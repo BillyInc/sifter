@@ -1,8 +1,8 @@
-// components/SmartInputParser.tsx - FIXED TYPE ERRORS
+// components/SmartInputParser.tsx - FIXED VERSION
 'use client';
 
 import React, { useState } from 'react';
-import { InputType, SmartInputResult, ResolvedEntity } from '@/types';
+import { InputType, SmartInputResult, ResolvedEntity, PlatformType } from '@/types';
 
 interface SmartInputParserProps {
   onResolve: (result: SmartInputResult) => void;
@@ -36,6 +36,18 @@ export default function SmartInputParser({
     return 'unknown';
   };
 
+  const convertInputTypeToPlatformType = (inputType: InputType): PlatformType => {
+    switch (inputType) {
+      case 'twitter': return 'twitter';
+      case 'discord': return 'discord';
+      case 'telegram': return 'telegram';
+      case 'github': return 'github';
+      case 'website': return 'website';
+      case 'name': return 'name';
+      default: return 'unknown';
+    }
+  };
+
   const resolveInput = async (value: string): Promise<ResolvedEntity[]> => {
     const type = detectInputType(value);
     setDetectedType(type);
@@ -43,12 +55,14 @@ export default function SmartInputParser({
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
     
+    const platformType = convertInputTypeToPlatformType(type);
+    
     const mockCandidates: ResolvedEntity[] = [
       {
         id: `entity_${Date.now()}_1`,
         canonicalName: value.toLowerCase().replace(/[^a-z0-9]/g, '_'),
         displayName: value,
-        platform: type,
+        platform: platformType,
         url: getPlatformUrl(type, value),
         confidence: 85,
         alternativeNames: [value, value.replace(/\s+/g, '')],
@@ -68,7 +82,7 @@ export default function SmartInputParser({
         id: `entity_${Date.now()}_2`,
         canonicalName: `${value.toLowerCase().replace(/[^a-z0-9]/g, '_')}_v2`,
         displayName: `${value} V2`,
-        platform: type,
+        platform: platformType,
         url: getPlatformUrl(type, `${value}_v2`),
         confidence: 65,
         alternativeNames: [`${value} V2`, `${value} Version 2`],
@@ -94,6 +108,7 @@ export default function SmartInputParser({
       case 'telegram': return `https://t.me/${cleanValue}`;
       case 'github': return `https://github.com/${cleanValue}`;
       case 'website': return cleanValue.startsWith('http') ? cleanValue : `https://${cleanValue}`;
+      case 'name': return '';
       default: return '';
     }
   };

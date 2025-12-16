@@ -1,8 +1,8 @@
-// components/BatchResultsTable.tsx - CORRECTED
+// components/BatchResultsTable.tsx - ALIGNED WITH TYPES
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { BatchProject, VerdictResult } from '@/types';
+import { BatchProject, VerdictType, BatchProcessingJob } from '@/types';
 
 interface BatchResultsTableProps {
   projects: BatchProject[];
@@ -10,8 +10,8 @@ interface BatchResultsTableProps {
   onExport: (type: 'csv' | 'pdf') => void;
 }
 
-// Update FilterType to match VerdictResult for the comparison
-type FilterType = 'all' | VerdictResult;
+// Use VerdictType from your types (excludes 'unknown')
+type FilterType = 'all' | VerdictType;
 
 type SortField = 'name' | 'riskScore' | 'processingTime';
 
@@ -28,21 +28,24 @@ export default function BatchResultsTable({ projects, onViewDetails, onExport }:
     if (searchQuery) {
       filtered = filtered.filter(p => 
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.topRedFlag?.toLowerCase().includes(searchQuery.toLowerCase())
+        (p.redFlags && p.redFlags.some(flag => 
+          flag.toLowerCase().includes(searchQuery.toLowerCase())
+        ))
       );
     }
     
     if (filter !== 'all') {
-      filtered = filtered.filter(p => p.result === filter);
+      filtered = filtered.filter(p => p.verdict === filter);
     }
     
     filtered = [...filtered].sort((a, b) => {
-      let aValue = 0, bValue = 0;
+      let aValue: string | number = 0;
+      let bValue: string | number = 0;
       
       switch (sortField) {
         case 'name':
-          aValue = a.name.localeCompare(b.name);
-          bValue = b.name.localeCompare(a.name);
+          aValue = a.name;
+          bValue = b.name;
           break;
         case 'riskScore':
           aValue = a.riskScore || 0;
@@ -55,40 +58,52 @@ export default function BatchResultsTable({ projects, onViewDetails, onExport }:
       }
       
       if (sortField === 'name') {
-        return sortDirection === 'asc' ? aValue : -aValue;
+        return sortDirection === 'asc' 
+          ? String(aValue).localeCompare(String(bValue))
+          : String(bValue).localeCompare(String(aValue));
       }
       
-      return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+      const aNum = Number(aValue);
+      const bNum = Number(bValue);
+      return sortDirection === 'asc' ? aNum - bNum : bNum - aNum;
     });
     
     return filtered;
   }, [projects, filter, sortField, sortDirection, searchQuery]);
 
-  // Update groupedProjects to handle filtering
+  // Group projects by verdict - using only the defined VerdictType values
   const groupedProjects = useMemo(() => {
-    return {
-      reject: projects.filter(p => p.result === 'reject'),
-      flag: projects.filter(p => p.result === 'flag'),
-      pass: projects.filter(p => p.result === 'pass')
+    const groups = {
+      reject: projects.filter(p => p.verdict === 'reject'),
+      flag: projects.filter(p => p.verdict === 'flag'),
+      pass: projects.filter(p => p.verdict === 'pass'),
     };
+    return groups;
   }, [projects]);
 
-  const getVerdictIcon = (verdict: VerdictResult | 'all') => {
+  // Add helper function to handle undefined verdicts
+  const getDisplayVerdict = (verdict?: VerdictType): VerdictType | 'unknown' => {
+    return verdict || 'unknown';
+  };
+
+  const getVerdictIcon = (verdict: VerdictType | 'all' | 'unknown') => {
     switch (verdict) {
       case 'pass': return '✅';
       case 'flag': return '⚠️';
       case 'reject': return '🚫';
       case 'all': return '📊';
+      case 'unknown': return '❓';
       default: return '❓';
     }
   };
 
-  const getVerdictColor = (verdict: VerdictResult | 'all') => {
+  const getVerdictColor = (verdict: VerdictType | 'all' | 'unknown') => {
     switch (verdict) {
       case 'pass': return 'text-green-400';
       case 'flag': return 'text-yellow-400';
       case 'reject': return 'text-red-400';
       case 'all': return 'text-blue-400';
+      case 'unknown': return 'text-gray-400';
       default: return 'text-gray-400';
     }
   };
@@ -110,44 +125,65 @@ export default function BatchResultsTable({ projects, onViewDetails, onExport }:
     }
   };
 
-  const renderProjectRow = (project: BatchProject) => (
-    <tr key={project.id} className="border-b border-sifter-border/30 hover:bg-sifter-card/50">
-      <td className="py-4 px-6">
-        <div className="font-medium text-white">{project.name}</div>
-      </td>
-      <td className="py-4 px-6">
-        <div className={`font-bold ${getRiskColor(project.riskScore || 0)}`}>
-          {project.riskScore}/100
-        </div>
-      </td>
-      <td className="py-4 px-6">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">{getVerdictIcon(project.result || 'unknown')}</span>
-          <span className={`font-medium ${getVerdictColor(project.result || 'unknown')}`}>
-            {project.result?.toUpperCase() || 'UNKNOWN'}
-          </span>
-        </div>
-      </td>
-      <td className="py-4 px-6">
-        <div className="text-gray-300">{project.topRedFlag || 'No red flags'}</div>
-      </td>
-      <td className="py-4 px-6">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => onViewDetails(project)}
-            className="text-blue-400 hover:text-blue-300 text-sm px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 rounded-lg transition-colors"
-          >
-            View Details
-          </button>
-          <button className="text-gray-400 hover:text-white text-sm px-3 py-1.5 bg-gray-800/50 hover:bg-gray-800 rounded-lg transition-colors">
-            PDF
-          </button>
-        </div>
-      </td>
-    </tr>
-  );
+  // Get top red flag from redFlags array
+  const getTopRedFlag = (project: BatchProject) => {
+    if (!project.redFlags || project.redFlags.length === 0) {
+      return 'No red flags detected';
+    }
+    return project.redFlags[0];
+  };
 
-  const renderSection = (verdict: 'reject' | 'flag' | 'pass', count: number, projects: BatchProject[]) => {
+  const renderProjectRow = (project: BatchProject) => {
+    const displayVerdict = getDisplayVerdict(project.verdict);
+    
+    return (
+      <tr key={project.id} className="border-b border-sifter-border/30 hover:bg-sifter-card/50">
+        <td className="py-4 px-6">
+          <div className="font-medium text-white">{project.name}</div>
+          <div className="text-sm text-gray-500">{project.input}</div>
+        </td>
+        <td className="py-4 px-6">
+          <div className={`font-bold ${getRiskColor(project.riskScore || 0)}`}>
+            {project.riskScore || 0}/100
+          </div>
+        </td>
+        <td className="py-4 px-6">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">{getVerdictIcon(displayVerdict)}</span>
+            <span className={`font-medium ${getVerdictColor(displayVerdict)}`}>
+              {displayVerdict.toUpperCase()}
+            </span>
+          </div>
+        </td>
+        <td className="py-4 px-6">
+          <div className="text-gray-300">{getTopRedFlag(project)}</div>
+          {project.redFlags && project.redFlags.length > 1 && (
+            <div className="text-xs text-gray-500 mt-1">
+              +{project.redFlags.length - 1} more flag{project.redFlags.length > 2 ? 's' : ''}
+            </div>
+          )}
+        </td>
+        <td className="py-4 px-6">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => onViewDetails(project)}
+              className="text-blue-400 hover:text-blue-300 text-sm px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 rounded-lg transition-colors"
+            >
+              View Details
+            </button>
+            <button 
+              className="text-gray-400 hover:text-white text-sm px-3 py-1.5 bg-gray-800/50 hover:bg-gray-800 rounded-lg transition-colors"
+              onClick={() => console.log('Export PDF for', project.name)}
+            >
+              PDF
+            </button>
+          </div>
+        </td>
+      </tr>
+    );
+  };
+
+  const renderSection = (verdict: VerdictType, count: number, projects: BatchProject[]) => {
     const isExpanded = expandedSection === verdict || expandedSection === null;
     const icon = getVerdictIcon(verdict);
     const color = getVerdictColor(verdict);
@@ -190,7 +226,7 @@ export default function BatchResultsTable({ projects, onViewDetails, onExport }:
           </div>
         </div>
 
-        {isExpanded && (
+        {isExpanded && projects.length > 0 && (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -223,20 +259,15 @@ export default function BatchResultsTable({ projects, onViewDetails, onExport }:
                 </tr>
               </thead>
               <tbody>
-                {projects.slice(0, verdict === 'reject' && !isExpanded ? 3 : projects.length).map(renderProjectRow)}
+                {projects.map(renderProjectRow)}
               </tbody>
             </table>
-            
-            {verdict === 'reject' && projects.length > 3 && !isExpanded && (
-              <div className="text-center py-4 border-t border-sifter-border/30">
-                <button
-                  onClick={() => setExpandedSection(verdict)}
-                  className="text-gray-400 hover:text-white text-sm"
-                >
-                  Show {projects.length - 3} more rejected projects...
-                </button>
-              </div>
-            )}
+          </div>
+        )}
+
+        {isExpanded && projects.length === 0 && (
+          <div className="text-center py-8 text-gray-500 border border-dashed border-sifter-border rounded-lg">
+            No projects in this category
           </div>
         )}
       </div>
@@ -297,7 +328,7 @@ export default function BatchResultsTable({ projects, onViewDetails, onExport }:
               placeholder="Search projects..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-gray-900 border border-sifter-border rounded-lg pl-10 pr-4 py-2 text-white focus:border-blue-500 focus:outline-none"
+              className="bg-gray-900 border border-sifter-border rounded-lg pl-10 pr-4 py-2 text-white focus:border-blue-500 focus:outline-none w-64"
             />
             <svg
               className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"
@@ -333,16 +364,25 @@ export default function BatchResultsTable({ projects, onViewDetails, onExport }:
       <div className="mb-8 p-4 bg-gray-900/50 rounded-xl">
         <h4 className="font-medium text-white mb-3">Bulk Actions</h4>
         <div className="flex flex-wrap gap-3">
-          <button className="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border border-blue-500/30 rounded-lg transition-colors flex items-center gap-2">
+          <button 
+            className="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border border-blue-500/30 rounded-lg transition-colors flex items-center gap-2"
+            disabled={groupedProjects.pass.length === 0}
+          >
             📧 Email {groupedProjects.pass.length} PASS Projects to Partner
           </button>
           <button className="px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border border-purple-500/30 rounded-lg transition-colors flex items-center gap-2">
             📄 Generate Partner Packet
           </button>
-          <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors flex items-center gap-2">
+          <button 
+            className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors flex items-center gap-2"
+            disabled={groupedProjects.reject.length === 0}
+          >
             📊 Export {groupedProjects.reject.length} Rejects as CSV
           </button>
-          <button className="px-4 py-2 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 border border-yellow-500/30 rounded-lg transition-colors flex items-center gap-2">
+          <button 
+            className="px-4 py-2 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 border border-yellow-500/30 rounded-lg transition-colors flex items-center gap-2"
+            disabled={groupedProjects.flag.length === 0}
+          >
             ⚠️ Review {groupedProjects.flag.length} Flagged
           </button>
         </div>

@@ -1,4 +1,4 @@
-// components/ResearcherDashboard.tsx - UPDATED WITH WORKING EXPORTS
+// components/ResearcherDashboard.tsx - ADAPTED VERSION
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -6,31 +6,94 @@ import SmartInputParser from './SmartInputParser';
 import MetricBreakdown from './MetricBreakdown';
 import ResearchReport from './ResearchReport';
 import ResearchCharts from './ResearchCharts';
-import { SmartInputResult, ProjectData, AnalysisHistory, ScamPattern } from '@/types';
+import { 
+  SmartInputResult, 
+  ProjectData, 
+  AnalysisHistory, 
+  ScamPattern, 
+  MetricData,
+  PatternExample,
+  DetectionRule,
+  VerdictType
+} from '@/types';
 import { generateMockProjectData } from '@/data/mockData';
 import { ExportService } from '@/services/exportService';
 
+// Helper function to get metric value by key or name
+export const getMetricValue = (metrics: MetricData[], keyOrName: string): number => {
+  if (!metrics || !Array.isArray(metrics)) return 0;
+  
+  const metric = metrics.find(m => 
+    m.key === keyOrName || 
+    (m.name && m.name.toLowerCase().includes(keyOrName.toLowerCase())) ||
+    (keyOrName.toLowerCase().includes(m.name?.toLowerCase() || ''))
+  );
+  
+  if (!metric) return 0;
+  
+  // Try to get numeric value from different possible properties
+  if (typeof metric.value === 'number') return metric.value;
+  if (typeof metric.score === 'number') return metric.score;
+  if (typeof metric.scoreValue === 'number') return metric.scoreValue;
+  if (typeof metric.contribution === 'number') return metric.contribution;
+  
+  // Try to convert string value to number
+  if (typeof metric.value === 'string') {
+    const parsed = parseFloat(metric.value);
+    if (!isNaN(parsed)) return parsed;
+  }
+  
+  return 0;
+};
+
+// Update ResearcherDashboardProps interface to match page.tsx
 interface ResearcherDashboardProps {
   onAnalyze: (input: string) => void;
-  userEmail?: string;
-  onModeChange?: () => void;
+  userEmail: string;
+  onModeChange: () => void;
+  onExportPDF?: (data: ProjectData) => void;
+  onExportJSON?: (data: ProjectData) => void;
+  onExportCSV?: (data: ProjectData) => void;
+  currentProjectData?: ProjectData;
+  projectMetrics?: MetricData[];
+  userName?: string;
+  // NEW: Accept AnalysisHistory[] instead of internal conversion
+  recentScans?: AnalysisHistory[];
+  // NEW: Callback updates to match page.tsx
+  onAddToWatchlist?: (projectName: string, riskScore: number, verdict: VerdictType) => void;
+  onViewReport?: (scanId: string) => void;
+  onRemoveFromWatchlist?: (projectId: string) => void;
 }
 
 export default function ResearcherDashboard({ 
   onAnalyze, 
   userEmail,
-  onModeChange
+  onModeChange,
+  onExportPDF,
+  onExportJSON,
+  onExportCSV,
+  currentProjectData,
+  projectMetrics = [],
+  userName,
+  // NEW props
+  recentScans: externalRecentScans,
+  onAddToWatchlist,
+  onViewReport,
+  onRemoveFromWatchlist
 }: ResearcherDashboardProps) {
   const [activeTab, setActiveTab] = useState<'analyze' | 'compare' | 'patterns' | 'database' | 'exports'>('analyze');
-  const [currentProject, setCurrentProject] = useState<ProjectData | null>(null);
+  const [currentProject, setCurrentProject] = useState<ProjectData | null>(currentProjectData || null);
   const [comparisonProjects, setComparisonProjects] = useState<ProjectData[]>([]);
-  const [savedAnalyses, setSavedAnalyses] = useState<AnalysisHistory[]>([
+  
+  // Use external recentScans if provided, otherwise use internal mock data
+  const [internalRecentScans, setInternalRecentScans] = useState<AnalysisHistory[]>([
     { id: '1', projectName: 'MoonDoge Protocol', riskScore: 89, verdict: 'reject', scannedAt: new Date(Date.now() - 2 * 60 * 60 * 1000), processingTime: 87 },
     { id: '2', projectName: 'CryptoGrowth Labs Analysis', riskScore: 93, verdict: 'reject', scannedAt: new Date(Date.now() - 24 * 60 * 60 * 1000), processingTime: 120 },
     { id: '3', projectName: 'DeFi Alpha Protocol', riskScore: 23, verdict: 'pass', scannedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), processingTime: 92 },
     { id: '4', projectName: 'TokenSwap Pro', riskScore: 55, verdict: 'flag', scannedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), processingTime: 78 },
   ]);
   
+  const recentScans = externalRecentScans || internalRecentScans;
   const [filteredProjects, setFilteredProjects] = useState<ProjectData[]>([]);
   const [expandedProjects, setExpandedProjects] = useState<{[key: string]: boolean}>({});
   const [showAllMetrics, setShowAllMetrics] = useState<{[key: string]: boolean}>({});
@@ -111,28 +174,39 @@ export default function ResearcherDashboard({
     lastUpdated: '2 hours ago',
   });
 
-  // Helper function to get project name from either ProjectData or AnalysisHistory
-  const getProjectName = (project: ProjectData | AnalysisHistory): string => {
-    return 'displayName' in project ? project.displayName : project.projectName;
-  };
+  // Get metric values using helper function
+  const founderDistractionValue = getMetricValue(projectMetrics, 'founderDistraction');
+  const mercenaryKeywordsValue = getMetricValue(projectMetrics, 'mercenaryKeywords');
+  const contaminatedNetworkValue = getMetricValue(projectMetrics, 'contaminatedNetwork');
+  const teamIdentityValue = getMetricValue(projectMetrics, 'teamIdentity');
 
-  // Initialize filteredProjects
+  // Update currentProject when prop changes
   useEffect(() => {
-    const mockFilteredProjects = savedAnalyses.map(analysis => {
-      const mockData = generateMockProjectData(analysis.projectName);
+    if (currentProjectData) {
+      setCurrentProject(currentProjectData);
+    }
+  }, [currentProjectData]);
+
+  // Convert AnalysisHistory[] to display format for charts and tables
+  useEffect(() => {
+    const displayProjects = recentScans.map(scan => {
+      const mockData = generateMockProjectData(scan.projectName);
       return {
         ...mockData,
-        id: analysis.id,
+        id: scan.id,
+        canonicalName: scan.projectName.toLowerCase().replace(/\s+/g, '-'),
+        displayName: scan.projectName,
         overallRisk: {
           ...mockData.overallRisk,
-          score: analysis.riskScore,
-          verdict: analysis.verdict
+          score: scan.riskScore,
+          verdict: scan.verdict
         },
-        scannedAt: analysis.scannedAt
-      };
+        scannedAt: scan.scannedAt,
+        weight: 100
+      } as ProjectData;
     });
-    setFilteredProjects(mockFilteredProjects);
-  }, [savedAnalyses]);
+    setFilteredProjects(displayProjects);
+  }, [recentScans]);
 
   const toggleProjectDetails = (projectId: string) => {
     setExpandedProjects(prev => ({
@@ -183,10 +257,15 @@ export default function ResearcherDashboard({
         processingTime: mockData.processingTime
       };
       
-      setSavedAnalyses(prev => [newAnalysis, ...prev.slice(0, 9)]);
+      setInternalRecentScans(prev => [newAnalysis, ...prev.slice(0, 9)]);
       setActiveTab('analyze');
       setIsAnalyzing(false);
       setAnalysisProgress(0);
+      
+      // Call parent's onAnalyze if provided
+      if (onAnalyze) {
+        onAnalyze(projectName);
+      }
     }, 3000);
   };
 
@@ -218,7 +297,6 @@ export default function ResearcherDashboard({
     setActiveTab('compare');
   };
 
-  // FIXED: Handle export with proper error handling and PDF generation
   const handleExportAnalysis = async (format: 'csv' | 'json' | 'pdf', projectData?: ProjectData) => {
     try {
       const dataToExport = projectData || currentProject;
@@ -229,16 +307,27 @@ export default function ResearcherDashboard({
 
       switch (format) {
         case 'csv':
-          ExportService.exportMetricsToCSV(dataToExport.metrics, dataToExport.displayName);
+          if (onExportCSV) {
+            onExportCSV(dataToExport);
+          } else {
+            ExportService.exportMetricsToCSV(dataToExport.metrics, dataToExport.displayName);
+          }
           break;
           
         case 'json':
-          ExportService.exportProjectAnalysis(dataToExport);
+          if (onExportJSON) {
+            onExportJSON(dataToExport);
+          } else {
+            ExportService.exportProjectAnalysis(dataToExport);
+          }
           break;
           
         case 'pdf':
-          // Use the exportSimplePDF method from ExportService
-          ExportService.exportSimplePDF(dataToExport);
+          if (onExportPDF) {
+            onExportPDF(dataToExport);
+          } else {
+            ExportService.exportToPDF(dataToExport);
+          }
           break;
       }
     } catch (error) {
@@ -247,7 +336,6 @@ export default function ResearcherDashboard({
     }
   };
 
-  // FIXED: Proper clipboard sharing with success feedback
   const handleShareAnalysis = async (platform?: 'twitter' | 'linkedin' | 'clipboard') => {
     if (!currentProject) {
       alert('No analysis to share. Please run an analysis first.');
@@ -314,20 +402,23 @@ export default function ResearcherDashboard({
           {metrics.map((metric, metricIdx) => (
             <div key={metricIdx} className="space-y-2">
               <div className="text-xs text-gray-400">{metric.name}</div>
-              {comparisonProjects.map((project, projIdx) => (
-                <div key={projIdx} className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${
-                    (project.metrics as any)[metric.key]?.score >= 80 ? 'bg-red-500' :
-                    (project.metrics as any)[metric.key]?.score >= 60 ? 'bg-orange-500' :
-                    (project.metrics as any)[metric.key]?.score >= 40 ? 'bg-yellow-500' :
-                    'bg-green-500'
-                  }`}></div>
-                  <div className="text-xs text-gray-300 truncate">{project.displayName}</div>
-                  <div className="text-xs font-medium text-white ml-auto">
-                    {(project.metrics as any)[metric.key]?.score || 0}
+              {comparisonProjects.map((project, projIdx) => {
+                const metricValue = getMetricValue(project.metrics, metric.key);
+                return (
+                  <div key={projIdx} className="flex items-center gap-2">
+                    <div className={`w-3 h-3 rounded-full ${
+                      metricValue >= 80 ? 'bg-red-500' :
+                      metricValue >= 60 ? 'bg-orange-500' :
+                      metricValue >= 40 ? 'bg-yellow-500' :
+                      'bg-green-500'
+                    }`}></div>
+                    <div className="text-xs text-gray-300 truncate">{project.displayName}</div>
+                    <div className="text-xs font-medium text-white ml-auto">
+                      {metricValue}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ))}
         </div>
@@ -335,79 +426,116 @@ export default function ResearcherDashboard({
     );
   };
 
-  // FIXED: Use getProjectName helper function
-  const handleViewFullReport = (project: ProjectData | AnalysisHistory) => {
-    const projectName = getProjectName(project);
-    const mockData = generateMockProjectData(projectName);
-    setCurrentProject(mockData);
-    setShowResearchReport(true);
-  };
-
-  // FIXED: Use getProjectName helper function
-  const handleCompareProject = (project: ProjectData | AnalysisHistory) => {
-    const projectName = getProjectName(project);
-    handleAddToComparison(projectName);
-  };
-
-  // FIXED: Use getProjectName helper function with proper export
-  const handleExportProject = (project: ProjectData | AnalysisHistory) => {
-    const projectName = getProjectName(project);
-    const mockData = generateMockProjectData(projectName);
-    setCurrentProject(mockData);
-    
-    // Let user choose export format
-    const format = prompt('Choose export format: csv, json, or pdf', 'csv');
-    if (format && ['csv', 'json', 'pdf'].includes(format.toLowerCase())) {
-      handleExportAnalysis(format.toLowerCase() as 'csv' | 'json' | 'pdf', mockData);
+  // UPDATED: Handle viewing report from scan ID
+  const handleViewFullReport = (scanId: string) => {
+    const scan = recentScans.find(s => s.id === scanId);
+    if (scan) {
+      const mockData = generateMockProjectData(scan.projectName);
+      setCurrentProject(mockData);
+      setShowResearchReport(true);
     }
   };
 
+  // UPDATED: Handle comparing project from scan
+  const handleCompareProject = (scanId: string) => {
+    const scan = recentScans.find(s => s.id === scanId);
+    if (scan) {
+      handleAddToComparison(scan.projectName);
+    }
+  };
+
+  // UPDATED: Handle exporting project from scan
+  const handleExportProject = (scanId: string) => {
+    const scan = recentScans.find(s => s.id === scanId);
+    if (scan) {
+      const mockData = generateMockProjectData(scan.projectName);
+      setCurrentProject(mockData);
+      
+      const format = prompt('Choose export format: csv, json, or pdf', 'csv');
+      if (format && ['csv', 'json', 'pdf'].includes(format.toLowerCase())) {
+        handleExportAnalysis(format.toLowerCase() as 'csv' | 'json' | 'pdf', mockData);
+      }
+    }
+  };
+
+  // UPDATED: Handle adding to watchlist from scan
+  const handleAddToWatchlistFromScan = (scanId: string) => {
+    const scan = recentScans.find(s => s.id === scanId);
+    if (scan && onAddToWatchlist) {
+      onAddToWatchlist(scan.projectName, scan.riskScore, scan.verdict);
+    } else if (scan) {
+      // Fallback: Use internal state if no callback provided
+      alert(`Added ${scan.projectName} to watchlist!`);
+    }
+  };
+
+  // Mode switch handler
   const handleModeSwitchClick = () => {
-    if (onModeChange) {
-      setShowModeSwitchModal(true);
-    }
+    setShowModeSwitchModal(true);
   };
 
   const confirmModeSwitch = () => {
-    if (onModeChange) {
-      onModeChange();
-    }
+    onModeChange();
     setShowModeSwitchModal(false);
   };
 
-  const calculateHighestRiskMetric = () => {
-    if (!currentProject) return 'N/A';
-    const metrics = Object.entries(currentProject.metrics);
-    const highest = metrics.reduce((max, [name, metric]: [string, any]) => 
-      metric.score > max.score ? {name, score: metric.score} : max, 
-      {name: '', score: 0}
-    );
-    return highest.name.replace(/([A-Z])/g, ' $1').trim();
+  const cancelModeSwitch = () => {
+    setShowModeSwitchModal(false);
   };
 
-  const calculateLowestRiskMetric = () => {
-    if (!currentProject) return 'N/A';
-    const metrics = Object.entries(currentProject.metrics);
-    const lowest = metrics.reduce((min, [name, metric]: [string, any]) => 
-      metric.score < min.score ? {name, score: metric.score} : min, 
-      {name: '', score: 100}
-    );
-    return lowest.name.replace(/([A-Z])/g, ' $1').trim();
+  const calculateHighestRiskMetric = (): string => {
+    if (!currentProject || !currentProject.metrics) return 'N/A';
+    
+    let highestName = '';
+    let highestScore = -1;
+    
+    currentProject.metrics.forEach(metric => {
+      const value = getMetricValue([metric], metric.key || metric.name || '');
+      if (value > highestScore) {
+        highestScore = value;
+        highestName = metric.name || metric.key || 'N/A';
+      }
+    });
+    
+    return highestName;
   };
 
-  const calculateAvgMetricScore = () => {
-    if (!currentProject) return 0;
-    return Math.round(Object.values(currentProject.metrics).reduce((sum: number, metric: any) => sum + metric.score, 0) / 13);
+  const calculateLowestRiskMetric = (): string => {
+    if (!currentProject || !currentProject.metrics) return 'N/A';
+    
+    let lowestName = '';
+    let lowestScore = 101;
+    
+    currentProject.metrics.forEach(metric => {
+      const value = getMetricValue([metric], metric.key || metric.name || '');
+      if (value < lowestScore) {
+        lowestScore = value;
+        lowestName = metric.name || metric.key || 'N/A';
+      }
+    });
+    
+    return lowestName;
   };
 
-  const calculateCriticalFlags = () => {
-    if (!currentProject) return 0;
-    return Object.values(currentProject.metrics).reduce((count: number, metric: any) => 
-      count + (metric.score >= 80 ? 1 : 0), 0
-    );
+  const calculateAvgMetricScore = (): number => {
+    if (!currentProject || !currentProject.metrics) return 0;
+    
+    const total = currentProject.metrics.reduce((sum, metric) => {
+      return sum + getMetricValue([metric], metric.key || metric.name || '');
+    }, 0);
+    
+    return Math.round(total / currentProject.metrics.length);
   };
 
-  // FIXED: Export table with working download buttons
+  const calculateCriticalFlags = (): number => {
+    if (!currentProject || !currentProject.metrics) return 0;
+    
+    return currentProject.metrics.filter(metric => {
+      const value = getMetricValue([metric], metric.key || metric.name || '');
+      return value >= 80;
+    }).length;
+  };
+
   const renderExportTable = () => {
     const exportData = [
       { name: 'MoonDoge_analysis.csv', date: '2 hours ago', size: '2.4 MB', type: 'csv' },
@@ -423,14 +551,13 @@ export default function ResearcherDashboard({
       
       switch (exportFile.type) {
         case 'csv':
-          ExportService.exportMetricsToCSV(currentProject.metrics, currentProject.displayName);
+          handleExportAnalysis('csv', currentProject);
           break;
         case 'json':
-          ExportService.exportProjectAnalysis(currentProject);
+          handleExportAnalysis('json', currentProject);
           break;
         case 'pdf':
-          // Use the exportSimplePDF method from ExportService
-          ExportService.exportSimplePDF(currentProject);
+          handleExportAnalysis('pdf', currentProject);
           break;
       }
     };
@@ -494,7 +621,7 @@ export default function ResearcherDashboard({
           
           <div className="text-right">
             <div className="text-sm text-gray-400">Researcher</div>
-            <div className="font-medium text-white">{userEmail || 'Researcher'}</div>
+            <div className="font-medium text-white">{userName || userEmail || 'Researcher'}</div>
           </div>
           <div className="px-3 py-1.5 rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/30 text-sm font-medium">
             🔬 Researcher Mode
@@ -789,6 +916,7 @@ export default function ResearcherDashboard({
                   projectName={currentProject.displayName}
                   riskScore={currentProject.overallRisk.score}
                   onExport={() => handleExportAnalysis('pdf', currentProject)}
+                  projectData={currentProject}
                 />
               </div>
             )}
@@ -802,13 +930,11 @@ export default function ResearcherDashboard({
                     <p className="text-gray-400 text-sm">13-metric risk assessment results</p>
                   </div>
                   <div className="flex gap-2">
-                    {/* FIXED: Export Data button with proper functionality */}
                     <button 
                       onClick={() => {
                         if (currentProject) {
                           handleExportAnalysis('csv', currentProject);
                         } else if (filteredProjects.length > 0) {
-                          // Export the first project as an example
                           handleExportAnalysis('csv', filteredProjects[0]);
                         } else {
                           alert('Please run an analysis first to export data.');
@@ -827,137 +953,156 @@ export default function ResearcherDashboard({
                   </div>
                 </div>
 
-                {/* Charts Section */}
+                {/* Charts Section - Now uses filteredProjects (converted from recentScans) */}
                 <ResearchCharts projects={filteredProjects} />
 
                 {/* Detailed Analysis */}
                 <div className="mt-8">
                   <h3 className="font-bold text-white mb-4">Detailed Analysis by Project</h3>
                   
-                  {filteredProjects.map((project) => (
-                    <div key={project.id} className="mb-4">
+                  {recentScans.map((scan) => (
+                    <div key={scan.id} className="mb-4">
                       <div className="bg-sifter-dark border border-sifter-border rounded-lg p-4">
                         {/* Project Header */}
                         <button
-                          onClick={() => toggleProjectDetails(project.id)}
+                          onClick={() => toggleProjectDetails(scan.id)}
                           className="w-full flex items-center justify-between text-left"
                         >
                           <div className="flex items-center gap-3">
                             <div className={`text-xl ${
-                              project.overallRisk.score >= 60 ? 'text-red-400' :
-                              project.overallRisk.score >= 30 ? 'text-yellow-400' : 'text-green-400'
+                              scan.riskScore >= 60 ? 'text-red-400' :
+                              scan.riskScore >= 30 ? 'text-yellow-400' : 'text-green-400'
                             }`}>
-                              {project.overallRisk.score >= 60 ? '🔴' : 
-                               project.overallRisk.score >= 30 ? '🟡' : '🟢'}
+                              {scan.riskScore >= 60 ? '🔴' : 
+                               scan.riskScore >= 30 ? '🟡' : '🟢'}
                             </div>
                             <div>
-                              <div className="font-bold text-white">{project.displayName}</div>
+                              <div className="font-bold text-white">{scan.projectName}</div>
                               <div className="flex items-center gap-2 text-sm">
                                 <div className={`px-2 py-0.5 rounded-full text-xs ${
-                                  project.overallRisk.verdict === 'reject' ? 'bg-red-500/20 text-red-400' :
-                                  project.overallRisk.verdict === 'flag' ? 'bg-yellow-500/20 text-yellow-400' :
+                                  scan.verdict === 'reject' ? 'bg-red-500/20 text-red-400' :
+                                  scan.verdict === 'flag' ? 'bg-yellow-500/20 text-yellow-400' :
                                   'bg-green-500/20 text-green-400'
                                 }`}>
-                                  {project.overallRisk.verdict.toUpperCase()}
+                                  {scan.verdict.toUpperCase()}
                                 </div>
                                 <div className="text-gray-400">
-                                  Score: <span className="font-bold">{project.overallRisk.score}/100</span>
+                                  Score: <span className="font-bold">{scan.riskScore}/100</span>
                                 </div>
                               </div>
                             </div>
                           </div>
                           <div className="text-gray-400">
-                            {expandedProjects[project.id] ? '▲' : '▼'}
+                            {expandedProjects[scan.id] ? '▲' : '▼'}
                           </div>
                         </button>
 
                         {/* Collapsible Content */}
-                        {expandedProjects[project.id] && (
+                        {expandedProjects[scan.id] && (
                           <div className="mt-4 pt-4 border-t border-sifter-border">
-                            {/* Quick Stats with ACTUAL metrics */}
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                              <div className="text-center p-3 bg-sifter-card rounded-lg">
-                                <div className="text-lg font-bold text-white">{project.metrics?.teamIdentity?.score || 0}</div>
-                                <div className="text-xs text-gray-400">Team Identity</div>
-                              </div>
-                              <div className="text-center p-3 bg-sifter-card rounded-lg">
-                                <div className="text-lg font-bold text-white">{project.metrics?.contaminatedNetwork?.score || 0}</div>
-                                <div className="text-xs text-gray-400">Network Risk</div>
-                              </div>
-                              <div className="text-center p-3 bg-sifter-card rounded-lg">
-                                <div className="text-lg font-bold text-white">{project.metrics?.githubAuthenticity?.score || 0}</div>
-                                <div className="text-xs text-gray-400">Code Auth</div>
-                              </div>
-                              <div className="text-center p-3 bg-sifter-card rounded-lg">
-                                <div className="text-lg font-bold text-white">{project.metrics?.tokenomics?.score || 0}</div>
-                                <div className="text-xs text-gray-400">Tokenomics</div>
-                              </div>
-                            </div>
-
-                            {/* Metric Breakdown */}
-                            <div>
-                              <div className="flex items-center justify-between mb-3">
-                                <h4 className="font-bold text-white">Metric Breakdown</h4>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    toggleAllMetrics(project.id);
-                                  }}
-                                  className="text-sm text-blue-400 hover:text-blue-300"
-                                >
-                                  {showAllMetrics[project.id] ? 'Show Less' : 'Show All'}
-                                </button>
-                              </div>
+                            {/* Get corresponding ProjectData for metrics */}
+                            {(() => {
+                              const projectData = filteredProjects.find(p => p.id === scan.id);
+                              if (!projectData) return null;
                               
-                              <div className="space-y-2">
-                                {Object.entries(project.metrics || {})
-                                  .slice(0, showAllMetrics[project.id] ? undefined : 3)
-                                  .map(([key, metric]: [string, any], index: number) => (
-                                    <div key={index} className="flex items-center justify-between p-3 bg-sifter-card rounded-lg">
-                                      <div className="text-sm text-gray-300">
-                                        {key.replace(/([A-Z])/g, ' $1').replace(/^\w/, c => c.toUpperCase())}
-                                      </div>
-                                      <div className="flex items-center gap-3">
-                                        <div className={`text-sm font-bold ${
-                                          metric.score >= 60 ? 'text-red-400' :
-                                          metric.score >= 30 ? 'text-yellow-400' : 'text-green-400'
-                                        }`}>
-                                          {metric.score}/100
-                                        </div>
-                                        <div className="w-16 bg-gray-800 rounded-full h-2">
-                                          <div 
-                                            className={`h-2 rounded-full ${
-                                              metric.score >= 60 ? 'bg-red-500' :
-                                              metric.score >= 30 ? 'bg-yellow-500' : 'bg-green-500'
-                                            }`}
-                                            style={{ width: `${metric.score}%` }}
-                                          />
-                                        </div>
-                                      </div>
+                              return (
+                                <>
+                                  {/* Quick Stats with ACTUAL metrics */}
+                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                                    <div className="text-center p-3 bg-sifter-card rounded-lg">
+                                      <div className="text-lg font-bold text-white">{getMetricValue(projectData.metrics, 'teamIdentity')}</div>
+                                      <div className="text-xs text-gray-400">Team Identity</div>
                                     </div>
-                                  ))}
-                              </div>
-                            </div>
+                                    <div className="text-center p-3 bg-sifter-card rounded-lg">
+                                      <div className="text-lg font-bold text-white">{getMetricValue(projectData.metrics, 'contaminatedNetwork')}</div>
+                                      <div className="text-xs text-gray-400">Network Risk</div>
+                                    </div>
+                                    <div className="text-center p-3 bg-sifter-card rounded-lg">
+                                      <div className="text-lg font-bold text-white">{getMetricValue(projectData.metrics, 'githubAuthenticity')}</div>
+                                      <div className="text-xs text-gray-400">Code Auth</div>
+                                    </div>
+                                    <div className="text-center p-3 bg-sifter-card rounded-lg">
+                                      <div className="text-lg font-bold text-white">{getMetricValue(projectData.metrics, 'tokenomics')}</div>
+                                      <div className="text-xs text-gray-400">Tokenomics</div>
+                                    </div>
+                                  </div>
 
-                            {/* Action Buttons - FIXED with proper handlers */}
+                                  {/* Metric Breakdown */}
+                                  <div>
+                                    <div className="flex items-center justify-between mb-3">
+                                      <h4 className="font-bold text-white">Metric Breakdown</h4>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          toggleAllMetrics(scan.id);
+                                        }}
+                                        className="text-sm text-blue-400 hover:text-blue-300"
+                                      >
+                                        {showAllMetrics[scan.id] ? 'Show Less' : 'Show All'}
+                                      </button>
+                                    </div>
+                                    
+                                    <div className="space-y-2">
+                                      {projectData.metrics
+                                        .slice(0, showAllMetrics[scan.id] ? undefined : 3)
+                                        .map((metric, index) => {
+                                          const metricValue = getMetricValue([metric], metric.key || metric.name || '');
+                                          return (
+                                            <div key={index} className="flex items-center justify-between p-3 bg-sifter-card rounded-lg">
+                                              <div className="text-sm text-gray-300">
+                                                {metric.name || metric.key || `Metric ${index}`}
+                                              </div>
+                                              <div className="flex items-center gap-3">
+                                                <div className={`text-sm font-bold ${
+                                                  metricValue >= 60 ? 'text-red-400' :
+                                                  metricValue >= 30 ? 'text-yellow-400' : 'text-green-400'
+                                                }`}>
+                                                  {metricValue}/100
+                                                </div>
+                                                <div className="w-16 bg-gray-800 rounded-full h-2">
+                                                  <div 
+                                                    className={`h-2 rounded-full ${
+                                                      metricValue >= 60 ? 'bg-red-500' :
+                                                      metricValue >= 30 ? 'bg-yellow-500' : 'bg-green-500'
+                                                    }`}
+                                                    style={{ width: `${metricValue}%` }}
+                                                  />
+                                                </div>
+                                              </div>
+                                            </div>
+                                          );
+                                        })}
+                                    </div>
+                                  </div>
+                                </>
+                              );
+                            })()}
+
+                            {/* Action Buttons - UPDATED to use scan ID */}
                             <div className="flex gap-2 mt-4">
                               <button 
-                                onClick={() => handleViewFullReport(project)}
+                                onClick={() => handleViewFullReport(scan.id)}
                                 className="px-3 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-lg transition-colors text-sm"
                               >
                                 View Full Report
                               </button>
                               <button 
-                                onClick={() => handleCompareProject(project)}
+                                onClick={() => handleCompareProject(scan.id)}
                                 className="px-3 py-2 bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg transition-colors text-sm"
                               >
                                 Compare
                               </button>
                               <button 
-                                onClick={() => handleExportProject(project)}
+                                onClick={() => handleExportProject(scan.id)}
                                 className="px-3 py-2 bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg transition-colors text-sm"
                               >
                                 Export
+                              </button>
+                              <button 
+                                onClick={() => handleAddToWatchlistFromScan(scan.id)}
+                                className="px-3 py-2 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border border-purple-500/20 rounded-lg transition-colors text-sm"
+                              >
+                                ⭐ Add to Watchlist
                               </button>
                             </div>
                           </div>
@@ -1031,23 +1176,23 @@ export default function ResearcherDashboard({
                           <tr key={key} className="border-b border-sifter-border/30 hover:bg-gray-900/20">
                             <td className="py-3 px-4 text-gray-300 text-sm">{name}</td>
                             {comparisonProjects.map((project, idx) => {
-                              const metric = (project.metrics as any)[key];
+                              const metricValue = getMetricValue(project.metrics, key);
                               return (
                                 <td key={idx} className="py-3 px-4">
                                   <div className="flex items-center gap-2">
                                     <div className={`w-8 h-1.5 rounded-full ${
-                                      metric?.score >= 80 ? 'bg-red-500' :
-                                      metric?.score >= 60 ? 'bg-orange-500' :
-                                      metric?.score >= 40 ? 'bg-yellow-500' : 'bg-green-500'
+                                      metricValue >= 80 ? 'bg-red-500' :
+                                      metricValue >= 60 ? 'bg-orange-500' :
+                                      metricValue >= 40 ? 'bg-yellow-500' : 'bg-green-500'
                                     }`}></div>
-                                    <span className="font-medium text-white text-sm">{metric?.score || 0}</span>
-                                    </div>
+                                    <span className="font-medium text-white text-sm">{metricValue}</span>
+                                  </div>
                                 </td>
                               );
                             })}
                             <td className="py-3 px-4 text-gray-400 text-sm">
                               {Math.round(
-                                comparisonProjects.reduce((sum, p) => sum + ((p.metrics as any)[key]?.score || 0), 0) / 
+                                comparisonProjects.reduce((sum, p) => sum + getMetricValue(p.metrics, key), 0) / 
                                 comparisonProjects.length
                               )}
                             </td>
@@ -1062,27 +1207,27 @@ export default function ResearcherDashboard({
               <div className="mt-6 pt-5 border-t border-sifter-border">
                 <h4 className="font-medium text-white mb-3 text-sm">Add Projects to Comparison</h4>
                 <div className="grid grid-cols-3 gap-3">
-                  {savedAnalyses.slice(0, 6).map((analysis) => (
+                  {recentScans.slice(0, 6).map((scan) => (
                     <button
-                      key={analysis.id}
-                      onClick={() => handleAddToComparison(analysis.projectName)}
-                      disabled={comparisonProjects.some(p => p.displayName === analysis.projectName)}
+                      key={scan.id}
+                      onClick={() => handleAddToComparison(scan.projectName)}
+                      disabled={comparisonProjects.some(p => p.displayName === scan.projectName)}
                       className="text-left p-3 border border-sifter-border rounded-lg hover:border-purple-500/50 hover:bg-sifter-card/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <div className="flex justify-between items-start">
                         <div className="truncate">
-                          <div className="font-medium text-white text-sm truncate">{analysis.projectName}</div>
+                          <div className="font-medium text-white text-sm truncate">{scan.projectName}</div>
                           <div className="text-xs text-gray-400 mt-0.5">
-                            {analysis.scannedAt.toLocaleDateString()}
+                            {scan.scannedAt.toLocaleDateString()}
                           </div>
                         </div>
                         <div className={`px-2 py-1 rounded text-xs ${
-                          analysis.riskScore >= 80 ? 'bg-red-500/20 text-red-400' :
-                          analysis.riskScore >= 60 ? 'bg-orange-500/20 text-orange-400' :
-                          analysis.riskScore >= 40 ? 'bg-yellow-500/20 text-yellow-400' :
+                          scan.riskScore >= 80 ? 'bg-red-500/20 text-red-400' :
+                          scan.riskScore >= 60 ? 'bg-orange-500/20 text-orange-400' :
+                          scan.riskScore >= 40 ? 'bg-yellow-500/20 text-yellow-400' :
                           'bg-green-500/20 text-green-400'
                         }`}>
-                          {analysis.riskScore}
+                          {scan.riskScore}
                         </div>
                       </div>
                     </button>
@@ -1130,7 +1275,7 @@ export default function ResearcherDashboard({
                     </div>
                     
                     <div className="grid grid-cols-3 gap-3 mb-3">
-                      {pattern.detectionRules.map((rule, idx) => (
+                      {pattern.detectionRules?.map((rule, idx) => (
                         <div key={idx} className="bg-gray-900/50 p-3 rounded">
                           <div className="text-xs text-gray-400 mb-1">{rule.condition}</div>
                           <div className="text-sm text-white">{rule.description}</div>
@@ -1142,7 +1287,7 @@ export default function ResearcherDashboard({
                     <div className="pt-3 border-t border-sifter-border">
                       <div className="text-sm font-medium text-gray-300 mb-2">Historical Matches</div>
                       <div className="space-y-2">
-                        {pattern.examples.map((example, idx) => (
+                        {pattern.examples?.map((example, idx) => (
                           <div key={idx} className="flex justify-between items-center text-sm">
                             <div className="text-gray-300">{example.projectName}</div>
                             <div className="flex items-center gap-2">
@@ -1232,7 +1377,7 @@ export default function ResearcherDashboard({
           </div>
         )}
 
-        {/* Exports Tab - FIXED with working buttons */}
+        {/* Exports Tab */}
         {activeTab === 'exports' && (
           <div className="space-y-4">
             <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
@@ -1311,7 +1456,7 @@ export default function ResearcherDashboard({
                 Switch Mode
               </button>
               <button
-                onClick={() => setShowModeSwitchModal(false)}
+                onClick={cancelModeSwitch}
                 className="flex-1 px-4 py-3 bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg font-medium transition-colors"
               >
                 Cancel
@@ -1333,7 +1478,7 @@ export default function ResearcherDashboard({
                 setShowResearchReport(false);
               }}
               initialTab={reportActiveTab}
-              metrics={currentProject.metrics}
+              projectMetrics={currentProject.metrics}
               onExport={() => handleExportAnalysis('pdf', currentProject)}
               onShare={() => handleShareAnalysis('clipboard')}
             />

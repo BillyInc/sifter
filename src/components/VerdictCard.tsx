@@ -9,32 +9,35 @@ interface VerdictCardProps {
   onReject: () => void;
   onProceed: () => void;
   onReset: () => void;
-  compact?: boolean; // ADDED COMPACT PROP
+  compact?: boolean;
 }
 
 function MetricRow({
   metric,
   isLast,
   showWeight,
-  compact = false, // ADDED COMPACT PROP
+  compact = false,
 }: {
   metric: MetricData;
   isLast: boolean;
   showWeight: boolean;
-  compact?: boolean; // ADDED COMPACT PROP
+  compact?: boolean;
 }) {
-  const getScoreColor = (score: number) => {
-    if (score >= 70) return 'text-red-400';
-    if (score >= 40) return 'text-yellow-400';
+  const getScoreColor = (score: number | undefined) => {
+    const safeScore = score || 0;
+    if (safeScore >= 70) return 'text-red-400';
+    if (safeScore >= 40) return 'text-yellow-400';
     return 'text-green-400';
   };
 
-  const getScoreBg = (score: number) => {
-    if (score >= 70) return 'bg-red-500/10';
-    if (score >= 40) return 'bg-yellow-500/10';
+  const getScoreBg = (score: number | undefined) => {
+    const safeScore = score || 0;
+    if (safeScore >= 70) return 'bg-red-500/10';
+    if (safeScore >= 40) return 'bg-yellow-500/10';
     return 'bg-green-500/10';
   };
 
+  const metricScore = metric.score || (typeof metric.value === 'number' ? metric.value : 0);
   const isComposite = metric.key === 'composite_score';
 
   return (
@@ -63,10 +66,10 @@ function MetricRow({
             {isComposite && (
               <span
                 className={`${compact ? 'text-xs px-1.5 py-0.5' : 'text-xs px-2 py-0.5'} rounded ${getScoreBg(
-                  metric.score
-                )} ${getScoreColor(metric.score)}`}
+                  metricScore
+                )} ${getScoreColor(metricScore)}`}
               >
-                {metric.score >= 75 ? 'HIGH RISK' : metric.score >= 50 ? 'ELEVATED' : metric.score >= 30 ? 'MODERATE' : 'LOW RISK'}
+                {metricScore >= 75 ? 'HIGH RISK' : metricScore >= 50 ? 'ELEVATED' : metricScore >= 30 ? 'MODERATE' : 'LOW RISK'}
               </span>
             )}
           </div>
@@ -80,7 +83,7 @@ function MetricRow({
           <span
             className={`${compact ? 'text-xs' : 'text-sm'} ${
               isComposite
-                ? `font-bold ${compact ? 'text-base' : 'text-lg'} ${getScoreColor(metric.score)}`
+                ? `font-bold ${compact ? 'text-base' : 'text-lg'} ${getScoreColor(metricScore)}`
                 : 'text-gray-400'
             }`}
           >
@@ -90,10 +93,10 @@ function MetricRow({
             <div className="flex items-center gap-2">
               <div
                 className={`${compact ? 'w-7 h-7 text-xs' : 'w-8 h-8 text-xs'} rounded-full flex items-center justify-center font-medium ${getScoreBg(
-                  metric.score
-                )} ${getScoreColor(metric.score)}`}
+                  metricScore
+                )} ${getScoreColor(metricScore)}`}
               >
-                {metric.score}
+                {metricScore}
               </div>
               {showWeight && (
                 <div className={`${compact ? 'w-10' : 'w-12'} text-right`}>
@@ -117,7 +120,6 @@ function ScoreBreakdownChart({ data, compact = false }: { data: VerdictData; com
     return 'bg-green-500';
   };
 
-  // Sort breakdown by contribution (highest first)
   const sortedBreakdown = [...data.breakdown].sort(
     (a, b) => b.contribution - a.contribution
   );
@@ -174,12 +176,12 @@ export default function VerdictCard({
   onReject,
   onProceed,
   onReset,
-  compact = false, // ADDED COMPACT PROP WITH DEFAULT
+  compact = false,
 }: VerdictCardProps) {
   const [showWeights, setShowWeights] = useState(false);
   const [showBreakdown, setShowBreakdown] = useState(false);
 
-  const isReject = data.verdict === 'REJECT';
+  const isReject = data.verdict?.toLowerCase() === 'reject';
   const riskTierInfo = getRiskTier(data.compositeScore);
 
   return (
@@ -229,7 +231,7 @@ export default function VerdictCard({
                   isReject ? 'text-red-100' : 'text-green-100'
                 }`}
               >
-                {data.verdict}
+                {data.verdict?.toUpperCase()}
               </h2>
             </div>
             <p className={`${compact ? 'text-sm' : 'text-sm'} text-white/80`}>

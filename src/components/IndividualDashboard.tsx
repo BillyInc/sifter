@@ -1,4 +1,3 @@
-// /components/IndividualDashboard.tsx - ALIGNED WITH TYPES
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -7,16 +6,15 @@ import {
   SmartInputResult, 
   ProjectData, 
   MetricData,
-  WatchlistItem as SharedWatchlistItem, // Use imported type
+  WatchlistItem as SharedWatchlistItem,
   AnalysisHistory,
   UserMode,
   VerdictType,
   RiskTier,
   PlatformType
 } from '@/types';
-import { generateMockProjectData, generateMock13Metrics } from '@/data/mockData';
+import { generateMockProjectData, generateMockMetrics } from '@/data/mockData';
 
-// Define local type that extends the shared type if needed
 interface LocalWatchlistItem extends SharedWatchlistItem {
   // No additional properties needed
 }
@@ -25,12 +23,42 @@ interface IndividualDashboardProps {
   onAnalyze: (input: string) => void;
   userName?: string;
   watchlist?: LocalWatchlistItem[];
-  recentScans?: ProjectData[];
+  recentScans?: AnalysisHistory[]; // ✅ CHANGED: Accept AnalysisHistory[] instead of ProjectData[]
   onAddToWatchlist?: (projectName: string, riskScore: number, verdict: VerdictType) => void;
   onRemoveFromWatchlist?: (projectId: string) => void;
-  onViewReport?: (project: ProjectData) => void;
+  onViewReport?: (scanId: string) => void; // ✅ CHANGED: Accept string ID instead of ProjectData
   onModeChange?: () => void;
+  projectMetrics?: MetricData[]; // ✅ ADD THIS
+  currentProject?: ProjectData; // ✅ ADD THIS
 }
+
+// Helper function to safely convert to number
+const safeToNumber = (value: string | number | undefined | null): number => {
+  if (value === undefined || value === null) return 0;
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') {
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? 0 : parsed;
+  }
+  return 0;
+};
+
+// Helper function to convert AnalysisHistory to display format
+const convertScanToDisplayData = (scan: AnalysisHistory) => {
+  return {
+    id: scan.id,
+    displayName: scan.projectName,
+    overallRisk: {
+      score: scan.riskScore,
+      verdict: scan.verdict,
+      tier: scan.riskScore < 25 ? 'LOW' : 
+            scan.riskScore < 50 ? 'MODERATE' : 
+            scan.riskScore < 75 ? 'ELEVATED' : 'HIGH',
+      confidence: 70
+    },
+    scannedAt: scan.scannedAt
+  };
+};
 
 export default function IndividualDashboard({ 
   onAnalyze, 
@@ -42,7 +70,6 @@ export default function IndividualDashboard({
   onViewReport,
   onModeChange 
 }: IndividualDashboardProps) {
-  // Local state for watchlist and recent scans if not provided via props
   const [internalWatchlist, setInternalWatchlist] = useState<LocalWatchlistItem[]>([
     { 
       projectId: '1', 
@@ -64,13 +91,34 @@ export default function IndividualDashboard({
     },
   ]);
   
-  const [internalRecentScans, setInternalRecentScans] = useState<ProjectData[]>([
-    generateMockProjectData('MoonDoge Protocol'),
-    generateMockProjectData('DeFi Alpha'),
-    generateMockProjectData('TokenSwap Pro'),
+  // ✅ CHANGED: Initialize with AnalysisHistory[] instead of ProjectData[]
+  const [internalRecentScans, setInternalRecentScans] = useState<AnalysisHistory[]>([
+    {
+      id: 'scan_1',
+      projectName: 'MoonDoge Protocol',
+      riskScore: 89,
+      verdict: 'reject',
+      scannedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+      processingTime: 87000
+    },
+    {
+      id: 'scan_2',
+      projectName: 'DeFi Alpha',
+      riskScore: 23,
+      verdict: 'pass',
+      scannedAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
+      processingTime: 89000
+    },
+    {
+      id: 'scan_3',
+      projectName: 'TokenSwap Pro',
+      riskScore: 55,
+      verdict: 'flag',
+      scannedAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+      processingTime: 92000
+    }
   ]);
   
-  // Use external props if provided, otherwise use internal state
   const watchlist = externalWatchlist || internalWatchlist;
   const recentScans = externalRecentScans || internalRecentScans;
   
@@ -102,7 +150,6 @@ export default function IndividualDashboard({
   const [showModeSwitch, setShowModeSwitch] = useState(false);
   const [selectedProjectDetails, setSelectedProjectDetails] = useState<any>(null);
   
-  // 13 metrics data with weights and descriptions
   const allMetrics = [
     { name: 'Team Identity', weight: 15, description: 'Verification of team member identities and professional backgrounds' },
     { name: 'Team Competence', weight: 12, description: 'Team experience, qualifications, and past project success' },
@@ -119,7 +166,6 @@ export default function IndividualDashboard({
     { name: 'Tokenomics', weight: 13, description: 'Token distribution, vesting, and economic design' }
   ];
 
-  // Helper functions for export functionality
   const exportToJSON = (data: any, filename: string) => {
     const jsonString = JSON.stringify(data, null, 2);
     const blob = new Blob([jsonString], { type: 'application/json' });
@@ -134,20 +180,22 @@ export default function IndividualDashboard({
   };
 
   const shareReport = async (project: ProjectData) => {
+    const safeScore = safeToNumber(project.overallRisk.score);
     if (navigator.share) {
       try {
         await navigator.share({
           title: `Risk Analysis: ${project.displayName}`,
-          text: `Check out this risk analysis for ${project.displayName}. Risk Score: ${project.overallRisk.score}/100 (${project.overallRisk.verdict})`,
+          text: `Check out this risk analysis for ${project.displayName}. Risk Score: ${safeScore}/100 (${project.overallRisk.verdict})`,
           url: window.location.href,
         });
       } catch (error) {
         console.log('Sharing cancelled or failed:', error);
       }
     } else {
-      // Fallback: copy to clipboard
-      const text = `Risk Analysis: ${project.displayName}\nScore: ${project.overallRisk.score}/100\nVerdict: ${project.overallRisk.verdict}\n\nKey Findings:\n${Object.values(project.metrics)
-        .flatMap(m => m.flags)
+      // Get flags from all metrics (array)
+      const allFlags = project.metrics?.flatMap(m => m.flags || []) || [];
+      
+      const text = `Risk Analysis: ${project.displayName}\nScore: ${safeScore}/100\nVerdict: ${project.overallRisk.verdict}\n\nKey Findings:\n${allFlags
         .slice(0, 3)
         .map(f => `• ${f}`)
         .join('\n')}`;
@@ -164,10 +212,17 @@ export default function IndividualDashboard({
       setCurrentProject(mockData);
       setShowSimpleReport(true);
       
-      // Add to recent scans
-      setInternalRecentScans(prev => [mockData, ...prev.slice(0, 4)]);
+      // ✅ CHANGED: Add as AnalysisHistory instead of ProjectData
+      const newScan: AnalysisHistory = {
+        id: `scan_${Date.now()}`,
+        projectName: result.selectedEntity.displayName,
+        riskScore: mockData.overallRisk.score,
+        verdict: mockData.overallRisk.verdict,
+        scannedAt: new Date(),
+        processingTime: mockData.processingTime
+      };
       
-      // Trigger analysis
+      setInternalRecentScans(prev => [newScan, ...prev.slice(0, 4)]);
       startAnalysis(result.selectedEntity.displayName);
     }
   };
@@ -176,13 +231,9 @@ export default function IndividualDashboard({
     setIsAnalyzing(true);
     
     setTimeout(() => {
-      const mockMetrics = generateMock13Metrics();
-      
-      // Calculate composite score from mock metrics
-      const compositeScore = Math.round(mockMetrics.reduce((sum, m) => sum + (m.contribution || 0), 0));
+      const mockMetrics = generateMockMetrics();
+      const compositeScore = Math.round(mockMetrics.reduce((sum: number, m: MetricData) => sum + (m.contribution || 0), 0));
       const riskScore = compositeScore;
-      
-      // Determine verdict based on risk score
       let verdict: VerdictType = 'pass';
       if (riskScore >= 60) verdict = 'reject';
       else if (riskScore >= 30) verdict = 'flag';
@@ -210,10 +261,11 @@ export default function IndividualDashboard({
   };
 
   const handleAddToWatchlist = (project: ProjectData) => {
+    const safeScore = safeToNumber(project.overallRisk.score);
     const newItem: LocalWatchlistItem = {
       projectId: `watch_${Date.now()}`,
       projectName: project.displayName,
-      riskScore: project.overallRisk.score,
+      riskScore: safeScore,
       verdict: project.overallRisk.verdict,
       addedAt: new Date(),
       alertsEnabled: true,
@@ -221,7 +273,7 @@ export default function IndividualDashboard({
     };
     
     if (onAddToWatchlist) {
-      onAddToWatchlist(project.displayName, project.overallRisk.score, project.overallRisk.verdict);
+      onAddToWatchlist(project.displayName, safeScore, project.overallRisk.verdict);
     } else {
       setInternalWatchlist(prev => [...prev, newItem]);
     }
@@ -234,10 +286,13 @@ export default function IndividualDashboard({
     startAnalysis(projectName);
   };
 
-  const handleViewDetails = (projectName: string) => {
-    const project = recentScans.find(p => p.displayName === projectName) || currentProject;
-    if (project) {
-      setSelectedProjectDetails(project);
+  // ✅ CHANGED: Accept scan ID instead of project name
+  const handleViewDetails = (scanId: string) => {
+    const scan = recentScans.find(s => s.id === scanId);
+    if (scan) {
+      // Convert to ProjectData for display
+      const mockProject = generateMockProjectData(scan.projectName);
+      setSelectedProjectDetails(mockProject);
       setActiveTab('projectDetails');
     }
   };
@@ -251,16 +306,17 @@ export default function IndividualDashboard({
   };
 
   const renderSimpleReport = (project: ProjectData) => {
-    // Type guard for project.overallRisk.score
-    const score = typeof project.overallRisk.score === 'number' ? project.overallRisk.score : 0;
+    const score = safeToNumber(project.overallRisk.score);
     const rec = getSimpleRecommendation(score);
     
-    // Get flags from metrics - each metric has a flags array
-    const flagsWithRecommendations = Object.values(project.metrics)
-      .flatMap(m => m.flags.map((flag: string) => ({
-        description: flag,
-        recommendation: 'Review this aspect carefully before investing.'
-      })))
+    // Get flags from metrics array
+    const flagsWithRecommendations = (project.metrics || [])
+      .flatMap((m: MetricData) => 
+        (m.flags || []).map((flag: string) => ({
+          description: flag,
+          recommendation: 'Review this aspect carefully before investing.'
+        }))
+      )
       .slice(0, 3);
     
     return (
@@ -278,7 +334,6 @@ export default function IndividualDashboard({
           </button>
         </div>
 
-        {/* Risk Summary */}
         <div className={`${rec.bg} border ${rec.color.replace('text', 'border')}/30 rounded-xl p-6 mb-6`}>
           <div className="flex items-center justify-between">
             <div>
@@ -293,7 +348,6 @@ export default function IndividualDashboard({
           </div>
         </div>
 
-        {/* Key Findings */}
         <div className="space-y-4 mb-6">
           <h3 className="font-semibold text-white">Key Findings</h3>
           {flagsWithRecommendations.length > 0 ? (
@@ -321,7 +375,6 @@ export default function IndividualDashboard({
           )}
         </div>
 
-        {/* Actions */}
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={() => handleAddToWatchlist(project)}
@@ -357,7 +410,6 @@ export default function IndividualDashboard({
 
     return (
       <div className="bg-sifter-card border border-sifter-border rounded-xl p-6 mt-6">
-        {/* Quick Results Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <div className="text-3xl mb-1">
@@ -386,7 +438,6 @@ export default function IndividualDashboard({
           })} | Duration: {analysisResults.scanDuration}s
         </div>
         
-        {/* Action Buttons */}
         <div className="grid grid-cols-2 gap-3 mb-6">
           <button
             onClick={() => {
@@ -406,7 +457,7 @@ export default function IndividualDashboard({
               }
             }}
             className="px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-colors text-sm flex items-center justify-center gap-2"
-          >
+            >
             <span>⭐</span> Add to Watchlist
           </button>
           <button
@@ -417,7 +468,6 @@ export default function IndividualDashboard({
           </button>
         </div>
         
-        {/* COMPLETE 13-METRIC BREAKDOWN */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-bold text-white">Complete 13-Metric Breakdown</h4>
@@ -427,9 +477,8 @@ export default function IndividualDashboard({
           </div>
           
           <div className="space-y-3">
-            {analysisResults.metrics.map((metric: MetricData, index: number) => {
-              // Type guard: Convert metric.value to number for comparison
-              const numericValue = typeof metric.value === 'number' ? metric.value : 0;
+            {(analysisResults.metrics || []).map((metric: MetricData, index: number) => {
+              const numericValue = safeToNumber(metric.value);
               
               return (
                 <div key={index} className="bg-sifter-dark border border-sifter-border rounded-lg p-4">
@@ -445,10 +494,9 @@ export default function IndividualDashboard({
                         </div>
                       </div>
                       <div className="text-xs text-gray-400 mb-2">
-                        Weight: {metric.weight}% • Contribution: {metric.contribution.toFixed(1)} points
+                        Weight: {metric.weight}% • Contribution: {metric.contribution?.toFixed(1)} points
                       </div>
                       
-                      {/* Progress Bar */}
                       <div className="w-full bg-gray-800 rounded-full h-2 mb-2">
                         <div 
                           className={`h-2 rounded-full ${
@@ -501,7 +549,6 @@ export default function IndividualDashboard({
     }, 1500);
   };
 
-  // Quiz functionality
   const [quizScore, setQuizScore] = useState<number | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [quizAnswers, setQuizAnswers] = useState<number[]>([]);
@@ -549,7 +596,6 @@ export default function IndividualDashboard({
     }
   };
 
-  // Red flags data
   const redFlags = [
     { id: 1, title: 'Anonymous Team', description: 'No LinkedIn or professional profiles found. Legitimate projects have doxxed teams.', severity: 'high', examples: ['No team photos', 'Generic bios', 'No work history'] },
     { id: 2, title: 'Guaranteed Returns', description: 'Promises specific % returns - this is illegal in most jurisdictions.', severity: 'critical', examples: ['"Guaranteed 100x"', '"Risk-free investment"', '"Cannot lose money"'] },
@@ -565,7 +611,6 @@ export default function IndividualDashboard({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-2">
         <div>
           <h1 className="text-2xl font-bold text-white">
@@ -587,7 +632,6 @@ export default function IndividualDashboard({
         </div>
       </div>
 
-      {/* Tab Navigation */}
       <div className="bg-sifter-card border border-sifter-border rounded-lg p-1">
         <div className="flex flex-wrap gap-1">
           {['analyze', 'watchlist', 'scans', 'learn'].map((tab) => (
@@ -611,7 +655,6 @@ export default function IndividualDashboard({
         </div>
       </div>
 
-      {/* Main Content */}
       {activeTab === 'analyze' && (
         <div className="space-y-6">
           {showSimpleReport && currentProject ? (
@@ -669,7 +712,6 @@ export default function IndividualDashboard({
             </div>
           )}
 
-          {/* Loading State */}
           {isAnalyzing && (
             <div className="bg-sifter-card border border-sifter-border rounded-xl p-8 text-center">
               <div className="w-16 h-16 mx-auto mb-4">
@@ -683,23 +725,21 @@ export default function IndividualDashboard({
             </div>
           )}
 
-          {/* 13-Metric Analysis Results */}
           {render13MetricAnalysis()}
 
-          {/* Recent Scans */}
           <div className="bg-sifter-card border border-sifter-border rounded-2xl p-6">
             <h3 className="text-lg font-semibold text-white mb-4">Recent Scans</h3>
             <div className="space-y-3">
-              {recentScans.slice(0, 3).map((project, idx) => {
-                // Type guard for project.overallRisk.score
-                const score = typeof project.overallRisk.score === 'number' ? project.overallRisk.score : 0;
+              {/* ✅ CHANGED: Use recentScans (AnalysisHistory[]) instead of ProjectData[] */}
+              {recentScans.slice(0, 3).map((scan) => {
+                const score = scan.riskScore;
                 
                 return (
-                  <div key={idx} className="flex justify-between items-center p-4 border border-sifter-border rounded-lg hover:border-green-500/50 transition-colors">
+                  <div key={scan.id} className="flex justify-between items-center p-4 border border-sifter-border rounded-lg hover:border-green-500/50 transition-colors">
                     <div>
-                      <div className="font-medium text-white">{project.displayName}</div>
+                      <div className="font-medium text-white">{scan.projectName}</div>
                       <div className="text-sm text-gray-400">
-                        Scanned: {project.scannedAt.toLocaleDateString()}
+                        Scanned: {scan.scannedAt.toLocaleDateString()}
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
@@ -713,7 +753,9 @@ export default function IndividualDashboard({
                       </div>
                       <button
                         onClick={() => {
-                          setCurrentProject(project);
+                          // Convert scan to project data for display
+                          const mockProject = generateMockProjectData(scan.projectName);
+                          setCurrentProject(mockProject);
                           setShowSimpleReport(true);
                         }}
                         className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded text-sm"
@@ -729,7 +771,6 @@ export default function IndividualDashboard({
         </div>
       )}
 
-      {/* Watchlist Tab */}
       {activeTab === 'watchlist' && (
         <div className="space-y-6">
           <div className="flex items-center justify-between mb-4">
@@ -742,8 +783,7 @@ export default function IndividualDashboard({
           {watchlist.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {watchlist.map((item) => {
-                // Type guard for item.riskScore
-                const riskScore = typeof item.riskScore === 'number' ? item.riskScore : 0;
+                const riskScore = safeToNumber(item.riskScore);
                 
                 return (
                   <div key={item.projectId} className="bg-sifter-card border border-sifter-border rounded-xl p-5 hover:border-blue-500/30 transition-all group">
@@ -791,7 +831,18 @@ export default function IndividualDashboard({
                         </button>
                         
                         <button
-                          onClick={() => handleViewDetails(item.projectName)}
+                          onClick={() => {
+                            // Find the scan for this watchlist item
+                            const scan = recentScans.find(s => s.projectName === item.projectName);
+                            if (scan && onViewReport) {
+                              onViewReport(scan.id);
+                            } else {
+                              // Fallback: convert to project data
+                              const mockProject = generateMockProjectData(item.projectName);
+                              setSelectedProjectDetails(mockProject);
+                              setActiveTab('projectDetails');
+                            }
+                          }}
                           className="px-3 py-2 bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg transition-colors flex items-center justify-center gap-1.5 text-sm"
                         >
                           <span>📊</span> Details
@@ -820,7 +871,6 @@ export default function IndividualDashboard({
         </div>
       )}
 
-      {/* Scans Tab */}
       {activeTab === 'scans' && (
         <div className="space-y-6">
           <div className="mb-4">
@@ -830,31 +880,31 @@ export default function IndividualDashboard({
           
           {recentScans.length > 0 ? (
             <div className="space-y-4">
-              {recentScans.map((scan, idx) => {
-                // Type guard for scan.overallRisk.score
-                const score = typeof scan.overallRisk.score === 'number' ? scan.overallRisk.score : 0;
+              {/* ✅ CHANGED: Use recentScans (AnalysisHistory[]) */}
+              {recentScans.map((scan) => {
+                const score = scan.riskScore;
                 
                 return (
-                  <div key={idx} className="bg-sifter-card border border-sifter-border rounded-xl p-5 hover:border-blue-500/30 transition-all">
+                  <div key={scan.id} className="bg-sifter-card border border-sifter-border rounded-xl p-5 hover:border-blue-500/30 transition-all">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <div className={`text-2xl ${
-                            scan.overallRisk.verdict === 'reject' ? 'text-red-400' :
-                            scan.overallRisk.verdict === 'flag' ? 'text-yellow-400' : 'text-green-400'
+                            scan.verdict === 'reject' ? 'text-red-400' :
+                            scan.verdict === 'flag' ? 'text-yellow-400' : 'text-green-400'
                           }`}>
-                            {scan.overallRisk.verdict === 'reject' ? '🔴' : 
-                             scan.overallRisk.verdict === 'flag' ? '🟡' : '🟢'}
+                            {scan.verdict === 'reject' ? '🔴' : 
+                             scan.verdict === 'flag' ? '🟡' : '🟢'}
                           </div>
                           <div>
-                            <h3 className="font-bold text-white text-lg">{scan.displayName}</h3>
+                            <h3 className="font-bold text-white text-lg">{scan.projectName}</h3>
                             <div className="flex items-center gap-3 mt-1">
                               <div className={`px-3 py-1 rounded-full text-xs font-bold ${
-                                scan.overallRisk.verdict === 'reject' ? 'bg-red-500/20 text-red-400' :
-                                scan.overallRisk.verdict === 'flag' ? 'bg-yellow-500/20 text-yellow-400' :
+                                scan.verdict === 'reject' ? 'bg-red-500/20 text-red-400' :
+                                scan.verdict === 'flag' ? 'bg-yellow-500/20 text-yellow-400' :
                                 'bg-green-500/20 text-green-400'
                               }`}>
-                                {scan.overallRisk.verdict.toUpperCase()}
+                                {scan.verdict.toUpperCase()}
                               </div>
                               <div className="text-xs text-gray-400">
                                 Score: <span className={`font-bold ${
@@ -872,14 +922,23 @@ export default function IndividualDashboard({
                       
                       <div className="flex gap-2">
                         <button
-                          onClick={() => handleRescan(scan.displayName)}
+                          onClick={() => handleRescan(scan.projectName)}
                           className="px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-lg transition-colors flex items-center gap-1.5 text-sm"
                         >
                           <span>🔄</span> Rescan
                         </button>
                         
                         <button
-                          onClick={() => handleViewDetails(scan.displayName)}
+                          onClick={() => {
+                            if (onViewReport) {
+                              onViewReport(scan.id);
+                            } else {
+                              // Convert scan to project data for display
+                              const mockProject = generateMockProjectData(scan.projectName);
+                              setSelectedProjectDetails(mockProject);
+                              setActiveTab('projectDetails');
+                            }
+                          }}
                           className="px-4 py-2 bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg transition-colors flex items-center gap-1.5 text-sm"
                         >
                           <span>📊</span> Details
@@ -908,7 +967,6 @@ export default function IndividualDashboard({
         </div>
       )}
 
-      {/* Learn Tab */}
       {activeTab === 'learn' && (
         <div className="space-y-6">
           <div className="mb-4">
@@ -983,7 +1041,6 @@ export default function IndividualDashboard({
         </div>
       )}
 
-      {/* Quiz Tab */}
       {activeTab === 'quiz' && (
         <div className="space-y-6">
           <div className="mb-4">
@@ -1093,7 +1150,6 @@ export default function IndividualDashboard({
         </div>
       )}
 
-      {/* Red Flags Tab */}
       {activeTab === 'redflags' && (
         <div className="space-y-6">
           <div className="mb-4">
@@ -1147,7 +1203,6 @@ export default function IndividualDashboard({
         </div>
       )}
 
-      {/* Alerts Section */}
       <div className="bg-sifter-card border border-sifter-border rounded-2xl p-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold text-white">Recent Alerts</h3>
@@ -1184,7 +1239,6 @@ export default function IndividualDashboard({
         </div>
       </div>
 
-      {/* Mode Switch Modal */}
       {showModeSwitch && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-sifter-card border border-sifter-border rounded-xl p-6 max-w-md w-full">

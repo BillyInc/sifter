@@ -1,4 +1,4 @@
-// components/EABatchDashboard.tsx - FIXED VERSION
+// components/EABatchDashboard.tsx - COMPLETE FIXED VERSION
 'use client';
 
 import React, { useState } from 'react';
@@ -10,21 +10,9 @@ import {
   SmartInputResult,
   ProjectData,
   MetricData,
-  TeamIdentityMetric,
-  TeamCompetenceMetric,
-  ContaminatedNetworkMetric,
-  MercenaryKeywordsMetric,
-  EntropyMetric,
-  TweetFocusMetric,
-  GithubMetric,
-  BusFactorMetric,
-  HypeMetric,
-  FounderDistractionMetric,
-  EngagementMetric,
-  TokenomicsMetric,
-  VerdictResult
+  VerdictType,
 } from '@/types';
-import { generateMock13Metrics, generateMockProjectData } from '@/data/mockData';
+import { generateMockProjectData } from '@/data/mockData';
 import { ExportService } from '@/services/exportService';
 
 interface EABatchDashboardProps {
@@ -43,259 +31,118 @@ interface EABatchDashboardProps {
     rejectionRate: number;
     lastBatchDate: Date;
   };
-  // ADD THESE EXPORT PROPS:
+  // Export props
   onExportBatch?: (projects: BatchProject[]) => void;
   onExportPartnerPacket?: (batchSummary: any, projects: BatchProject[]) => void;
   onExportBatchCSV?: (projects: BatchProject[]) => void;
 }
 
-// Helper function to create a base metric
-const createBaseMetric = (score: number): any => ({
-  score,
-  confidence: Math.floor(Math.random() * 30) + 70,
-  status: score < 30 ? 'low' : score < 50 ? 'moderate' : score < 70 ? 'high' : 'critical' as const,
-  breakdown: { 
-    subMetrics: [], 
-    weightedScore: score, 
-    calculationDetails: 'Mock data conversion' 
-  },
-  flags: [],
-  evidence: []
-});
-
-// Convert metrics array to the expected object structure
-const convertMetricsToObject = (metricsArray: MetricData[]): {
-  teamIdentity: TeamIdentityMetric;
-  teamCompetence: TeamCompetenceMetric;
-  contaminatedNetwork: ContaminatedNetworkMetric;
-  mercenaryKeywords: MercenaryKeywordsMetric;
-  messageTimeEntropy: EntropyMetric;
-  accountAgeEntropy: EntropyMetric;
-  tweetFocus: TweetFocusMetric;
-  githubAuthenticity: GithubMetric;
-  busFactor: BusFactorMetric;
-  artificialHype: HypeMetric;
-  founderDistraction: FounderDistractionMetric;
-  engagementAuthenticity: EngagementMetric;
-  tokenomics: TokenomicsMetric;
-} => {
-  // Create a map of metric values by key
-  const metricMap = new Map<string, number>();
-  metricsArray.forEach(metric => {
-    metricMap.set(metric.key, metric.value || 0);
-  });
-
-  const teamIdentityScore = metricMap.get('teamIdentity') || 0;
-  const teamCompetenceScore = metricMap.get('teamCompetence') || 0;
-  const contaminatedNetworkScore = metricMap.get('contaminatedNetwork') || 0;
-  const mercenaryKeywordsScore = metricMap.get('mercenaryKeywords') || 0;
-  const messageTimeEntropyScore = metricMap.get('messageTimeEntropy') || 0;
-  const accountAgeEntropyScore = metricMap.get('accountAgeEntropy') || 0;
-  const tweetFocusScore = metricMap.get('tweetFocus') || 0;
-  const githubAuthenticityScore = metricMap.get('githubAuthenticity') || 0;
-  const busFactorScore = metricMap.get('busFactor') || 0;
-  const artificialHypeScore = metricMap.get('artificialHype') || 0;
-  const founderDistractionScore = metricMap.get('founderDistraction') || 0;
-  const engagementAuthenticityScore = metricMap.get('engagementAuthenticity') || 0;
-  const tokenomicsScore = metricMap.get('tokenomics') || 0;
-
+// Helper function to create a metric data object WITH FIXED SCORE PROPERTY
+const createMetricData = (key: string, name: string, score: number): MetricData => {
+  const normalizedScore = Math.min(Math.max(score, 0), 100);
+  
   return {
-    teamIdentity: {
-      ...createBaseMetric(teamIdentityScore),
-      teamMembers: [],
-      doxxedPercentage: teamIdentityScore,
-      anonymousCount: Math.floor((100 - teamIdentityScore) / 100 * 5),
-      professionalSignals: []
-    } as TeamIdentityMetric,
-    
-    teamCompetence: {
-      ...createBaseMetric(teamCompetenceScore),
-      githubReputation: teamCompetenceScore,
-      pastProjectSuccess: teamCompetenceScore,
-      technicalContent: teamCompetenceScore,
-      educationCredentials: teamCompetenceScore,
-      documentationQuality: teamCompetenceScore
-    } as TeamCompetenceMetric,
-    
-    contaminatedNetwork: {
-      ...createBaseMetric(contaminatedNetworkScore),
-      flaggedEntities: [],
-      agencyConnections: [],
-      advisorConnections: [],
-      influencerConnections: [],
-      networkRiskScore: contaminatedNetworkScore
-    } as ContaminatedNetworkMetric,
-    
-    mercenaryKeywords: {
-      ...createBaseMetric(mercenaryKeywordsScore),
-      mercenaryRatio: mercenaryKeywordsScore / 100,
-      genuineRatio: Math.random() * 0.5,
-      technicalRatio: 1 - Math.random() * 0.5,
-      keywordAnalysis: {
-        tier1Mercenary: [],
-        tier2Mercenary: [],
-        tier3Mercenary: [],
-        tier1Genuine: [],
-        tier2Genuine: [],
-        tier3Genuine: [],
-        tier1Technical: [],
-        tier2Technical: [],
-        tier3Technical: []
-      },
-      sampleMessages: []
-    } as MercenaryKeywordsMetric,
-    
-    messageTimeEntropy: {
-      ...createBaseMetric(messageTimeEntropyScore),
-      entropyValue: Math.random() * 4,
-      maxEntropy: 4.58,
-      normalizedEntropy: (Math.random() * 4 / 4.58) * 100,
-      concentrationScore: Math.random() * 100,
-      patternAnalysis: {
-        hourlyDistribution: Array(24).fill(0).map(() => Math.random() * 100),
-        concentrationPeaks: [2, 3, 4],
-        temporalPatterns: ['Bot-like scheduling detected'] as string[]
-      }
-    } as EntropyMetric,
-    
-    accountAgeEntropy: {
-      ...createBaseMetric(accountAgeEntropyScore),
-      entropyValue: Math.random() * 4,
-      maxEntropy: 4.58,
-      normalizedEntropy: (Math.random() * 4 / 4.58) * 100,
-      concentrationScore: Math.random() * 100,
-      patternAnalysis: {
-        hourlyDistribution: Array(24).fill(0).map(() => Math.random() * 100),
-        concentrationPeaks: [2, 3, 4],
-        temporalPatterns: ['Bulk account creation'] as string[]
-      }
-    } as EntropyMetric,
-    
-    tweetFocus: {
-      ...createBaseMetric(tweetFocusScore),
-      topicConcentration: Math.random(),
-      keywordConsistency: Math.random(),
-      topics: [
-        { name: 'Token Launch', weight: 0.4, keywords: ['launch', 'token', 'distribution'] },
-        { name: 'Technology', weight: 0.3, keywords: ['protocol', 'smart contract', 'blockchain'] },
-        { name: 'Community', weight: 0.3, keywords: ['community', 'discord', 'telegram'] }
-      ],
-      weeklyOverlap: [0.7, 0.8, 0.6, 0.9]
-    } as TweetFocusMetric,
-    
-    githubAuthenticity: {
-      ...createBaseMetric(githubAuthenticityScore),
-      originalityScore: githubAuthenticityScore,
-      commitActivity: githubAuthenticityScore,
-      contributorDiversity: githubAuthenticityScore,
-      issueEngagement: githubAuthenticityScore,
-      codeQuality: githubAuthenticityScore
-    } as GithubMetric,
-    
-    busFactor: {
-      ...createBaseMetric(busFactorScore),
-      busFactorValue: Math.random() * 5 + 1,
-      contributionConcentration: Math.random(),
-      activeContributors: Math.floor(Math.random() * 20) + 1,
-      dependencyAnalysis: {
-        code: Math.random() * 100,
-        community: Math.random() * 100,
-        social: Math.random() * 100,
-        weightedAverage: Math.random() * 100
-      }
-    } as BusFactorMetric,
-    
-    artificialHype: {
-      ...createBaseMetric(artificialHypeScore),
-      growthSpikes: [],
-      retentionRate: Math.random(),
-      campaignDetection: [],
-      volatilityScore: Math.random() * 100
-    } as HypeMetric,
-    
-    founderDistraction: {
-      ...createBaseMetric(founderDistractionScore),
-      twitterActivity: Math.random() * 100,
-      speakingCircuit: Math.random() * 100,
-      concurrentProjects: Math.random() * 100,
-      contentCreation: Math.random() * 100,
-      githubActivity: Math.random() * 100,
-      founders: []
-    } as FounderDistractionMetric,
-    
-    engagementAuthenticity: {
-      ...createBaseMetric(engagementAuthenticityScore),
-      copyPastaScore: Math.random() * 100,
-      threadDepth: Math.random() * 10,
-      participationDistribution: Math.random(),
-      questionAnswerRate: Math.random(),
-      sentimentDiversity: Math.random(),
-      botDetectionScore: Math.random() * 100
-    } as EngagementMetric,
-    
-    tokenomics: {
-      ...createBaseMetric(tokenomicsScore),
-      disclosureStatus: Math.random() > 0.5 ? 'full' : Math.random() > 0.5 ? 'partial' : 'none',
-      teamAllocation: Math.floor(Math.random() * 40),
-      vestingPeriod: Math.floor(Math.random() * 48) + 12,
-      unlockSchedule: [],
-      liquidityAllocation: Math.floor(Math.random() * 10) + 2,
-      insiderConcentration: Math.floor(Math.random() * 60) + 20,
-      redFlags: []
-    } as TokenomicsMetric
+    id: `metric_${key}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    key,
+    name,
+    value: normalizedScore,
+    weight: 10,
+    contribution: normalizedScore,
+    status: score < 30 ? 'low' : score < 50 ? 'moderate' : score < 70 ? 'high' : 'critical',
+    confidence: Math.floor(Math.random() * 30) + 70,
+    flags: [],
+    evidence: [],
+    score: normalizedScore // Explicitly set the score property
   };
 };
 
-// Helper function to convert BatchProject[] to ProjectData[] - FIXED VERSION
+// Fixed: Simple function to ensure metrics have score property (what you asked for)
+const ensureMetricsHaveScore = (metricsArray: MetricData[]): MetricData[] => {
+  return metricsArray.map(metric => ({
+    ...metric,
+    score: typeof metric.value === 'number' ? metric.value : 0
+  }));
+};
+
+// Create metrics array with all 13 metrics
+const createMetricsArray = (): MetricData[] => {
+  const metrics: MetricData[] = [];
+  
+  // Team metrics
+  metrics.push(createMetricData('teamIdentity', 'Team Identity', 85));
+  metrics.push(createMetricData('teamCompetence', 'Team Competence', 45));
+  metrics.push(createMetricData('contaminatedNetwork', 'Contaminated Network', 92));
+  metrics.push(createMetricData('mercenaryKeywords', 'Mercenary Keywords', 78));
+  metrics.push(createMetricData('messageTimeEntropy', 'Message Time Entropy', 65));
+  metrics.push(createMetricData('accountAgeEntropy', 'Account Age Entropy', 88));
+  metrics.push(createMetricData('tweetFocus', 'Tweet Focus', 32));
+  metrics.push(createMetricData('githubAuthenticity', 'GitHub Authenticity', 25));
+  metrics.push(createMetricData('busFactor', 'Bus Factor', 40));
+  metrics.push(createMetricData('artificialHype', 'Artificial Hype', 95));
+  metrics.push(createMetricData('founderDistraction', 'Founder Distraction', 70));
+  metrics.push(createMetricData('engagementAuthenticity', 'Engagement Authenticity', 55));
+  metrics.push(createMetricData('tokenomics', 'Tokenomics', 60));
+  
+  return metrics;
+};
+
+// Helper function to convert BatchProject to ProjectData
 const convertBatchToProjectData = (batchProject: BatchProject): ProjectData => {
-  const mockMetrics = generateMock13Metrics();
-  const compositeScore = Math.round(mockMetrics.reduce((sum, m) => sum + m.contribution, 0));
+  const metricsArray = createMetricsArray();
+  const metricsWithScore = ensureMetricsHaveScore(metricsArray); // Fix: Ensure score property exists
+  
+  const compositeScore = Math.round(
+    metricsWithScore.reduce((sum, m) => sum + (m.score || 0), 0) / metricsWithScore.length
+  );
   
   // Get verdict with proper type
-  const getVerdict = (result: string | undefined): VerdictResult => {
-    if (result === 'pass') return 'pass';
-    if (result === 'flag') return 'flag';
+  const getVerdict = (): VerdictType => {
+    const score = batchProject.riskScore || compositeScore;
+    if (score < 30) return 'pass';
+    if (score < 60) return 'flag';
     return 'reject';
   };
 
   // Get risk tier based on score
-  const getRiskTier = (score: number): 'LOW' | 'MODERATE' | 'ELEVATED' | 'HIGH' => {
-    if (score < 30) return 'LOW';
-    if (score < 60) return 'MODERATE';
-    if (score < 75) return 'ELEVATED';
-    return 'HIGH';
+  const getRiskTier = (score: number) => {
+    if (score < 20) return 'LOW';
+    if (score < 40) return 'MODERATE';
+    if (score < 60) return 'ELEVATED';
+    if (score < 80) return 'HIGH';
+    return 'CRITICAL';
   };
 
   return {
     id: batchProject.id,
     canonicalName: batchProject.name.toLowerCase().replace(/\s+/g, '_'),
     displayName: batchProject.name,
-    sources: {
-      // Use proper source structure instead of array
-      website: {
-        type: 'website',
-        url: batchProject.input.startsWith('http') ? batchProject.input : `https://${batchProject.input}`,
-        confidence: 85,
-        metadata: {}
+    description: `Batch analysis for ${batchProject.name}`,
+    platform: 'batch_analysis',
+    sources: [
+      {
+        type: 'batch_analysis',
+        url: 'https://sifter.ai/batch',
+        input: batchProject.input || 'batch_input'
       }
-    } as any,
-    metrics: convertMetricsToObject(mockMetrics),
+    ],
+    metrics: metricsWithScore, // Use the fixed metrics array
     overallRisk: {
       score: batchProject.riskScore || compositeScore,
-      verdict: getVerdict(batchProject.result),
-      summary: batchProject.topRedFlag || 'No summary available',
+      verdict: getVerdict(),
+      tier: getRiskTier(batchProject.riskScore || compositeScore),
       confidence: Math.floor(Math.random() * 30) + 70,
-      riskTier: getRiskTier(batchProject.riskScore || compositeScore)
+      breakdown: [
+        `Batch analysis complete for ${batchProject.name}`,
+        `Risk score: ${batchProject.riskScore || compositeScore}/100`,
+        `Verdict: ${getVerdict()}`
+      ]
     },
+    scannedAt: new Date(),
     processingTime: batchProject.processingTime || 45000,
-    analyzedAt: new Date().toISOString(),
-    flags: [],
-    recommendations: [],
-    scannedAt: new Date()
   };
 };
 
-// Reusable BatchUpload Component
+// BatchUpload Component
 const BatchUpload = ({ 
   onUpload,
   onUploadComplete 
@@ -308,12 +155,11 @@ const BatchUpload = ({
   const handleFileUpload = (files: File[]) => {
     onUpload(files);
     
-    // Create a job and call onUploadComplete
     const job: BatchProcessingJob = {
       id: `batch_${Date.now()}`,
       name: `Batch Upload ${new Date().toLocaleDateString()}`,
       status: 'processing',
-      projects: [], // Initialize with empty projects array
+      projects: [],
       summary: {
         total: files.length,
         passed: 0,
@@ -324,7 +170,7 @@ const BatchUpload = ({
         redFlagDistribution: {}
       },
       createdAt: new Date(),
-      completedAt: undefined // Will be set when completed
+      completedAt: undefined
     };
     
     onUploadComplete(job);
@@ -376,8 +222,8 @@ const BatchUpload = ({
   );
 };
 
-// BatchSummary Component
-const BatchSummary = ({ 
+// BatchSummaryComponent
+const BatchSummaryComponent = ({ 
   job,
   batchStats 
 }: { 
@@ -463,7 +309,7 @@ const BatchSummary = ({
   );
 };
 
-// BatchResultsTable Component - UPDATED WITH EXPORT PROP SUPPORT
+// BatchResultsTable Component
 const BatchResultsTable = ({ 
   projects, 
   onViewDetails,
@@ -479,15 +325,8 @@ const BatchResultsTable = ({
     if (onExportBatchCSV) {
       onExportBatchCSV(projects);
     } else {
-      // Fallback to ExportService with proper typing
-      ExportService.exportBatchToCSV(
-        projects.map(p => ({
-          name: p.name,
-          riskScore: p.riskScore || 0,
-          verdict: p.result || 'unknown',
-          redFlags: [p.topRedFlag || 'No red flags']
-        }))
-      );
+      // ExportService expects proper BatchProject objects
+      ExportService.exportBatchToCSV(projects);
     }
   };
 
@@ -495,7 +334,7 @@ const BatchResultsTable = ({
     if (onExportBatch) {
       onExportBatch(projects);
     } else {
-      // Convert BatchProject[] to ProjectData[] for ExportService.exportAllAnalyses
+      // Convert BatchProject[] to ProjectData[] for ExportService
       const projectDataArray = projects.map(convertBatchToProjectData);
       ExportService.exportAllAnalyses(projectDataArray);
     }
@@ -535,6 +374,11 @@ const BatchResultsTable = ({
           <tbody>
             {projects.slice(0, 10).map((project) => {
               const riskScore = project.riskScore || 0;
+              const topRedFlag = project.redFlags && project.redFlags.length > 0 
+                ? project.redFlags[0] 
+                : 'No red flags detected';
+              const verdict = project.verdict || 'unknown';
+              
               return (
                 <tr key={project.id} className="border-b border-sifter-border/50 hover:bg-sifter-dark/30">
                   <td className="py-3 px-4">
@@ -557,16 +401,16 @@ const BatchResultsTable = ({
                   </td>
                   <td className="py-3 px-4">
                     <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
-                      project.result === 'pass' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
-                      project.result === 'flag' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                      verdict === 'pass' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                      verdict === 'flag' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
                       'bg-red-500/20 text-red-400 border border-red-500/30'
                     }`}>
-                      {project.result === 'pass' ? '✓ Pass' : 
-                       project.result === 'flag' ? '⚠ Flag' : '✗ Reject'}
+                      {verdict === 'pass' ? '✓ Pass' : 
+                       verdict === 'flag' ? '⚠ Flag' : '✗ Reject'}
                     </div>
                   </td>
                   <td className="py-3 px-4">
-                    <div className="text-sm text-gray-300">{project.topRedFlag || 'No red flags'}</div>
+                    <div className="text-sm text-gray-300">{topRedFlag}</div>
                   </td>
                   <td className="py-3 px-4">
                     <button
@@ -608,7 +452,7 @@ export default function EABatchDashboard({
     rejectionRate: 0,
     lastBatchDate: new Date()
   },
-  // ADD THESE EXPORT PROPS:
+  // Export props
   onExportBatch,
   onExportPartnerPacket,
   onExportBatchCSV
@@ -622,6 +466,32 @@ export default function EABatchDashboard({
   const [detailedMetrics, setDetailedMetrics] = useState<MetricData[]>([]);
   const [batchTextInput, setBatchTextInput] = useState<string>('');
   const [processing, setProcessing] = useState(false);
+
+  const generateMockBatchProjects = (): BatchProject[] => {
+    return Array.from({ length: 50 }, (_, i) => {
+      const riskScore = Math.floor(Math.random() * 100);
+      let verdict: VerdictType = 'reject';
+      
+      if (riskScore < 30) verdict = 'pass';
+      else if (riskScore < 60) verdict = 'flag';
+      
+      return {
+        id: `project_${i}`,
+        name: `Project ${String.fromCharCode(65 + (i % 26))}${Math.floor(i / 26) + 1}`,
+        input: `project${i}.com`,
+        status: 'complete',
+        riskScore,
+        verdict,
+        redFlags: riskScore > 80 ? ['Known rug agency'] : 
+                 riskScore > 60 ? ['Anonymous team'] : 
+                 riskScore > 40 ? ['Mixed signals'] : [],
+        processingTime: Math.floor(Math.random() * 60000) + 30000,
+        scannedAt: new Date(),
+        weight: Math.random(),
+        confidence: Math.floor(Math.random() * 30) + 70
+      };
+    });
+  };
 
   const handleBatchUploadComplete = (job: BatchProcessingJob) => {
     setBatchJob(job);
@@ -637,17 +507,17 @@ export default function EABatchDashboard({
         projects: mockProjects,
         summary: {
           total: mockProjects.length,
-          passed: mockProjects.filter(p => p.result === 'pass').length,
-          flagged: mockProjects.filter(p => p.result === 'flag').length,
-          rejected: mockProjects.filter(p => p.result === 'reject').length,
+          passed: mockProjects.filter(p => p.verdict === 'pass').length,
+          flagged: mockProjects.filter(p => p.verdict === 'flag').length,
+          rejected: mockProjects.filter(p => p.verdict === 'reject').length,
           averageRiskScore: Math.round(mockProjects.reduce((sum, p) => sum + (p.riskScore || 0), 0) / mockProjects.length),
           processingTime: Math.floor((Date.now() - job.createdAt.getTime()) / 1000),
           redFlagDistribution: {
-            'Known rug agency': Math.floor(mockProjects.filter(p => p.result === 'reject').length * 0.3),
-            'Anonymous team': Math.floor(mockProjects.filter(p => p.result === 'reject').length * 0.25),
-            'Bot activity': Math.floor(mockProjects.filter(p => p.result === 'reject').length * 0.2),
-            'Short vesting': Math.floor(mockProjects.filter(p => p.result === 'reject').length * 0.15),
-            'Other': Math.floor(mockProjects.filter(p => p.result === 'reject').length * 0.1)
+            'Known rug agency': Math.floor(mockProjects.filter(p => p.verdict === 'reject').length * 0.3),
+            'Anonymous team': Math.floor(mockProjects.filter(p => p.verdict === 'reject').length * 0.25),
+            'Bot activity': Math.floor(mockProjects.filter(p => p.verdict === 'reject').length * 0.2),
+            'Short vesting': Math.floor(mockProjects.filter(p => p.verdict === 'reject').length * 0.15),
+            'Other': Math.floor(mockProjects.filter(p => p.verdict === 'reject').length * 0.1)
           }
         }
       };
@@ -662,38 +532,46 @@ export default function EABatchDashboard({
     }, 2000);
   };
 
-  const generateMockBatchProjects = (): BatchProject[] => {
-    return Array.from({ length: 50 }, (_, i) => {
-      const riskScore = Math.floor(Math.random() * 100);
-      let result: 'pass' | 'flag' | 'reject' = 'reject';
-      
-      if (riskScore < 30) result = 'pass';
-      else if (riskScore < 60) result = 'flag';
-      
-      return {
-        id: `project_${i}`,
-        name: `Project ${String.fromCharCode(65 + (i % 26))}${Math.floor(i / 26) + 1}`,
-        input: `project${i}.com`,
-        status: 'complete',
-        riskScore,
-        result,
-        topRedFlag: riskScore > 80 ? 'Known rug agency' : 
-                   riskScore > 60 ? 'Anonymous team' : 
-                   riskScore > 40 ? 'Mixed signals' : 'Clean metrics',
-        processingTime: Math.floor(Math.random() * 60000) + 30000
-      };
-    });
-  };
-
   const handleSmartInputResolve = (result: SmartInputResult) => {
     if (result.selectedEntity) {
-      const mockMetrics = generateMock13Metrics();
-      setDetailedMetrics(mockMetrics);
+      const mockMetrics = createMetricsArray();
+      const metricsWithScore = ensureMetricsHaveScore(mockMetrics); // Fix: Ensure score property exists
+      setDetailedMetrics(metricsWithScore);
       
-      const mockProjectData = generateMockProjectData(result.selectedEntity.displayName);
+      const compositeScore = Math.round(
+        metricsWithScore.reduce((sum, m) => sum + (m.score || 0), 0) / metricsWithScore.length
+      );
+      
+      const mockProjectData: ProjectData = {
+        id: 'single_project',
+        canonicalName: result.selectedEntity.canonicalName || result.selectedEntity.displayName.toLowerCase().replace(/\s+/g, '_'),
+        displayName: result.selectedEntity.displayName,
+        description: `Single analysis for ${result.selectedEntity.displayName}`,
+        platform: result.selectedEntity.platform || 'unknown',
+        sources: [
+          {
+            type: result.selectedEntity.platform || 'website',
+            url: result.selectedEntity.url || result.input,
+            input: result.input
+          }
+        ],
+        metrics: metricsWithScore,
+        overallRisk: {
+          score: compositeScore,
+          verdict: compositeScore >= 60 ? 'reject' : compositeScore >= 30 ? 'flag' : 'pass',
+          tier: compositeScore < 20 ? 'LOW' : compositeScore < 40 ? 'MODERATE' : compositeScore < 60 ? 'ELEVATED' : compositeScore < 80 ? 'HIGH' : 'CRITICAL',
+          confidence: 85,
+          breakdown: [
+            `Single analysis complete for ${result.selectedEntity.displayName}`,
+            `Risk score: ${compositeScore}/100`,
+            `Verdict: ${compositeScore >= 60 ? 'Reject' : compositeScore >= 30 ? 'Flag' : 'Pass'}`
+          ]
+        },
+        scannedAt: new Date(),
+        processingTime: 45000,
+      };
+      
       setProjectData(mockProjectData);
-      
-      const compositeScore = Math.round(mockMetrics.reduce((sum, m) => sum + m.contribution, 0));
       
       setSelectedProject({
         id: 'single_project',
@@ -701,11 +579,14 @@ export default function EABatchDashboard({
         input: result.input,
         status: 'complete',
         riskScore: compositeScore,
-        result: compositeScore >= 60 ? 'reject' : compositeScore >= 30 ? 'flag' : 'pass',
-        topRedFlag: compositeScore > 80 ? 'Known rug agency' : 
-                   compositeScore > 60 ? 'Anonymous team' : 
-                   compositeScore > 40 ? 'Mixed signals' : 'Clean metrics',
-        processingTime: 45000
+        verdict: compositeScore >= 60 ? 'reject' : compositeScore >= 30 ? 'flag' : 'pass',
+        redFlags: compositeScore > 80 ? ['Known rug agency'] : 
+                 compositeScore > 60 ? ['Anonymous team'] : 
+                 compositeScore > 40 ? ['Mixed signals'] : [],
+        processingTime: 45000,
+        scannedAt: new Date(),
+        weight: Math.random(),
+        confidence: 85
       });
       
       setShowSingleAnalysis(true);
@@ -727,7 +608,7 @@ export default function EABatchDashboard({
       id: `batch_${Date.now()}`,
       name: `Text Batch ${new Date().toLocaleDateString()}`,
       status: 'processing',
-      projects: [], // Initialize empty
+      projects: [],
       summary: {
         total: projects.length,
         passed: 0,
@@ -784,13 +665,37 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
       if (onExportPartnerPacket) {
         onExportPartnerPacket(batchJob.summary, batchJob.projects);
       } else {
-        // Fallback to ExportService
-        const packet = ExportService.generatePartnerPacket(batchJob.summary, batchJob.projects);
+        const packet = {
+          summary: {
+            total: batchJob.summary.total,
+            passed: batchJob.summary.passed,
+            flagged: batchJob.summary.flagged,
+            rejected: batchJob.summary.rejected,
+            averageRiskScore: batchJob.summary.averageRiskScore,
+            processingTime: batchJob.summary.processingTime,
+            redFlagDistribution: batchJob.summary.redFlagDistribution || {},
+            generatedAt: new Date().toISOString()
+          },
+          projects: batchJob.projects.map(p => ({
+            name: p.name,
+            riskScore: p.riskScore || 0,
+            verdict: p.verdict || 'unknown',
+            redFlags: p.redFlags || [],
+            processingTime: p.processingTime || 0,
+            scannedAt: p.scannedAt || new Date()
+          }))
+        };
+        
         ExportService.exportPartnerPacket(packet);
       }
     } else {
       alert('No batch data available to export. Please process a batch first.');
     }
+  };
+
+  // Handle export analysis
+  const handleExportAnalysis = (projectDataForExport: ProjectData) => {
+    ExportService.exportProjectAnalysis(projectDataForExport);
   };
 
   if (showSingleAnalysis && selectedProject && projectData) {
@@ -815,10 +720,12 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
         </div>
 
         <MetricBreakdown
-          metrics={convertMetricsToObject(detailedMetrics)}
+          metrics={detailedMetrics}
           projectName={selectedProject.name}
           riskScore={riskScore}
-          onExport={() => alert('Exporting single project analysis...')}
+          onExport={() => {
+            handleExportAnalysis(projectData);
+          }}
         />
       </div>
     );
@@ -846,7 +753,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
           </div>
         </div>
 
-        <BatchSummary 
+        <BatchSummaryComponent
           job={batchJob} 
           batchStats={batchStats}
         />
@@ -866,7 +773,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
             projects={batchJob.projects}
             onViewDetails={(project) => {
               setSelectedProject(project);
-              const mockProjectData = generateMockProjectData(project.name);
+              const mockProjectData = convertBatchToProjectData(project);
               setProjectData(mockProjectData);
               setShowSingleAnalysis(true);
               
@@ -882,6 +789,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
     );
   }
 
+  // Main dashboard rendering
   return (
     <div className="space-y-8">
       {/* Header */}

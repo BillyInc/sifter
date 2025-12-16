@@ -1,63 +1,14 @@
-// components/MetricBreakdown.tsx - UPDATED WITH SHARE DIALOG
+// components/MetricBreakdown.tsx - UPDATED TO ACCEPT ARRAY
 'use client';
 
 import React, { useState } from 'react';
 import {
-  MetricScore,
-  TeamIdentityMetric,
-  ContaminatedNetworkMetric,
-  MercenaryKeywordsMetric,
-  EntropyMetric,
-  TweetFocusMetric,
-  GithubMetric,
-  BusFactorMetric,
-  HypeMetric,
-  FounderDistractionMetric,
-  EngagementMetric,
-  TokenomicsMetric,
-  TeamCompetenceMetric,
+  MetricData,
   ProjectData
 } from '@/types';
 
-// Define a union type for all metrics
-type MetricType = 
-  | TeamIdentityMetric 
-  | TeamCompetenceMetric 
-  | ContaminatedNetworkMetric 
-  | MercenaryKeywordsMetric 
-  | EntropyMetric 
-  | TweetFocusMetric 
-  | GithubMetric 
-  | BusFactorMetric 
-  | HypeMetric 
-  | FounderDistractionMetric 
-  | EngagementMetric 
-  | TokenomicsMetric;
-
-interface MetricDefinition {
-  name: string;
-  metric: MetricType;
-  weight: number;
-  icon: string;
-  description: string;
-}
-
 interface MetricBreakdownProps {
-  metrics: {
-    teamIdentity: TeamIdentityMetric;
-    teamCompetence: TeamCompetenceMetric;
-    contaminatedNetwork: ContaminatedNetworkMetric;
-    mercenaryKeywords: MercenaryKeywordsMetric;
-    messageTimeEntropy: EntropyMetric;
-    accountAgeEntropy: EntropyMetric;
-    tweetFocus: TweetFocusMetric;
-    githubAuthenticity: GithubMetric;
-    busFactor: BusFactorMetric;
-    artificialHype: HypeMetric;
-    founderDistraction: FounderDistractionMetric;
-    engagementAuthenticity: EngagementMetric;
-    tokenomics: TokenomicsMetric;
-  };
+  metrics: MetricData[]; // ✅ CHANGED FROM OBJECT TO ARRAY
   onExport?: () => void;
   onBack?: () => void;
   projectName?: string;
@@ -65,26 +16,49 @@ interface MetricBreakdownProps {
   projectData?: ProjectData;
 }
 
-// Helper function to safely access metric properties
-const getMetricVerdict = (metric: MetricType): string => {
-  if ('verdict' in metric && typeof metric.verdict === 'string') {
-    return metric.verdict;
-  }
-  return 'unknown';
+// Helper function to get metric properties
+const getMetricVerdict = (score: number): string => {
+  if (score >= 80) return 'critical';
+  if (score >= 60) return 'high';
+  if (score >= 40) return 'moderate';
+  if (score >= 20) return 'low';
+  return 'minimal';
 };
 
-const getMetricSummary = (metric: MetricType): string => {
-  if ('summary' in metric && typeof metric.summary === 'string') {
-    return metric.summary;
+const getMetricSummary = (metric: MetricData): string => {
+  // Check for evidence or flags in the metric
+  if (metric.evidence && metric.evidence.length > 0) {
+    return metric.evidence[0];
+  }
+  
+  if (metric.flags && metric.flags.length > 0) {
+    return `Flag: ${metric.flags[0]}`;
   }
   
   // Fallback based on score
-  const score = 'score' in metric ? metric.score : 0;
-  if (score >= 80) return 'Critical risk level';
-  if (score >= 60) return 'High risk level';
-  if (score >= 40) return 'Moderate risk level';
-  if (score >= 20) return 'Low risk level';
-  return 'Minimal risk level';
+  const score = metric.value as number;
+  if (score >= 80) return 'Critical risk level - Immediate attention required';
+  if (score >= 60) return 'High risk level - Significant concerns';
+  if (score >= 40) return 'Moderate risk level - Some concerns';
+  if (score >= 20) return 'Low risk level - Minor concerns';
+  return 'Minimal risk level - Within acceptable range';
+};
+
+// Define metric details with icons and descriptions
+const metricDetails: Record<string, { icon: string; description: string; weight: number }> = {
+  teamIdentity: { icon: '👤', description: 'Team legitimacy and identity verification', weight: 13 },
+  teamCompetence: { icon: '🎓', description: 'Technical ability and track record', weight: 11 },
+  contaminatedNetwork: { icon: '🕸️', description: 'Connections to known bad actors', weight: 19 },
+  mercenaryKeywords: { icon: '💰', description: 'Financial vs genuine community discourse', weight: 9 },
+  messageTimeEntropy: { icon: '⏰', description: 'Natural vs coordinated posting patterns', weight: 5 },
+  accountAgeEntropy: { icon: '📅', description: 'Organic vs bulk account creation', weight: 5 },
+  tweetFocus: { icon: '🐦', description: 'Narrative consistency and coherence', weight: 7 },
+  githubAuthenticity: { icon: '💻', description: 'Real development vs copy-paste code', weight: 10 },
+  busFactor: { icon: '🚌', description: 'Single point of failure risk', weight: 2 },
+  artificialHype: { icon: '📈', description: 'Organic vs paid growth campaigns', weight: 5 },
+  founderDistraction: { icon: '🎯', description: 'Focus on building vs personal brand', weight: 6 },
+  engagementAuthenticity: { icon: '💬', description: 'Genuine vs performative engagement', weight: 10 },
+  tokenomics: { icon: '📊', description: 'Economic structure and fairness', weight: 7 },
 };
 
 export default function MetricBreakdown({
@@ -98,8 +72,8 @@ export default function MetricBreakdown({
   const [expandedMetric, setExpandedMetric] = useState<string | null>(null);
   const [showShareDialog, setShowShareDialog] = useState(false);
 
-  const toggleMetric = (metricName: string) => {
-    setExpandedMetric(expandedMetric === metricName ? null : metricName);
+  const toggleMetric = (metricId: string) => {
+    setExpandedMetric(expandedMetric === metricId ? null : metricId);
   };
 
   const getMetricColor = (score: number) => {
@@ -118,36 +92,37 @@ export default function MetricBreakdown({
     return 'bg-green-500/10';
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'critical': return '🔴';
-      case 'high': return '🟠';
-      case 'moderate': return '🟡';
-      case 'low': return '🟢';
-      default: return '⚪';
-    }
+  const getStatusIcon = (score: number) => {
+    if (score >= 80) return '🔴';
+    if (score >= 60) return '🟠';
+    if (score >= 40) return '🟡';
+    if (score >= 20) return '🟢';
+    return '⚪';
   };
 
-  const metricDefinitions: MetricDefinition[] = [
-    { name: 'Team Identity', metric: metrics.teamIdentity, weight: 13, icon: '👤', description: 'Team legitimacy and identity verification' },
-    { name: 'Team Competence', metric: metrics.teamCompetence, weight: 11, icon: '🎓', description: 'Technical ability and track record' },
-    { name: 'Contaminated Network', metric: metrics.contaminatedNetwork, weight: 19, icon: '🕸️', description: 'Connections to known bad actors' },
-    { name: 'Mercenary Keywords', metric: metrics.mercenaryKeywords, weight: 9, icon: '💰', description: 'Financial vs genuine community discourse' },
-    { name: 'Message Time Entropy', metric: metrics.messageTimeEntropy, weight: 5, icon: '⏰', description: 'Natural vs coordinated posting patterns' },
-    { name: 'Account Age Entropy', metric: metrics.accountAgeEntropy, weight: 5, icon: '📅', description: 'Organic vs bulk account creation' },
-    { name: 'Tweet Focus', metric: metrics.tweetFocus, weight: 7, icon: '🐦', description: 'Narrative consistency and coherence' },
-    { name: 'GitHub Authenticity', metric: metrics.githubAuthenticity, weight: 10, icon: '💻', description: 'Real development vs copy-paste code' },
-    { name: 'Bus Factor', metric: metrics.busFactor, weight: 2, icon: '🚌', description: 'Single point of failure risk' },
-    { name: 'Artificial Hype', metric: metrics.artificialHype, weight: 5, icon: '📈', description: 'Organic vs paid growth campaigns' },
-    { name: 'Founder Distraction', metric: metrics.founderDistraction, weight: 6, icon: '🎯', description: 'Focus on building vs personal brand' },
-    { name: 'Engagement Authenticity', metric: metrics.engagementAuthenticity, weight: 10, icon: '💬', description: 'Genuine vs performative engagement' },
-    { name: 'Tokenomics', metric: metrics.tokenomics, weight: 7, icon: '📊', description: 'Economic structure and fairness' },
-  ];
+  // Process metrics array into display format
+  const processedMetrics = metrics.map(metric => {
+    const score = typeof metric.value === 'number' ? metric.value : 0;
+    const details = metricDetails[metric.key] || { 
+      icon: '📊', 
+      description: metric.name || 'No description available',
+      weight: metric.weight || 10 
+    };
+    
+    return {
+      ...metric,
+      score,
+      icon: details.icon,
+      description: details.description,
+      weight: details.weight,
+      verdict: getMetricVerdict(score),
+      summary: getMetricSummary(metric)
+    };
+  });
 
   const overallScore = riskScore || 
-    Math.round(metricDefinitions.reduce((sum, def) => {
-      const score = 'score' in def.metric ? def.metric.score : 0;
-      return sum + (score * def.weight / 100);
+    Math.round(processedMetrics.reduce((sum, metric) => {
+      return sum + (metric.score * metric.weight / 100);
     }, 0));
 
   // Simple ShareDialog component
@@ -157,7 +132,7 @@ export default function MetricBreakdown({
     const shareToClipboard = async () => {
       if (!projectData) return;
       
-      const shareText = `Sifter Analysis: ${projectData.displayName}\nRisk Score: ${projectData.overallRisk.score}/100 (${projectData.overallRisk.verdict.toUpperCase()})\n${projectData.overallRisk.summary || ''}`;
+      const shareText = `Sifter Analysis: ${projectData.displayName}\nRisk Score: ${projectData.overallRisk.score}/100 (${projectData.overallRisk.verdict.toUpperCase()})\nMetrics Analyzed: ${projectData.metrics.length}`;
       const shareUrl = window.location.href;
       
       try {
@@ -288,53 +263,66 @@ export default function MetricBreakdown({
 
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {metricDefinitions.map((def) => {
-          const metricScore = 'score' in def.metric ? def.metric.score : 0;
-          const verdict = getMetricVerdict(def.metric);
-          const summary = getMetricSummary(def.metric);
-          
-          return (
-            <div
-              key={def.name}
-              className={`border border-sifter-border rounded-xl p-4 cursor-pointer transition-all hover:border-gray-600 ${
-                expandedMetric === def.name ? 'bg-gray-900/50' : ''
-              }`}
-              onClick={() => toggleMetric(def.name)}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{def.icon}</span>
-                  <div>
-                    <h3 className="font-medium text-white">{def.name}</h3>
-                    <p className="text-xs text-gray-500">Weight: {def.weight}%</p>
-                  </div>
-                </div>
-                <div className={`text-2xl font-bold ${getMetricColor(metricScore)}`}>
-                  {metricScore}/100
+        {processedMetrics.map((metric) => (
+          <div
+            key={metric.id}
+            className={`border border-sifter-border rounded-xl p-4 cursor-pointer transition-all hover:border-gray-600 ${
+              expandedMetric === metric.id ? 'bg-gray-900/50' : ''
+            }`}
+            onClick={() => toggleMetric(metric.id)}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">{metric.icon}</span>
+                <div>
+                  <h3 className="font-medium text-white">{metric.name}</h3>
+                  <p className="text-xs text-gray-500">Weight: {metric.weight}%</p>
                 </div>
               </div>
-              
-              <div className={`${getMetricBgColor(metricScore)} rounded-lg h-2 mb-3`}>
-                <div 
-                  className={`h-full rounded-lg ${getMetricColor(metricScore).replace('text-', 'bg-')}`}
-                  style={{ width: `${metricScore}%` }}
-                />
+              <div className={`text-2xl font-bold ${getMetricColor(metric.score)}`}>
+                {metric.score}/100
               </div>
-              
-              <p className="text-sm text-gray-400 mb-3">{def.description}</p>
-              
-              {expandedMetric === def.name && (
-                <div className="mt-4 pt-4 border-t border-sifter-border">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span>{getStatusIcon(verdict)}</span>
-                    <span className="font-medium text-white capitalize">{verdict} Risk</span>
-                  </div>
-                  <p className="text-sm text-gray-400">{summary}</p>
-                </div>
-              )}
             </div>
-          );
-        })}
+            
+            <div className={`${getMetricBgColor(metric.score)} rounded-lg h-2 mb-3`}>
+              <div 
+                className={`h-full rounded-lg ${getMetricColor(metric.score).replace('text-', 'bg-')}`}
+                style={{ width: `${metric.score}%` }}
+              />
+            </div>
+            
+            <p className="text-sm text-gray-400 mb-3">{metric.description}</p>
+            
+            {expandedMetric === metric.id && (
+              <div className="mt-4 pt-4 border-t border-sifter-border">
+                <div className="flex items-center gap-2 mb-2">
+                  <span>{getStatusIcon(metric.score)}</span>
+                  <span className="font-medium text-white capitalize">{metric.verdict} Risk</span>
+                </div>
+                <p className="text-sm text-gray-400">{metric.summary}</p>
+                
+                {/* Display flags if any */}
+                {metric.flags && metric.flags.length > 0 && (
+                  <div className="mt-3">
+                    <p className="text-xs text-gray-500 mb-1">Red Flags:</p>
+                    <div className="flex flex-wrap gap-1">
+                      {metric.flags.slice(0, 3).map((flag, index) => (
+                        <span key={index} className="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded">
+                          {flag}
+                        </span>
+                      ))}
+                      {metric.flags.length > 3 && (
+                        <span className="px-2 py-1 bg-gray-800 text-gray-400 text-xs rounded">
+                          +{metric.flags.length - 3} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
       </div>
 
       {/* Add ShareDialog at the end of the return */}
