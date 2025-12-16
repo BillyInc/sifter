@@ -139,6 +139,7 @@ export interface ProjectData {
     type: string;
     url: string;
     [key: string]: any; // Additional source-specific properties
+
   }>;
   platform?: PlatformType | string;
   overallRisk: {
@@ -147,6 +148,7 @@ export interface ProjectData {
     tier: RiskTier;
     confidence: number;
       breakdown?: string[]; // ADD: Make this optional
+      summary?: string; // Add summary property
   };
   metrics: MetricData[];
   scannedAt: Date;
