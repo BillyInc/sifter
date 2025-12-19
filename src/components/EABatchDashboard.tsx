@@ -1,7 +1,14 @@
-// components/EABatchDashboard.tsx - COMPLETE FIXED VERSION
+// components/EABatchDashboard.tsx - WITH DATA DONATION INTEGRATION (FIXED)
 'use client';
 
 import React, { useState } from 'react';
+
+// Add these imports at the top:
+import { PointsDisplay } from '@/components/data-donation/gamification';
+import { RewardsShop } from '@/components/data-donation/gamification';
+import { EvidenceUpload } from '@/components/data-donation/universal';
+import { DisputeForm } from '@/components/data-donation/universal';
+
 import SmartInputParser from './SmartInputParser';
 import MetricBreakdown from './MetricBreakdown';
 import { 
@@ -14,6 +21,29 @@ import {
 } from '@/types';
 import { generateMockProjectData } from '@/data/mockData';
 import { ExportService } from '@/services/exportService';
+import { BatchFlagButton } from '@/components/data-donation/ea-vc'; // Import from correct path
+import BulkFlaggingModal from '@/components/data-donation/ea-vc/BulkFlaggingOption'; // Correct component name
+
+// ADD THIS WRAPPER COMPONENT HERE
+const BatchFlagButtonWrapper: React.FC<{
+  projectName: string;
+  entityName: string;
+  riskScore: number;
+  context: string;
+  onFlag: (entityData: {
+    entityName: string;
+    projectName: string;
+    context: string;
+    riskScore?: number;
+  }) => void;
+}> = (props) => {
+  return <BatchFlagButton {...props} />;
+};
+
+// First, let's extend the BatchProject type locally since it's missing flaggedEntity
+type ExtendedBatchProject = BatchProject & {
+  flaggedEntity?: string; // Add the missing property
+};
 
 interface EABatchDashboardProps {
   onBatchUpload: (files: File[]) => void;
@@ -35,6 +65,20 @@ interface EABatchDashboardProps {
   onExportBatch?: (projects: BatchProject[]) => void;
   onExportPartnerPacket?: (batchSummary: any, projects: BatchProject[]) => void;
   onExportBatchCSV?: (projects: BatchProject[]) => void;
+  // NEW: Data donation props
+  onStandardForm?: (entityData: {
+    entityName: string;
+    projectName: string;
+    context: string;
+    riskScore?: number;
+  }) => void;
+  onBulkFlagEntities?: (entities: Array<{
+    id: string;
+    name: string;
+    projectCount: number;
+    projects: string[];
+    confidence: number;
+  }>) => void;
 }
 
 // Helper function to create a metric data object WITH FIXED SCORE PROPERTY
@@ -309,23 +353,125 @@ const BatchSummaryComponent = ({
   );
 };
 
-// BatchResultsTable Component
+// ProjectCardWithFlagging Component - NEW
+const ProjectCardWithFlagging = ({ 
+  project,
+  onViewDetails,
+  onStandardForm
+}: { 
+  project: ExtendedBatchProject;
+  onViewDetails: (project: BatchProject) => void;
+  onStandardForm?: (entityData: {
+    entityName: string;
+    projectName: string;
+    context: string;
+    riskScore?: number;
+  }) => void;
+}) => {
+  const riskScore = project.riskScore || 0;
+  const topRedFlag = project.redFlags && project.redFlags.length > 0 
+    ? project.redFlags[0] 
+    : 'No red flags detected';
+  const verdict = project.verdict || 'unknown';
+  
+  // Detect if there's a suspicious entity in this project
+  const flaggedEntity = project.flaggedEntity || (riskScore > 60 ? `Suspicious Entity (${project.name})` : null);
+
+  return (
+    <div className="border-b border-sifter-border/50 hover:bg-sifter-dark/30 p-4">
+      <div className="flex justify-between items-start mb-3">
+        <div className="flex-1">
+          <div className="font-medium text-white">{project.name}</div>
+          <div className="text-xs text-gray-500">{project.input}</div>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
+            riskScore < 30 ? 'bg-green-500/20 text-green-400' :
+            riskScore < 60 ? 'bg-yellow-500/20 text-yellow-400' :
+            'bg-red-500/20 text-red-400'
+          }`}>
+            <div className={`w-2 h-2 rounded-full ${
+              riskScore < 30 ? 'bg-green-500' :
+              riskScore < 60 ? 'bg-yellow-500' :
+              'bg-red-500'
+            }`} />
+            {riskScore}/100
+          </div>
+        </div>
+      </div>
+      
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-sm text-gray-300">{topRedFlag}</div>
+        <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
+          verdict === 'pass' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+          verdict === 'flag' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+          'bg-red-500/20 text-red-400 border border-red-500/30'
+        }`}>
+          {verdict === 'pass' ? '✓ Pass' : 
+           verdict === 'flag' ? '⚠ Flag' : '✗ Reject'}
+        </div>
+      </div>
+      
+      {/* NEW: Data donation section for suspicious entities */}
+      {flaggedEntity && riskScore > 60 && (
+        <div className="mt-3 pt-3 border-t border-amber-500/30">
+          <div className="flex justify-between items-center">
+            <div className="flex-1">
+              <p className="text-sm text-amber-300 font-medium">
+                ⚠️ {flaggedEntity}
+              </p>
+              <p className="text-xs text-gray-400">
+                Detected during batch analysis
+              </p>
+            </div>
+           {onStandardForm && (
+          <BatchFlagButtonWrapper
+           projectName={project.name}
+           entityName={flaggedEntity}
+           riskScore={riskScore}
+           context="Batch analysis"
+           onFlag={onStandardForm}
+  />
+)}
+          </div>
+        </div>
+      )}
+      
+      <div className="mt-3">
+        <button
+          onClick={() => onViewDetails(project)}
+          className="w-full px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg text-sm transition-colors"
+        >
+          View Full Analysis
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// BatchResultsTable Component - UPDATED WITH FLAGGING
 const BatchResultsTable = ({ 
   projects, 
   onViewDetails,
   onExportBatch,
-  onExportBatchCSV
+  onExportBatchCSV,
+  onStandardForm
 }: { 
-  projects: BatchProject[];
+  projects: ExtendedBatchProject[];
   onViewDetails: (project: BatchProject) => void;
   onExportBatch?: (projects: BatchProject[]) => void;
   onExportBatchCSV?: (projects: BatchProject[]) => void;
+  onStandardForm?: (entityData: {
+    entityName: string;
+    projectName: string;
+    context: string;
+    riskScore?: number;
+  }) => void;
 }) => {
   const handleExportCSV = () => {
     if (onExportBatchCSV) {
       onExportBatchCSV(projects);
     } else {
-      // ExportService expects proper BatchProject objects
       ExportService.exportBatchToCSV(projects);
     }
   };
@@ -334,7 +480,6 @@ const BatchResultsTable = ({
     if (onExportBatch) {
       onExportBatch(projects);
     } else {
-      // Convert BatchProject[] to ProjectData[] for ExportService
       const projectDataArray = projects.map(convertBatchToProjectData);
       ExportService.exportAllAnalyses(projectDataArray);
     }
@@ -361,70 +506,16 @@ const BatchResultsTable = ({
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-sifter-border">
-              <th className="text-left py-3 px-4 text-gray-400 font-medium">Project</th>
-              <th className="text-left py-3 px-4 text-gray-400 font-medium">Risk Score</th>
-              <th className="text-left py-3 px-4 text-gray-400 font-medium">Result</th>
-              <th className="text-left py-3 px-4 text-gray-400 font-medium">Top Red Flag</th>
-              <th className="text-left py-3 px-4 text-gray-400 font-medium">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projects.slice(0, 10).map((project) => {
-              const riskScore = project.riskScore || 0;
-              const topRedFlag = project.redFlags && project.redFlags.length > 0 
-                ? project.redFlags[0] 
-                : 'No red flags detected';
-              const verdict = project.verdict || 'unknown';
-              
-              return (
-                <tr key={project.id} className="border-b border-sifter-border/50 hover:bg-sifter-dark/30">
-                  <td className="py-3 px-4">
-                    <div className="font-medium text-white">{project.name}</div>
-                    <div className="text-xs text-gray-500">{project.input}</div>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
-                      riskScore < 30 ? 'bg-green-500/20 text-green-400' :
-                      riskScore < 60 ? 'bg-yellow-500/20 text-yellow-400' :
-                      'bg-red-500/20 text-red-400'
-                    }`}>
-                      <div className={`w-2 h-2 rounded-full ${
-                        riskScore < 30 ? 'bg-green-500' :
-                        riskScore < 60 ? 'bg-yellow-500' :
-                        'bg-red-500'
-                      }`} />
-                      {riskScore}/100
-                    </div>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
-                      verdict === 'pass' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
-                      verdict === 'flag' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
-                      'bg-red-500/20 text-red-400 border border-red-500/30'
-                    }`}>
-                      {verdict === 'pass' ? '✓ Pass' : 
-                       verdict === 'flag' ? '⚠ Flag' : '✗ Reject'}
-                    </div>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="text-sm text-gray-300">{topRedFlag}</div>
-                  </td>
-                  <td className="py-3 px-4">
-                    <button
-                      onClick={() => onViewDetails(project)}
-                      className="px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg text-sm transition-colors"
-                    >
-                      View Details
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <div className="space-y-2">
+          {projects.slice(0, 10).map((project) => (
+            <ProjectCardWithFlagging
+              key={project.id}
+              project={project}
+              onViewDetails={onViewDetails}
+              onStandardForm={onStandardForm}
+            />
+          ))}
+        </div>
       </div>
 
       {projects.length > 10 && (
@@ -455,25 +546,51 @@ export default function EABatchDashboard({
   // Export props
   onExportBatch,
   onExportPartnerPacket,
-  onExportBatchCSV
+  onExportBatchCSV,
+  // NEW: Data donation props
+  onStandardForm,
+  onBulkFlagEntities
 }: EABatchDashboardProps) {
   const [activeTab, setActiveTab] = useState<'single' | 'batch'>('batch');
   const [batchJob, setBatchJob] = useState<BatchProcessingJob | null>(null);
   const [showBatchResults, setShowBatchResults] = useState(false);
   const [showSingleAnalysis, setShowSingleAnalysis] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<BatchProject | null>(null);
+  const [selectedProject, setSelectedProject] = useState<ExtendedBatchProject | null>(null);
   const [projectData, setProjectData] = useState<ProjectData | null>(null);
   const [detailedMetrics, setDetailedMetrics] = useState<MetricData[]>([]);
   const [batchTextInput, setBatchTextInput] = useState<string>('');
   const [processing, setProcessing] = useState(false);
+  // NEW: Bulk flagging state
+  const [showBulkFlagging, setShowBulkFlagging] = useState(false);
+  const [suspiciousEntities, setSuspiciousEntities] = useState<Array<{
+    id: string;
+    name: string;
+    projectCount: number;
+    projects: string[];
+    confidence: number;
+  }>>([]);
 
-  const generateMockBatchProjects = (): BatchProject[] => {
+  const generateMockBatchProjects = (): ExtendedBatchProject[] => {
+    // Define common suspicious entities
+    const suspiciousEntities = [
+      'RugAgencyX',
+      'DevAnonymous',
+      'MarketingBotFarm',
+      'PumpGroupAlpha',
+      'ScamContractor'
+    ];
+    
     return Array.from({ length: 50 }, (_, i) => {
       const riskScore = Math.floor(Math.random() * 100);
       let verdict: VerdictType = 'reject';
       
       if (riskScore < 30) verdict = 'pass';
       else if (riskScore < 60) verdict = 'flag';
+      
+      // Add flagged entity for high-risk projects
+      const flaggedEntity = riskScore > 60 
+        ? suspiciousEntities[Math.floor(Math.random() * suspiciousEntities.length)]
+        : undefined;
       
       return {
         id: `project_${i}`,
@@ -488,9 +605,40 @@ export default function EABatchDashboard({
         processingTime: Math.floor(Math.random() * 60000) + 30000,
         scannedAt: new Date(),
         weight: Math.random(),
-        confidence: Math.floor(Math.random() * 30) + 70
+        confidence: Math.floor(Math.random() * 30) + 70,
+        flaggedEntity // Add the missing property
       };
     });
+  };
+
+  // NEW: Function to detect suspicious entities from batch results
+  const analyzeBatchForEntities = (projects: ExtendedBatchProject[]) => {
+    const entities: Record<string, {
+      id: string;
+      name: string;
+      projectCount: number;
+      projects: string[];
+      confidence: number;
+    }> = {};
+    
+    projects.forEach(project => {
+      if (project.flaggedEntity && project.riskScore && project.riskScore > 60) {
+        const entityName = project.flaggedEntity;
+        if (!entities[entityName]) {
+          entities[entityName] = {
+            id: `entity_${Object.keys(entities).length}`,
+            name: entityName,
+            projectCount: 0,
+            projects: [],
+            confidence: Math.min(95, (project.riskScore || 0) + 10)
+          };
+        }
+        entities[entityName].projectCount++;
+        entities[entityName].projects.push(project.name);
+      }
+    });
+    
+    return Object.values(entities);
   };
 
   const handleBatchUploadComplete = (job: BatchProcessingJob) => {
@@ -526,16 +674,56 @@ export default function EABatchDashboard({
       setProcessing(false);
       setShowBatchResults(true);
       
+      // NEW: Analyze for suspicious entities
+      const entities = analyzeBatchForEntities(mockProjects);
+      setSuspiciousEntities(entities);
+      
+      // Show bulk flagging option if we found suspicious entities
+      if (entities.length > 0) {
+        setTimeout(() => {
+          setShowBulkFlagging(true);
+        }, 1000);
+      }
+      
       if (onBatchUploadComplete) {
         onBatchUploadComplete(completedJob);
       }
     }, 2000);
   };
 
+  // NEW: Handle entity flagging
+  const handleStandardForm = (entityData: {
+    entityName: string;
+    projectName: string;
+    context: string;
+    riskScore?: number;
+  }) => {
+    if (onStandardForm) {
+      onStandardForm(entityData);
+    }
+    // This would typically open the universal SubmissionForm with pre-filled data
+    alert(`Flagged entity: ${entityData.entityName} from project: ${entityData.projectName}`);
+  };
+  
+  // NEW: Handle bulk flagging
+  const handleBulkFlag = (entities: Array<{
+    id: string;
+    name: string;
+    projectCount: number;
+    projects: string[];
+    confidence: number;
+  }>) => {
+    if (onBulkFlagEntities) {
+      onBulkFlagEntities(entities);
+    }
+    setShowBulkFlagging(false);
+    alert(`Flagged ${entities.length} suspicious entities for review`);
+  };
+
   const handleSmartInputResolve = (result: SmartInputResult) => {
     if (result.selectedEntity) {
       const mockMetrics = createMetricsArray();
-      const metricsWithScore = ensureMetricsHaveScore(mockMetrics); // Fix: Ensure score property exists
+      const metricsWithScore = ensureMetricsHaveScore(mockMetrics);
       setDetailedMetrics(metricsWithScore);
       
       const compositeScore = Math.round(
@@ -770,9 +958,9 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
         
         {batchJob.projects && batchJob.projects.length > 0 && (
           <BatchResultsTable
-            projects={batchJob.projects}
+            projects={batchJob.projects as ExtendedBatchProject[]}
             onViewDetails={(project) => {
-              setSelectedProject(project);
+              setSelectedProject(project as ExtendedBatchProject);
               const mockProjectData = convertBatchToProjectData(project);
               setProjectData(mockProjectData);
               setShowSingleAnalysis(true);
@@ -783,12 +971,28 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
             }}
             onExportBatch={onExportBatch}
             onExportBatchCSV={onExportBatchCSV}
+            onStandardForm={handleStandardForm}
           />
         )}
+
+        {/* NEW: Bulk Flagging Modal */}
+       {suspiciousEntities.length > 0 && (
+       <BulkFlaggingModal
+       isOpen={showBulkFlagging}  // Add this prop!
+       onClose={() => setShowBulkFlagging(false)}
+       entities={suspiciousEntities}
+       onFlagAll={() => handleBulkFlag(suspiciousEntities)}
+       onFlagSelected={(selectedIds) => {
+      const selected = suspiciousEntities.filter(e => selectedIds.includes(e.id));
+      handleBulkFlag(selected);
+    }}
+  />
+)}
       </div>
     );
   }
 
+  
   // Main dashboard rendering
   return (
     <div className="space-y-8">
@@ -1080,6 +1284,17 @@ https://projectx.com`}
           </div>
         </div>
       )}
+
+      {/* Data Donation & Rewards Section - ADDED HERE AT THE END */}
+      <div className="mt-12 mb-8">
+        <h2 className="text-xl font-bold text-white mb-6">Data Donation & Rewards</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <PointsDisplay />
+          <RewardsShop />
+          <EvidenceUpload userType="ea-vc" />
+          <DisputeForm />
+        </div>
+      </div>
     </div>
   );
 }

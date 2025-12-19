@@ -1,64 +1,38 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+
+import { PointsDisplay } from '@/components/data-donation/gamification';
+import { RewardsShop } from '@/components/data-donation/gamification';
+import { EvidenceUpload } from '@/components/data-donation/universal';
+import { DisputeForm } from '@/components/data-donation/universal';
+
 import SmartInputParser from './SmartInputParser';
 import { 
   SmartInputResult, 
-  ProjectData, 
   MetricData,
   WatchlistItem as SharedWatchlistItem,
   AnalysisHistory,
   UserMode,
   VerdictType,
-  RiskTier,
-  PlatformType
+  ProjectData
 } from '@/types';
 import { generateMockProjectData, generateMockMetrics } from '@/data/mockData';
 
-interface LocalWatchlistItem extends SharedWatchlistItem {
-  // No additional properties needed
-}
+interface LocalWatchlistItem extends SharedWatchlistItem {}
 
 interface IndividualDashboardProps {
-  onAnalyze: (input: string) => void;
+  onAnalyze?: (input: string) => void;
   userName?: string;
   watchlist?: LocalWatchlistItem[];
-  recentScans?: AnalysisHistory[]; // ✅ CHANGED: Accept AnalysisHistory[] instead of ProjectData[]
+  recentScans?: AnalysisHistory[];
   onAddToWatchlist?: (projectName: string, riskScore: number, verdict: VerdictType) => void;
   onRemoveFromWatchlist?: (projectId: string) => void;
-  onViewReport?: (scanId: string) => void; // ✅ CHANGED: Accept string ID instead of ProjectData
+  onViewReport?: (scanId: string) => void;
   onModeChange?: () => void;
-  projectMetrics?: MetricData[]; // ✅ ADD THIS
-  currentProject?: ProjectData; // ✅ ADD THIS
+  projectMetrics?: MetricData[];
+  currentProject?: ProjectData;
 }
-
-// Helper function to safely convert to number
-const safeToNumber = (value: string | number | undefined | null): number => {
-  if (value === undefined || value === null) return 0;
-  if (typeof value === 'number') return value;
-  if (typeof value === 'string') {
-    const parsed = parseFloat(value);
-    return isNaN(parsed) ? 0 : parsed;
-  }
-  return 0;
-};
-
-// Helper function to convert AnalysisHistory to display format
-const convertScanToDisplayData = (scan: AnalysisHistory) => {
-  return {
-    id: scan.id,
-    displayName: scan.projectName,
-    overallRisk: {
-      score: scan.riskScore,
-      verdict: scan.verdict,
-      tier: scan.riskScore < 25 ? 'LOW' : 
-            scan.riskScore < 50 ? 'MODERATE' : 
-            scan.riskScore < 75 ? 'ELEVATED' : 'HIGH',
-      confidence: 70
-    },
-    scannedAt: scan.scannedAt
-  };
-};
 
 export default function IndividualDashboard({ 
   onAnalyze, 
@@ -68,1238 +42,912 @@ export default function IndividualDashboard({
   onAddToWatchlist,
   onRemoveFromWatchlist,
   onViewReport,
-  onModeChange 
+  onModeChange,
+  projectMetrics = [],
+  currentProject
 }: IndividualDashboardProps) {
+  // State
   const [internalWatchlist, setInternalWatchlist] = useState<LocalWatchlistItem[]>([
-    { 
-      projectId: '1', 
-      projectName: 'DeFi Alpha', 
-      riskScore: 23, 
-      verdict: 'pass', 
-      addedAt: new Date(Date.now() - 1*24*60*60*1000), 
-      alertsEnabled: true, 
-      lastChecked: new Date() 
-    },
-    { 
-      projectId: '2', 
-      projectName: 'TokenSwap Pro', 
-      riskScore: 55, 
-      verdict: 'flag', 
-      addedAt: new Date(Date.now() - 2*24*60*60*1000), 
-      alertsEnabled: true, 
-      lastChecked: new Date() 
-    },
+    { projectId: '1', projectName: 'DeFi Alpha', riskScore: 23, verdict: 'pass', addedAt: new Date(), alertsEnabled: true, lastChecked: new Date() },
+    { projectId: '2', projectName: 'TokenSwap Pro', riskScore: 55, verdict: 'flag', addedAt: new Date(), alertsEnabled: true, lastChecked: new Date() },
   ]);
   
-  // ✅ CHANGED: Initialize with AnalysisHistory[] instead of ProjectData[]
   const [internalRecentScans, setInternalRecentScans] = useState<AnalysisHistory[]>([
-    {
-      id: 'scan_1',
-      projectName: 'MoonDoge Protocol',
-      riskScore: 89,
-      verdict: 'reject',
-      scannedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      processingTime: 87000
-    },
-    {
-      id: 'scan_2',
-      projectName: 'DeFi Alpha',
-      riskScore: 23,
-      verdict: 'pass',
-      scannedAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
-      processingTime: 89000
-    },
-    {
-      id: 'scan_3',
-      projectName: 'TokenSwap Pro',
-      riskScore: 55,
-      verdict: 'flag',
-      scannedAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      processingTime: 92000
-    }
+    { id: 'scan_1', projectName: 'MoonDoge Protocol', riskScore: 89, verdict: 'reject', scannedAt: new Date(), processingTime: 87000 },
+    { id: 'scan_2', projectName: 'DeFi Alpha', riskScore: 23, verdict: 'pass', scannedAt: new Date(), processingTime: 89000 },
+    { id: 'scan_3', projectName: 'TokenSwap Pro', riskScore: 55, verdict: 'flag', scannedAt: new Date(), processingTime: 92000 }
   ]);
   
   const watchlist = externalWatchlist || internalWatchlist;
   const recentScans = externalRecentScans || internalRecentScans;
   
-  const [alerts, setAlerts] = useState([
-    { 
-      id: '1', 
-      type: 'risk_change' as const, 
-      projectName: 'TokenSwap Pro', 
-      message: 'Risk increased from 47 → 52 → 55', 
-      timestamp: new Date(Date.now() - 6*60*60*1000), 
-      read: false 
-    },
-    { 
-      id: '2', 
-      type: 'new_red_flag' as const, 
-      projectName: 'GemToken', 
-      message: 'Team member connected to known scams', 
-      timestamp: new Date(Date.now() - 10*60*1000), 
-      read: false 
-    },
-  ]);
-
-  const [currentProject, setCurrentProject] = useState<ProjectData | null>(null);
-  const [showSimpleReport, setShowSimpleReport] = useState(false);
-  const [activeTab, setActiveTab] = useState<'analyze' | 'watchlist' | 'scans' | 'learn' | 'quiz' | 'redflags' | 'projectDetails'>('analyze');
-  const [inputValue, setInputValue] = useState('');
+  const [activeTab, setActiveTab] = useState<'analyze' | 'watchlist' | 'scans' | 'learn'>('analyze');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisResults, setAnalysisResults] = useState<any>(null);
+  const [analysisResults, setAnalysisResults] = useState<{
+    projectName: string;
+    riskScore: number;
+    verdict: VerdictType;
+    metrics: MetricData[];
+    scanDuration: number;
+  } | null>(null);
   const [showModeSwitch, setShowModeSwitch] = useState(false);
-  const [selectedProjectDetails, setSelectedProjectDetails] = useState<any>(null);
+  const [showExportMenu, setShowExportMenu] = useState(false);
   
-  const allMetrics = [
-    { name: 'Team Identity', weight: 15, description: 'Verification of team member identities and professional backgrounds' },
-    { name: 'Team Competence', weight: 12, description: 'Team experience, qualifications, and past project success' },
-    { name: 'Contaminated Network', weight: 10, description: 'Associations with suspicious or failed projects' },
-    { name: 'Mercenary Keywords', weight: 8, description: 'Analysis of community language focusing on financial extraction' },
-    { name: 'Message Time Entropy', weight: 7, description: 'Pattern analysis of posting times and frequency' },
-    { name: 'Account Age Entropy', weight: 6, description: 'Age distribution and authenticity of community accounts' },
-    { name: 'Tweet Focus', weight: 6, description: 'Consistency and quality of project messaging' },
-    { name: 'GitHub Authenticity', weight: 10, description: 'Originality of code vs fork activity' },
-    { name: 'Bus Factor', weight: 8, description: 'Project dependency on key individuals' },
-    { name: 'Artificial Hype', weight: 6, description: 'Analysis of organic vs paid engagement patterns' },
-    { name: 'Founder Distraction', weight: 5, description: 'Multiple project involvement by founders' },
-    { name: 'Engagement Authenticity', weight: 4, description: 'Real vs bot engagement analysis' },
-    { name: 'Tokenomics', weight: 13, description: 'Token distribution, vesting, and economic design' }
-  ];
+  const [receivedMetrics, setReceivedMetrics] = useState<MetricData[]>(projectMetrics || []);
+  const [receivedProject, setReceivedProject] = useState<ProjectData | undefined>(currentProject);
+  
+  const exportMenuRef = useRef<HTMLDivElement>(null);
+  const exportButtonRef = useRef<HTMLButtonElement>(null);
 
-  const exportToJSON = (data: any, filename: string) => {
-    const jsonString = JSON.stringify(data, null, 2);
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        exportMenuRef.current && 
+        !exportMenuRef.current.contains(event.target as Node) &&
+        exportButtonRef.current &&
+        !exportButtonRef.current.contains(event.target as Node)
+      ) {
+        setShowExportMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (projectMetrics && projectMetrics.length > 0) {
+      setReceivedMetrics(projectMetrics);
+      console.log('IndividualDashboard: Received metrics:', projectMetrics.length);
+    }
+  }, [projectMetrics]);
+
+  useEffect(() => {
+    if (currentProject) {
+      setReceivedProject(currentProject);
+      console.log('IndividualDashboard: Received project:', currentProject.displayName);
+    }
+  }, [currentProject]);
+
+  const safeToNumber = (value: any): number => {
+    if (typeof value === 'number') return value;
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? 0 : parsed;
   };
 
-  const shareReport = async (project: ProjectData) => {
-    const safeScore = safeToNumber(project.overallRisk.score);
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `Risk Analysis: ${project.displayName}`,
-          text: `Check out this risk analysis for ${project.displayName}. Risk Score: ${safeScore}/100 (${project.overallRisk.verdict})`,
-          url: window.location.href,
-        });
-      } catch (error) {
-        console.log('Sharing cancelled or failed:', error);
-      }
-    } else {
-      // Get flags from all metrics (array)
-      const allFlags = project.metrics?.flatMap(m => m.flags || []) || [];
-      
-      const text = `Risk Analysis: ${project.displayName}\nScore: ${safeScore}/100\nVerdict: ${project.overallRisk.verdict}\n\nKey Findings:\n${allFlags
-        .slice(0, 3)
-        .map(f => `• ${f}`)
-        .join('\n')}`;
-      
-      navigator.clipboard.writeText(text).then(() => {
-        alert('Report copied to clipboard!');
-      });
-    }
+  const resetAnalysis = () => {
+    setAnalysisResults(null);
+    setIsAnalyzing(false);
+  };
+
+  const startAnalysis = async (projectName: string) => {
+    setIsAnalyzing(true);
+    setAnalysisResults(null);
+    
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    const metricsToUse = receivedMetrics.length > 0 ? receivedMetrics : generateMockMetrics();
+    const compositeScore = Math.round(metricsToUse.reduce((sum, m) => sum + (m.contribution || 0), 0));
+    const riskScore = Math.min(100, Math.max(0, compositeScore));
+    let verdict: VerdictType = 'pass';
+    if (riskScore >= 60) verdict = 'reject';
+    else if (riskScore >= 30) verdict = 'flag';
+    
+    const results = {
+      projectName,
+      riskScore,
+      verdict,
+      metrics: metricsToUse,
+      scanDuration: Math.floor(Math.random() * 30) + 30
+    };
+    
+    setAnalysisResults(results);
+    setIsAnalyzing(false);
+    
+    const newScan: AnalysisHistory = {
+      id: `scan_${Date.now()}`,
+      projectName,
+      riskScore,
+      verdict,
+      scannedAt: new Date(),
+      processingTime: results.scanDuration * 1000
+    };
+    
+    setInternalRecentScans(prev => [newScan, ...prev.slice(0, 4)]);
+    
+    if (onAnalyze) onAnalyze(projectName);
   };
 
   const handleSmartInputResolve = (result: SmartInputResult) => {
     if (result.selectedEntity) {
-      const mockData = generateMockProjectData(result.selectedEntity.displayName);
-      setCurrentProject(mockData);
-      setShowSimpleReport(true);
-      
-      // ✅ CHANGED: Add as AnalysisHistory instead of ProjectData
-      const newScan: AnalysisHistory = {
-        id: `scan_${Date.now()}`,
-        projectName: result.selectedEntity.displayName,
-        riskScore: mockData.overallRisk.score,
-        verdict: mockData.overallRisk.verdict,
-        scannedAt: new Date(),
-        processingTime: mockData.processingTime
-      };
-      
-      setInternalRecentScans(prev => [newScan, ...prev.slice(0, 4)]);
       startAnalysis(result.selectedEntity.displayName);
     }
   };
 
-  const startAnalysis = (projectName: string) => {
-    setIsAnalyzing(true);
-    
-    setTimeout(() => {
-      const mockMetrics = generateMockMetrics();
-      const compositeScore = Math.round(mockMetrics.reduce((sum: number, m: MetricData) => sum + (m.contribution || 0), 0));
-      const riskScore = compositeScore;
-      let verdict: VerdictType = 'pass';
-      if (riskScore >= 60) verdict = 'reject';
-      else if (riskScore >= 30) verdict = 'flag';
-      
-      const mockResults = {
-        projectName: projectName,
-        riskScore: riskScore,
-        compositeScore: compositeScore,
-        verdict: verdict,
-        metrics: mockMetrics,
-        summary: `${projectName} shows ${riskScore >= 60 ? 'concerning patterns' : riskScore >= 30 ? 'mixed signals' : 'promising signals'} across 13 risk metrics.`,
-        timestamp: new Date().toISOString(),
-        scanDuration: Math.floor(Math.random() * 30) + 30,
-        anonymousTeamMembers: Math.floor(Math.random() * 3) + 1,
-        mercenaryFocus: Math.floor(Math.random() * 30) + 40
-      };
-      
-      setAnalysisResults(mockResults);
-      setIsAnalyzing(false);
-      
-      if (onAnalyze) {
-        onAnalyze(projectName);
-      }
-    }, 1500);
-  };
-
-  const handleAddToWatchlist = (project: ProjectData) => {
-    const safeScore = safeToNumber(project.overallRisk.score);
+  const addToWatchlist = (projectName: string, riskScore: number, verdict: VerdictType) => {
     const newItem: LocalWatchlistItem = {
       projectId: `watch_${Date.now()}`,
-      projectName: project.displayName,
-      riskScore: safeScore,
-      verdict: project.overallRisk.verdict,
+      projectName,
+      riskScore,
+      verdict,
       addedAt: new Date(),
       alertsEnabled: true,
       lastChecked: new Date()
     };
     
     if (onAddToWatchlist) {
-      onAddToWatchlist(project.displayName, safeScore, project.overallRisk.verdict);
+      onAddToWatchlist(projectName, riskScore, verdict);
     } else {
       setInternalWatchlist(prev => [...prev, newItem]);
     }
+  };
+
+  const exportToJSON = (data: any, fileName: string) => {
+    const jsonString = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${fileName}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setShowExportMenu(false);
+  };
+
+  const exportToCSV = (data: any[], fileName: string) => {
+    const headers = Object.keys(data[0]);
+    const csvContent = [
+      headers.join(','),
+      ...data.map(row => headers.map(header => {
+        const cell = row[header];
+        return typeof cell === 'string' ? `"${cell.replace(/"/g, '""')}"` : cell;
+      }).join(','))
+    ].join('\n');
     
-    alert(`Added ${project.displayName} to your watchlist!`);
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${fileName}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setShowExportMenu(false);
   };
 
-  const handleRescan = (projectName: string) => {
-    setInputValue(projectName);
-    startAnalysis(projectName);
+  const exportToPDF = () => {
+    alert('PDF export feature coming soon!');
+    setShowExportMenu(false);
   };
 
-  // ✅ CHANGED: Accept scan ID instead of project name
-  const handleViewDetails = (scanId: string) => {
-    const scan = recentScans.find(s => s.id === scanId);
-    if (scan) {
-      // Convert to ProjectData for display
-      const mockProject = generateMockProjectData(scan.projectName);
-      setSelectedProjectDetails(mockProject);
-      setActiveTab('projectDetails');
+  const exportWatchlist = (format: 'json' | 'csv' | 'pdf') => {
+    const data = watchlist.map(item => ({
+      'Project Name': item.projectName,
+      'Risk Score': item.riskScore,
+      'Verdict': item.verdict.toUpperCase(),
+      'Added Date': item.addedAt.toISOString().split('T')[0],
+      'Last Checked': item.lastChecked.toISOString().split('T')[0],
+      'Alerts Enabled': item.alertsEnabled ? 'Yes' : 'No'
+    }));
+    
+    const fileName = `sifter-watchlist-${new Date().toISOString().split('T')[0]}`;
+    
+    if (format === 'json') exportToJSON(data, fileName);
+    else if (format === 'csv') exportToCSV(data, fileName);
+    else if (format === 'pdf') exportToPDF();
+  };
+
+  const exportRecentScans = (format: 'json' | 'csv' | 'pdf') => {
+    const data = recentScans.map(scan => ({
+      'Project Name': scan.projectName,
+      'Risk Score': scan.riskScore,
+      'Verdict': scan.verdict.toUpperCase(),
+      'Scan Date': scan.scannedAt.toISOString().split('T')[0],
+      'Processing Time (s)': Math.round(scan.processingTime / 1000),
+      'Scan ID': scan.id
+    }));
+    
+    const fileName = `sifter-scans-${new Date().toISOString().split('T')[0]}`;
+    
+    if (format === 'json') exportToJSON(data, fileName);
+    else if (format === 'csv') exportToCSV(data, fileName);
+    else if (format === 'pdf') exportToPDF();
+  };
+
+  const exportAnalysisResults = (format: 'json' | 'csv' | 'pdf') => {
+    if (!analysisResults) return;
+    
+    const flatData = [{
+      'Project Name': analysisResults.projectName,
+      'Risk Score': analysisResults.riskScore,
+      'Verdict': analysisResults.verdict.toUpperCase(),
+      'Scan Duration (s)': analysisResults.scanDuration,
+      'Scan Date': new Date().toISOString().split('T')[0],
+      'Total Metrics': analysisResults.metrics.length
+    }];
+    
+    const fileName = `sifter-analysis-${analysisResults.projectName}-${new Date().toISOString().split('T')[0]}`;
+    
+    if (format === 'json') {
+      const data = {
+        ...flatData[0],
+        metrics: analysisResults.metrics
+      };
+      exportToJSON(data, fileName);
+    } else if (format === 'csv') {
+      exportToCSV(flatData, fileName);
+    } else if (format === 'pdf') {
+      exportToPDF();
     }
   };
 
-  const getSimpleRecommendation = (score: number) => {
-    if (score >= 80) return { text: '🚨 HIGH RISK - DO NOT INVEST', color: 'text-red-400', bg: 'bg-red-500/10' };
-    if (score >= 60) return { text: '⚠️ MEDIUM RISK - BE CAREFUL', color: 'text-orange-400', bg: 'bg-orange-500/10' };
-    if (score >= 40) return { text: '⚠️ MODERATE RISK - DO RESEARCH', color: 'text-yellow-400', bg: 'bg-yellow-500/10' };
-    if (score >= 20) return { text: '✅ LOW RISK - LOOKS GOOD', color: 'text-green-400', bg: 'bg-green-500/10' };
-    return { text: '✅ VERY LOW RISK - STRONG', color: 'text-green-400', bg: 'bg-green-500/10' };
-  };
-
-  const renderSimpleReport = (project: ProjectData) => {
-    const score = safeToNumber(project.overallRisk.score);
-    const rec = getSimpleRecommendation(score);
+  const ScoreBadge = ({ score, verdict }: { score: number; verdict: VerdictType }) => {
+    const colors = {
+      reject: 'bg-red-500/20 text-red-400 border-red-500/30',
+      flag: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+      pass: 'bg-green-500/20 text-green-400 border-green-500/30'
+    };
     
-    // Get flags from metrics array
-    const flagsWithRecommendations = (project.metrics || [])
-      .flatMap((m: MetricData) => 
-        (m.flags || []).map((flag: string) => ({
-          description: flag,
-          recommendation: 'Review this aspect carefully before investing.'
-        }))
-      )
-      .slice(0, 3);
+    const icons = {
+      reject: '🔴',
+      flag: '🟡',
+      pass: '🟢'
+    };
     
     return (
-      <div className="bg-sifter-card border border-sifter-border rounded-2xl p-6">
-        <div className="flex justify-between items-start mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-white">{project.displayName}</h2>
-            <p className="text-gray-400">Scanned just now • 87 seconds</p>
-          </div>
-          <button
-            onClick={() => setShowSimpleReport(false)}
-            className="text-gray-400 hover:text-white"
-          >
-            ✕
-          </button>
-        </div>
+      <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-sm ${colors[verdict]}`}>
+        <span className="text-xs">{icons[verdict]}</span>
+        <span className="font-bold">{score}/100</span>
+        <span className="text-xs">{verdict.toUpperCase()}</span>
+      </div>
+    );
+  };
 
-        <div className={`${rec.bg} border ${rec.color.replace('text', 'border')}/30 rounded-xl p-6 mb-6`}>
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-3xl font-bold text-white mb-2">{score}/100</div>
-              <div className={`text-xl font-semibold ${rec.color}`}>{rec.text}</div>
-            </div>
-            <div className="text-4xl">
-              {score >= 80 ? '🚨' : 
-               score >= 60 ? '⚠️' : 
-               score >= 40 ? '⚠️' : '✅'}
-            </div>
-          </div>
+  const MetricBar = ({ metric, index }: { metric: MetricData; index: number }) => {
+    const value = safeToNumber(metric.value);
+    const width = `${value}%`;
+    const color = value >= 60 ? 'bg-red-500' : value >= 30 ? 'bg-yellow-500' : 'bg-green-500';
+    
+    return (
+      <div className="animate-fadeIn" style={{ animationDelay: `${index * 50}ms` }}>
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-xs text-gray-300">{metric.name}</span>
+          <span className="text-xs font-semibold">{value}/100</span>
         </div>
-
-        <div className="space-y-4 mb-6">
-          <h3 className="font-semibold text-white">Key Findings</h3>
-          {flagsWithRecommendations.length > 0 ? (
-            <div className="space-y-3">
-              {flagsWithRecommendations.map((flag, idx) => (
-                <div key={idx} className="flex items-start gap-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
-                  <span className="text-red-400 mt-1">⚠️</span>
-                  <div>
-                    <div className="text-white text-sm">{flag.description}</div>
-                    <div className="text-red-400 text-xs mt-1">{flag.recommendation}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-              <div className="flex items-center gap-3">
-                <span className="text-green-400">✅</span>
-                <div>
-                  <div className="text-white">No critical red flags detected</div>
-                  <div className="text-green-400 text-sm mt-1">Project appears to have legitimate fundamentals</div>
-                </div>
-              </div>
-            </div>
-          )}
+        <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
+          <div 
+            className={`h-full rounded-full transition-all duration-500 ${color}`}
+            style={{ width }}
+          />
         </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            onClick={() => handleAddToWatchlist(project)}
-            className="px-4 py-3 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border border-blue-500/30 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-          >
-            ⭐ Add to Watchlist
-          </button>
-          <button
-            onClick={() => exportToJSON(project, `${project.displayName}_report.json`)}
-            className="px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-          >
-            📄 Save Report
-          </button>
-          <button
-            onClick={() => shareReport(project)}
-            className="px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-          >
-            📤 Share
-          </button>
-          <button
-            onClick={() => setShowSimpleReport(false)}
-            className="px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
-          >
-            Check Another
-          </button>
+        <div className="flex justify-between text-xs text-gray-500 mt-1">
+          <span>Low</span>
+          <span>Medium</span>
+          <span>High</span>
         </div>
       </div>
     );
   };
 
-  const render13MetricAnalysis = () => {
-    if (!analysisResults) return null;
-
-    return (
-      <div className="bg-sifter-card border border-sifter-border rounded-xl p-6 mt-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <div className="text-3xl mb-1">
-              {analysisResults.riskScore >= 60 ? '🔴' : 
-               analysisResults.riskScore >= 30 ? '🟡' : '🟢'}
+  const renderAnalyzeTab = () => {
+    if (isAnalyzing) {
+      return (
+        <div className="animate-fadeIn">
+          <div className="bg-sifter-card border border-sifter-border rounded-xl p-6 text-center">
+            <div className="w-16 h-16 mx-auto mb-4 relative">
+              <div className="absolute inset-0 rounded-full border-4 border-blue-500/20 animate-ping"></div>
+              <div className="absolute inset-0 rounded-full border-4 border-blue-500/30 border-t-blue-500 animate-spin"></div>
             </div>
-            <div className={`text-xl font-bold ${
-              analysisResults.verdict === 'reject' ? 'text-red-400' :
-              analysisResults.verdict === 'flag' ? 'text-yellow-400' : 'text-green-400'
-            }`}>
-              {analysisResults.verdict === 'reject' ? 'HIGH RISK' :
-               analysisResults.verdict === 'flag' ? 'CAUTION ADVISED' : 'LOW RISK'}
+            <h3 className="text-lg font-bold text-white mb-2">Analyzing Project</h3>
+            <p className="text-sm text-gray-400 mb-4">Scanning 13 risk metrics...</p>
+            <div className="w-full bg-gray-800 rounded-full h-1.5">
+              <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-1.5 rounded-full animate-pulse" style={{ width: '70%' }}></div>
             </div>
           </div>
-          <div className="text-right">
-            <div className="text-lg font-bold text-white">{analysisResults.projectName}</div>
-            <div className="text-3xl font-bold text-white mt-1">{analysisResults.riskScore}/100</div>
-          </div>
         </div>
-        
-        <div className="text-sm text-gray-400 mb-6">
-          Scanned: {new Date().toLocaleDateString('en-US', { 
-            month: '2-digit', 
-            day: '2-digit', 
-            year: 'numeric' 
-          })} | Duration: {analysisResults.scanDuration}s
-        </div>
-        
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          <button
-            onClick={() => {
-              if (onAddToWatchlist) {
-                onAddToWatchlist(analysisResults.projectName, analysisResults.riskScore, analysisResults.verdict);
-              } else {
-                const newItem: LocalWatchlistItem = {
-                  projectId: `watch_${Date.now()}`,
-                  projectName: analysisResults.projectName,
-                  riskScore: analysisResults.riskScore,
-                  verdict: analysisResults.verdict,
-                  addedAt: new Date(),
-                  alertsEnabled: true,
-                  lastChecked: new Date()
-                };
-                setInternalWatchlist(prev => [...prev, newItem]);
-              }
-            }}
-            className="px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-colors text-sm flex items-center justify-center gap-2"
-            >
-            <span>⭐</span> Add to Watchlist
-          </button>
-          <button
-            onClick={() => handleRescan(analysisResults.projectName)}
-            className="px-4 py-3 bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg font-medium transition-colors text-sm flex items-center justify-center gap-2"
-          >
-            <span>🔄</span> Scan Again
-          </button>
-        </div>
-        
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="font-bold text-white">Complete 13-Metric Breakdown</h4>
-            <div className="text-sm text-gray-400">
-              Composite Score: <span className="font-bold text-white">{analysisResults.compositeScore}/100</span>
-            </div>
-          </div>
-          
-          <div className="space-y-3">
-            {(analysisResults.metrics || []).map((metric: MetricData, index: number) => {
-              const numericValue = safeToNumber(metric.value);
-              
-              return (
-                <div key={index} className="bg-sifter-dark border border-sifter-border rounded-lg p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="font-medium text-white text-sm">{metric.name}</div>
-                        <div className={`text-sm font-bold ${
-                          numericValue >= 60 ? 'text-red-400' :
-                          numericValue >= 30 ? 'text-yellow-400' : 'text-green-400'
-                        }`}>
-                          {metric.value}/100
-                        </div>
-                      </div>
-                      <div className="text-xs text-gray-400 mb-2">
-                        Weight: {metric.weight}% • Contribution: {metric.contribution?.toFixed(1)} points
-                      </div>
-                      
-                      <div className="w-full bg-gray-800 rounded-full h-2 mb-2">
-                        <div 
-                          className={`h-2 rounded-full ${
-                            numericValue >= 60 ? 'bg-red-500' :
-                            numericValue >= 30 ? 'bg-yellow-500' : 'bg-green-500'
-                          }`}
-                          style={{ width: `${numericValue}%` }}
-                        />
-                      </div>
-                      
-                      <div className="flex justify-between text-xs text-gray-500 mb-2">
-                        <div>Low (0-29)</div>
-                        <div>Medium (30-59)</div>
-                        <div>High (60-100)</div>
-                      </div>
-                      
-                      <div className="text-xs text-gray-500">{metric.key}</div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const handleModeSwitch = () => {
-    if (onModeChange) {
-      onModeChange();
-    } else {
-      setShowModeSwitch(true);
+      );
     }
-  };
 
-  const handleLocalModeSelect = (mode: UserMode) => {
-    if (mode === null) return;
-    
-    localStorage.setItem('sifter_mode', mode);
-    setShowModeSwitch(false);
-    const notification = document.createElement('div');
-    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
-    notification.textContent = `Switched to ${mode} mode. Refreshing...`;
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-      document.body.removeChild(notification);
-      window.location.reload();
-    }, 1500);
-  };
-
-  const [quizScore, setQuizScore] = useState<number | null>(null);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [quizAnswers, setQuizAnswers] = useState<number[]>([]);
-
-  const quizQuestions = [
-    {
-      id: 1,
-      question: 'What is the biggest red flag for a crypto project?',
-      options: ['Anonymous team', 'Strong community', 'Good website design', 'Active Twitter'],
-      correct: 0
-    },
-    {
-      id: 2,
-      question: 'How much team allocation is considered reasonable?',
-      options: ['5-15%', '30-50%', '70-80%', '90-100%'],
-      correct: 0
-    },
-    {
-      id: 3,
-      question: 'What does "mercenary community" mean?',
-      options: ['Paid military group', 'Users only there for airdrops', 'Professional traders', 'Long-term holders'],
-      correct: 1
-    }
-  ];
-
-  const handleTakeQuiz = () => {
-    setActiveTab('quiz');
-    setCurrentQuestion(0);
-    setQuizAnswers([]);
-    setQuizScore(null);
-  };
-
-  const handleQuizAnswer = (answerIndex: number) => {
-    const newAnswers = [...quizAnswers, answerIndex];
-    setQuizAnswers(newAnswers);
-    
-    if (currentQuestion < quizQuestions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    } else {
-      const correctAnswers = newAnswers.reduce((acc: number, answer: number, index: number) => {
-        return acc + (answer === quizQuestions[index].correct ? 1 : 0);
-      }, 0);
-      const score = Math.round((correctAnswers / quizQuestions.length) * 100);
-      setQuizScore(score);
-    }
-  };
-
-  const redFlags = [
-    { id: 1, title: 'Anonymous Team', description: 'No LinkedIn or professional profiles found. Legitimate projects have doxxed teams.', severity: 'high', examples: ['No team photos', 'Generic bios', 'No work history'] },
-    { id: 2, title: 'Guaranteed Returns', description: 'Promises specific % returns - this is illegal in most jurisdictions.', severity: 'critical', examples: ['"Guaranteed 100x"', '"Risk-free investment"', '"Cannot lose money"'] },
-    { id: 3, title: 'Copy-Paste Code', description: 'GitHub repo is mostly forked with minimal original code.', severity: 'medium', examples: ['0 original commits', 'Forked repository', 'No technical innovation'] },
-    { id: 4, title: 'No Token Lockup', description: 'Team tokens unlock immediately at launch.', severity: 'high', examples: ['0% locked', '1-month vesting', 'Immediate selling pressure'] },
-    { id: 5, title: 'Fake Followers', description: 'Twitter has bot-like followers with low engagement.', severity: 'medium', examples: ['100k followers, 10 likes', 'Generic comments', 'Sudden follower spikes'] },
-    { id: 6, title: 'No Roadmap', description: 'Vague or non-existent plans for the future.', severity: 'medium', examples: ['"To the moon!"', 'No timeline', 'Constantly changing goals'] },
-  ];
-
-  const handleCommonRedFlags = () => {
-    setActiveTab('redflags');
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-2">
-        <div>
-          <h1 className="text-2xl font-bold text-white">
-            👋 Welcome, <span className="text-blue-400">{userName}</span>
-          </h1>
-          <p className="text-gray-400 text-sm">13-metric risk analysis</p>
-        </div>
-        
-        <div className="flex gap-2">
-          <button
-            onClick={handleModeSwitch}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm font-medium"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-            </svg>
-            Switch Mode
-          </button>
-        </div>
-      </div>
-
-      <div className="bg-sifter-card border border-sifter-border rounded-lg p-1">
-        <div className="flex flex-wrap gap-1">
-          {['analyze', 'watchlist', 'scans', 'learn'].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab as any)}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-1.5 ${
-                activeTab === tab
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-sifter-dark/50'
-              }`}
-            >
-              {tab === 'analyze' && '🔍'}
-              {tab === 'watchlist' && '📋'}
-              {tab === 'scans' && '📊'}
-              {tab === 'learn' && '📚'}
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              {(tab === 'watchlist' || tab === 'scans') && ` (${tab === 'watchlist' ? watchlist.length : recentScans.length})`}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {activeTab === 'analyze' && (
-        <div className="space-y-6">
-          {showSimpleReport && currentProject ? (
-            renderSimpleReport(currentProject)
-          ) : (
-            <div className="bg-sifter-card border border-sifter-border rounded-2xl p-6">
-              <h2 className="text-xl font-semibold text-white mb-4">Check a Project</h2>
-              <p className="text-gray-400 mb-6">
-                Is this crypto project safe? Get your answer in 90 seconds.
-              </p>
-              
-              <SmartInputParser
-                onResolve={handleSmartInputResolve}
-                placeholder="Enter project name, Twitter handle, Discord invite, or website..."
-              />
-              
-              <div className="mt-6 text-sm text-gray-500">
-                <p className="mb-2">Examples:</p>
-                <div className="flex flex-wrap gap-2">
-                  {['MoonDoge Protocol', '@cryptoproject', 'discord.gg/invite', 'projectwebsite.com'].map((example) => (
-                    <button
-                      key={example}
-                      onClick={() => handleSmartInputResolve({
-                        input: example,
-                        type: example.startsWith('@') ? 'twitter' : 
-                               example.includes('discord.gg') ? 'discord' : 
-                               example.includes('.com') ? 'website' : 'name',
-                        resolvedEntities: [],
-                        selectedEntity: {
-                          id: 'example',
-                          canonicalName: example,
-                          displayName: example,
-                          platform: example.startsWith('@') ? 'twitter' : 
-                                   example.includes('discord.gg') ? 'discord' : 
-                                   example.includes('.com') ? 'website' : 'name',
-                          url: example.startsWith('http') ? example : 
-                               example.startsWith('@') ? `https://twitter.com/${example.substring(1)}` : 
-                               example.includes('.') ? `https://${example}` : '',
-                          confidence: 100,
-                          alternativeNames: [],
-                          crossReferences: [],
-                          metadata: {}
-                        },
-                        confidence: 100,
-                        searchHistory: [],
-                        timestamp: new Date()
-                      })}
-                      className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 px-3 py-1.5 rounded transition-colors"
-                    >
-                      {example}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {isAnalyzing && (
-            <div className="bg-sifter-card border border-sifter-border rounded-xl p-8 text-center">
-              <div className="w-16 h-16 mx-auto mb-4">
-                <div className="w-full h-full rounded-full border-4 border-blue-500/30 border-t-blue-500 animate-spin"></div>
-              </div>
-              <h3 className="text-lg font-semibold text-white mb-2">Analyzing {inputValue}</h3>
-              <p className="text-gray-400 text-sm mb-4">Scanning 13 risk metrics...</p>
-              <div className="w-full bg-gray-800 rounded-full h-1.5">
-                <div className="bg-blue-500 h-1.5 rounded-full animate-pulse" style={{ width: '70%' }}></div>
-              </div>
-            </div>
-          )}
-
-          {render13MetricAnalysis()}
-
-          <div className="bg-sifter-card border border-sifter-border rounded-2xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Recent Scans</h3>
-            <div className="space-y-3">
-              {/* ✅ CHANGED: Use recentScans (AnalysisHistory[]) instead of ProjectData[] */}
-              {recentScans.slice(0, 3).map((scan) => {
-                const score = scan.riskScore;
-                
-                return (
-                  <div key={scan.id} className="flex justify-between items-center p-4 border border-sifter-border rounded-lg hover:border-green-500/50 transition-colors">
-                    <div>
-                      <div className="font-medium text-white">{scan.projectName}</div>
-                      <div className="text-sm text-gray-400">
-                        Scanned: {scan.scannedAt.toLocaleDateString()}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className={`text-lg font-bold ${
-                        score >= 80 ? 'text-red-400' :
-                        score >= 60 ? 'text-orange-400' :
-                        score >= 40 ? 'text-yellow-400' :
-                        'text-green-400'
-                      }`}>
-                        {score}/100
-                      </div>
-                      <button
-                        onClick={() => {
-                          // Convert scan to project data for display
-                          const mockProject = generateMockProjectData(scan.projectName);
-                          setCurrentProject(mockProject);
-                          setShowSimpleReport(true);
-                        }}
-                        className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded text-sm"
-                      >
-                        View
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'watchlist' && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-xl font-bold text-white mb-1">Project Watchlist</h2>
-              <p className="text-gray-400 text-sm">Track projects you're monitoring</p>
-            </div>
-          </div>
-          
-          {watchlist.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {watchlist.map((item) => {
-                const riskScore = safeToNumber(item.riskScore);
-                
-                return (
-                  <div key={item.projectId} className="bg-sifter-card border border-sifter-border rounded-xl p-5 hover:border-blue-500/30 transition-all group">
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <h3 className="font-bold text-white text-lg mb-1">{item.projectName}</h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          <div className={`px-3 py-1 rounded-full text-xs font-bold ${
-                            item.verdict === 'reject' ? 'bg-red-500/20 text-red-400' :
-                            item.verdict === 'flag' ? 'bg-yellow-500/20 text-yellow-400' :
-                            'bg-green-500/20 text-green-400'
-                          }`}>
-                            {item.verdict.toUpperCase()}
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            Score: <span className={`font-bold ${
-                              riskScore >= 60 ? 'text-red-400' :
-                              riskScore >= 30 ? 'text-yellow-400' : 'text-green-400'
-                            }`}>{riskScore}/100</span>
-                          </div>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => {
-                          if (onRemoveFromWatchlist) {
-                            onRemoveFromWatchlist(item.projectId);
-                          } else {
-                            setInternalWatchlist(prev => prev.filter(w => w.projectId !== item.projectId));
-                          }
-                        }}
-                        className="text-gray-500 hover:text-red-400 transition-colors p-1 hover:bg-red-500/10 rounded-lg"
-                        title="Remove from watchlist"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          onClick={() => handleRescan(item.projectName)}
-                          className="px-3 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-lg transition-colors flex items-center justify-center gap-1.5 text-sm"
-                        >
-                          <span>🔄</span> Rescan
-                        </button>
-                        
-                        <button
-                          onClick={() => {
-                            // Find the scan for this watchlist item
-                            const scan = recentScans.find(s => s.projectName === item.projectName);
-                            if (scan && onViewReport) {
-                              onViewReport(scan.id);
-                            } else {
-                              // Fallback: convert to project data
-                              const mockProject = generateMockProjectData(item.projectName);
-                              setSelectedProjectDetails(mockProject);
-                              setActiveTab('projectDetails');
-                            }
-                          }}
-                          className="px-3 py-2 bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg transition-colors flex items-center justify-center gap-1.5 text-sm"
-                        >
-                          <span>📊</span> Details
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="text-center py-12 bg-sifter-card border border-sifter-border rounded-xl">
-              <div className="text-5xl mb-4">📋</div>
-              <h3 className="text-xl font-bold text-white mb-3">Your Watchlist is Empty</h3>
-              <p className="text-gray-400 mb-6 max-w-md mx-auto">
-                Add projects to your watchlist to track their risk scores over time and get notified of changes.
-              </p>
-              <button
-                onClick={() => setActiveTab('analyze')}
-                className="px-5 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-colors"
-              >
-                Analyze a Project
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {activeTab === 'scans' && (
-        <div className="space-y-6">
-          <div className="mb-4">
-            <h2 className="text-xl font-bold text-white mb-1">Recent Scans</h2>
-            <p className="text-gray-400 text-sm">History of all analyzed projects</p>
-          </div>
-          
-          {recentScans.length > 0 ? (
-            <div className="space-y-4">
-              {/* ✅ CHANGED: Use recentScans (AnalysisHistory[]) */}
-              {recentScans.map((scan) => {
-                const score = scan.riskScore;
-                
-                return (
-                  <div key={scan.id} className="bg-sifter-card border border-sifter-border rounded-xl p-5 hover:border-blue-500/30 transition-all">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className={`text-2xl ${
-                            scan.verdict === 'reject' ? 'text-red-400' :
-                            scan.verdict === 'flag' ? 'text-yellow-400' : 'text-green-400'
-                          }`}>
-                            {scan.verdict === 'reject' ? '🔴' : 
-                             scan.verdict === 'flag' ? '🟡' : '🟢'}
-                          </div>
-                          <div>
-                            <h3 className="font-bold text-white text-lg">{scan.projectName}</h3>
-                            <div className="flex items-center gap-3 mt-1">
-                              <div className={`px-3 py-1 rounded-full text-xs font-bold ${
-                                scan.verdict === 'reject' ? 'bg-red-500/20 text-red-400' :
-                                scan.verdict === 'flag' ? 'bg-yellow-500/20 text-yellow-400' :
-                                'bg-green-500/20 text-green-400'
-                              }`}>
-                                {scan.verdict.toUpperCase()}
-                              </div>
-                              <div className="text-xs text-gray-400">
-                                Score: <span className={`font-bold ${
-                                  score >= 60 ? 'text-red-400' :
-                                  score >= 30 ? 'text-yellow-400' : 'text-green-400'
-                                }`}>{score}/100</span>
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                {scan.scannedAt.toLocaleDateString()}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleRescan(scan.projectName)}
-                          className="px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-lg transition-colors flex items-center gap-1.5 text-sm"
-                        >
-                          <span>🔄</span> Rescan
-                        </button>
-                        
-                        <button
-                          onClick={() => {
-                            if (onViewReport) {
-                              onViewReport(scan.id);
-                            } else {
-                              // Convert scan to project data for display
-                              const mockProject = generateMockProjectData(scan.projectName);
-                              setSelectedProjectDetails(mockProject);
-                              setActiveTab('projectDetails');
-                            }
-                          }}
-                          className="px-4 py-2 bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg transition-colors flex items-center gap-1.5 text-sm"
-                        >
-                          <span>📊</span> Details
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="text-center py-12 bg-sifter-card border border-sifter-border rounded-xl">
-              <div className="text-5xl mb-4">📊</div>
-              <h3 className="text-xl font-bold text-white mb-3">No Scans Yet</h3>
-              <p className="text-gray-400 mb-6 max-w-md mx-auto">
-                Analyze your first project to see scan history here. Track how risk scores change over time.
-              </p>
-              <button
-                onClick={() => setActiveTab('analyze')}
-                className="px-5 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-colors"
-              >
-                Analyze a Project
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {activeTab === 'learn' && (
-        <div className="space-y-6">
-          <div className="mb-4">
-            <h2 className="text-xl font-bold text-white mb-1">Learn & Educate</h2>
-            <p className="text-gray-400 text-sm">Knowledge to protect your investments</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <button
-              onClick={handleTakeQuiz}
-              className="bg-gradient-to-br from-blue-500/10 to-cyan-600/10 border border-blue-500/20 rounded-xl p-5 hover:border-blue-500/40 transition-all text-left group"
-            >
-              <div className="text-3xl mb-3">🧪</div>
-              <h3 className="font-bold text-white text-lg mb-2">Risk Assessment Quiz</h3>
-              <p className="text-gray-400 text-sm mb-4">Test your ability to spot crypto scams</p>
-              <div className="text-blue-400 text-sm font-medium group-hover:text-blue-300">
-                Take Quiz →
-              </div>
-            </button>
-            
-            <button
-              onClick={handleCommonRedFlags}
-              className="bg-gradient-to-br from-red-500/10 to-orange-600/10 border border-red-500/20 rounded-xl p-5 hover:border-red-500/40 transition-all text-left group"
-            >
-              <div className="text-3xl mb-3">🚨</div>
-              <h3 className="font-bold text-white text-lg mb-2">Common Red Flags</h3>
-              <p className="text-gray-400 text-sm mb-4">Learn the warning signs of scams</p>
-              <div className="text-red-400 text-sm font-medium group-hover:text-red-300">
-                View Checklist →
-              </div>
-            </button>
-            
-            <div className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 border border-green-500/20 rounded-xl p-5">
-              <div className="text-3xl mb-3">✅</div>
-              <h3 className="font-bold text-white text-lg mb-2">Due Diligence Checklist</h3>
-              <p className="text-gray-400 text-sm mb-3">Essential steps before investing:</p>
-              <ul className="text-gray-300 text-sm space-y-1">
-                <li className="flex items-center gap-2">
-                  <span className="text-green-400">✓</span>
-                  <span>Verify team identities</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-green-400">✓</span>
-                  <span>Check GitHub activity</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-green-400">✓</span>
-                  <span>Review tokenomics</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-green-400">✓</span>
-                  <span>Analyze community</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-          
+    if (analysisResults) {
+      return (
+        <div className="animate-fadeIn space-y-4">
           <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
-            <h3 className="font-bold text-white text-lg mb-4">Understanding the 13 Risk Metrics</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {allMetrics.map((metric, index) => (
-                <div key={index} className="bg-sifter-dark/50 border border-sifter-border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="font-medium text-white text-sm">{metric.name}</div>
-                    <div className="text-xs text-gray-500">Weight: {metric.weight}%</div>
+            <div className="flex items-start justify-between mb-5">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <button
+                    onClick={resetAnalysis}
+                    className="p-1.5 hover:bg-gray-800 rounded-lg transition-colors text-gray-400 hover:text-white text-sm"
+                  >
+                    ← Back
+                  </button>
+                  <h2 className="text-lg font-bold text-white truncate">{analysisResults.projectName}</h2>
+                </div>
+                <p className="text-xs text-gray-400">
+                  Scanned just now • {analysisResults.scanDuration}s
+                </p>
+              </div>
+              <ScoreBadge score={analysisResults.riskScore} verdict={analysisResults.verdict} />
+            </div>
+
+            <div className="space-y-4">
+              <div className={`p-3 rounded-lg border text-sm ${
+                analysisResults.verdict === 'reject' ? 'bg-red-500/10 border-red-500/20' :
+                analysisResults.verdict === 'flag' ? 'bg-yellow-500/10 border-yellow-500/20' :
+                'bg-green-500/10 border-green-500/20'
+              }`}>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">
+                    {analysisResults.verdict === 'reject' ? '🚨' :
+                     analysisResults.verdict === 'flag' ? '⚠️' : '✅'}
+                  </span>
+                  <div>
+                    <h3 className="font-bold text-white">
+                      {analysisResults.verdict === 'reject' ? 'High Risk Detected' :
+                       analysisResults.verdict === 'flag' ? 'Caution Advised' : 'Low Risk'}
+                    </h3>
+                    <p className="text-xs text-gray-300 mt-0.5">
+                      {analysisResults.verdict === 'reject' ? 'Multiple red flags detected.' :
+                       analysisResults.verdict === 'flag' ? 'Some concerning metrics found.' :
+                       'Project shows promising fundamentals.'}
+                    </p>
                   </div>
-                  <p className="text-gray-400 text-xs">{metric.description}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => addToWatchlist(analysisResults.projectName, analysisResults.riskScore, analysisResults.verdict)}
+                  className="px-3 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg text-sm font-medium transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1.5"
+                >
+                  ⭐ Add to Watchlist
+                </button>
+                <button
+                  onClick={() => startAnalysis(analysisResults.projectName)}
+                  className="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1.5"
+                >
+                  🔄 Rescan
+                </button>
+              </div>
+
+              <div>
+                <h3 className="font-bold text-white mb-3 text-sm">13-Metric Breakdown</h3>
+                <div className="space-y-3">
+                  {analysisResults.metrics.map((metric, index) => (
+                    <MetricBar key={index} metric={metric} index={index} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
+            <h3 className="font-bold text-white mb-3 text-sm">Recent Scans</h3>
+            <div className="space-y-2">
+              {recentScans.slice(0, 2).map((scan) => (
+                <div 
+                  key={scan.id}
+                  onClick={() => startAnalysis(scan.projectName)}
+                  className="flex items-center justify-between p-3 border border-sifter-border rounded-lg hover:border-blue-500/50 hover:bg-blue-500/5 cursor-pointer transition-all group"
+                >
+                  <div className="truncate">
+                    <div className="font-medium text-white text-sm group-hover:text-blue-300 truncate">{scan.projectName}</div>
+                    <div className="text-xs text-gray-400">{scan.scannedAt.toLocaleDateString()}</div>
+                  </div>
+                  <ScoreBadge score={scan.riskScore} verdict={scan.verdict} />
                 </div>
               ))}
             </div>
           </div>
         </div>
-      )}
+      );
+    }
 
-      {activeTab === 'quiz' && (
-        <div className="space-y-6">
-          <div className="mb-4">
-            <h2 className="text-xl font-bold text-white mb-1">Risk Assessment Quiz</h2>
-            <p className="text-gray-400 text-sm">Test your ability to spot crypto scams</p>
-          </div>
+    return (
+      <div className="animate-fadeIn space-y-4">
+        <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
+          <h2 className="text-lg font-bold text-white mb-2">Check a Project</h2>
+          <p className="text-sm text-gray-400 mb-4">
+            Is this crypto project safe? Get your answer in 90 seconds.
+          </p>
           
-          {quizScore === null ? (
-            <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
-              <div className="text-center mb-6">
-                <div className="text-4xl mb-2">🧪</div>
-                <div className="text-lg font-bold text-white mb-2">
-                  Question {currentQuestion + 1} of {quizQuestions.length}
-                </div>
-                <div className="text-gray-400 text-sm">
-                  Score: {quizAnswers.filter((ans, idx) => ans === quizQuestions[idx].correct).length}/{quizQuestions.length}
-                </div>
-              </div>
-              
-              <div className="mb-8">
-                <h3 className="text-xl font-bold text-white mb-4 text-center">
-                  {quizQuestions[currentQuestion].question}
-                </h3>
-              </div>
-              
-              <div className="space-y-3">
-                {quizQuestions[currentQuestion].options.map((option, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleQuizAnswer(idx)}
-                    className="w-full p-4 bg-sifter-dark hover:bg-sifter-border border border-sifter-border rounded-lg text-left transition-all hover:border-blue-500/30 group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-6 h-6 rounded-full border border-gray-600 group-hover:border-blue-500 flex items-center justify-center">
-                        {String.fromCharCode(65 + idx)}
-                      </div>
-                      <div className="text-gray-300 group-hover:text-white">
-                        {option}
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-              
-              <div className="mt-6 flex justify-center">
-                <div className="flex gap-1">
-                  {quizQuestions.map((_, idx) => (
-                    <div
-                      key={idx}
-                      className={`w-3 h-3 rounded-full ${
-                        idx <= currentQuestion
-                          ? idx < currentQuestion
-                            ? quizAnswers[idx] === quizQuestions[idx].correct
-                              ? 'bg-green-500'
-                              : 'bg-red-500'
-                            : 'bg-blue-500'
-                          : 'bg-gray-700'
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-sifter-card border border-sifter-border rounded-xl p-8 text-center">
-              <div className="text-5xl mb-4">
-                {quizScore >= 80 ? '🏆' : quizScore >= 60 ? '👍' : '📚'}
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-2">Quiz Complete!</h3>
-              <div className={`text-4xl font-bold mb-4 ${
-                quizScore >= 80 ? 'text-green-400' :
-                quizScore >= 60 ? 'text-yellow-400' : 'text-red-400'
-              }`}>
-                {quizScore}%
-              </div>
-              
-              <div className="mb-6">
-                <p className="text-gray-300 mb-2">
-                  You answered {quizAnswers.filter((ans, idx) => ans === quizQuestions[idx].correct).length} 
-                  out of {quizQuestions.length} questions correctly.
-                </p>
-                {quizScore >= 80 ? (
-                  <p className="text-green-400 font-medium">Excellent! You have strong scam detection skills.</p>
-                ) : quizScore >= 60 ? (
-                  <p className="text-yellow-400 font-medium">Good! You have basic scam detection skills.</p>
-                ) : (
-                  <p className="text-red-400 font-medium">Keep learning! Review the red flags section.</p>
-                )}
-              </div>
-              
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <SmartInputParser
+            onResolve={handleSmartInputResolve}
+            placeholder="Enter project name, Twitter, Discord, or website..."
+          />
+          
+          <div className="mt-4">
+            <p className="text-xs text-gray-400 mb-2">Try these examples:</p>
+            <div className="flex flex-wrap gap-1.5">
+              {['@moonrocket_fi', 'discord.gg/crypto', 'github.com/project', 'project.com'].map((example, i) => (
                 <button
-                  onClick={handleTakeQuiz}
-                  className="px-5 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-colors"
+                  key={i}
+                  onClick={() => startAnalysis(example)}
+                  className="px-2.5 py-1.5 text-xs text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg border border-sifter-border transition-all hover:border-blue-500/50"
                 >
-                  Take Quiz Again
+                  {example}
                 </button>
-                <button
-                  onClick={handleCommonRedFlags}
-                  className="px-5 py-3 bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg font-medium transition-colors"
-                >
-                  Learn Red Flags
-                </button>
-              </div>
+              ))}
             </div>
-          )}
+          </div>
         </div>
-      )}
 
-      {activeTab === 'redflags' && (
-        <div className="space-y-6">
-          <div className="mb-4">
-            <h2 className="text-xl font-bold text-white mb-1">Common Red Flags</h2>
-            <p className="text-gray-400 text-sm">Warning signs to watch for in crypto projects</p>
+        <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-bold text-white text-sm">Recent Scans</h3>
+            <button
+              onClick={() => setActiveTab('scans')}
+              className="text-xs text-blue-400 hover:text-blue-300 hover:scale-105 transition-all"
+            >
+              View All →
+            </button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {redFlags.map((flag) => (
-              <div key={flag.id} className={`bg-sifter-card border rounded-xl p-5 ${
-                flag.severity === 'critical' ? 'border-red-500/30 bg-red-500/5' :
-                flag.severity === 'high' ? 'border-red-500/20 bg-red-500/5' :
-                'border-yellow-500/20 bg-yellow-500/5'
-              }`}>
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className={`text-lg ${
-                        flag.severity === 'critical' ? 'text-red-400' :
-                        flag.severity === 'high' ? 'text-red-400' : 'text-yellow-400'
-                      }`}>
-                        {flag.severity === 'critical' ? '🔥' : '⚠️'}
-                      </div>
-                      <span className={`font-bold ${
-                        flag.severity === 'critical' ? 'text-red-400' :
-                        flag.severity === 'high' ? 'text-red-400' : 'text-yellow-400'
-                      }`}>
-                        {flag.severity.toUpperCase()}
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-bold text-white">{flag.title}</h3>
+          <div className="space-y-2">
+            {recentScans.slice(0, 3).map((scan) => (
+              <div 
+                key={scan.id}
+                onClick={() => startAnalysis(scan.projectName)}
+                className="flex items-center justify-between p-3 border border-sifter-border rounded-lg hover:border-blue-500/50 hover:bg-blue-500/5 cursor-pointer transition-all group"
+              >
+                <div className="flex items-center gap-2">
+                  <div className={`text-lg ${
+                    scan.verdict === 'reject' ? 'text-red-400' :
+                    scan.verdict === 'flag' ? 'text-yellow-400' : 'text-green-400'
+                  }`}>
+                    {scan.verdict === 'reject' ? '🔴' : 
+                     scan.verdict === 'flag' ? '🟡' : '🟢'}
+                  </div>
+                  <div className="truncate">
+                    <div className="font-medium text-white text-sm group-hover:text-blue-300 truncate">{scan.projectName}</div>
+                    <div className="text-xs text-gray-400">{scan.scannedAt.toLocaleDateString()}</div>
                   </div>
                 </div>
-                
-                <p className="text-gray-300 text-sm mb-4">{flag.description}</p>
-                
-                <div className="bg-sifter-dark/50 rounded-lg p-3">
-                  <div className="text-xs text-gray-400 mb-2">Examples:</div>
-                  <ul className="space-y-1">
-                    {flag.examples.map((example, idx) => (
-                      <li key={idx} className="flex items-center gap-2 text-xs text-gray-300">
-                        <span className="text-gray-500">•</span>
-                        {example}
-                      </li>
-                    ))}
-                  </ul>
+                <div className={`text-sm font-bold ${
+                  scan.riskScore >= 80 ? 'text-red-400' :
+                  scan.riskScore >= 60 ? 'text-orange-400' :
+                  scan.riskScore >= 40 ? 'text-yellow-400' : 'text-green-400'
+                }`}>
+                  {scan.riskScore}/100
                 </div>
               </div>
             ))}
           </div>
         </div>
-      )}
+      </div>
+    );
+  };
 
-      <div className="bg-sifter-card border border-sifter-border rounded-2xl p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-white">Recent Alerts</h3>
-          {alerts.filter(a => !a.read).length > 0 && (
-            <span className="text-xs px-2 py-1 bg-red-500/20 text-red-400 rounded">
-              {alerts.filter(a => !a.read).length} new
-            </span>
-          )}
-        </div>
-        
-        <div className="space-y-3">
-          {alerts.slice(0, 3).map((alert) => (
-            <div key={alert.id} className={`p-3 rounded-lg border ${
-              alert.read ? 'border-gray-800' : 'border-red-500/30 bg-red-500/5'
-            }`}>
-              <div className="flex items-start gap-2">
-                <span className="text-red-400 mt-1">🚨</span>
-                <div>
-                  <div className="font-medium text-white">{alert.projectName}</div>
-                  <div className="text-sm text-gray-300 mt-1">{alert.message}</div>
-                  <div className="text-xs text-gray-500 mt-2">
-                    {alert.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </div>
+  const renderWatchlistTab = () => (
+    <div className="animate-fadeIn">
+      <div className="mb-4">
+        <h2 className="text-lg font-bold text-white mb-1">Your Watchlist</h2>
+        <p className="text-xs text-gray-400">Projects you're actively monitoring</p>
+      </div>
+      
+      {watchlist.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {watchlist.map((item) => (
+            <div key={item.projectId} className="bg-sifter-card border border-sifter-border rounded-xl p-4 hover:border-blue-500/30 transition-all group">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-white text-sm truncate mb-2">{item.projectName}</h3>
+                  <ScoreBadge score={item.riskScore} verdict={item.verdict} />
                 </div>
+                <button
+                  onClick={() => {
+                    if (onRemoveFromWatchlist) {
+                      onRemoveFromWatchlist(item.projectId);
+                    } else {
+                      setInternalWatchlist(prev => prev.filter(w => w.projectId !== item.projectId));
+                    }
+                  }}
+                  className="text-gray-500 hover:text-red-400 transition-all hover:scale-110 p-1 ml-2"
+                >
+                  ✕
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => startAnalysis(item.projectName)}
+                  className="px-2.5 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg text-xs transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1.5"
+                >
+                  🔄 Rescan
+                </button>
+                <button
+                  onClick={() => startAnalysis(item.projectName)}
+                  className="px-2.5 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-xs transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1.5"
+                >
+                  📊 Details
+                </button>
               </div>
             </div>
           ))}
-          
-          {alerts.length === 0 && (
-            <div className="text-center py-4 text-gray-500">
-              No new alerts
+        </div>
+      ) : (
+        <div className="text-center py-8 bg-sifter-card border border-sifter-border rounded-xl">
+          <div className="text-4xl mb-3 animate-bounce">📋</div>
+          <h3 className="text-lg font-bold text-white mb-2">Watchlist Empty</h3>
+          <p className="text-sm text-gray-400 mb-4">Add projects to track their risk scores over time.</p>
+          <button
+            onClick={() => setActiveTab('analyze')}
+            className="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95"
+          >
+            Analyze a Project
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderScansTab = () => (
+    <div className="animate-fadeIn">
+      <div className="mb-4">
+        <h2 className="text-lg font-bold text-white mb-1">Recent Scans</h2>
+        <p className="text-xs text-gray-400">History of all analyzed projects</p>
+      </div>
+      
+      <div className="space-y-3">
+        {recentScans.map((scan) => (
+          <div key={scan.id} className="bg-sifter-card border border-sifter-border rounded-xl p-4 hover:border-blue-500/30 transition-all">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className={`text-2xl ${
+                  scan.verdict === 'reject' ? 'text-red-400' :
+                  scan.verdict === 'flag' ? 'text-yellow-400' : 'text-green-400'
+                }`}>
+                  {scan.verdict === 'reject' ? '🔴' : 
+                   scan.verdict === 'flag' ? '🟡' : '🟢'}
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-bold text-white text-sm truncate">{scan.projectName}</h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="text-xs text-gray-400">
+                      {scan.scannedAt.toLocaleDateString()}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      • {Math.round(scan.processingTime / 1000)}s
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <ScoreBadge score={scan.riskScore} verdict={scan.verdict} />
+                <button
+                  onClick={() => startAnalysis(scan.projectName)}
+                  className="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg text-xs transition-all hover:scale-105 active:scale-95"
+                >
+                  🔄 Rescan
+                </button>
+              </div>
             </div>
-          )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderLearnTab = () => (
+    <div className="animate-fadeIn">
+      <div className="mb-4">
+        <h2 className="text-lg font-bold text-white mb-1">Learn & Educate</h2>
+        <p className="text-xs text-gray-400">Knowledge to protect your investments</p>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
+          <h3 className="font-bold text-white mb-3 text-sm">Common Red Flags</h3>
+          <div className="space-y-2.5">
+            {[
+              { id: 1, title: 'Anonymous Team', desc: 'No professional profiles', severity: 'high' },
+              { id: 2, title: 'Guaranteed Returns', desc: 'Promises specific profits', severity: 'critical' },
+              { id: 3, title: 'Copy-Paste Code', desc: 'Mostly forked repository', severity: 'medium' },
+              { id: 4, title: 'No Token Lockup', desc: 'Immediate team unlocks', severity: 'high' },
+              { id: 5, title: 'Fake Followers', desc: 'Bot-like engagement', severity: 'medium' },
+              { id: 6, title: 'No Roadmap', desc: 'Vague future plans', severity: 'medium' }
+            ].map((flag) => (
+              <div 
+                key={flag.id}
+                className={`p-3 rounded-lg border transition-all hover:scale-[1.02] cursor-pointer ${
+                  flag.severity === 'critical' ? 'bg-red-500/10 border-red-500/20 hover:border-red-500/40' :
+                  flag.severity === 'high' ? 'bg-red-500/5 border-red-500/10 hover:border-red-500/30' :
+                  'bg-yellow-500/5 border-yellow-500/10 hover:border-yellow-500/30'
+                }`}
+              >
+                <div className="flex items-start gap-2">
+                  <span className={`text-lg ${
+                    flag.severity === 'critical' ? 'text-red-400' :
+                    flag.severity === 'high' ? 'text-red-400' : 'text-yellow-400'
+                  }`}>
+                    {flag.severity === 'critical' ? '🔥' : '⚠️'}
+                  </span>
+                  <div>
+                    <h4 className="font-bold text-white text-sm">{flag.title}</h4>
+                    <p className="text-xs text-gray-300 mt-0.5">{flag.desc}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="space-y-4">
+          <div className="bg-gradient-to-br from-blue-500/10 to-cyan-600/10 border border-blue-500/20 rounded-xl p-5">
+            <div className="text-3xl mb-3">🧪</div>
+            <h3 className="font-bold text-white text-sm mb-2">Risk Assessment Quiz</h3>
+            <p className="text-xs text-gray-400 mb-4">Test your scam detection skills</p>
+            <button
+              onClick={() => setActiveTab('analyze')}
+              className="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95 w-full"
+            >
+              Start Quiz
+            </button>
+          </div>
+          
+          <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
+            <h3 className="font-bold text-white mb-3 text-sm">Quick Tips</h3>
+            <ul className="space-y-2">
+              {[
+                '✅ Always verify team identities',
+                '✅ Check GitHub for original code',
+                '✅ Review token lockup schedules',
+                '✅ Analyze community engagement',
+                '✅ Watch for unrealistic promises'
+              ].map((tip, i) => (
+                <li key={i} className="flex items-center gap-2 text-sm text-gray-300">
+                  <span className="text-green-400">✓</span>
+                  {tip}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="space-y-4 animate-fadeIn relative min-h-screen">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-30">
+        <div>
+          <h1 className="text-xl font-bold text-white">
+            👋 Welcome, <span className="text-blue-400">{userName}</span>
+          </h1>
+          <p className="text-xs text-gray-400">13-metric risk analysis</p>
+        </div>
+        
+        <div className="flex gap-2">
+          <button
+            onClick={() => alert('Share feature coming soon!')}
+            className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
+          >
+            <span className="text-sm">📤</span>
+            Share
+          </button>
+          
+          <div className="relative">
+            <button
+              ref={exportButtonRef}
+              onClick={() => setShowExportMenu(!showExportMenu)}
+              className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
+            >
+              <span className="text-sm">📥</span>
+              Export
+              <span className={`text-xs transition-transform ${showExportMenu ? 'rotate-180' : ''}`}>▼</span>
+            </button>
+            
+            {showExportMenu && (
+              <div 
+                ref={exportMenuRef}
+                className="absolute top-full right-0 mt-1.5 z-50 animate-fadeIn shadow-2xl"
+              >
+                <div className="bg-sifter-card border border-sifter-border rounded-lg w-56 overflow-hidden">
+                  <div className="p-3 border-b border-sifter-border bg-sifter-card/95">
+                    <h3 className="font-bold text-white text-sm">Export Data</h3>
+                    <p className="text-xs text-gray-400">Choose format and data</p>
+                  </div>
+                  
+                  <div className="p-1.5 max-h-80 overflow-y-auto">
+                    {analysisResults && (
+                      <div className="mb-1.5">
+                        <div className="px-2 py-1 text-xs font-medium text-gray-500">CURRENT ANALYSIS</div>
+                        <button onClick={() => exportAnalysisResults('json')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                          <span className="text-blue-400">📊</span>
+                          <span className="text-white">Export as JSON</span>
+                        </button>
+                        <button onClick={() => exportAnalysisResults('csv')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                          <span className="text-green-400">📈</span>
+                          <span className="text-white">Export as CSV/Excel</span>
+                        </button>
+                        <button onClick={() => exportAnalysisResults('pdf')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                          <span className="text-red-400">📄</span>
+                          <span className="text-white">Export as PDF</span>
+                        </button>
+                      </div>
+                    )}
+                    
+                    <div className="mb-1.5">
+                      <div className="px-2 py-1 text-xs font-medium text-gray-500">WATCHLIST</div>
+                      <button onClick={() => exportWatchlist('json')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                        <span className="text-green-400">📋</span>
+                        <span className="text-white">Export as JSON</span>
+                      </button>
+                      <button onClick={() => exportWatchlist('csv')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                        <span className="text-green-400">📈</span>
+                        <span className="text-white">Export as CSV/Excel</span>
+                      </button>
+                      <button onClick={() => exportWatchlist('pdf')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                        <span className="text-green-400">📄</span>
+                        <span className="text-white">Export as PDF</span>
+                      </button>
+                    </div>
+                    
+                    <div className="mb-1.5">
+                      <div className="px-2 py-1 text-xs font-medium text-gray-500">RECENT SCANS</div>
+                      <button onClick={() => exportRecentScans('json')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                        <span className="text-purple-400">📊</span>
+                        <span className="text-white">Export as JSON</span>
+                      </button>
+                      <button onClick={() => exportRecentScans('csv')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                        <span className="text-purple-400">📈</span>
+                        <span className="text-white">Export as CSV/Excel</span>
+                      </button>
+                      <button onClick={() => exportRecentScans('pdf')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                        <span className="text-purple-400">📄</span>
+                        <span className="text-white">Export as PDF</span>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="p-1.5 border-t border-sifter-border">
+                    <button onClick={() => setShowExportMenu(false)} className="w-full px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded text-sm">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <button
+            onClick={() => setShowModeSwitch(true)}
+            className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
+          >
+            <span className="text-sm">🔄</span>
+            Switch Mode
+          </button>
         </div>
       </div>
 
+      {/* Navigation */}
+      <div className="bg-sifter-card border border-sifter-border rounded-lg p-1">
+        <div className="flex flex-wrap gap-1">
+          {[
+            { id: 'analyze', icon: '🔍', label: 'Analyze' },
+            { id: 'watchlist', icon: '📋', label: `Watchlist (${watchlist.length})` },
+            { id: 'scans', icon: '📊', label: `Scans (${recentScans.length})` },
+            { id: 'learn', icon: '📚', label: 'Learn' }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => {
+                if (tab.id === 'analyze') resetAnalysis();
+                setActiveTab(tab.id as any);
+              }}
+              className={`px-3 py-1.5 rounded text-sm font-medium transition-all flex items-center gap-1.5 ${
+                activeTab === tab.id
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800'
+              }`}
+            >
+              <span>{tab.icon}</span>
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10">
+        {activeTab === 'analyze' && renderAnalyzeTab()}
+        {activeTab === 'watchlist' && renderWatchlistTab()}
+        {activeTab === 'scans' && renderScansTab()}
+        {activeTab === 'learn' && renderLearnTab()}
+      </div>
+
+      {/* Contribute & Earn Points Section - ADDED HERE */}
+      <div className="space-y-8">
+        {/* Existing individual analysis content would be above this */}
+        
+        {/* ADD HERE - Bottom section */}
+        <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
+          <h2 className="text-xl font-bold text-white mb-6">Contribute & Earn Points</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <PointsDisplay />
+            <RewardsShop />
+            <EvidenceUpload userType="individual" />
+            <DisputeForm />
+          </div>
+        </div>
+      </div>
+
+      {/* Mode Switch Modal */}
       {showModeSwitch && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-sifter-card border border-sifter-border rounded-xl p-6 max-w-md w-full">
-            <h3 className="text-xl font-bold text-white mb-4">Switch Mode</h3>
-            <p className="text-gray-400 text-sm mb-6">
-              Choose your role to customize the dashboard experience:
-            </p>
-            
-            <div className="space-y-3 mb-6">
-              <button
-                onClick={() => handleLocalModeSelect('ea-vc')}
-                className="w-full p-4 bg-sifter-dark hover:bg-sifter-border border border-sifter-border rounded-lg text-left transition-all hover:border-purple-500/30 group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="text-2xl">🏢</div>
-                  <div>
-                    <div className="font-bold text-white">EA/VC Mode</div>
-                    <div className="text-gray-400 text-xs">Portfolio monitoring and due diligence tools</div>
-                  </div>
-                </div>
-              </button>
+        <div className="fixed inset-0 z-50 animate-fadeIn">
+          <div 
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => setShowModeSwitch(false)}
+          />
+          
+          <div className="absolute top-10 left-1/2 transform -translate-x-1/2 w-full max-w-sm px-4">
+            <div className="bg-sifter-card border border-sifter-border rounded-xl p-5 shadow-2xl">
+              <h3 className="text-lg font-bold text-white mb-3">Switch Mode</h3>
+              <p className="text-sm text-gray-400 mb-4">Choose your dashboard mode:</p>
+              
+              <div className="space-y-2.5 mb-4">
+                {[
+                  { id: 'ea-vc', icon: '🏢', title: 'EA/VC Mode', desc: 'Portfolio monitoring' },
+                  { id: 'researcher', icon: '🔬', title: 'Researcher', desc: 'Deep analytics' },
+                  { id: 'individual', icon: '👤', title: 'Individual', desc: 'Simple due diligence', current: true }
+                ].map((mode) => (
+                  <button
+                    key={mode.id}
+                    onClick={() => {
+                      if (!mode.current && onModeChange) {
+                        onModeChange();
+                      }
+                      setShowModeSwitch(false);
+                    }}
+                    className={`w-full p-3 border rounded-lg text-left transition-all hover:scale-[1.02] ${
+                      mode.current 
+                        ? 'border-blue-500 bg-blue-500/10' 
+                        : 'border-sifter-border hover:border-blue-500/30'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="text-xl">{mode.icon}</div>
+                      <div>
+                        <div className="font-bold text-white text-sm">{mode.title}</div>
+                        <div className="text-xs text-gray-400">{mode.desc}</div>
+                      </div>
+                      {mode.current && (
+                        <div className="ml-auto bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+                          Current
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
               
               <button
-                onClick={() => handleLocalModeSelect('researcher')}
-                className="w-full p-4 bg-sifter-dark hover:bg-sifter-border border border-sifter-border rounded-lg text-left transition-all hover:border-blue-500/30 group"
+                onClick={() => setShowModeSwitch(false)}
+                className="w-full px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95"
               >
-                <div className="flex items-center gap-3">
-                  <div className="text-2xl">🔬</div>
-                  <div>
-                    <div className="font-bold text-white">Researcher Mode</div>
-                    <div className="text-gray-400 text-xs">Deep dive analytics and historical data</div>
-                  </div>
-                </div>
-              </button>
-              
-              <button
-                onClick={() => handleLocalModeSelect('individual')}
-                className="w-full p-4 bg-sifter-dark border border-blue-500/30 rounded-lg text-left group relative"
-              >
-                <div className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
-                  Current
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="text-2xl">👤</div>
-                  <div>
-                    <div className="font-bold text-white">Individual Investor</div>
-                    <div className="text-gray-400 text-xs">Simple risk assessment and due diligence</div>
-                  </div>
-                </div>
+                Cancel
               </button>
             </div>
-            
-            <button
-              onClick={() => setShowModeSwitch(false)}
-              className="w-full px-4 py-3 bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg font-medium transition-colors"
-            >
-              Cancel
-            </button>
           </div>
         </div>
       )}
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.2s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 }

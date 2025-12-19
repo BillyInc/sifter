@@ -1,4 +1,4 @@
-// src/types/index.ts - CONSOLIDATED VERSION
+// src/types/index.ts - CONSOLIDATED VERSION WITH DATA DONATION TYPES
 // ============= CORE TYPES =============
 export type AnalysisState = 'idle' | 'loading' | 'complete' | 'error';
 export type UserMode = 'ea-vc' | 'researcher' | 'individual' | null;
@@ -6,6 +6,130 @@ export type VerdictType = 'pass' | 'flag' | 'reject';
 export type VerdictResult = VerdictType | 'unknown';
 export type RiskTier = 'LOW' | 'MODERATE' | 'ELEVATED' | 'HIGH' | 'CRITICAL';
 export type PlatformType = 'twitter' | 'discord' | 'telegram' | 'github' | 'website' | 'name' | 'unknown';
+
+// ============= DATA DONATION TYPES =============
+export type EntityType = 'marketing-agency' | 'advisor-consultant' | 'influencer-kol' | 'team-member';
+export type SubmissionStatus = 'draft' | 'submitted' | 'under-review' | 'approved' | 'rejected' | 'needs-info';
+export type EvidenceType = 'twitter_post' | 'reddit_thread' | 'blockchain_transaction' | 'news_article' | 'archived_website' | 'telegram' | 'other';
+export type EvidenceStatus = 'pending' | 'verified' | 'disputed' | 'invalid';
+export type SeverityLevel = 'low' | 'medium' | 'high' | 'critical';
+export type ContributorTier = 'tier-1' | 'tier-2' | 'tier-3';
+
+// src/types/index.ts - UPDATED SubmissionFormData
+export interface SubmissionFormData {
+  id: string;
+  caseId: string;
+  entityType: 'marketing-agency' | 'advisor-consultant' | 'influencer-kol' | 'team-member';
+  entityDetails: {
+    fullName: string;
+    twitterHandle?: string;
+    telegramHandle?: string;
+    linkedinProfile?: string;
+    website?: string;
+  };
+  affectedProjects: Array<{
+    id?: string;
+    projectName: string;
+    incidentDescription: string;
+    date: string; // MM/YYYY
+    evidence?: string[];
+  }>;
+  evidence: Array<{
+    id: string;
+    url: string;
+    description: string;
+    type: 'twitter' | 'reddit' | 'news' | 'archive' | 'blockchain' | 'telegram' | 'other';
+    status: 'pending' | 'verified' | 'disputed' | 'invalid';
+    submittedAt?: Date;
+  }>;
+  submitterInfo: {
+    email: string;
+    name?: string;
+    anonymous: boolean;
+    acknowledgements: boolean[];
+  };
+  mode: UserMode;
+  status: 'draft' | 'submitted' | 'under-review' | 'approved' | 'rejected' | 'needs-info';
+  submittedAt: string;
+  confidenceScore?: number;
+  impactScore?: number; // ADD THIS
+  pointsAwarded?: number; // ADD THIS
+  updatedAt?: string;
+  // Add any other missing properties you're using
+  title?: string; // Add if used
+  description?: string; // Add if used
+  severity?: 'low' | 'medium' | 'high' | 'critical'; // Add if used
+}
+
+export interface EvidenceItem {
+  id: string;
+  entityId: string;
+  evidenceType: EvidenceType;
+  originalUrl: string;
+  archivedUrl?: string;
+  screenshotUrl?: string;
+  ipfsHash?: string;
+  evidenceTitle: string;
+  evidenceDescription: string;
+  severity: SeverityLevel;
+  verificationStatus: EvidenceStatus;
+  submittedBy: string;
+  verifiedBy?: string;
+  submittedAt: Date;
+}
+
+export interface DisputeFormData {
+  relationship: 'authorized-representative' | 'individual-named' | 'disputing-with-authorization' | 'other';
+  fullName: string;
+  positionTitle: string;
+  officialEmail: string;
+  phoneNumber?: string;
+  disputeCategories: string[];
+  detailedExplanation: string;
+  counterEvidence: Array<{
+    type: string;
+    file?: File;
+    url?: string;
+    description: string;
+  }>;
+  requestedResolution: string;
+  resolutionExplanation: string;
+  verificationMethod: 'email' | 'document' | 'video-call';
+}
+
+export interface ContributorTierInfo {
+  id: ContributorTier;
+  name: string;
+  credibilityWeight: number;
+  basePoints: number;
+  verificationPriority: 'priority' | 'high' | 'standard';
+  minPoints?: number;
+  maxPoints?: number;
+}
+
+export interface UserPointsData {
+  availablePoints: number;
+  pointsInPool: number;
+  lifetimeEarned: number;
+  lifetimeRedeemed: number;
+  currentMultiplier: number;
+  tier: ContributorTier;
+  nextMilestone?: {
+    pointsNeeded: number;
+    reward: string;
+  };
+}
+
+export interface RewardItem {
+  id: string;
+  name: string;
+  description: string;
+  pointsRequired: number;
+  category: 'badge' | 'access' | 'physical' | 'service';
+  availability: 'available' | 'limited' | 'sold-out';
+  imageUrl?: string;
+  claimable: boolean;
+}
 
 // ============= EVIDENCE & FLAG TYPES =============
 export interface Evidence {
@@ -52,9 +176,9 @@ export interface ResolvedEntity {
 
 export interface SmartInputResult {
   input: string;
-  type: InputType; // Changed from PlatformType to InputType
+  type: InputType;
   resolvedEntities: ResolvedEntity[];
-   selectedEntity?: ResolvedEntity | null; // Make it nullable
+  selectedEntity?: ResolvedEntity | null;
   confidence: number;
   searchHistory: string[];
   timestamp: Date;
@@ -65,15 +189,15 @@ export interface MetricData {
   id: string;
   key: string;
   name: string;
-  value: number; // CHANGE: Make this always number, not string | number
+  value: number;
   weight: number;
   contribution: number;
   status: 'low' | 'moderate' | 'high' | 'critical';
   confidence: number;
   flags: string[];
   evidence: string[];
-  score: number;           // Required
-  scoreValue?: number;     // Optional
+  score: number;
+  scoreValue?: number;
   subline?: string;
   breakdown?: any;
 }
@@ -135,11 +259,10 @@ export interface ProjectData {
   canonicalName: string;
   displayName: string;
   description?: string;
-   sources: Array<{
+  sources: Array<{
     type: string;
     url: string;
-    [key: string]: any; // Additional source-specific properties
-
+    [key: string]: any;
   }>;
   platform?: PlatformType | string;
   overallRisk: {
@@ -147,8 +270,8 @@ export interface ProjectData {
     verdict: VerdictType;
     tier: RiskTier;
     confidence: number;
-      breakdown?: string[]; // ADD: Make this optional
-      summary?: string; // Add summary property
+    breakdown?: string[];
+    summary?: string;
   };
   metrics: MetricData[];
   scannedAt: Date;
@@ -157,7 +280,6 @@ export interface ProjectData {
   analyzedAt?: string;
   flags?: any[];
   recommendations?: any[];
-  
 }
 
 // ============= BATCH PROCESSING TYPES =============
@@ -246,8 +368,6 @@ export interface MetricWeight {
   description: string;
 }
 
-// Weights sum to 1.0 (100%)
-// Higher weight = more impact on final score
 export const METRIC_WEIGHTS: MetricWeight[] = [
   {
     key: 'team_identity',
@@ -264,7 +384,7 @@ export const METRIC_WEIGHTS: MetricWeight[] = [
   {
     key: 'likely_agency',
     name: 'Likely Agency',
-    weight: 0.15, // Heavy weight - agencies are a huge red flag
+    weight: 0.15,
     description: 'Signs of paid marketing agency involvement',
   },
   {
@@ -323,17 +443,49 @@ export const METRIC_WEIGHTS: MetricWeight[] = [
   },
 ];
 
-// Validate weights sum to 1.0
-const totalWeight = METRIC_WEIGHTS.reduce((sum, m) => sum + m.weight, 0);
-if (Math.abs(totalWeight - 1.0) > 0.001) {
-  console.warn(`Warning: Metric weights sum to ${totalWeight}, expected 1.0`);
-}
+// ============= DATA DONATION CONSTANTS =============
+export const TIER_INFO: Record<ContributorTier, ContributorTierInfo> = {
+  'tier-1': {
+    id: 'tier-1',
+    name: 'Institutional',
+    credibilityWeight: 2.0,
+    basePoints: 100,
+    verificationPriority: 'priority',
+    minPoints: 5000,
+  },
+  'tier-2': {
+    id: 'tier-2',
+    name: 'Professional',
+    credibilityWeight: 1.5,
+    basePoints: 75,
+    verificationPriority: 'high',
+    minPoints: 1000,
+    maxPoints: 4999,
+  },
+  'tier-3': {
+    id: 'tier-3',
+    name: 'Community',
+    credibilityWeight: 1.0,
+    basePoints: 50,
+    verificationPriority: 'standard',
+    maxPoints: 999,
+  },
+};
+
+export const DEFAULT_POINTS_DATA: UserPointsData = {
+  availablePoints: 0,
+  pointsInPool: 0,
+  lifetimeEarned: 0,
+  lifetimeRedeemed: 0,
+  currentMultiplier: 1.0,
+  tier: 'tier-3',
+  nextMilestone: {
+    pointsNeeded: 1000,
+    reward: 'Tier 2 Upgrade',
+  },
+};
 
 // ============= COMPOSITE SCORE FUNCTIONS =============
-/**
- * Calculate composite score from individual metric scores
- * Each metric score should be 0-100 (higher = riskier)
- */
 export function calculateCompositeScore(
   metricScores: Record<string, number>
 ): number {
@@ -348,7 +500,6 @@ export function calculateCompositeScore(
     }
   }
 
-  // Normalize if some metrics are missing
   if (totalWeight > 0 && totalWeight < 1.0) {
     weightedSum = weightedSum / totalWeight;
   }
@@ -356,18 +507,12 @@ export function calculateCompositeScore(
   return Math.round(weightedSum);
 }
 
-/**
- * Get verdict based on composite score
- */
 export function getVerdict(score: number): VerdictType {
   if (score >= 70) return 'reject';
   if (score >= 40) return 'flag';
   return 'pass';
 }
 
-/**
- * Get risk tier for display
- */
 export function getRiskTier(
   score: number
 ): {
@@ -416,9 +561,6 @@ export function getRiskTier(
   };
 }
 
-/**
- * Get weight contribution breakdown for transparency
- */
 export function getScoreBreakdown(
   metricScores: Record<string, number>
 ): Array<{
@@ -443,6 +585,23 @@ export function getScoreBreakdown(
   }).sort((a, b) => b.contribution - a.contribution);
 }
 
+// ============= DATA DONATION UTILITIES =============
+export function calculateSubmissionPoints(formData: SubmissionFormData, tier: ContributorTier): number {
+  const basePoints = TIER_INFO[tier].basePoints;
+  const evidenceBonus = formData.evidence.filter(e => e.url.trim()).length * 10;
+  const projectBonus = formData.affectedProjects.length * 5;
+  const multiplier = TIER_INFO[tier].credibilityWeight;
+  
+  const total = (basePoints + evidenceBonus + projectBonus) * multiplier;
+  return Math.floor(total);
+}
+
+export function getTierFromPoints(points: number): ContributorTier {
+  if (points >= 5000) return 'tier-1';
+  if (points >= 1000) return 'tier-2';
+  return 'tier-3';
+}
+
 // ============= HELPER FUNCTIONS =============
 export const isProceedVerdict = (verdict: VerdictType): boolean => {
   return verdict === 'pass' || verdict === 'flag';
@@ -456,7 +615,6 @@ export const legacyToVerdict = (legacy: 'REJECT' | 'PROCEED'): VerdictType => {
   return legacy === 'REJECT' ? 'reject' : 'pass';
 };
 
-// In your types/index.ts
 export const getMetricValue = (metric: MetricData): number => {
   if (typeof metric.value === 'number') return metric.value;
   if (metric.scoreValue !== undefined) return metric.scoreValue;
@@ -476,10 +634,9 @@ export const getMetricValueFromArray = (metrics: MetricData[], key: string): num
   
   if (!metric) return 0;
   
-  return getMetricValue(metric); // Reuse the first function
+  return getMetricValue(metric);
 };
 
-// Or as an alias for convenience
 export const getMetricByKey = getMetricValueFromArray;
 
 export type InputType = 'twitter' | 'discord' | 'telegram' | 'github' | 'website' | 'name' | 'unknown';

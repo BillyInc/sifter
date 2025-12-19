@@ -20,3 +20,11 @@ export default function RootLayout({
     </html>
   )
 }
+
+<nav className="border-b border-sifter-border p-4">
+  <div className="flex gap-6">
+    <a href="/" className="text-gray-400 hover:text-white">Home</a>
+    <a href="/disputes" className="text-gray-400 hover:text-white">Public Disputes</a>
+    <a href="/terms" className="text-gray-400 hover:text-white">Terms</a>
+  </div>
+</nav>

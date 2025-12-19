@@ -1,4 +1,4 @@
-// app/page.tsx - COMPREHENSIVE FIXES
+// app/page.tsx - COMPREHENSIVE FIXES WITH DATA DONATION INTEGRATION
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -11,6 +11,13 @@ import ResearcherDashboard from '@/components/ResearcherDashboard';
 import EABatchDashboard from '@/components/EABatchDashboard';
 import LandingPage from '../components/LandingPage';
 import { ExportService } from '@/services/exportService';
+
+// NEW: Import Data Donation Components
+import { SubmissionForm, TrackingDashboard, EvidenceUpload } from '@/components/data-donation/universal';
+import PointsDisplay from '@/components/data-donation/universal/PointsDisplay'; // Added
+import DisputeForm from '@/components/data-donation/universal/DisputeForm'; // Added
+import StandardFlagForm from '@/components/data-donation/universal/StandardFlagForm';
+
 import { 
   AnalysisState, 
   VerdictData, 
@@ -24,7 +31,9 @@ import {
   WatchlistItem,
   AnalysisHistory,
   VerdictType,
-  BatchSummary
+  BatchSummary,
+  EvidenceItem,
+  SubmissionFormData
 } from '@/types';
 import { generateMockProjectData } from '@/data/mockData'; // Fixed import
 
@@ -223,6 +232,29 @@ export default function Home() {
     lastBatchDate: new Date()
   });
 
+  // ==================== DATA DONATION STATES ====================
+  const [showDataDonation, setShowDataDonation] = useState(false);
+  const [showSubmissionForm, setShowSubmissionForm] = useState(false);
+  const [showEvidenceUpload, setShowEvidenceUpload] = useState(false);
+  const [showTrackingDashboard, setShowTrackingDashboard] = useState(false);
+  const [showPointsDisplay, setShowPointsDisplay] = useState(false); // Added
+  const [showDisputeForm, setShowDisputeForm] = useState(false); // Added
+  const [showStandardForm, setShowStandardForm] = useState(false);
+  
+  const [dataDonationSubmissions, setDataDonationSubmissions] = useState<SubmissionFormData[]>([]);
+  const [selectedSubmissionId, setSelectedSubmissionId] = useState<string | null>(null);
+  const [selectedEntityForFlagging, setSelectedEntityForFlagging] = useState<string[]>([]); // Added
+  const [selectedEntityForDispute, setSelectedEntityForDispute] = useState<string[]>([]); // Added
+  const [dataDonationPrefill, setDataDonationPrefill] = useState<any>(null);
+  
+  // Points states
+  const [userPoints, setUserPoints] = useState(0);
+  const [lifetimePoints, setLifetimePoints] = useState(0);
+  const [poolPoints, setPoolPoints] = useState(0);
+  const [multiplier, setMultiplier] = useState(1.0);
+  const [nextMilestone, setNextMilestone] = useState(1000);
+  const [userTier, setUserTier] = useState<'tier-1' | 'tier-2' | 'tier-3'>('tier-3');
+
   // Load user from localStorage on mount
   useEffect(() => {
     const savedUser = localStorage.getItem('sifter_user');
@@ -233,12 +265,51 @@ export default function Home() {
         setUserName(userData.name);
         setUserEmail(userData.email);
         setUserMode(userData.mode);
+        
+        // Load data donation submissions
+        const savedSubmissions = localStorage.getItem(`sifter_submissions_${userData.email}`);
+        if (savedSubmissions) {
+          setDataDonationSubmissions(JSON.parse(savedSubmissions));
+        }
+        
+        // Load user points
+        const savedPoints = localStorage.getItem(`sifter_points_${userData.email}`);
+        if (savedPoints) {
+          const pointsData = JSON.parse(savedPoints);
+          setUserPoints(pointsData.availablePoints || 0);
+          setLifetimePoints(pointsData.lifetimeEarned || 0);
+          setPoolPoints(pointsData.pointsInPool || 0);
+          setMultiplier(pointsData.multiplier || 1.0);
+          setNextMilestone(pointsData.nextMilestone || 1000);
+          setUserTier(pointsData.tier || 'tier-3');
+        }
       } catch (err) {
         console.error('Failed to parse saved user:', err);
         localStorage.removeItem('sifter_user');
       }
     }
   }, []);
+
+  // Save submissions when they change
+  useEffect(() => {
+    if (isLoggedIn && userEmail) {
+      localStorage.setItem(`sifter_submissions_${userEmail}`, JSON.stringify(dataDonationSubmissions));
+    }
+  }, [dataDonationSubmissions, isLoggedIn, userEmail]);
+
+  // Save points when they change
+  useEffect(() => {
+    if (isLoggedIn && userEmail) {
+      localStorage.setItem(`sifter_points_${userEmail}`, JSON.stringify({
+        availablePoints: userPoints,
+        lifetimeEarned: lifetimePoints,
+        pointsInPool: poolPoints,
+        multiplier: multiplier,
+        nextMilestone: nextMilestone,
+        tier: userTier
+      }));
+    }
+  }, [userPoints, lifetimePoints, poolPoints, multiplier, nextMilestone, userTier, isLoggedIn, userEmail]);
 
   // Helper function to generate recommendations - memoized
   const generateRecommendations = useCallback((riskScore: number): string[] => {
@@ -436,6 +507,263 @@ export default function Home() {
       }
     ];
   };
+
+  // ==================== DATA DONATION HANDLERS ====================
+  const handleSubmitDataDonation = useCallback(async (formData: SubmissionFormData) => {
+    try {
+      // Add points based on submission quality
+      const basePoints = 50;
+      const evidenceBonus = formData.evidence.filter((e: any) => e.url).length * 10;
+      const projectBonus = formData.affectedProjects.length * 5;
+      const tierMultiplier = userTier === 'tier-1' ? 2.0 : userTier === 'tier-2' ? 1.5 : 1.0;
+      
+      const pointsEarned = Math.floor((basePoints + evidenceBonus + projectBonus) * tierMultiplier);
+      const newPoints = userPoints + pointsEarned;
+      const newLifetimePoints = lifetimePoints + pointsEarned;
+      
+      setUserPoints(newPoints);
+      setLifetimePoints(newLifetimePoints);
+      
+      // Update user tier if needed
+      if (newLifetimePoints >= 1000 && userTier === 'tier-3') {
+        setUserTier('tier-2');
+        setMultiplier(1.5);
+      } else if (newLifetimePoints >= 5000 && userTier === 'tier-2') {
+        setUserTier('tier-1');
+        setMultiplier(2.0);
+      }
+      
+      // Add to submissions
+      const submissionWithId: SubmissionFormData = {
+        ...formData,
+        id: `submission_${Date.now()}`,
+        caseId: `SR-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000)}`,
+        pointsAwarded: pointsEarned,
+        submittedAt: new Date().toISOString(),
+        status: 'submitted'
+      };
+      
+      setDataDonationSubmissions(prev => [submissionWithId, ...prev]);
+      
+      // Show success message
+      alert(`Submission successful! You earned ${pointsEarned} points.`);
+      
+      // Close form
+      setShowSubmissionForm(false);
+      
+    } catch (error) {
+      console.error('Data donation submission failed:', error);
+      setError('Submission failed. Please try again.');
+    }
+  }, [userPoints, lifetimePoints, userTier, userEmail]);
+
+  const handleViewSubmissionDetails = useCallback((submissionId: string) => {
+    setSelectedSubmissionId(submissionId);
+    // You could open a detailed view modal here
+    console.log('Viewing submission:', submissionId);
+  }, []);
+
+  const handleAddEvidenceToSubmission = useCallback((submissionId: string) => {
+    setSelectedSubmissionId(submissionId);
+    setShowEvidenceUpload(true);
+  }, []);
+
+  const handleUploadEvidence = useCallback(async (evidenceItems: Omit<EvidenceItem, 'id' | 'submittedAt'>[]) => {
+    try {
+      if (!selectedSubmissionId || !userEmail) return;
+      
+      // Update the submission with new evidence
+      setDataDonationSubmissions(prev =>
+        prev.map(submission => {
+          if (submission.id === selectedSubmissionId) {
+            const newEvidence = evidenceItems.map(item => {
+              let type: 'twitter' | 'reddit' | 'news' | 'archive' | 'blockchain' | 'telegram' | 'other' = 'other';
+              
+              if (item.evidenceType === 'twitter_post') type = 'twitter';
+              else if (item.evidenceType === 'reddit_thread') type = 'reddit';
+              else if (item.evidenceType === 'blockchain_transaction') type = 'blockchain';
+              else if (item.evidenceType === 'news_article') type = 'news';
+              else if (item.evidenceType === 'archived_website') type = 'archive';
+
+              return {
+                id: `evidence_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                url: item.originalUrl,
+                description: item.evidenceDescription,
+                type,
+                status: 'pending' as const,
+                submittedAt: new Date()
+              };
+            });
+
+            return {
+              ...submission,
+              evidence: [...(submission.evidence || []), ...newEvidence],
+              status: 'under-review',
+              updatedAt: new Date().toISOString()
+            };
+          }
+          return submission;
+        })
+      );
+      
+      alert('Evidence uploaded successfully! Submission is now under review.');
+      setShowEvidenceUpload(false);
+      setSelectedSubmissionId(null);
+    } catch (error) {
+      console.error('Evidence upload failed:', error);
+      setError('Failed to upload evidence. Please try again.');
+    }
+  }, [selectedSubmissionId, userEmail]);
+
+  const handleExportSubmissions = useCallback(() => {
+    if (dataDonationSubmissions.length === 0) {
+      alert('No submissions to export');
+      return;
+    }
+    
+    const csvData = dataDonationSubmissions.map(sub => ({
+      'Case ID': sub.caseId || 'N/A',
+      'Entity Name': sub.entityDetails?.fullName || 'Unknown',
+      'Submitted': new Date(sub.submittedAt).toLocaleDateString(),
+      'Status': sub.status || 'unknown',
+      'Confidence': sub.confidenceScore || 'N/A',
+      'Projects Affected': sub.affectedProjects?.length || 0,
+      'Points Earned': sub.pointsAwarded || 0
+    }));
+    
+    const headers = Object.keys(csvData[0]);
+    const csvRows = [
+      headers.join(','),
+      ...csvData.map(row => 
+        headers.map(header => 
+          `"${String(row[header as keyof typeof row]).replace(/"/g, '""')}"`
+        ).join(',')
+      )
+    ];
+    
+    const csvString = csvRows.join('\n');
+    const blob = new Blob([csvString], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `sifter-submissions-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [dataDonationSubmissions]);
+
+  const handleOpenDataDonationWithContext = useCallback((context: {
+    entityName: string;
+    projectName: string;
+    riskScore?: number;
+    context: string;
+  }) => {
+    if (!isLoggedIn) {
+      setShowAuthModal(true);
+      return;
+    }
+    
+    setDataDonationPrefill({
+      entityName: context.entityName,
+      projectName: context.projectName,
+      context: context.context
+    });
+    
+    setShowSubmissionForm(true);
+  }, [isLoggedIn]);
+
+  // ==================== NEW HANDLERS FOR ADDED COMPONENTS ====================
+
+  // Points Display Handlers
+  const handleEnterRewardPool = useCallback((points: number) => {
+    if (points < 100) {
+      alert('Minimum 100 points required to enter reward pool');
+      return;
+    }
+    
+    const poolEntry = Math.min(points, 1000);
+    setUserPoints(prev => prev - poolEntry);
+    setPoolPoints(prev => prev + poolEntry);
+    alert(`Entered ${poolEntry} points into the reward pool!`);
+  }, []);
+
+  const handleRedeemPoints = useCallback((points: number) => {
+    if (points < 500) {
+      alert('Minimum 500 points required to redeem');
+      return;
+    }
+    
+    const redeemAmount = Math.min(points, 5000);
+    setUserPoints(prev => prev - redeemAmount);
+    alert(`Redeemed ${redeemAmount} points! Check your email for reward details.`);
+  }, []);
+
+  // Dispute Form Handler
+  const handleSubmitDispute = useCallback(async (disputeData: any[]) => {
+    try {
+      console.log('Dispute submitted:', disputeData);
+      alert('Dispute submitted successfully! Our team will review it within 24-48 hours.');
+      setShowDisputeForm(false);
+    } catch (error) {
+      console.error('Dispute submission failed:', error);
+      setError('Failed to submit dispute. Please try again.');
+    }
+  }, []);
+
+  // Flag Entity Handler
+  const handleSubmitFlag = useCallback(async (flagData: any[]) => {
+    try {
+      const pointsEarned = flagData[flagData.length - 3] || 0; // Points from FlagEntity component
+      const newPoints = userPoints + pointsEarned;
+      const newLifetimePoints = lifetimePoints + pointsEarned;
+      
+      setUserPoints(newPoints);
+      setLifetimePoints(newLifetimePoints);
+      
+      alert(`Entity flagged successfully! You earned ${pointsEarned} points.`);
+      setShowStandardForm(false);
+    } catch (error) {
+      console.error('Flag submission failed:', error);
+      setError('Failed to flag entity. Please try again.');
+    }
+  }, [userPoints, lifetimePoints]);
+
+  // Quick flag handler for batch context
+  const handleQuickStandardForm = useCallback((entityData: {
+    entityName: string;
+    entityType: string;
+    projectName: string;
+    riskScore: number;
+    context: string;
+  }) => {
+    setSelectedEntityForFlagging([
+      entityData.entityName,
+      entityData.entityType,
+      entityData.projectName,
+      entityData.riskScore.toString(),
+      entityData.context
+    ]);
+    setStandardForm(true);
+  }, []);
+
+  // Dispute handler
+  const handleOpenDisputeForm = useCallback((entityData: {
+    entityName: string;
+    submissionId: string;
+    caseId: string;
+    entityType: string;
+    submitterEmail: string;
+  }) => {
+    setSelectedEntityForDispute([
+      entityData.entityName,
+      entityData.submissionId,
+      entityData.caseId,
+      entityData.entityType,
+      entityData.submitterEmail
+    ]);
+    setShowDisputeForm(true);
+  }, []);
 
   // Handle smart input - FIXED with error handling
   const handleSmartInputResolve = useCallback(async (result: SmartInputResult) => {
@@ -1413,6 +1741,126 @@ export default function Home() {
   // Main rendering logic
   return (
     <main className="min-h-screen bg-sifter-dark">
+      {/* ==================== DATA DONATION MODALS ==================== */}
+      
+      {/* Submission Form Modal */}
+      {showSubmissionForm && (
+        <SubmissionForm
+          mode={userMode || 'individual'}
+          isOpen={showSubmissionForm}
+          onClose={() => {
+            setShowSubmissionForm(false);
+            setDataDonationPrefill(null);
+          }}
+          onSubmit={handleSubmitDataDonation}
+          userName={userName}
+          userEmail={userEmail}
+          prefillData={dataDonationPrefill}
+        />
+      )}
+
+      {/* Evidence Upload Modal */}
+      {showEvidenceUpload && selectedSubmissionId && (
+        <EvidenceUpload
+          submissionId={selectedSubmissionId}
+          existingEvidence={[]}
+          onUpload={handleUploadEvidence}
+          onCancel={() => {
+            setShowEvidenceUpload(false);
+            setSelectedSubmissionId(null);
+          }}
+          mode={(userMode as 'ea-vc' | 'researcher' | 'individual') || 'individual'}
+        />
+      )}
+
+      {/* Tracking Dashboard Modal */}
+      {showTrackingDashboard && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 overflow-y-auto">
+          <div className="min-h-screen flex items-start justify-center p-4 pt-20">
+            <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-6xl w-full max-h-[80vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-white">Data Donation Tracking</h2>
+                  <button
+                    onClick={() => setShowTrackingDashboard(false)}
+                    className="text-gray-400 hover:text-white text-2xl"
+                  >
+                    ✕
+                  </button>
+                </div>
+                
+                <TrackingDashboard
+                  submissions={dataDonationSubmissions}
+                  userMode={userMode || 'individual'}
+                  onViewDetails={handleViewSubmissionDetails}
+                  onAddEvidence={handleAddEvidenceToSubmission}
+                  onExportSubmissions={handleExportSubmissions}
+                  userPoints={userPoints}
+                  userName={userName}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Points Display Modal */}
+      {showPointsDisplay && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 overflow-y-auto">
+          <div className="min-h-screen flex items-start justify-center p-4 pt-20">
+            <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-6xl w-full max-h-[80vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-white">Points & Rewards</h2>
+                  <button
+                    onClick={() => setShowPointsDisplay(false)}
+                    className="text-gray-400 hover:text-white text-2xl"
+                  >
+                    ✕
+                  </button>
+                </div>
+                
+                <PointsDisplay
+                  pointsData={[userPoints, lifetimePoints, poolPoints, multiplier, nextMilestone]}
+                  userTier={userTier}
+                  userMode={userMode || 'individual'}
+                  onEnterRewardPool={handleEnterRewardPool}
+                  onRedeemPoints={handleRedeemPoints}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dispute Form Modal */}
+      {showDisputeForm && selectedEntityForDispute.length > 0 && (
+        <DisputeForm
+          entityData={selectedEntityForDispute}
+          userData={[userName, userEmail, userMode || 'individual', '']}
+          onSubmit={handleSubmitDispute}
+          onCancel={() => {
+            setShowDisputeForm(false);
+            setSelectedEntityForDispute([]);
+          }}
+          userMode={userMode || 'individual'}
+        />
+      )}
+
+      {/* Flag Entity Modal */}
+      {showStandardForm && selectedEntityForFlagging.length > 0 && (
+        <StandardFlagForm
+          entityData={selectedEntityForFlagging}
+          userData={[userEmail || 'user', userEmail, userMode || 'individual', userName]}
+          onSubmit={handleSubmitFlag}
+          onCancel={() => {
+            setShowStandardForm(false);
+            setSelectedEntityForFlagging([]);
+          }}
+          showQuickActions={userMode === 'ea-vc'}
+        />
+      )}
+
       {/* Mode Selection Modal */}
       {showModeModal && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -1711,6 +2159,46 @@ export default function Home() {
               </div>
               
               <div className="flex items-center gap-6">
+                {/* Data Donation Button */}
+                {isLoggedIn && userMode && (
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setShowTrackingDashboard(true)}
+                      className="px-4 py-2 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 
+                               border border-amber-500/30 rounded-lg font-medium text-sm transition-colors flex items-center gap-2"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      </svg>
+                      Data Donation
+                      {userPoints > 0 && (
+                        <span className="bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full">
+                          {userPoints} pts
+                        </span>
+                      )}
+                    </button>
+                    
+                    <button
+                      onClick={() => setShowPointsDisplay(true)}
+                      className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 
+                               text-white rounded-lg font-medium text-sm transition-all flex items-center gap-2"
+                    >
+                      🏆 Points
+                    </button>
+                    
+                    <button
+                      onClick={() => setShowSubmissionForm(true)}
+                      className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 
+                               text-white rounded-lg font-medium text-sm transition-all flex items-center gap-2"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Submit Report
+                    </button>
+                  </div>
+                )}
+                
                 {state === 'complete' && projectData && (
                   <div className="flex items-center gap-2">
                     <ExportDropdown projectData={projectData} />

@@ -253,41 +253,7 @@ export default function SmartInputParser({
         </div>
       </div>
 
-      {/* Input examples - hide in compact mode */}
-      {!compact && (
-        <div className="mt-3 text-sm text-gray-500 flex flex-wrap gap-2">
-          <span className="text-gray-600">Examples:</span>
-          <button
-            type="button"
-            onClick={() => setInput('@moonrocket_fi')}
-            className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 px-2 py-1 rounded transition-colors"
-          >
-            @moonrocket_fi
-          </button>
-          <button
-            type="button"
-            onClick={() => setInput('discord.gg/crypto')}
-            className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 px-2 py-1 rounded transition-colors"
-          >
-            discord.gg/crypto
-          </button>
-          <button
-            type="button"
-            onClick={() => setInput('github.com/projectx')}
-            className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 px-2 py-1 rounded transition-colors"
-          >
-            github.com/projectx
-          </button>
-          <button
-            type="button"
-            onClick={() => setInput('https://project.com')}
-            className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 px-2 py-1 rounded transition-colors"
-          >
-            project.com
-          </button>
-        </div>
-      )}
-
+      
       {/* Disambiguation Modal */}
       {showDisambiguation && candidates.length > 0 && (
         <div className={`mt-4 border border-sifter-border rounded-xl bg-sifter-card overflow-hidden ${compact ? 'p-3' : 'p-4'}`}>

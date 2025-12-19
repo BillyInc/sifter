@@ -2,6 +2,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+
+import { PointsDisplay } from '@/components/data-donation/gamification';
+import { RewardsShop } from '@/components/data-donation/gamification';
+import { EvidenceUpload } from '@/components/data-donation/universal';
+import { DisputeForm } from '@/components/data-donation/universal';
+
 import SmartInputParser from './SmartInputParser';
 import MetricBreakdown from './MetricBreakdown';
 import ResearchReport from './ResearchReport';
@@ -955,6 +961,17 @@ export default function ResearcherDashboard({
 
                 {/* Charts Section - Now uses filteredProjects (converted from recentScans) */}
                 <ResearchCharts projects={filteredProjects} />
+
+                {/* NEW SECTION: Submit Evidence & Earn Rewards */}
+                <div className="border-t border-sifter-border pt-8 mt-8">
+                  <h2 className="text-xl font-bold text-white mb-6">Submit Evidence & Earn Rewards</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <PointsDisplay />
+                    <RewardsShop />
+                    <EvidenceUpload userType="researcher" />
+                    <DisputeForm />
+                  </div>
+                </div>
 
                 {/* Detailed Analysis */}
                 <div className="mt-8">
