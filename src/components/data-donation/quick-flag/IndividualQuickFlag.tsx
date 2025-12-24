@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { QuickFlagData, UserMode } from '@/types/datadonation';
+import { QuickFlagData, UserMode } from '@/types/dataDonation';
 
 interface IndividualQuickFlagProps {
   entityName: string;

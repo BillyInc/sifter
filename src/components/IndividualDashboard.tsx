@@ -19,6 +19,18 @@ import {
 } from '@/types';
 import { generateMockProjectData, generateMockMetrics } from '@/data/mockData';
 
+// Import the actual types from datadonation
+import { 
+  Reward,
+  UserGamificationProfile,
+  RewardType,
+  UserTier,
+  Badge,
+  Achievement,
+  StreakData,
+  Milestone
+} from '@/types/dataDonation';
+
 interface LocalWatchlistItem extends SharedWatchlistItem {}
 
 interface IndividualDashboardProps {
@@ -56,6 +68,147 @@ export default function IndividualDashboard({
     { id: 'scan_1', projectName: 'MoonDoge Protocol', riskScore: 89, verdict: 'reject', scannedAt: new Date(), processingTime: 87000 },
     { id: 'scan_2', projectName: 'DeFi Alpha', riskScore: 23, verdict: 'pass', scannedAt: new Date(), processingTime: 89000 },
     { id: 'scan_3', projectName: 'TokenSwap Pro', riskScore: 55, verdict: 'flag', scannedAt: new Date(), processingTime: 92000 }
+  ]);
+
+  const [userProfile, setUserProfile] = useState<UserGamificationProfile>({
+    userId: `user_${Date.now()}`,
+    mode: 'individual',
+    totalPoints: 1250,
+    availablePoints: 1250,
+    lifetimePoints: 1500,
+    currentLevel: 3,
+    currentTier: 'silver',
+    badges: [
+      {
+        id: '1',
+        name: 'First Scan',
+        description: 'Completed first project scan',
+        icon: '🔍',
+        earnedAt: new Date('2024-01-16').toISOString(),
+        rarity: 'common',
+        category: 'submission',
+        pointsReward: 50
+      },
+      {
+        id: '2',
+        name: 'Week Streak',
+        description: '7-day scanning streak',
+        icon: '🔥',
+        earnedAt: new Date('2024-01-22').toISOString(),
+        rarity: 'uncommon',
+        category: 'consistency',
+        pointsReward: 100
+      }
+    ],
+    achievements: [
+      {
+        id: '1',
+        name: 'Data Contributor',
+        description: 'Submit 5 data points',
+        progress: 3,
+        target: 5,
+        completed: false,
+        pointsReward: 200
+      },
+      {
+        id: '2',
+        name: 'Accuracy Master',
+        description: 'Get 10 accurate scans',
+        progress: 8,
+        target: 10,
+        completed: false,
+        pointsReward: 300
+      }
+    ],
+    streak: {
+      currentStreak: 7,
+      longestStreak: 12,
+      lastActivity: new Date().toISOString(),
+      streakBonus: 1.5
+    },
+    leaderboardPosition: 42,
+    nextMilestone: {
+      pointsNeeded: 500,
+      reward: 'Premium Report Access',
+      unlocks: ['Profile badge', 'Priority review', 'Direct support', 'Early access features']
+    },
+    displayName: userName,
+    pointsMultiplier: 1.0
+  });
+
+  const [rewards, setRewards] = useState<Reward[]>([
+    {
+      id: '1',
+      name: 'Premium Report',
+      description: 'Get an in-depth analysis report',
+      type: 'access' as RewardType,
+      category: 'individual',
+      pointsCost: 500,
+      quantityAvailable: 100,
+      quantityRemaining: 55,
+      tierRequirement: 'silver',
+      modeRequirement: 'individual',
+      features: ['In-depth analysis', 'Risk breakdown', 'Recommendations'],
+      redemptionInstructions: 'The report will be available in your account within 24 hours.',
+      expiryDate: new Date('2024-12-31').toISOString(),
+      createdAt: new Date('2024-01-01').toISOString()
+    },
+    {
+      id: '2',
+      name: 'Priority Scanning',
+      description: 'Jump to the front of the queue',
+      type: 'feature' as RewardType,
+      category: 'individual',
+      pointsCost: 300,
+      tierRequirement: 'bronze',
+      modeRequirement: 'individual',
+      features: ['Faster scans', 'Priority processing'],
+      redemptionInstructions: 'Priority scanning will be enabled for your account immediately.',
+      expiryDate: new Date('2024-12-31').toISOString(),
+      createdAt: new Date('2024-01-01').toISOString()
+    },
+    {
+      id: '3',
+      name: 'Custom Alert',
+      description: 'Set up a custom monitoring alert',
+      type: 'feature' as RewardType,
+      category: 'individual',
+      pointsCost: 200,
+      tierRequirement: 'bronze',
+      modeRequirement: 'individual',
+      features: ['Custom alerts', 'Real-time notifications'],
+      redemptionInstructions: 'Navigate to Alerts section to set up your custom alert.',
+      expiryDate: new Date('2024-12-31').toISOString(),
+      createdAt: new Date('2024-01-01').toISOString()
+    },
+    {
+      id: '4',
+      name: 'Advanced Analytics',
+      description: 'Access to advanced risk metrics',
+      type: 'access' as RewardType,
+      category: 'individual',
+      pointsCost: 750,
+      tierRequirement: 'gold',
+      modeRequirement: 'individual',
+      features: ['Advanced metrics', 'Historical data', 'Trend analysis'],
+      redemptionInstructions: 'Advanced analytics will be unlocked in your dashboard.',
+      expiryDate: new Date('2024-12-31').toISOString(),
+      createdAt: new Date('2024-01-15').toISOString()
+    },
+    {
+      id: '5',
+      name: 'Community Badge',
+      description: 'Show your contributor status',
+      type: 'recognition' as RewardType,
+      category: 'individual',
+      pointsCost: 150,
+      tierRequirement: 'bronze',
+      modeRequirement: 'individual',
+      features: ['Profile badge', 'Recognition'],
+      redemptionInstructions: 'Badge will appear on your profile immediately.',
+      expiryDate: new Date('2024-12-31').toISOString(),
+      createdAt: new Date('2024-01-01').toISOString()
+    }
   ]);
   
   const watchlist = externalWatchlist || internalWatchlist;
@@ -713,6 +866,68 @@ export default function IndividualDashboard({
     </div>
   );
 
+  const handleRedeemReward = async (rewardId: string) => {
+    const reward = rewards.find(r => r.id === rewardId);
+    if (!reward) return false;
+    
+    if (!reward.isAvailable) {
+      alert('This reward is currently unavailable!');
+      return false;
+    }
+    
+    if (userProfile.availablePoints < reward.pointsCost) {
+      alert(`Not enough points! You need ${reward.pointsCost} points but have ${userProfile.availablePoints}.`);
+      return false;
+    }
+    
+    // Check tier requirement
+    const tierOrder: UserTier[] = ['bronze', 'silver', 'gold', 'platinum', 'diamond', 'vc-elite', 'research-fellow'];
+    if (reward.tierRequirement) {
+      const userTierIndex = tierOrder.indexOf(userProfile.currentTier);
+      const requiredTierIndex = tierOrder.indexOf(reward.tierRequirement);
+      if (userTierIndex < requiredTierIndex) {
+        alert(`This reward requires ${reward.tierRequirement} tier or higher. You are currently ${userProfile.currentTier}.`);
+        return false;
+      }
+    }
+    
+    // Check mode requirement
+    if (reward.modeRequirement && reward.modeRequirement !== userProfile.mode) {
+      alert(`This reward is only available for ${reward.modeRequirement} mode users.`);
+      return false;
+    }
+    
+    try {
+      // In a real app, this would be an API call
+      console.log(`Redeeming reward: ${reward.name} for ${reward.pointsCost} points`);
+      
+      // Update user points
+      setUserProfile(prev => ({
+        ...prev,
+        availablePoints: prev.availablePoints - reward.pointsCost,
+        totalPoints: prev.totalPoints - reward.pointsCost
+      }));
+      
+      // Update reward quantity if applicable
+      if (reward.quantityRemaining !== undefined) {
+        setRewards(prev => prev.map(r => 
+          r.id === rewardId 
+            ? { ...r, quantityRemaining: (r.quantityRemaining || 1) - 1 }
+            : r
+        ));
+      }
+      
+      // Show success message
+      alert(`Successfully redeemed: ${reward.name}!\n\n${reward.redemptionInstructions}\n\nYou've been charged ${reward.pointsCost} points.`);
+      
+      return true;
+    } catch (error) {
+      console.error('Failed to redeem reward:', error);
+      alert('Failed to redeem reward. Please try again.');
+      return false;
+    }
+  };
+
   return (
     <div className="space-y-4 animate-fadeIn relative min-h-screen">
       {/* Header */}
@@ -863,18 +1078,30 @@ export default function IndividualDashboard({
         {activeTab === 'learn' && renderLearnTab()}
       </div>
 
-      {/* Contribute & Earn Points Section - ADDED HERE */}
+      {/* Contribute & Earn Points Section */}
       <div className="space-y-8">
-        {/* Existing individual analysis content would be above this */}
-        
-        {/* ADD HERE - Bottom section */}
         <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
           <h2 className="text-xl font-bold text-white mb-6">Contribute & Earn Points</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <PointsDisplay />
-            <RewardsShop />
-            <EvidenceUpload userType="individual" />
-            <DisputeForm />
+            <DisputeForm 
+              entityData={[]}
+              userData={[]}
+              onSubmit={() => Promise.resolve()}
+              onCancel={() => {}}
+              userMode="individual"
+            />
+            
+            <PointsDisplay
+              userProfile={userProfile}
+              showStreak={true}
+              showLevel={true}
+            />
+            
+            <RewardsShop
+              userProfile={userProfile}
+              rewards={rewards}
+              onRedeem={handleRedeemReward}
+            />
           </div>
         </div>
       </div>

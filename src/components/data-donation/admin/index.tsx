@@ -4,7 +4,8 @@
 import React, { useState, useEffect } from 'react';
 import AdminReviewDashboard from './AdminReviewDashboard';
 import AdminSubmissionDetail from './AdminSubmissionDetail';
-import { AdminSubmission, AdminStats } from '@/types/admin';
+import { AdminSubmission, AdminStats } from '../../../types/admin';
+
 
 // Mock data - replace with your API calls
 const mockSubmissions: AdminSubmission[] = [
@@ -129,11 +130,11 @@ export default function AdminDashboardPage() {
     
     // Update submission status based on action
     if (action.type === 'approve') {
-      setSubmissions(prev => prev.filter(s => s.id !== action.submissionId));
-      setStats(prev => ({ ...prev, totalPending: prev.totalPending - 1 }));
+      setSubmissions((prev: AdminSubmission[]) => prev.filter(s => s.id !== action.submissionId));
+      setStats((prev: AdminStats) => ({ ...prev, totalPending: prev.totalPending - 1 }));
     } else if (action.type === 'reject') {
-      setSubmissions(prev => prev.filter(s => s.id !== action.submissionId));
-      setStats(prev => ({ ...prev, totalPending: prev.totalPending - 1 }));
+      setSubmissions((prev: AdminSubmission[]) => prev.filter(s => s.id !== action.submissionId));
+      setStats((prev: AdminStats) => ({ ...prev, totalPending: prev.totalPending - 1 }));
     } else if (action.type === 'assign') {
       // Mark as under review
       setSubmissions(prev => prev.map(s => 

@@ -7,7 +7,7 @@ import {
   Badge,
   Achievement,
   LeaderboardEntry
-} from '@/types/datadonation';
+} from '@/types/dataDonation';
 import { GamificationService } from './gamification';
 
 export class DataDonationService {
@@ -19,10 +19,11 @@ export class DataDonationService {
   
   static async submitFlag(flagData: FlagSubmissionData): Promise<{
     success: boolean;
-    submissionId: string;
-    pointsAwarded: number;
+    submissionId?: string;
+    pointsAwarded?: number;
     newBadges?: Badge[];
     newAchievements?: Achievement[];
+     evidence: Evidence[];
   }> {
     try {
       const response = await fetch(`${this.API_BASE}/submit`, {
@@ -38,7 +39,7 @@ export class DataDonationService {
       // Update local gamification profile
       await this.updateGamificationProfile(
         flagData.mode,
-        flagData.points,
+         flagData.points || 0,  // ✅ Handle undefined with fallback
         flagData.tier
       );
       
@@ -540,3 +541,32 @@ export class DataDonationService {
 
 // Create a default export instance for convenience
 export default new DataDonationService();
+export interface QuickFlagData {
+  entityName: string;
+  context: string;
+  mode: UserMode;
+  points: number;
+  template?: string;
+  methodology?: string;
+  confidential?: boolean;
+  portfolioItems?: string[];
+  reason?: string;
+  severity?: SeverityLevel;
+  portfolioContext?: string;
+  methodologyNotes?: string;
+}
+
+export interface Evidence {
+  id: string;
+  submissionId: string;
+  type: 'url' | 'file' | 'document' | 'image';
+  url?: string;
+  fileName?: string;
+  description: string;
+  uploadedAt: string;
+  verified: boolean;
+  archived: boolean;
+  archiveUrl?: string;
+}
+
+export type SeverityLevel = 'low' | 'medium' | 'high' | 'critical';

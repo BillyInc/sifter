@@ -8,7 +8,7 @@ import Link from 'next/link';
 export default function DisputeConfirmationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const caseId = searchParams.get('caseId') || 'DISP-2024-089';
+  const caseId = searchParams?.get('caseId') || 'DISP-2024-089';
   
   const [timeLeft, setTimeLeft] = useState(10);
   const [emailSent, setEmailSent] = useState(false);

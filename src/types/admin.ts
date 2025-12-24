@@ -51,10 +51,18 @@ export interface AdminStats {
   oldestUnreviewed: number; // hours
 }
 
-export interface AdminAction {
-  type: 'approve' | 'reject' | 'request-info' | 'flag' | 'assign';
+// In src/types/admin.ts - update the AdminAction interface
+export type AdminAction = {
+  type: 'approve' | 'reject' | 'request-info' | 'flag' | 'assign' | 'update-dispute' | 'send-resolution' | 'verify-evidence' | 'file-dispute' | 'manual-review';
   submissionId: string;
   adminId: string;
   notes?: string;
   timestamp: Date;
-}
+  // Optional fields for specific actions
+  disputeId?: string;
+  updates?: any;
+  resolution?: any;
+  evidenceId?: string;
+  disputeData?: any;
+  decision?: 'approved' | 'rejected' | 'needs_more_evidence';
+};

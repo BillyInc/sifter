@@ -2,16 +2,24 @@
 
 import React, { useState, useEffect } from 'react';
 import { UserMode, SubmissionFormData } from '@/types';
+import { 
+  CompatibleSubmissionFormData,
+  EvidenceType,  // Add from dataDonation.ts
+  EvidenceStatus  // Add from dataDonation.ts
+} from '@/types/dataDonation';
 
 // Define the props interface as a named export
 export interface SubmissionFormProps {
   mode: UserMode;
   prefillData?: Partial<SubmissionFormData>;
-  onSubmit: (data: SubmissionFormData) => Promise<void>;
+    onSubmit: (data: any) => Promise<void>;  // Accept any type
+
   isOpen: boolean;
   onClose: () => void;
   userName?: string;
   userEmail?: string;
+    onEvidenceCountChange?: (count: number) => void;  // ← ADD THIS
+
 }
 
 export default function SubmissionForm({ 
@@ -45,8 +53,20 @@ export default function SubmissionForm({
       date: new Date().toLocaleDateString('en-US', { month: '2-digit', year: 'numeric' })
     }],
     evidence: prefillData.evidence || [
-      { id: `evidence_${Date.now()}_1`, url: '', description: '', type: 'other', status: 'pending' },
-      { id: `evidence_${Date.now()}_2`, url: '', description: '', type: 'other', status: 'pending' }
+      { 
+        id: `evidence_${Date.now()}_1`, 
+        url: '', 
+        description: '', 
+        type: 'other' as EvidenceType,  // Cast to EvidenceType
+        status: 'pending' as EvidenceStatus  // Cast to EvidenceStatus
+      },
+      { 
+        id: `evidence_${Date.now()}_2`, 
+        url: '', 
+        description: '', 
+        type: 'other' as EvidenceType,  // Cast to EvidenceType
+        status: 'pending' as EvidenceStatus  // Cast to EvidenceStatus
+      }
     ],
     submitterInfo: {
       email: userEmail || prefillData.submitterInfo?.email || '',
@@ -132,13 +152,32 @@ export default function SubmissionForm({
 
     setIsSubmitting(true);
     try {
-      const submissionData: SubmissionFormData = {
+      // Create data that works for both SubmissionFormData and CompatibleSubmissionFormData
+      const submissionData: SubmissionFormData | CompatibleSubmissionFormData = {
         ...formData,
+        // Required for SubmissionFormData
         id: `submission_${Date.now()}`,
         caseId: `SR-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000)}`,
         submittedAt: new Date().toISOString(),
+        status: 'submitted' as any,
+        // Compatible with both types
+        entityType: formData.entityType,
+        entityDetails: formData.entityDetails,
+        affectedProjects: formData.affectedProjects,
+        evidence: formData.evidence.map(ev => ({
+          id: ev.id,
+          url: ev.url,
+          description: ev.description,
+          type: ev.type as EvidenceType,  // Cast to EvidenceType
+          status: ev.status as EvidenceStatus  // Cast to EvidenceStatus
+        })),
+        submitterInfo: formData.submitterInfo,
+        mode: formData.mode,
+        // Optional properties
         confidenceScore: Math.floor(Math.random() * 30) + 70,
-        status: 'submitted'
+        impactScore: 0,
+        pointsAwarded: 0,
+        updatedAt: new Date().toISOString()
       };
 
       await onSubmit(submissionData);
@@ -506,7 +545,7 @@ export default function SubmissionForm({
                 value={evidence.type}
                 onChange={(e) => {
                   const newEvidence = [...formData.evidence];
-                  newEvidence[index].type = e.target.value as any;
+                  newEvidence[index].type = e.target.value as EvidenceType;  // Cast to EvidenceType
                   setFormData({ ...formData, evidence: newEvidence });
                 }}
                 className="w-full p-3 bg-sifter-dark border border-sifter-border rounded-lg text-white focus:border-blue-500 focus:outline-none"
@@ -531,8 +570,8 @@ export default function SubmissionForm({
               id: `evidence_${Date.now()}`, 
               url: '', 
               description: '', 
-              type: 'other', 
-              status: 'pending' 
+              type: 'other' as EvidenceType,  // Cast to EvidenceType
+              status: 'pending' as EvidenceStatus  // Cast to EvidenceStatus
             }]
           })}
           className="w-full p-4 border border-dashed border-sifter-border rounded-lg text-gray-400 hover:text-white hover:border-blue-500 transition-colors flex items-center justify-center gap-2"
@@ -705,8 +744,20 @@ export default function SubmissionForm({
               entityDetails: { fullName: '', twitterHandle: '', telegramHandle: '', linkedinProfile: '', website: '' },
               affectedProjects: [{ projectName: '', incidentDescription: '', date: '' }],
               evidence: [
-                { id: `evidence_${Date.now()}_1`, url: '', description: '', type: 'other', status: 'pending' },
-                { id: `evidence_${Date.now()}_2`, url: '', description: '', type: 'other', status: 'pending' }
+                { 
+                  id: `evidence_${Date.now()}_1`, 
+                  url: '', 
+                  description: '', 
+                  type: 'other' as EvidenceType,  // Cast to EvidenceType
+                  status: 'pending' as EvidenceStatus  // Cast to EvidenceStatus
+                },
+                { 
+                  id: `evidence_${Date.now()}_2`, 
+                  url: '', 
+                  description: '', 
+                  type: 'other' as EvidenceType,  // Cast to EvidenceType
+                  status: 'pending' as EvidenceStatus  // Cast to EvidenceStatus
+                }
               ],
               submitterInfo: {
                 email: userEmail || '',

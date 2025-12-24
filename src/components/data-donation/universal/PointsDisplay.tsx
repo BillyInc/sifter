@@ -8,6 +8,7 @@ interface PointsDisplayProps {
   onEnterRewardPool: (points: number) => void;
   onRedeemPoints: (points: number) => void;
   userMode: 'ea-vc' | 'researcher' | 'individual';
+  
 }
 
 export default function PointsDisplay({

@@ -12,8 +12,48 @@ import ModeEvidenceRequirements from './ModeEvidenceRequirements';
 import VCSubmissionEnhancements from './modes/VCSubmissionEnhancements';
 import ResearcherSubmissionEnhancements from './modes/ResearcherSubmissionEnhancements';
 import IndividualSubmissionEnhancements from './modes/IndividualSubmissionEnhancements';
-import { UserMode, FlagSubmissionData, QuickFlagData, SubmissionFormData, MODE_CONFIGS, SubmissionGamificationResult, UserGamificationProfile } from '@/types/datadonation';
+import { 
+  UserMode, 
+  FlagSubmissionData, 
+  QuickFlagData, 
+  MODE_CONFIGS, 
+  SubmissionGamificationResult, 
+  UserGamificationProfile,
+  EvidenceType,
+  EvidenceStatus
+} from '@/types/dataDonation';
 import { GamificationService } from '@/services/gamification';
+
+// Create a compatible SubmissionFormData type
+type CompatibleSubmissionFormData = {
+  entityType: string;
+  entityDetails: {
+    fullName: string;
+    twitterHandle?: string;
+    telegramHandle?: string;
+    linkedinProfile?: string;
+    website?: string;
+  };
+  affectedProjects: Array<{
+    projectName: string;
+    incidentDescription: string;
+    date: string;
+  }>;
+  evidence: Array<{
+    id?: string;
+    url: string;
+    description: string;
+    type?: EvidenceType;
+    status?: EvidenceStatus;
+  }>;
+  submitterInfo: {
+    email: string;
+    name?: string;
+    anonymous: boolean;
+    acknowledgements: boolean[];
+  };
+  mode?: UserMode;
+};
 
 type FlaggingTier = 'quick' | 'standard' | 'full';
 
@@ -65,7 +105,8 @@ export default function FlaggingInterface({
   // Calculate points based on tier and mode using mode config
   const calculatePoints = (tier: FlaggingTier, mode: UserMode): number => {
     const config = MODE_CONFIGS[mode];
-    return config.basePoints[tier] * config.pointMultiplier;
+    const basePoints = config.basePoints[tier];
+    return basePoints * config.pointMultiplier;
   };
 
   // Calculate gamification rewards
@@ -115,9 +156,7 @@ export default function FlaggingInterface({
       newLevel,
       levelUp,
       tierChanged,
-      newTier,
-      updatedStreak,
-      updatedAchievements
+      newTier
     };
   };
 
@@ -206,17 +245,26 @@ export default function FlaggingInterface({
         projectName: entityData.projectName,
         riskScore: entityData.riskScore,
         quickData: {
+          entityName: entityData.entityName,
+          context: entityData.context,
+          mode: userData.mode,
           reason: data.reason,
           severity: data.severity,
-          portfolioContext: data.portfolioContext,
-          methodologyNotes: data.methodologyNotes,
+          portfolioContext: data.portfolioContext || '',
+          methodologyNotes: data.methodologyNotes || '',
+          points: data.points,
           // Add mode-specific data
-          confidential: vcConfidential,
-          portfolioItems: vcPortfolioContext,
-          methodology: researcherMethodology,
-          template: individualTemplate
+          ...(userData.mode === 'ea-vc' && {
+            confidential: vcConfidential,
+            portfolioItems: vcPortfolioContext
+          }),
+          ...(userData.mode === 'researcher' && {
+            methodology: researcherMethodology
+          }),
+          ...(userData.mode === 'individual' && {
+            template: individualTemplate
+          })
         },
-        points: data.points,
         pointsAwarded: gamificationRewards.pointsAwarded,
         badgesEarned: gamificationRewards.badgesEarned,
         achievementsProgress: gamificationRewards.achievementsProgress,
@@ -238,9 +286,21 @@ export default function FlaggingInterface({
     }
   };
 
-  const handleStandardSubmit = async (data: any) => {
+  interface StandardFormData {
+    evidence: Array<{
+      url: string;
+      description: string;
+      type?: EvidenceType;
+      id?: string;
+    }>;
+    detailedExplanation?: string;
+    selectedSeverity?: 'low' | 'medium' | 'high' | 'critical';
+  }
+
+  const handleStandardSubmit = async (data: StandardFormData[]) => {
     setIsSubmitting(true);
     try {
+      const formData = data[0];
       // Calculate base points
       const basePoints = MODE_CONFIGS[userData.mode].basePoints.standard;
       
@@ -255,22 +315,9 @@ export default function FlaggingInterface({
         projectName: entityData.projectName,
         riskScore: entityData.riskScore,
         standardData: {
-          evidence: data.evidence || [],
-          description: data.detailedExplanation || '',
-          severity: data.selectedSeverity || 'medium',
-          // Add mode-specific data to standard submissions
-          ...(userData.mode === 'ea-vc' && {
-            confidential: vcConfidential,
-            portfolioContext: vcPortfolioContext
-          }),
-          ...(userData.mode === 'researcher' && {
-            methodology: researcherMethodology,
-            patternAnalysis: researcherPatternAnalysis
-          }),
-          ...(userData.mode === 'individual' && {
-            template: individualTemplate,
-            personalExperience: individualExperience
-          })
+          evidence: formData.evidence?.map(e => e.url) || [],
+          description: formData.detailedExplanation || '',
+          severity: formData.selectedSeverity || 'medium'
         },
         points: calculatePoints('standard', userData.mode),
         pointsAwarded: gamificationRewards.pointsAwarded,
@@ -294,7 +341,7 @@ export default function FlaggingInterface({
     }
   };
 
-  const handleFullSubmit = async (data: SubmissionFormData) => {
+  const handleFullSubmit = async (data: CompatibleSubmissionFormData) => {
     setIsSubmitting(true);
     try {
       // Calculate base points
@@ -302,6 +349,9 @@ export default function FlaggingInterface({
       
       // Calculate gamification rewards
       const gamificationRewards = calculateGamificationRewards(basePoints, userProfile);
+      
+      // Convert to array format evidence for consistency
+      //const evidenceArray = data.evidence.map(e => `${e.url}|${e.description}|${e.type || 'other'}`);
       
       const flagData: FlagSubmissionData = {
         tier: 'full',
@@ -311,26 +361,12 @@ export default function FlaggingInterface({
         projectName: entityData.projectName,
         riskScore: entityData.riskScore,
         fullData: {
-          ...data,
-          // Add mode-specific data to full submissions
-          ...(userData.mode === 'ea-vc' && {
-            vcEnhancements: {
-              confidential: vcConfidential,
-              portfolioContext: vcPortfolioContext
-            }
-          }),
-          ...(userData.mode === 'researcher' && {
-            researcherEnhancements: {
-              methodology: researcherMethodology,
-              patternAnalysis: researcherPatternAnalysis
-            }
-          }),
-          ...(userData.mode === 'individual' && {
-            individualEnhancements: {
-              template: individualTemplate,
-              personalExperience: individualExperience
-            }
-          })
+          entityType: data.entityType as any,
+          entityDetails: data.entityDetails,
+          affectedProjects: data.affectedProjects,
+          evidence: data.evidence,
+          submitterInfo: data.submitterInfo,
+          mode: userData.mode
         },
         points: calculatePoints('full', userData.mode),
         pointsAwarded: gamificationRewards.pointsAwarded,
@@ -721,36 +757,29 @@ export default function FlaggingInterface({
                         ]}
                         onSubmit={handleStandardSubmit}
                         onCancel={onClose}
-                        userMode={userData.mode}
                         onEvidenceCountChange={setEvidenceCount}
                       />
                       
                       {/* Mode-specific enhancements for standard tier */}
                       {userData.mode === 'ea-vc' && (
                         <VCSubmissionEnhancements
-                          portfolioData={userData.vcPortfolioData}
-                          onConfidentialToggle={setVcConfidential}
-                          onPortfolioSelect={setVcPortfolioContext}
-                          defaultConfidential={vcConfidential}
-                          defaultPortfolioItems={vcPortfolioContext}
+                          portfolioData={userData.vcPortfolioData || []}
+                          onConfidentialToggle={(value: boolean) => setVcConfidential(value)}
+                          onPortfolioSelect={(items: string[]) => setVcPortfolioContext(items)}
                         />
                       )}
                       
                       {userData.mode === 'researcher' && (
                         <ResearcherSubmissionEnhancements
-                          onMethodologyChange={setResearcherMethodology}
-                          onPatternAnalysisChange={setResearcherPatternAnalysis}
-                          defaultMethodology={researcherMethodology}
-                          defaultPatternAnalysis={researcherPatternAnalysis}
+                          onMethodologyChange={(method: string) => setResearcherMethodology(method)}
+                          onPatternAnalysisChange={(analysis: string) => setResearcherPatternAnalysis(analysis)}
                         />
                       )}
                       
                       {userData.mode === 'individual' && (
                         <IndividualSubmissionEnhancements
-                          onTemplateSelect={setIndividualTemplate}
-                          onExperienceShare={setIndividualExperience}
-                          defaultTemplate={individualTemplate}
-                          defaultExperience={individualExperience}
+                          onTemplateSelect={(template: string) => setIndividualTemplate(template)}
+                          onExperienceShare={(experience: string) => setIndividualExperience(experience)}
                         />
                       )}
                     </div>
@@ -762,28 +791,43 @@ export default function FlaggingInterface({
                       <SubmissionForm
                         mode={userData.mode}
                         prefillData={{
-                          entityType: 'marketing-agency', // Default
-                          entityDetails: {
-                            fullName: entityData.entityName,
-                            twitterHandle: '',
-                            telegramHandle: '',
-                            linkedinProfile: '',
-                            website: ''
-                          },
-                          affectedProjects: [{
-                            projectName: entityData.projectName || '',
-                            incidentDescription: entityData.context,
-                            date: new Date().toLocaleDateString('en-US', { month: '2-digit', year: 'numeric' })
-                          }],
-                          evidence: [],
-                          submitterInfo: {
-                            email: userData.userEmail || '',
-                            name: userData.userName,
-                            anonymous: false,
-                            acknowledgements: [false, false, false]
-                          },
-                          mode: userData.mode
-                        }}
+  entityType: 'marketing-agency', // Default
+  entityDetails: {
+    fullName: entityData.entityName,
+    twitterHandle: '',
+    telegramHandle: '',
+    linkedinProfile: '',
+    website: ''
+  },
+  affectedProjects: [{
+    projectName: entityData.projectName || '',
+    incidentDescription: entityData.context,
+    date: new Date().toLocaleDateString('en-US', { month: '2-digit', year: 'numeric' })
+  }],
+  evidence: [
+    { 
+      id: `evidence_${Date.now()}_1`, 
+      url: '', 
+      description: '', 
+      type: 'twitter' as EvidenceType, 
+      status: 'pending' as EvidenceStatus 
+    },
+    { 
+      id: `evidence_${Date.now()}_2`, 
+      url: '', 
+      description: '', 
+      type: 'twitter' as EvidenceType, 
+      status: 'pending' as EvidenceStatus 
+    }
+  ],
+  submitterInfo: {
+    email: userData.userEmail || '',
+    name: userData.userName,
+    anonymous: false,
+    acknowledgements: [false, false, false]
+  },
+  mode: userData.mode
+}}
                         onSubmit={handleFullSubmit}
                         isOpen={true}
                         onClose={onClose}
@@ -796,11 +840,9 @@ export default function FlaggingInterface({
                       {userData.mode === 'ea-vc' && (
                         <div className="mt-6">
                           <VCSubmissionEnhancements
-                            portfolioData={userData.vcPortfolioData}
-                            onConfidentialToggle={setVcConfidential}
-                            onPortfolioSelect={setVcPortfolioContext}
-                            defaultConfidential={vcConfidential}
-                            defaultPortfolioItems={vcPortfolioContext}
+                            portfolioData={userData.vcPortfolioData || []}
+                            onConfidentialToggle={(value: boolean) => setVcConfidential(value)}
+                            onPortfolioSelect={(items: string[]) => setVcPortfolioContext(items)}
                           />
                         </div>
                       )}
@@ -808,10 +850,8 @@ export default function FlaggingInterface({
                       {userData.mode === 'researcher' && (
                         <div className="mt-6">
                           <ResearcherSubmissionEnhancements
-                            onMethodologyChange={setResearcherMethodology}
-                            onPatternAnalysisChange={setResearcherPatternAnalysis}
-                            defaultMethodology={researcherMethodology}
-                            defaultPatternAnalysis={researcherPatternAnalysis}
+                            onMethodologyChange={(method: string) => setResearcherMethodology(method)}
+                            onPatternAnalysisChange={(analysis: string) => setResearcherPatternAnalysis(analysis)}
                           />
                         </div>
                       )}
@@ -819,10 +859,8 @@ export default function FlaggingInterface({
                       {userData.mode === 'individual' && (
                         <div className="mt-6">
                           <IndividualSubmissionEnhancements
-                            onTemplateSelect={setIndividualTemplate}
-                            onExperienceShare={setIndividualExperience}
-                            defaultTemplate={individualTemplate}
-                            defaultExperience={individualExperience}
+                            onTemplateSelect={(template: string) => setIndividualTemplate(template)}
+                            onExperienceShare={(experience: string) => setIndividualExperience(experience)}
                           />
                         </div>
                       )}

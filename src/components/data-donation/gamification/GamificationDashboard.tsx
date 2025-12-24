@@ -6,7 +6,7 @@ import { GamificationService } from '@/services/gamification';
 import { 
   UserGamificationProfile, LeaderboardEntry, UserMode, UserTier, 
   Badge, Achievement 
-} from '@/types/datadonation';
+} from '@/types/dataDonation';
 
 interface GamificationDashboardProps {
   userProfile: UserGamificationProfile;

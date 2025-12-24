@@ -11,13 +11,12 @@ export {
   PointsDisplay 
 } from './universal';
 
-// src/components/data-donation/index.ts
-// Add admin exports
+// Admin components
 export { 
   AdminReviewDashboard, 
-  AdminSubmissionDetail, 
-  AdminDashboardPage 
+  AdminSubmissionDetail 
 } from './admin';
+
 
 // VC-specific components
 export { default as BatchFlagButton } from './ea-vc/BatchFlagButton';

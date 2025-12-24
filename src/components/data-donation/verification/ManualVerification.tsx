@@ -1,9 +1,8 @@
-// src/components/data-donation/verification/ManualVerification.tsx
 'use client';
 
 import React, { useState } from 'react';
 import { VerificationResult } from '@/types/verification';
-import { FlagSubmissionData } from '@/types/datadonation';
+import { FlagSubmissionData } from '@/types/dataDonation';
 
 interface ManualVerificationProps {
   submission: FlagSubmissionData;

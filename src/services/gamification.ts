@@ -8,7 +8,7 @@ import {
   LeaderboardEntry,
   SubmissionGamificationResult,
   UserMode
-} from '@/types/datadonation';
+} from '@/types/dataDonation';
 import { GAMIFICATION_CONFIG } from '@/config/gamification';
 
 export class GamificationService {

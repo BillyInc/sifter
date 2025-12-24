@@ -1,4 +1,4 @@
-// components/ResearcherDashboard.tsx - ADAPTED VERSION
+// components/ResearcherDashboard.tsx - CORRECTED WITH ACTUAL TYPES
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -20,10 +20,20 @@ import {
   MetricData,
   PatternExample,
   DetectionRule,
-  VerdictType
+  VerdictType,
+  EvidenceItem 
 } from '@/types';
 import { generateMockProjectData } from '@/data/mockData';
 import { ExportService } from '@/services/exportService';
+
+// Import the actual types
+import type { 
+  UserGamificationProfile, 
+  Reward,
+  EntityType,
+  EvidenceType,
+  UserMode
+} from '@/types/dataDonation';
 
 // Helper function to get metric value by key or name
 export const getMetricValue = (metrics: MetricData[], keyOrName: string): number => {
@@ -599,6 +609,153 @@ export default function ResearcherDashboard({
     );
   };
 
+  // Create proper user profile based on actual types
+  const userProfile: UserGamificationProfile = {
+    userId: userEmail || 'researcher',
+    mode: 'researcher' as UserMode,
+    totalPoints: 1250,
+    availablePoints: 850,
+    lifetimePoints: 2500,
+    currentLevel: 3,
+    currentTier: 'gold',
+    badges: [
+      {
+        id: 'first_submission',
+        name: 'First Submission',
+        description: 'Made your first evidence submission',
+        icon: '🥇',
+        earnedAt: new Date().toISOString(),
+        rarity: 'common',
+        category: 'submission',
+        pointsReward: 50
+      },
+      {
+        id: 'pattern_discoverer',
+        name: 'Pattern Discoverer',
+        description: 'Identified a new scam pattern',
+        icon: '🔍',
+        earnedAt: new Date().toISOString(),
+        rarity: 'rare',
+        category: 'impact',
+        pointsReward: 200
+      }
+    ],
+    achievements: [
+      {
+        id: 'submit_10_evidences',
+        name: 'Evidence Collector',
+        description: 'Submit 10 pieces of evidence',
+        progress: 7,
+        target: 10,
+        completed: false,
+        pointsReward: 150
+      },
+      {
+        id: 'high_accuracy',
+        name: 'High Accuracy',
+        description: 'Maintain 80%+ accuracy on submissions',
+        progress: 85,
+        target: 80,
+        completed: true,
+        completedAt: new Date().toISOString(),
+        pointsReward: 100
+      }
+    ],
+    streak: {
+      currentStreak: 14,
+      longestStreak: 21,
+      lastActivity: new Date().toISOString(),
+      streakBonus: 1.5
+    },
+    leaderboardPosition: 42,
+    nextMilestone: {
+      pointsNeeded: 500,
+      reward: 'Premium Analysis Tools',
+      unlocks: ['Extended data export', 'API access', 'Historical analysis', 'Custom reports']
+    },
+    displayName: userName || userEmail || 'Researcher',
+    pointsMultiplier: 1.2
+  };
+
+  // Create proper rewards based on actual types
+  const rewards: Reward[] = [
+    {
+      id: 'premium_report',
+      name: 'Premium Research Report',
+      description: 'Get access to premium analysis features and detailed reports',
+      type: 'access',
+      category: 'researcher',
+      pointsCost: 1000,
+      quantityAvailable: 50,
+      quantityRemaining: 35,
+      tierRequirement: 'silver',
+      modeRequirement: 'researcher',
+      features: ['Extended data export', 'API access', 'Historical analysis'],
+      redemptionInstructions: 'Access will be granted within 24 hours of redemption',
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 'export_credits',
+      name: 'Export Credits',
+      description: '5 additional export credits for CSV/JSON/PDF exports',
+      type: 'feature',
+      category: 'researcher',
+      pointsCost: 500,
+      quantityAvailable: 100,
+      quantityRemaining: 75,
+      tierRequirement: 'bronze',
+      modeRequirement: 'researcher',
+      features: ['5 export credits', 'Unlimited formats'],
+      redemptionInstructions: 'Credits added automatically to your account',
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 'priority_queue',
+      name: 'Priority Analysis',
+      description: 'Jump to front of analysis queue for 5 projects',
+      type: 'feature',
+      category: 'researcher',
+      pointsCost: 750,
+      quantityAvailable: 20,
+      quantityRemaining: 12,
+      tierRequirement: 'gold',
+      modeRequirement: 'researcher',
+      features: ['Priority processing', '5 project slots'],
+      redemptionInstructions: 'Priority status activated immediately',
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 'data_access',
+      name: 'Extended Data Access',
+      description: 'Access to historical analysis database for 30 days',
+      type: 'access',
+      category: 'researcher',
+      pointsCost: 1500,
+      quantityAvailable: 30,
+      quantityRemaining: 18,
+      tierRequirement: 'gold',
+      modeRequirement: 'researcher',
+      features: ['Full database access', '30-day duration', 'API endpoints'],
+      redemptionInstructions: 'Access token sent via email within 2 hours',
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 'api_access',
+      name: 'API Access',
+      description: 'Programmatic access to analysis data and endpoints',
+      type: 'access',
+      category: 'researcher',
+      pointsCost: 2000,
+      quantityAvailable: 10,
+      quantityRemaining: 4,
+      tierRequirement: 'platinum',
+      modeRequirement: 'researcher',
+      features: ['Full API access', 'Rate limits 1000/hour', 'Webhook support'],
+      redemptionInstructions: 'API key and documentation sent within 48 hours',
+      createdAt: new Date().toISOString()
+    }
+  ];
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -966,10 +1123,79 @@ export default function ResearcherDashboard({
                 <div className="border-t border-sifter-border pt-8 mt-8">
                   <h2 className="text-xl font-bold text-white mb-6">Submit Evidence & Earn Rewards</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <PointsDisplay />
-                    <RewardsShop />
-                    <EvidenceUpload userType="researcher" />
-                    <DisputeForm />
+                    {/* Dispute Form Component - CORRECTED WITH ACTUAL TYPES */}
+                    <DisputeForm 
+                      entityData={currentProject ? [currentProject.displayName] : []} // String array
+                      userData={[userEmail || 'anonymous']}
+                      onSubmit={async (disputeData) => {
+                        console.log('Dispute submitted:', disputeData);
+                        // Simulate API call
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        alert('Dispute submitted successfully!');
+                        return true;
+                      }}
+                      onCancel={() => console.log('Dispute cancelled')}
+                      userMode="researcher"
+                    />
+                    
+                    {/* Points Display Component - USING CORRECT USERPROFILE */}
+                    <PointsDisplay
+                      userProfile={userProfile}
+                      showStreak={true}
+                      showLevel={true}
+                      showRank={true}
+                      onLevelUp={() => {
+                        console.log('Level up!');
+                      }}
+                    />
+
+                    {/* Evidence Upload Component - USING CORRECT TYPES */}
+                    <div className="md:col-span-2">
+                      <div className="md:col-span-2">
+  <EvidenceUpload
+    submissionId={currentProject?.id || 'current_analysis'}
+    existingEvidence={[]}
+      onUpload={async (evidence: Omit<EvidenceItem, 'id' | 'submittedAt'>[]) => {
+
+      console.log('Evidence uploaded:', evidence);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      alert('Evidence submitted successfully! You earned 50 points!');
+    }}
+    onCancel={() => console.log('Evidence cancelled')}
+    mode="researcher"
+    maxFiles={10}
+  />
+</div>
+                    </div>
+
+                    {/* Rewards Shop Component - USING CORRECT TYPES */}
+                    <div className="md:col-span-2">
+                      <RewardsShop
+                        userProfile={userProfile}
+                        rewards={rewards}
+                        onRedeem={async (rewardId: string) => {
+                          try {
+                            // Simulate redemption API call
+                            console.log(`Redeeming reward: ${rewardId}`);
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                            
+                            const reward = rewards.find(r => r.id === rewardId);
+                            if (reward) {
+                              alert(`Successfully redeemed: ${reward.name}!`);
+                            }
+                            return true;
+                          } catch (error) {
+                            console.error('Redemption failed:', error);
+                            alert('Failed to redeem reward. Please try again.');
+                            return false;
+                          }
+                        }}
+                        onPurchaseCredits={() => {
+                          alert('Redirecting to credits purchase...');
+                        }}
+                        showCategories={true}
+                      />
+                    </div>
                   </div>
                 </div>
 

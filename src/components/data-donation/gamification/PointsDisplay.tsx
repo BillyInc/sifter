@@ -2,13 +2,16 @@
 'use client';
 
 import React from 'react';
-import { UserGamificationProfile } from '@/types/datadonation';
+import { UserGamificationProfile } from '@/types/dataDonation';
 
 interface PointsDisplayProps {
   userProfile: UserGamificationProfile;
   showStreak?: boolean;
   showLevel?: boolean;
   compact?: boolean;
+  showRank?: boolean;  // ← Add this
+  onLevelUp?: () => void;  // ✅ ADD THIS
+
   onPointsClick?: () => void;
 }
 
@@ -17,6 +20,9 @@ export default function PointsDisplay({
   showStreak = true,
   showLevel = true,
   compact = false,
+  showRank = false,  // ← Add this
+  
+
   onPointsClick
 }: PointsDisplayProps) {
   const getTierColor = (tier: string) => {
@@ -47,6 +53,18 @@ export default function PointsDisplay({
           <div className="text-lg font-bold text-amber-400">{userProfile.totalPoints.toLocaleString()}</div>
           <div className="text-xs text-gray-400">points</div>
         </div>
+
+              {showRank && userProfile.leaderboardPosition && (
+        <div className="mt-3 pt-3 border-t border-sifter-border">
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-gray-400">Leaderboard Rank</span>
+            <span className="text-lg font-bold text-purple-400">
+              #{userProfile.leaderboardPosition}
+            </span>
+          </div>
+        </div>
+      )}
+
         
         {/* Tier Badge */}
         <div className={`px-3 py-1 rounded-lg bg-gradient-to-r ${getTierColor(userProfile.currentTier)}`}>

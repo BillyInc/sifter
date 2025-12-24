@@ -3,11 +3,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { VerificationCheck, AutoVerificationData, MODE_VERIFICATION_THRESHOLDS } from '@/types/verification';
-import { UserMode, FlagSubmissionData } from '@/types/datadonation';
+import { UserMode, FlagSubmissionData } from '@/types/dataDonation';
 
 interface AutoVerificationProps {
   submission: FlagSubmissionData;
   onComplete: (result: AutoVerificationData) => void;
+   autoDecision?: "auto_approved" | "auto_rejected" | "needs_manual_review";
+
+}
+
+interface StepResult {
+  status: 'pending' | 'passed' | 'failed' | 'warning';  // ✅ Explicit type
+  details?: string;
 }
 
 export default function AutoVerification({ submission, onComplete }: AutoVerificationProps) {
@@ -23,16 +30,18 @@ export default function AutoVerification({ submission, onComplete }: AutoVerific
       name: 'Entity Database Match',
       description: 'Check if entity already exists in database',
       weight: 30,
-      run: async () => {
-        // Simulate fuzzy match logic from PDF
-        await new Promise(resolve => setTimeout(resolve, 800));
-        const exists = Math.random() > 0.7; // 30% chance entity exists
-        
-        return {
-          status: exists ? 'passed' : 'warning',
-          details: exists 
-            ? 'Entity found in database with 95% match confidence'
-            : 'New entity - not in database'
+      run: async (): Promise<StepResult> => {
+  await new Promise(resolve => setTimeout(resolve, 800));
+  const exists = Math.random() > 0.7;
+  
+  const status: 'passed' | 'warning' = exists ? 'passed' : 'warning';
+  
+  return {
+    status,
+    details: exists 
+      ? 'Entity found in database with 95% match confidence'
+      : 'New entity - not in database'
+
         };
       }
     },
@@ -41,16 +50,17 @@ export default function AutoVerification({ submission, onComplete }: AutoVerific
       name: 'Project Outcome Verification',
       description: 'Check if project is known scam/rug',
       weight: 25,
-      run: async () => {
-        await new Promise(resolve => setTimeout(resolve, 600));
-        const isKnownScam = Math.random() > 0.5;
-        
-        return {
-          status: isKnownScam ? 'passed' : 'warning',
-          details: isKnownScam
-            ? 'Project confirmed as scam/rug in database'
-            : 'Project not in scam database'
-        };
+      run: async (): Promise<StepResult> => {
+  await new Promise(resolve => setTimeout(resolve, 600));
+  const isKnownScam = Math.random() > 0.5;
+  
+  const status: 'passed' | 'warning' = isKnownScam ? 'passed' : 'warning';
+  
+  return {
+    status,
+    details: isKnownScam
+      ? 'Project confirmed as scam/rug in database'
+      : 'Project not in scam database'        };
       }
     },
     {
@@ -58,16 +68,19 @@ export default function AutoVerification({ submission, onComplete }: AutoVerific
       name: 'Evidence Link Verification',
       description: 'Verify evidence links are accessible and relevant',
       weight: 20,
-      run: async () => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        const accessibility = Math.random();
-        const accessible = accessibility > 0.3;
-        
-        return {
-          status: accessible ? 'passed' : 'failed',
-          details: accessible
-            ? 'All evidence links verified and accessible'
-            : `Some links inaccessible (${Math.round((1 - accessibility) * 100)}% failed)`
+      run: async (): Promise<StepResult> => {
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  const accessibility = Math.random();
+  const accessible = accessibility > 0.3;
+  
+  const status: 'passed' | 'failed' = accessible ? 'passed' : 'failed';
+  
+  return {
+    status,
+    details: accessible
+      ? 'All evidence links verified and accessible'
+      : `Some links inaccessible (${Math.round((1 - accessibility) * 100)}% failed)`
+
         };
       }
     },
@@ -76,15 +89,18 @@ export default function AutoVerification({ submission, onComplete }: AutoVerific
       name: 'Data Consistency Check',
       description: 'Cross-reference with existing data',
       weight: 15,
-      run: async () => {
-        await new Promise(resolve => setTimeout(resolve, 700));
-        const hasContradictions = Math.random() > 0.8;
-        
-        return {
-          status: hasContradictions ? 'failed' : 'passed',
-          details: hasContradictions
-            ? 'Found contradictions with existing database entries'
-            : 'No contradictions found with existing data'
+      run: async (): Promise<StepResult> => {
+  await new Promise(resolve => setTimeout(resolve, 700));
+  const hasContradictions = Math.random() > 0.8;
+  
+  const status: 'failed' | 'passed' = hasContradictions ? 'failed' : 'passed';
+  
+  return {
+    status,
+    details: hasContradictions
+      ? 'Found contradictions with existing database entries'
+      : 'No contradictions found with existing data'
+
         };
       }
     },
@@ -93,15 +109,17 @@ export default function AutoVerification({ submission, onComplete }: AutoVerific
       name: 'Submitter Reputation Check',
       description: 'Check submitter history and reputation',
       weight: 10,
-      run: async () => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        const goodReputation = Math.random() > 0.3;
-        
-        return {
-          status: goodReputation ? 'passed' : 'warning',
-          details: goodReputation
-            ? 'Submitter has good history with previous submissions'
-            : 'Submitter has limited or mixed history'
+      run: async (): Promise<StepResult> => {
+  await new Promise(resolve => setTimeout(resolve, 500));
+  const goodReputation = Math.random() > 0.3;
+  
+  const status: 'passed' | 'warning' = goodReputation ? 'passed' : 'warning';
+  
+  return {
+    status,
+    details: goodReputation
+      ? 'Submitter has good history with previous submissions'
+      : 'Submitter has limited or mixed history'
         };
       }
     }

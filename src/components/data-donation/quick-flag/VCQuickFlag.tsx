@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { QuickFlagData, UserMode, VCPortfolioItem } from '@/types/datadonation';
+import { QuickFlagData, UserMode, VCPortfolioItem } from '@/types/dataDonation';
 
 interface VCQuickFlagProps {
   entityName: string;

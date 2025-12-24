@@ -1,5 +1,5 @@
 // src/services/redemption-service.ts
-import { Reward, RedemptionRequest, UserGamificationProfile } from '@/types/datadonation';
+import { Reward, RedemptionRequest, UserGamificationProfile } from '@/types/dataDonation';
 
 // Mock data for example
 const MOCK_REWARDS: Reward[] = [

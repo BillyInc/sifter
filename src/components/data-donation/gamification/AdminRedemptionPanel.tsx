@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { RedemptionRequest, Reward, UserGamificationProfile } from '@/types/datadonation';
+import { RedemptionRequest, Reward, UserGamificationProfile } from '@/types/dataDonation';
 
 interface AdminRedemptionPanelProps {
   requests: RedemptionRequest[];

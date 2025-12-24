@@ -8,6 +8,8 @@ export interface StandardFlagFormProps {
   onSubmit: (flagData: any[]) => void;
   onCancel: () => void;
   showQuickActions?: boolean;
+  onEvidenceCountChange?: (count: number) => void;  // ← ADD THIS
+
 }
 
 export default function StandardFlagForm({

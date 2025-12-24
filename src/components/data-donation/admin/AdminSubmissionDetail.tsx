@@ -1,7 +1,8 @@
 // src/components/data-donation/admin/AdminSubmissionDetail.tsx
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+
 import { AdminSubmission } from '@/types/admin';
 import { XMarkIcon, CheckIcon, ExclamationTriangleIcon, LinkIcon } from '@heroicons/react/24/outline';
 

@@ -2,16 +2,19 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Reward, UserGamificationProfile, UserMode, UserTier } from '@/types/datadonation';
+import { Reward, UserGamificationProfile, UserMode, UserTier } from '@/types/dataDonation';
 import { NotificationService } from '@/services/notifications';
 
 interface RewardsShopProps {
   userProfile: UserGamificationProfile;
   rewards: Reward[];
   onRedeem: (rewardId: string) => Promise<boolean>;
+  isAvailable?: boolean;  // ✅ ADD THIS
+  onPurchaseCredits?: () => void;  // ✅ ADD THIS
+  showCategories?: boolean;  // ✅ ADD THIS
 }
 
-export default function RewardsShop({ userProfile, rewards, onRedeem }: RewardsShopProps) {
+export default function RewardsShop({ userProfile, rewards, onRedeem,  onPurchaseCredits, showCategories = true  }: RewardsShopProps) {
   const [selectedCategory, setSelectedCategory] = useState<'all' | UserMode>('all');
   const [selectedReward, setSelectedReward] = useState<Reward | null>(null);
   const [isRedeeming, setIsRedeeming] = useState(false);
@@ -122,6 +125,22 @@ export default function RewardsShop({ userProfile, rewards, onRedeem }: RewardsS
             </div>
           </div>
         </div>
+
+        {/* ✅ ADD THIS: Optional "Get More Points" button */}
+       {onPurchaseCredits && (
+       <button
+      onClick={onPurchaseCredits}
+      className="mt-3 w-full px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 
+                 hover:from-amber-600 hover:to-amber-700 text-white rounded-lg 
+                 font-medium text-sm transition-all"
+        >
+      ⚡ Get More Points
+       </button>
+      )}
+
+
+
+
       </div>
 
       {/* Category Filter */}

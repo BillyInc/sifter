@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { VCPortfolioItem } from '@/types/datadonation';
+import { VCPortfolioItem } from '@/types/dataDonation';
 
 interface VCSubmissionEnhancementsProps {
   portfolioData?: VCPortfolioItem[];

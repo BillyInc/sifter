@@ -1,10 +1,10 @@
-// src/components/disputes/DisputeFilingForm.tsx - COMPLETE VERSION
+// src/components/disputes/DisputeFilingForm.tsx - UPDATED VERSION
 'use client';
 
 import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { EntityEntry } from '@/types/datadonation';
-import { Dispute, DisputeCategory, DisputeResolution } from '@/types/disputes';
+import { EntityEntry } from '@/types/dataDonation';
+import { Dispute, DisputeCategory, DisputeResolution } from '@/types/dispute';
 
 interface DisputeFilingFormProps {
   entity: EntityEntry;
@@ -45,7 +45,8 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
     }>,
     
     // Step 5: Address Specific Allegations
-    allegationResponses: entity.allegations?.map(allegation => ({
+    allegationResponses: entity.allegations?.map((allegation: any, index: number) => ({  // ✅ Add types
+
       allegationId: allegation.id,
       allegationText: allegation.description,
       response: '',
@@ -69,7 +70,243 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
     }
   });
 
-  // Step 5: Allegation Responses Component
+  // Step 1: Your Relationship Component
+  const Step1Relationship = () => (
+    <div className="space-y-6">
+      <h2 className="text-xl font-bold text-white">Your Relationship to This Entity</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-white font-medium mb-2">
+            Full Name *
+          </label>
+          <input
+            type="text"
+            value={formData.disputerName}
+            onChange={(e) => setFormData({...formData, disputerName: e.target.value})}
+            className="w-full px-4 py-3 bg-sifter-dark border border-sifter-border rounded-lg text-white"
+            placeholder="John Smith"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-white font-medium mb-2">
+            Email Address *
+          </label>
+          <input
+            type="email"
+            value={formData.disputerEmail}
+            onChange={(e) => setFormData({...formData, disputerEmail: e.target.value})}
+            className="w-full px-4 py-3 bg-sifter-dark border border-sifter-border rounded-lg text-white"
+            placeholder="john@company.com"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-white font-medium mb-2">
+            Your Title/Role *
+          </label>
+          <input
+            type="text"
+            value={formData.disputerTitle}
+            onChange={(e) => setFormData({...formData, disputerTitle: e.target.value})}
+            className="w-full px-4 py-3 bg-sifter-dark border border-sifter-border rounded-lg text-white"
+            placeholder="e.g., CEO, Legal Counsel, Project Manager"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-white font-medium mb-2">
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            value={formData.phoneNumber}
+            onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
+            className="w-full px-4 py-3 bg-sifter-dark border border-sifter-border rounded-lg text-white"
+            placeholder="+1 (555) 123-4567"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-white font-medium mb-2">
+            Company Domain
+          </label>
+          <input
+            type="text"
+            value={formData.companyDomain}
+            onChange={(e) => setFormData({...formData, companyDomain: e.target.value})}
+            className="w-full px-4 py-3 bg-sifter-dark border border-sifter-border rounded-lg text-white"
+            placeholder="company.com"
+          />
+          <p className="text-sm text-gray-400 mt-2">
+            Used for verification if filing as a representative
+          </p>
+        </div>
+        
+        <div>
+          <label className="block text-white font-medium mb-2">
+            Your Relationship *
+          </label>
+          <select
+            value={formData.disputerRelationship}
+            onChange={(e) => setFormData({
+              ...formData, 
+              disputerRelationship: e.target.value as 'representative' | 'individual' | 'other'
+            })}
+            className="w-full px-4 py-3 bg-sifter-dark border border-sifter-border rounded-lg text-white"
+          >
+            <option value="">Select relationship...</option>
+            <option value="representative">Official Representative</option>
+            <option value="individual">Individual Affected</option>
+            <option value="other">Third Party/Other</option>
+          </select>
+        </div>
+      </div>
+      
+      {formData.disputerRelationship && (
+        <div className="bg-sifter-dark/50 border border-sifter-border rounded-lg p-4">
+          <h4 className="font-medium text-white mb-2">
+            {formData.disputerRelationship === 'representative' ? '🏢 Official Representative' :
+             formData.disputerRelationship === 'individual' ? '👤 Individual' : '🤝 Third Party'}
+          </h4>
+          <p className="text-sm text-gray-300">
+            {formData.disputerRelationship === 'representative' 
+              ? 'As an official representative, we\'ll verify your identity through company email or documents.'
+              : formData.disputerRelationship === 'individual'
+              ? 'As an individual, you\'ll need to demonstrate personal connection to the case.'
+              : 'As a third party, please explain your connection to this entity in the explanation section.'}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+
+  // Step 2: What are you disputing?
+  const Step2Categories = () => (
+    <div className="space-y-6">
+      <h2 className="text-xl font-bold text-white">What Are You Disputing?</h2>
+      
+      <div className="bg-sifter-dark/50 border border-sifter-border rounded-lg p-4 mb-6">
+        <h3 className="font-medium text-white mb-2">🎯 Tip: Be Specific</h3>
+        <p className="text-sm text-gray-300">
+          Select all categories that apply. Being specific helps us review your dispute faster and more accurately.
+        </p>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {([
+          { id: 'incorrect_information', label: 'Incorrect Information', description: 'Facts about the entity are wrong' },
+          { id: 'outdated_information', label: 'Outdated Information', description: 'Information is no longer accurate' },
+          { id: 'misrepresentation', label: 'Misrepresentation', description: 'Entity is misrepresented' },
+          { id: 'false_allegations', label: 'False Allegations', description: 'Allegations are untrue' },
+          { id: 'context_needed', label: 'Missing Context', description: 'Information lacks important context' },
+          { id: 'wrong_risk_score', label: 'Incorrect Risk Score', description: 'Risk assessment is inaccurate' },
+          { id: 'wrong_legal_status', label: 'Legal Status Error', description: 'Legal standing is incorrect' },
+          { id: 'wrong_ownership', label: 'Ownership/Control Error', description: 'Ownership details are wrong' },
+        ] as { id: DisputeCategory; label: string; description: string }[]).map((category) => (
+          <label key={category.id} className="flex items-start space-x-3 p-4 border border-sifter-border rounded-lg hover:bg-sifter-dark/30 cursor-pointer">
+            <input
+              type="checkbox"
+              value={category.id}
+              checked={formData.categories.includes(category.id)}
+              onChange={(e) => {
+                const newCategories = e.target.checked
+                  ? [...formData.categories, category.id]
+                  : formData.categories.filter(cat => cat !== category.id);
+                setFormData({...formData, categories: newCategories});
+              }}
+              className="mt-1 text-blue-500"
+            />
+            <div>
+              <div className="font-medium text-white">{category.label}</div>
+              <div className="text-sm text-gray-400">{category.description}</div>
+            </div>
+          </label>
+        ))}
+      </div>
+      
+      <div className="mt-6">
+        <label className="block text-sm text-gray-400 mb-2">
+          Quick summary of what you're disputing:
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {formData.categories.map(category => (
+            <span key={category} className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm">
+              {category.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+            </span>
+          ))}
+          {formData.categories.length === 0 && (
+            <span className="text-gray-500 italic">Select categories above</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  // Step 3: Detailed Explanation
+  const Step3Explanation = () => (
+    <div className="space-y-6">
+      <h2 className="text-xl font-bold text-white">Detailed Explanation</h2>
+      
+      <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mb-6">
+        <div className="flex items-start gap-3">
+          <div className="text-2xl">📝</div>
+          <div>
+            <h3 className="font-medium text-yellow-400 mb-2">Write a Clear Explanation</h3>
+            <ul className="text-sm text-gray-300 space-y-1">
+              <li>• Be specific about <strong>what</strong> is wrong and <strong>why</strong></li>
+              <li>• Reference specific allegations if applicable</li>
+              <li>• Provide context for any complex situations</li>
+              <li>• Avoid emotional language - stick to facts</li>
+              <li>• Minimum 100 characters required</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div>
+        <label className="block text-white font-medium mb-3">
+          Your detailed explanation: *
+        </label>
+        <textarea
+          value={formData.explanation}
+          onChange={(e) => setFormData({...formData, explanation: e.target.value})}
+          className="w-full h-64 px-4 py-3 bg-sifter-dark border border-sifter-border rounded-lg text-white resize-none leading-relaxed"
+          placeholder="Explain in detail what information is incorrect, why it's incorrect, and provide the correct information..."
+        />
+        <div className="flex justify-between items-center mt-2">
+          <div className={`text-sm ${formData.explanation.length < 100 ? 'text-red-400' : 'text-green-400'}`}>
+            {formData.explanation.length} / 100 characters minimum
+          </div>
+          <div className="text-sm text-gray-400">
+            {formData.explanation.length > 5000 ? 'Maximum exceeded' : `${5000 - formData.explanation.length} characters left`}
+          </div>
+        </div>
+      </div>
+      
+      <div className="mt-6">
+        <h4 className="font-medium text-white mb-3">💡 Explanation Template (Optional)</h4>
+        <div className="bg-sifter-dark/50 border border-sifter-border rounded-lg p-4 text-sm text-gray-300">
+          <div className="space-y-2">
+            <p><strong>1. What specific information is incorrect?</strong></p>
+            <p className="ml-4 text-gray-400">"The entry states that we [incorrect statement], but in reality..."</p>
+            
+            <p><strong>2. Why is it incorrect?</strong></p>
+            <p className="ml-4 text-gray-400">"This is incorrect because [evidence/reason]..."</p>
+            
+            <p><strong>3. What is the correct information?</strong></p>
+            <p className="ml-4 text-gray-400">"The accurate information should be [correct details]..."</p>
+            
+            <p><strong>4. Supporting evidence (briefly mention):</strong></p>
+            <p className="ml-4 text-gray-400">"This is supported by [evidence you'll upload]..."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Step 5: Allegation Responses Component (from original code)
   const Step5Allegations = () => (
     <div className="space-y-6">
       <h2 className="text-xl font-bold text-white">Address Specific Allegations</h2>
@@ -150,7 +387,7 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
     </div>
   );
 
-  // Step 6: Requested Resolution
+  // Step 6: Requested Resolution (from original code)
   const Step6Resolution = () => (
     <div className="space-y-6">
       <h2 className="text-xl font-bold text-white">Requested Resolution</h2>
@@ -168,7 +405,7 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
           What resolution are you requesting? *
         </label>
         
-        {[
+        {([
           {
             id: 'remove_entry',
             title: 'Remove this entry entirely',
@@ -193,7 +430,7 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
             description: 'The severity or risk level is inaccurate',
             icon: '📊'
           }
-        ].map((option) => (
+        ] as const).map((option) => (
           <label key={option.id} className="flex items-start space-x-3 p-4 border border-sifter-border rounded-lg hover:bg-sifter-dark/30 cursor-pointer">
             <input
               type="radio"
@@ -238,19 +475,18 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
     </div>
   );
 
-  // Step 7: Verification & Acknowledgements
+  // Step 7: Verification & Acknowledgements (from original code)
   const Step7Verification = () => (
     <div className="space-y-6">
       <h2 className="text-xl font-bold text-white">Verification & Acknowledgements</h2>
       
-      {/* Verification Method */}
       <div className="space-y-4">
         <label className="block text-white font-medium mb-2">
           How would you like us to verify your identity? *
         </label>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
+          {([
             {
               id: 'email',
               title: 'Email Verification',
@@ -269,7 +505,7 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
               description: 'Schedule a verification call',
               icon: '📞'
             }
-          ].map((method) => (
+          ] as const).map((method) => (
             <label key={method.id} className="flex flex-col p-4 border border-sifter-border rounded-lg hover:bg-sifter-dark/30 cursor-pointer">
               <div className="flex items-center gap-2 mb-2">
                 <input
@@ -291,7 +527,6 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
         </div>
       </div>
       
-      {/* Verification Notes */}
       {formData.verificationMethod && (
         <div className="mt-6">
           <label className="block text-white font-medium mb-3">
@@ -309,12 +544,11 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
         </div>
       )}
       
-      {/* Acknowledgements */}
       <div className="mt-8 pt-6 border-t border-sifter-border">
         <h3 className="font-medium text-white mb-4">Required Acknowledgements</h3>
         
         <div className="space-y-4">
-          {[
+          {([
             {
               id: 'authorized',
               label: 'I am authorized to file this dispute on behalf of the entity',
@@ -335,11 +569,11 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
               label: 'I have read and agree to the Dispute Resolution Policy',
               required: true
             }
-          ].map((ack) => (
+          ] as const).map((ack) => (
             <label key={ack.id} className="flex items-start space-x-3 p-3 border border-sifter-border rounded-lg hover:bg-sifter-dark/30 cursor-pointer">
               <input
                 type="checkbox"
-                checked={formData.acknowledgements[ack.id as keyof typeof formData.acknowledgements]}
+                checked={formData.acknowledgements[ack.id]}
                 onChange={(e) => setFormData({
                   ...formData,
                   acknowledgements: {
@@ -358,7 +592,6 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
         </div>
       </div>
       
-      {/* Summary */}
       <div className="mt-6 bg-sifter-dark/50 border border-sifter-border rounded-lg p-4">
         <h4 className="font-medium text-white mb-3">📋 Dispute Summary</h4>
         <div className="space-y-2 text-sm">
@@ -414,7 +647,6 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
 
     setIsSubmitting(true);
     try {
-      // TODO: Implement API call
       const dispute: Dispute = {
         id: `dispute-${Date.now()}`,
         caseId: `DISP-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`,
@@ -450,17 +682,16 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
         
         verificationMethod: formData.verificationMethod,
         isVerified: false,
-        adminNotes: formData.verificationNotes,
+        verificationNotes: formData.verificationNotes,  // ✅ Add this to Dispute type
         
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
       
-      // Submit to backend
       console.log('Submitting dispute:', dispute);
+      // TODO: Implement actual API call
       // await submitDispute(dispute);
       
-      // Redirect to confirmation
       router.push(`/disputes/confirmation/${dispute.caseId}`);
       
     } catch (error) {
@@ -471,7 +702,6 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
     }
   };
 
-  // Handle file upload
   const handleFileUpload = async (file: File, index: number) => {
     const updatedEvidence = [...formData.counterEvidence];
     updatedEvidence[index] = {
@@ -481,7 +711,6 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
     };
     setFormData({...formData, counterEvidence: updatedEvidence});
     
-    // Simulate upload
     let progress = 0;
     const interval = setInterval(() => {
       progress += 10;
@@ -547,31 +776,16 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
           
           {/* Form Content */}
           <div className="p-6">
-            {/* Step 1: Your Relationship (Your existing code - keep as is) */}
-            {step === 1 && (
-              <div className="space-y-6">
-                <h2 className="text-xl font-bold text-white">Your Relationship to This Entity</h2>
-                {/* ... Your existing Step 1 code ... */}
-              </div>
-            )}
+            {/* Step 1: Your Relationship */}
+            {step === 1 && <Step1Relationship />}
             
-            {/* Step 2: What are you disputing? (Your existing code - keep as is) */}
-            {step === 2 && (
-              <div className="space-y-6">
-                <h2 className="text-xl font-bold text-white">What Are You Disputing?</h2>
-                {/* ... Your existing Step 2 code ... */}
-              </div>
-            )}
+            {/* Step 2: What are you disputing? */}
+            {step === 2 && <Step2Categories />}
             
-            {/* Step 3: Detailed Explanation (Your existing code - keep as is) */}
-            {step === 3 && (
-              <div className="space-y-6">
-                <h2 className="text-xl font-bold text-white">Detailed Explanation</h2>
-                {/* ... Your existing Step 3 code ... */}
-              </div>
-            )}
+            {/* Step 3: Detailed Explanation */}
+            {step === 3 && <Step3Explanation />}
             
-            {/* Step 4: Counter Evidence (Enhanced version) */}
+            {/* Step 4: Counter Evidence */}
             {step === 4 && (
               <div className="space-y-6">
                 <h2 className="text-xl font-bold text-white">Counter Evidence</h2>
@@ -589,7 +803,6 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
                   </ul>
                 </div>
                 
-                {/* Evidence Items */}
                 <div className="space-y-4">
                   {formData.counterEvidence.map((evidence, index) => (
                     <div key={index} className="border border-sifter-border rounded-lg p-4">
@@ -706,21 +919,27 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
                   
                   <button
                     onClick={() => {
-                      setFormData({
-                        ...formData,
-                        counterEvidence: [...formData.counterEvidence, {
-                          type: '',
-                          title: '',
-                          description: '',
-                          url: ''
-                        }]
-                      });
+                      if (formData.counterEvidence.length < 10) {
+                        setFormData({
+                          ...formData,
+                          counterEvidence: [...formData.counterEvidence, {
+                            type: '',
+                            title: '',
+                            description: '',
+                            url: ''
+                          }]
+                        });
+                      } else {
+                        alert('Maximum 10 evidence items allowed');
+                      }
                     }}
                     className="w-full py-4 border-2 border-dashed border-sifter-border rounded-lg text-gray-400 hover:text-white hover:border-blue-500/50 transition-colors flex flex-col items-center gap-2"
                   >
                     <span className="text-xl">+</span>
                     <span>Add More Evidence</span>
-                    <span className="text-xs text-gray-500">Maximum 10 evidence items</span>
+                    <span className="text-xs text-gray-500">
+                      {formData.counterEvidence.length} of 10 items added
+                    </span>
                   </button>
                 </div>
               </div>
@@ -782,7 +1001,6 @@ export default function DisputeFilingForm({ entity, onClose }: DisputeFilingForm
               </button>
             </div>
             
-            {/* Step Indicator */}
             <div className="mt-4 text-center text-sm text-gray-500">
               Step {step} of 7 • {Math.round((step / 7) * 100)}% complete
             </div>

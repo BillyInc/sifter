@@ -1,5 +1,5 @@
 // src/config/gamification.ts
-import { GamificationConfig, UserMode, UserGamificationProfile } from '@/types/datadonation';
+import { GamificationConfig, UserMode, UserGamificationProfile } from '@/types/dataDonation';
 
 export const GAMIFICATION_CONFIG: GamificationConfig = {
   // Tier thresholds (points required)

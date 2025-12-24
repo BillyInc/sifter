@@ -7,17 +7,10 @@ export type SubmissionStatus = 'draft' | 'submitted' | 'under-review' | 'approve
 export type UserMode = 'ea-vc' | 'researcher' | 'individual';
 export type SubmissionTier = 'quick' | 'standard' | 'full';
 export type EvidenceStatus = 'pending' | 'verified' | 'disputed' | 'invalid';
-export type UserTier = 'tier-1' | 'tier-2' | 'tier-3';
 
 // Evidence Types
 export type EvidenceType = 
-  | 'twitter_post' | 'reddit_thread' | 'blockchain_transaction' 
-  | 'news_article' | 'archived_website' | 'portfolio_page'
-  | 'linkedin_profile' | 'discord_export' | 'telegram_export'
-  | 'email_correspondence' | 'legal_document' | 'press_release'
-  | 'audit_report' | 'github_commit' | 'financial_record'
-  | 'contract_document' | 'confidential_source' | 'pattern_analysis'
-  | 'data_analysis' | 'academic_source' | 'personal_experience';
+  | 'twitter' | 'reddit' | 'news' | 'archive' | 'blockchain' | 'telegram' | 'other';
 
 // Core Interfaces
 export interface SubmissionFormData {
@@ -109,13 +102,15 @@ export interface QuickFlagData {
   points: number;
 }
 
-export interface StandardFlagData {
+export interface StandardFlagFormData {
+  // Array format for evidence: ["url|description|type", "url|description|type"]
   evidence: string[];
   description: string;
   severity: SeverityLevel;
 }
 
 export interface FlagSubmissionData {
+  submissionId?: string;
   tier: SubmissionTier;
   mode: UserMode;
   entityName: string;
@@ -125,13 +120,19 @@ export interface FlagSubmissionData {
   
   // Tier-specific data
   quickData?: QuickFlagData;
-  standardData?: StandardFlagData;
-  fullData?: SubmissionFormData;
+  standardData?: StandardFlagFormData;
+  evidence?: Evidence[];
   
-  // Metadata
-  points: number;
+  // Gamification metadata
+  pointsAwarded: number;
+  badgesEarned: Badge[];
+  achievementsProgress: Achievement[];
+  streakUpdated: boolean;
   timestamp: string;
-  submissionId?: string;
+  
+  // Legacy properties for backward compatibility
+  points?: number;
+  fullData?: SubmissionFormData;
 }
 
 // VC-specific Types
@@ -141,6 +142,9 @@ export interface VCPortfolioItem {
   status: 'active' | 'exited' | 'considering' | 'rejected';
   investedAmount?: number;
   dateAdded: string;
+  investmentAmount?: number;  // Add alias or use investedAmount consistently
+  fund?: string;
+  projectName?: string;
 }
 
 // Mode Configuration
@@ -181,9 +185,9 @@ export const MODE_CONFIGS: Record<UserMode, ModeConfig> = {
   'ea-vc': {
     minEvidenceRequired: 4,
     allowedEvidenceTypes: [
-      'legal_document', 'financial_record', 'contract_document',
-      'email_correspondence', 'confidential_source', 'portfolio_page',
-      'twitter_post', 'reddit_thread', 'news_article', 'archived_website'
+      'twitter', 'reddit', 'news', 'archive', 'blockchain', 'telegram', 'other'
+      // Remove: 'legal_document', 'financial_record', 'contract_document',
+      // 'email_correspondence', 'confidential_source', 'portfolio_page'
     ],
     formComplexity: 'advanced',
     reviewSLA: '12-24h',
@@ -205,9 +209,9 @@ export const MODE_CONFIGS: Record<UserMode, ModeConfig> = {
   'researcher': {
     minEvidenceRequired: 3,
     allowedEvidenceTypes: [
-      'data_analysis', 'pattern_analysis', 'academic_source',
-      'blockchain_transaction', 'github_commit', 'audit_report',
-      'twitter_post', 'reddit_thread', 'news_article', 'archived_website'
+      'twitter', 'reddit', 'news', 'archive', 'blockchain', 'telegram', 'other'
+      // Remove: 'data_analysis', 'pattern_analysis', 'academic_source',
+      // 'blockchain_transaction', 'github_commit', 'audit_report'
     ],
     formComplexity: 'advanced',
     reviewSLA: '24-48h',
@@ -229,8 +233,8 @@ export const MODE_CONFIGS: Record<UserMode, ModeConfig> = {
   'individual': {
     minEvidenceRequired: 2,
     allowedEvidenceTypes: [
-      'twitter_post', 'reddit_thread', 'news_article',
-      'archived_website', 'personal_experience'
+      'twitter', 'reddit', 'news', 'archive', 'blockchain', 'telegram', 'other'
+      // Remove: 'personal_experience'
     ],
     formComplexity: 'simple',
     reviewSLA: '48-72h',
@@ -267,7 +271,7 @@ export function isFullSubmission(data: FlagSubmissionData): data is FlagSubmissi
   return data.tier === 'full' && data.fullData !== undefined;
 }
 
-export function isStandardSubmission(data: FlagSubmissionData): data is FlagSubmissionData & { standardData: StandardFlagData } {
+export function isStandardSubmission(data: FlagSubmissionData): data is FlagSubmissionData & { standardData: StandardFlagFormData } {
   return data.tier === 'standard' && data.standardData !== undefined;
 }
 
@@ -283,8 +287,7 @@ export type PointsCalculator = (
   evidenceCount?: number
 ) => number;
 
-// src/types/datadonation.ts - ADD gamification types
-
+// Gamification Types
 export interface UserGamificationProfile {
   userId: string;
   mode: UserMode;
@@ -298,16 +301,14 @@ export interface UserGamificationProfile {
   streak: StreakData;
   leaderboardPosition?: number;
   nextMilestone?: Milestone;
+  displayName?: string;
+  pointsMultiplier?: number;
+   name?: string;          // User's display name (e.g., "John Doe")
+  email?: string;         // User's email for identification/contact
 }
 
-export type UserTier = 
-  | 'bronze'    // 0-999 points
-  | 'silver'    // 1000-4999 points
-  | 'gold'      // 5000-9999 points
-  | 'platinum'  // 10000-24999 points
-  | 'diamond'   // 25000+ points
-  | 'vc-elite'  // Special VC tier
-  | 'research-fellow'; // Special researcher tier
+// Fix duplicate UserTier declaration
+export type UserTier = "bronze" | "silver" | "gold" | "platinum" | "diamond" | "vc-elite" | "research-fellow";
 
 export interface Badge {
   id: string;
@@ -397,33 +398,6 @@ export interface AchievementDefinition {
   progressFn: (user: UserGamificationProfile) => number;
 }
 
-
-// First, update the FlagSubmissionData type to include gamification
-// src/types/datadonation.ts - Add to existing types:
-
-export interface FlagSubmissionData {
-  tier: 'quick' | 'standard' | 'full';
-  mode: UserMode;
-  entityName: string;
-  context: string;
-  projectName?: string;
-  riskScore?: number;
-  
-  // Tier-specific data
-  quickData?: QuickFlagData;
-  standardData?: StandardFlagData;
-  fullData?: SubmissionFormData;
-  
-  // Gamification metadata
-  pointsAwarded: number;
-  badgesEarned: Badge[];
-  achievementsProgress: Achievement[];
-  streakUpdated: boolean;
-  timestamp: string;
-  submissionId: string;
-}
-
-// Add new types for gamification tracking
 export interface SubmissionGamificationResult {
   pointsAwarded: number;
   badgesEarned: Badge[];
@@ -433,11 +407,10 @@ export interface SubmissionGamificationResult {
   levelUp?: boolean;
   tierChanged?: boolean;
   newTier?: UserTier;
+  updatedStreak?: StreakData; // Added for gamification UI feedback
 }
 
-
-// src/types/datadonation.ts - Add redemption types
-
+// Reward and Redemption Types
 export type RewardType = 
   | 'discount'
   | 'access'
@@ -461,6 +434,7 @@ export interface Reward {
   redemptionInstructions: string;
   expiryDate?: string;
   createdAt: string;
+   isAvailable?: boolean;  // ✅ ADD THIS to the type definition
 }
 
 export interface RedemptionRequest {
@@ -475,3 +449,120 @@ export interface RedemptionRequest {
   adminNotes?: string;
   userNotes?: string;
 }
+
+// Additional missing types
+export interface Evidence {
+  id?: string;
+  url: string;
+  description: string;
+  type: 'url' | 'file' | 'document' | 'image';
+  status?: EvidenceStatus;
+  submissionId: string;
+  archiveUrl?: string;
+  uploadedAt: string;
+  verified: boolean;
+  archived: boolean;
+}
+
+export interface EntityEntry {
+  id: string;
+  name: string;
+  type: EntityType;
+  riskScore?: number;
+  submissionCount?: number;
+  description: string;
+  lastFlagged?: string;
+   allegations?: Array<{    // ✅ ADD THIS
+    id: string;
+    description: string;
+  }>;
+    evidenceCount: number;
+  lastUpdated: string;
+  status?: string;
+  createdAt?: string;
+  
+  // ... other properties
+}
+
+export interface Dispute {
+  id: string;
+  submissionId: string;
+  reason: string;
+  status: 'open' | 'under-review' | 'resolved' | 'dismissed';
+  submittedBy: string;
+  submittedAt: string;
+  resolvedAt?: string;
+  resolutionNotes?: string;
+  // ... other properties
+}
+
+export interface EvidenceVaultItem {
+  id: string;
+  entityId: string;
+  evidenceType: EvidenceType;
+  originalUrl: string;
+  archivedUrl?: string;
+  ipfsHash?: string;
+  submittedBy: string;
+  submittedAt: string;
+  verified: boolean;
+  verificationNotes?: string;
+  // ... other properties
+}
+
+// Helper functions for array format operations
+export const ArrayHelpers = {
+  // Convert evidence array format to objects
+  parseEvidenceArray: (evidenceArray: string[]): Array<{url: string, description: string, type?: EvidenceType}> => {
+    return evidenceArray.map(item => {
+      const parts = item.split('|');
+      return {
+        url: parts[0] || '',
+        description: parts[1] || '',
+        type: parts[2] as EvidenceType || undefined
+      };
+    });
+  },
+  
+  // Convert evidence objects to array format
+  formatEvidenceArray: (evidenceObjects: Array<{url: string, description: string, type?: EvidenceType}>): string[] => {
+    return evidenceObjects.map(e => `${e.url}|${e.description}|${e.type || 'other'}`);
+  },
+  
+  // Calculate points from evidence array
+  calculateEvidencePoints: (evidenceArray: string[], mode: UserMode): number => {
+    const validEvidence = evidenceArray.filter(item => item.includes('|') && item.split('|')[0].trim());
+    const basePoints = validEvidence.length * 10;
+    const multiplier = MODE_CONFIGS[mode].pointMultiplier;
+    return basePoints * multiplier;
+  }
+};
+export type CompatibleSubmissionFormData = {
+  entityType: string;
+  entityDetails: {
+    fullName: string;
+    twitterHandle?: string;
+    telegramHandle?: string;
+    linkedinProfile?: string;
+    website?: string;
+  };
+  affectedProjects: Array<{
+    projectName: string;
+    incidentDescription: string;
+    date: string;
+  }>;
+  evidence: Array<{
+    id?: string;
+    url: string;
+    description: string;
+    type?: EvidenceType;
+    status?: EvidenceStatus;
+  }>;
+  submitterInfo: {
+    email: string;
+    name?: string;
+    anonymous: boolean;
+    acknowledgements: boolean[];
+  };
+  mode?: UserMode;
+};

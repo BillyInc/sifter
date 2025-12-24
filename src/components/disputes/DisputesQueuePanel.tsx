@@ -1,8 +1,8 @@
-// src/components/data-donation/admin/disputes/DisputesQueuePanel.tsx
 'use client';
 
 import React, { useState } from 'react';
-import { Dispute } from '@/types/disputes';
+import { useSearchParams } from 'next/navigation';
+import { Dispute } from '@/types/dispute';
 import { CheckCircleIcon, ClockIcon, ExclamationCircleIcon, DocumentTextIcon, EnvelopeIcon, PhoneIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface DisputesQueuePanelProps {
@@ -26,6 +26,10 @@ export default function DisputesQueuePanel({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [resolution, setResolution] = useState<'accepted' | 'partial' | 'rejected' | null>(null);
   const [emailPreviewType, setEmailPreviewType] = useState<'confirmation' | 'verification' | 'resolution'>('resolution');
+
+  // Fix searchParams null check
+  const searchParams = useSearchParams();
+  const caseId = searchParams?.get('caseId') || '';
 
   // Status counts
   const statusCounts = {
@@ -137,6 +141,17 @@ export default function DisputesQueuePanel({
       default:
         return null;
     }
+  };
+
+  // Fix implicit any types
+  const handleEvidence = (evidence: any, idx: number) => {
+    // Your logic for handling evidence
+    console.log(`Evidence ${idx}:`, evidence);
+  };
+
+  const handleCategory = (category: string, idx: number) => {
+    // Your logic for handling category
+    console.log(`Category ${idx}: ${category}`);
   };
 
   // Email Preview Templates
@@ -547,7 +562,7 @@ The SIFTER Team`
                             <div className="text-sm text-gray-400">{evidence.type}</div>
                           </div>
                           <span className="text-xs text-gray-500">
-                            {new Date(evidence.uploadedAt).toLocaleDateString()}
+                             {evidence.uploadedAt ? new Date(evidence.uploadedAt).toLocaleDateString() : 'Unknown date'}  {/* ✅ Add null check */}
                           </span>
                         </div>
                         <p className="text-gray-300 text-sm mb-3">{evidence.description}</p>

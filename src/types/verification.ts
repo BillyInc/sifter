@@ -31,7 +31,11 @@ export interface AutoVerificationData {
     result: 'match' | 'confirmed_bad' | 'accessible' | 'no_contradictions' | 'contradictions_found';
     detail?: string;
     points?: number; // Contribution to confidence
+    
+
   }>;
+  autoDecision: 'auto_approved' | 'auto_rejected' | 'needs_manual_review';  // ✅ Parent level
+
 }
 
 // From PDF: Manual verification data
@@ -434,7 +438,7 @@ export const REVIEW_WORKFLOWS = {
     requiresQualityCheck: true,
     requiresAdminReview: true
   }
-} as const;
+}; export type ReviewWorkflow = typeof REVIEW_WORKFLOWS[keyof typeof REVIEW_WORKFLOWS];
 
 // PDF Contributor Tiers (from Data Donation Guidelines)
 export const PDF_CONTRIBUTOR_TIERS: Record<1 | 2 | 3, PDFContributorTier> = {

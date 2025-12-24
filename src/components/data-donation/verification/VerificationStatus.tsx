@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { VerificationResult, REVIEW_WORKFLOWS } from '@/types/verification';
-import { UserMode } from '@/types/datadonation';
+import { UserMode } from '@/types/dataDonation';
 
 interface VerificationStatusProps {
   result: VerificationResult;
@@ -85,7 +85,7 @@ export default function VerificationStatus({
         <h4 className="font-medium text-white mb-3">{workflow.totalTime} Review Process</h4>
         <div className="grid grid-cols-4 gap-3">
           {Object.entries(workflow).map(([key, stage]) => {
-            if (key === 'totalTime') return null;
+            if (key === 'totalTime') return null;if (key === 'totalTime' || key.includes('requires')) return null;  // ✅ Skip non-stage 
             
             const isCurrent = key === 'stage2'; // Simplified logic
             const isCompleted = key === 'stage1'; // Simplified logic
@@ -105,7 +105,8 @@ export default function VerificationStatus({
                   {key.replace('stage', 'Stage ')}
                 </div>
                 <div className="font-medium text-white capitalize">
-                  {stage.replace('_', ' ')}
+                  {typeof stage === 'string' ? stage.replace(/_/g, ' ') : ''}  {/* ✅ Safe replace */}
+
                 </div>
                 {isCurrent && (
                   <div className="text-xs text-blue-400 mt-1">Current</div>

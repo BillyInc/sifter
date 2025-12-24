@@ -16,15 +16,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <nav className="border-b border-sifter-border p-4">
+          <div className="flex gap-6">
+            <a href="/" className="text-gray-400 hover:text-white">Home</a>
+            <a href="/disputes" className="text-gray-400 hover:text-white">Public Disputes</a>
+            <a href="/terms" className="text-gray-400 hover:text-white">Terms</a>
+          </div>
+        </nav>
+        {children}
+      </body>
     </html>
   )
 }
-
-<nav className="border-b border-sifter-border p-4">
-  <div className="flex gap-6">
-    <a href="/" className="text-gray-400 hover:text-white">Home</a>
-    <a href="/disputes" className="text-gray-400 hover:text-white">Public Disputes</a>
-    <a href="/terms" className="text-gray-400 hover:text-white">Terms</a>
-  </div>
-</nav>

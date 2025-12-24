@@ -1,4 +1,3 @@
-// components/EABatchDashboard.tsx - WITH DATA DONATION INTEGRATION (FIXED)
 'use client';
 
 import React, { useState } from 'react';
@@ -9,6 +8,21 @@ import { RewardsShop } from '@/components/data-donation/gamification';
 import { EvidenceUpload } from '@/components/data-donation/universal';
 import { DisputeForm } from '@/components/data-donation/universal';
 
+// Import the actual types from the central types file
+import { 
+  UserGamificationProfile, 
+  Reward, 
+  RewardType,
+  UserMode,
+  UserTier,
+  Badge,
+  Achievement,
+  
+  EvidenceType,
+  EvidenceStatus,
+  EntityEntry
+} from '@/types/dataDonation';
+
 import SmartInputParser from './SmartInputParser';
 import MetricBreakdown from './MetricBreakdown';
 import { 
@@ -18,6 +32,7 @@ import {
   ProjectData,
   MetricData,
   VerdictType,
+  EvidenceItem,
 } from '@/types';
 import { generateMockProjectData } from '@/data/mockData';
 import { ExportService } from '@/services/exportService';
@@ -570,6 +585,148 @@ export default function EABatchDashboard({
     confidence: number;
   }>>([]);
 
+  // User profile state for data donation components - USING CORRECT TYPE
+  const [userProfile] = useState<UserGamificationProfile>({
+    userId: 'user_123',
+    name: userEmail.split('@')[0],
+    email: userEmail,
+    mode: 'ea-vc' as UserMode,
+    totalPoints: 1500,
+    lifetimePoints: 2500,
+    availablePoints: 1250,
+    currentLevel: 3,
+    currentTier: 'vc-elite' as UserTier,
+    badges: [
+      {
+        id: 'badge_1',
+        name: 'Early Contributor',
+        description: 'Submitted first batch analysis',
+        icon: '🏆',
+        earnedAt: new Date().toISOString(),
+        rarity: 'rare',
+        category: 'submission',
+        pointsReward: 100
+      },
+      {
+        id: 'badge_2',
+        name: 'Batch Master',
+        description: 'Processed 10+ batch analyses',
+        icon: '⚡',
+        earnedAt: new Date().toISOString(),
+        rarity: 'epic',
+        category: 'consistency',
+        pointsReward: 250
+      }
+    ],
+    achievements: [
+      {
+        id: 'ach_1',
+        name: 'VC Analyst',
+        description: 'Complete 50 project analyses',
+        progress: 35,
+        target: 50,
+        completed: false,
+        pointsReward: 500
+      },
+      {
+        id: 'ach_2',
+        name: 'Data Donor',
+        description: 'Submit 20 evidence items',
+        progress: 12,
+        target: 20,
+        completed: false,
+        pointsReward: 300
+      }
+    ],
+    streak: {
+      currentStreak: 7,
+      longestStreak: 14,
+      lastActivity: new Date().toISOString(),
+      streakBonus: 1.5
+    },
+    leaderboardPosition: 42,
+    nextMilestone: {
+      pointsNeeded: 500,
+      reward: 'Advanced Analytics Access',
+      unlocks: ['Bulk submission tools', 'Team dashboard', 'Advanced analytics', 'Dedicated support']
+    },
+    displayName: userEmail.split('@')[0],
+    pointsMultiplier: 2.0
+  });
+
+  // Rewards data for RewardsShop component - USING CORRECT TYPE
+  const [rewards] = useState<Reward[]>([
+    {
+      id: 'reward_1',
+      name: 'Early Access Feature',
+      description: 'Get 1-week early access to new analysis features',
+      type: 'access' as RewardType,
+      category: 'vc',
+      pointsCost: 500,
+      quantityAvailable: 50,
+      quantityRemaining: 25,
+      tierRequirement: 'silver' as UserTier,
+      modeRequirement: 'ea-vc' as UserMode,
+      features: ['Early access', 'Beta testing'],
+      redemptionInstructions: 'Feature will be unlocked in your account settings after redemption.',
+      createdAt: new Date('2024-01-15').toISOString()
+    },
+    {
+      id: 'reward_2',
+      name: 'Priority Support',
+      description: 'Get priority in customer support queue',
+      type: 'access' as RewardType,
+      category: 'vc',
+      pointsCost: 300,
+      quantityAvailable: 100,
+      quantityRemaining: 75,
+      tierRequirement: 'bronze' as UserTier,
+      redemptionInstructions: 'Priority support activated automatically for 30 days.',
+      createdAt: new Date('2024-01-20').toISOString()
+    },
+    {
+      id: 'reward_3',
+      name: 'Custom Report Template',
+      description: 'Get a custom report template for your VC firm',
+      type: 'feature' as RewardType,
+      category: 'vc',
+      pointsCost: 1000,
+      quantityAvailable: 10,
+      quantityRemaining: 8,
+      tierRequirement: 'gold' as UserTier,
+      modeRequirement: 'ea-vc' as UserMode,
+      features: ['Custom branding', 'VC-specific metrics'],
+      redemptionInstructions: 'Our team will contact you within 48 hours to discuss template requirements.',
+      createdAt: new Date('2024-02-01').toISOString()
+    },
+    {
+      id: 'reward_4',
+      name: 'API Credit Boost',
+      description: 'Get 1000 extra API credits for batch processing',
+      type: 'feature' as RewardType,
+      category: 'vc',
+      pointsCost: 750,
+      quantityAvailable: 25,
+      quantityRemaining: 15,
+      tierRequirement: 'silver' as UserTier,
+      redemptionInstructions: 'Credits will be added to your account balance immediately.',
+      createdAt: new Date('2024-02-10').toISOString()
+    },
+    {
+      id: 'reward_5',
+      name: 'Verified Analyst Badge',
+      description: 'Display a verified badge on your profile',
+      type: 'recognition' as RewardType,
+      category: 'all',
+      pointsCost: 1500,
+      quantityAvailable: 100,
+      quantityRemaining: 45,
+      tierRequirement: 'platinum' as UserTier,
+      redemptionInstructions: 'Badge will appear on your profile within 24 hours.',
+      createdAt: new Date('2024-02-15').toISOString()
+    }
+  ]);
+
   const generateMockBatchProjects = (): ExtendedBatchProject[] => {
     // Define common suspicious entities
     const suspiciousEntities = [
@@ -774,7 +931,8 @@ export default function EABatchDashboard({
         processingTime: 45000,
         scannedAt: new Date(),
         weight: Math.random(),
-        confidence: 85
+        confidence: 85,
+        flaggedEntity: undefined
       });
       
       setShowSingleAnalysis(true);
@@ -886,6 +1044,58 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
     ExportService.exportProjectAnalysis(projectDataForExport);
   };
 
+  // Handle reward redemption
+  const handleRedeemReward = async (rewardId: string): Promise<boolean> => {
+    console.log(`Redeeming reward: ${rewardId}`);
+    // In a real app, this would be an API call
+    return new Promise<boolean>((resolve) => {
+      setTimeout(() => {
+        alert(`Successfully redeemed reward! Points deducted.`);
+        resolve(true);
+      }, 1000);
+    });
+  };
+
+  // Handle evidence submission
+  const handleEvidenceSubmit = async (evidenceData: Omit<EvidenceItem, 'id' | 'submittedAt'>[])=> {
+
+    console.log('Evidence submitted:', evidenceData);
+    // In a real app, this would be an API call
+    return new Promise<void>((resolve) => {
+            setTimeout(() => {
+        alert('Evidence submitted successfully!');
+        resolve();
+      }, 1000);
+    });
+  };
+
+  // Handle dispute submission
+  const handleDisputeSubmit = async (disputeData: any[]): Promise<void> => {
+    console.log('Dispute submitted:', disputeData);
+    // In a real app, this would be an API call
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        alert('Dispute submitted successfully!');
+        resolve();
+      }, 1000);
+    });
+  };
+
+  // Entity data for EvidenceUpload and DisputeForm
+  const entityData: EntityEntry[] = [
+    {
+      id: 'batch_analysis_1',
+      name: 'VC Batch Analysis',
+      type: 'advisor-consultant',
+      riskScore: 75,
+      description: 'Batch analysis of portfolio entities',  // ✅ ADD THIS
+    evidenceCount: 15,                                      // ✅ ADD THIS
+    lastUpdated: new Date().toISOString(),                 // ✅ ADD THIS
+      submissionCount: 15,
+      lastFlagged: new Date().toISOString()
+    }
+  ];
+
   if (showSingleAnalysis && selectedProject && projectData) {
     const riskScore = selectedProject.riskScore || 0;
     
@@ -976,23 +1186,22 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
         )}
 
         {/* NEW: Bulk Flagging Modal */}
-       {suspiciousEntities.length > 0 && (
-       <BulkFlaggingModal
-       isOpen={showBulkFlagging}  // Add this prop!
-       onClose={() => setShowBulkFlagging(false)}
-       entities={suspiciousEntities}
-       onFlagAll={() => handleBulkFlag(suspiciousEntities)}
-       onFlagSelected={(selectedIds) => {
-      const selected = suspiciousEntities.filter(e => selectedIds.includes(e.id));
-      handleBulkFlag(selected);
-    }}
-  />
-)}
+        {suspiciousEntities.length > 0 && (
+          <BulkFlaggingModal
+            isOpen={showBulkFlagging}
+            onClose={() => setShowBulkFlagging(false)}
+            entities={suspiciousEntities}
+            onFlagAll={() => handleBulkFlag(suspiciousEntities)}
+            onFlagSelected={(selectedIds) => {
+              const selected = suspiciousEntities.filter(e => selectedIds.includes(e.id));
+              handleBulkFlag(selected);
+            }}
+          />
+        )}
       </div>
     );
   }
 
-  
   // Main dashboard rendering
   return (
     <div className="space-y-8">
@@ -1285,14 +1494,46 @@ https://projectx.com`}
         </div>
       )}
 
-      {/* Data Donation & Rewards Section - ADDED HERE AT THE END */}
+      {/* Data Donation & Rewards Section - USING CORRECT PROPS */}
       <div className="mt-12 mb-8">
         <h2 className="text-xl font-bold text-white mb-6">Data Donation & Rewards</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <PointsDisplay />
-          <RewardsShop />
-          <EvidenceUpload userType="ea-vc" />
-          <DisputeForm />
+          {/* Evidence Upload Component - USING CORRECT PROPS */}
+          <div className="md:col-span-2">
+            <div className="md:col-span-2">
+  <EvidenceUpload
+    submissionId="batch_analysis"
+    existingEvidence={[]}
+    onUpload={handleEvidenceSubmit}
+    onCancel={() => console.log('Evidence upload cancelled')}
+    mode="ea-vc"
+    maxFiles={10}
+  />
+</div>
+          </div>
+          
+          {/* Dispute Form Component - USING CORRECT PROPS */}
+          <DisputeForm 
+            entityData={entityData.map(e => e.name)} // Convert to string[]
+            userData={[]}
+            onSubmit={handleDisputeSubmit}
+            onCancel={() => console.log('Dispute form cancelled')}
+            userMode="ea-vc"
+          />
+          
+          {/* Points Display Component */}
+          <PointsDisplay
+            userProfile={userProfile}
+            showStreak={true}
+            showLevel={true}
+          />
+          
+          {/* Rewards Shop Component */}
+          <RewardsShop
+            userProfile={userProfile}
+            rewards={rewards}
+            onRedeem={handleRedeemReward}
+          />
         </div>
       </div>
     </div>

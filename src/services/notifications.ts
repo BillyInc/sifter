@@ -1,5 +1,5 @@
 // src/services/notifications.ts
-import { Badge, Achievement, UserTier } from '@/types/datadonation';
+import { Badge, Achievement, UserTier } from '@/types/dataDonation';
 
 export type NotificationType = 
   | 'points-earned'

@@ -744,7 +744,7 @@ export default function Home() {
       entityData.riskScore.toString(),
       entityData.context
     ]);
-    setStandardForm(true);
+   {setShowStandardForm(true)}  // ✅
   }, []);
 
   // Dispute handler

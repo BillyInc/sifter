@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import { MODE_CONFIGS, UserMode } from '@/types/datadonation';
+import { MODE_CONFIGS, UserMode } from '@/types/dataDonation';
 
 interface ModeEvidenceRequirementsProps {
   mode: UserMode;

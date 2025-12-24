@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Dispute } from '@/types/disputes';
+import { Dispute } from '@/types/dispute';
 
 interface EmailPreviewProps {
   dispute: Dispute;

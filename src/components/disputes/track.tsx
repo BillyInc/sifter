@@ -23,7 +23,7 @@ const mockDispute = {
 
 export default function DisputeStatusTrackerPage() {
   const searchParams = useSearchParams();
-  const caseId = searchParams.get('caseId') || mockDispute.caseId;
+  const caseId = searchParams?.get('caseId') || mockDispute.caseId;
   
   const [dispute, setDispute] = useState(mockDispute);
   const [checkingStatus, setCheckingStatus] = useState(false);

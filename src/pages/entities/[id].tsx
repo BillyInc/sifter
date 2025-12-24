@@ -4,12 +4,14 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DisputeFilingForm from '@/components/disputes/DisputeFilingForm';
+import { EntityEntry, EntityType } from '@/types/dataDonation';  // ✅ ADD THIS
 
 // Mock entity data for demo
-const demoEntity = {
+const demoEntity: EntityEntry = {  // ✅ Explicit type
   id: 'entity-123',
   name: 'CryptoScam Inc',
-  type: 'company',
+    type: 'company' as EntityType,  // ✅ Cast to EntityType
+
   riskScore: 85,
   description: 'Multiple rug pull allegations across 3 projects in 2023.',
   allegations: [
@@ -92,7 +94,7 @@ export default function EntityProfilePage() {
               <div className="bg-sifter-card border border-sifter-border rounded-xl p-6 mb-6">
                 <h2 className="text-xl font-bold mb-4">Allegations</h2>
                 <div className="space-y-4">
-                  {demoEntity.allegations.map((allegation, idx) => (
+{demoEntity.allegations?.map((allegation: { id: string; description: string }, idx: number) => (
                     <div key={allegation.id} className="border border-sifter-border rounded-lg p-4">
                       <div className="flex items-center gap-3 mb-3">
                         <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-400">
