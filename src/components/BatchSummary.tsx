@@ -9,7 +9,7 @@ interface BatchSummaryProps {
   onOpenBulkFlagging?: () => void; // ADD
 }
 
-export default function BatchSummary({ job }: BatchSummaryProps) {
+export default function BatchSummary({ job, onOpenBulkFlagging }: BatchSummaryProps) {
   const { summary } = job;
   
   const getPercentage = (count: number) => {
