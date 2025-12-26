@@ -3,6 +3,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { BatchProject, VerdictType, BatchProcessingJob } from '@/types';
+import { createMetricsArray } from '@/utils/metricHelpers';
 
 interface BatchResultsTableProps {
   projects: BatchProject[];
@@ -182,6 +183,31 @@ export default function BatchResultsTable({ projects, onViewDetails, onExport }:
       </tr>
     );
   };
+
+  // In BatchResultsTable.tsx, update the renderProjectCard function
+const renderProjectCard = (project: BatchProject) => {
+  // ... existing code ...
+  
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      // Generate full metrics array if not present
+      const fullProjectData = {
+        ...project,
+        metrics: project.metrics && project.metrics.length >= 13 
+          ? project.metrics 
+          : createMetricsArray(), // Import from metricHelpers
+        overallRisk: {
+          score: project.riskScore,
+          verdict: project.verdict
+        }
+      };
+      onViewDetails(fullProjectData as any); // Pass enriched data
+    }}
+    className="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border border-blue-500/30 rounded-lg text-sm transition-colors"
+  >
+    View Full Analysis
+  </button>
 
   const renderSection = (verdict: VerdictType, count: number, projects: BatchProject[]) => {
     const isExpanded = expandedSection === verdict || expandedSection === null;

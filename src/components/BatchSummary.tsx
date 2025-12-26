@@ -6,6 +6,7 @@ import { BatchProcessingJob } from '@/types';
 
 interface BatchSummaryProps {
   job: BatchProcessingJob;
+  onOpenBulkFlagging?: () => void; // ADD
 }
 
 export default function BatchSummary({ job }: BatchSummaryProps) {
@@ -37,6 +38,34 @@ export default function BatchSummary({ job }: BatchSummaryProps) {
           <div className="text-sm text-gray-400 mb-1">Total Scanned</div>
           <div className="text-3xl font-bold text-white">{summary.total} projects</div>
         </div>
+
+              {summary.rejected > 0 && onOpenBulkFlagging && (
+        <div className="mt-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-semibold text-amber-400 flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-1.998-1.333-2.732 0L3.732 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                Suspicious entities detected
+              </div>
+              <div className="text-sm text-gray-400 mt-1">
+                Review entities appearing in multiple rejected projects
+              </div>
+            </div>
+            <button
+              onClick={onOpenBulkFlagging}
+              className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+              </svg>
+              Review Entities
+            </button>
+          </div>
+        </div>
+      )}
+
         
         <div className="bg-red-500/10 border border-red-500/30 p-6 rounded-xl">
           <div className="text-4xl mb-2">🚫</div>

@@ -192,6 +192,10 @@ export default function ResearcherDashboard({
     lastUpdated: '2 hours ago',
   });
 
+  const handleRemoveFromComparison = (projectId: string) => {
+  setComparisonProjects(prev => prev.filter(p => p.id !== projectId));
+};
+
   // Get metric values using helper function
   const founderDistractionValue = getMetricValue(projectMetrics, 'founderDistraction');
   const mercenaryKeywordsValue = getMetricValue(projectMetrics, 'mercenaryKeywords');
@@ -1274,6 +1278,18 @@ export default function ResearcherDashboard({
                 <div className="text-sm text-gray-400">
                   {comparisonProjects.length} project{comparisonProjects.length !== 1 ? 's' : ''} selected
                 </div>
+
+                  {comparisonProjects.length > 0 && (
+            <button
+              onClick={() => setComparisonProjects([])}
+              className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg text-sm transition-colors"
+            >
+              Clear All
+            </button>
+          )}
+
+
+
               </div>
               
               {comparisonProjects.length === 0 ? (
@@ -1307,6 +1323,17 @@ export default function ResearcherDashboard({
                                 }`}></div>
                                 {project.displayName}
                                 <div className="text-xs text-gray-500">({project.overallRisk.score})</div>
+                                                                  {/* ADD THIS BUTTON: */}
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleRemoveFromComparison(project.id);
+                                        }}
+                                        className="ml-2 text-red-400 hover:text-red-300 text-xs"
+                                        title="Remove from comparison"
+                                      >
+                                        ✕
+                                      </button>
                               </div>
                             </th>
                           ))}

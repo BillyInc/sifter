@@ -9,6 +9,7 @@ import { DisputeForm } from '@/components/data-donation/universal';
 import { createMetricsArray } from '@/utils/metricHelpers';
 import { generateDetailedMetricEvidence } from '@/utils/metricHelpers';
 import SmartInputParser from './SmartInputParser';
+import { ExportService } from '@/services/exportService';
 import { 
   SmartInputResult, 
   MetricData,
@@ -31,6 +32,52 @@ import {
   StreakData,
   Milestone
 } from '@/types/dataDonation';
+
+// Import MetricBreakdown
+import MetricBreakdown from '@/components/MetricBreakdown';  // adjust path if needed
+
+// Helper function to create a metric data object WITH detailed evidence
+const createMetricData = (key: string, name: string, score: number): MetricData => {
+  const normalizedScore = Math.min(Math.max(score, 0), 100);
+  const detailedEvidence = generateDetailedMetricEvidence(key, normalizedScore, {});
+  
+  return {
+    id: `metric_${key}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    key,
+    name,
+    value: normalizedScore,
+    weight: 10,
+    contribution: normalizedScore * 0.1,
+    status: score < 30 ? 'low' : score < 50 ? 'moderate' : score < 70 ? 'high' : 'critical',
+    confidence: Math.floor(Math.random() * 30) + 70,
+    flags: [],
+    evidence: [detailedEvidence],  // ✅ Now has detailed evidence!
+    score: normalizedScore,
+    scoreValue: normalizedScore
+  };
+};
+
+// Create metrics array with all 13 metrics and DETAILED evidence
+const generateMockMetricsWithEvidence = (): MetricData[] => {
+  const metrics: MetricData[] = [];
+  
+  metrics.push(createMetricData('teamIdentity', 'Team Identity', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('teamCompetence', 'Team Competence', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('contaminatedNetwork', 'Contaminated Network', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('mercenaryKeywords', 'Mercenary Keywords', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('messageTimeEntropy', 'Message Time Entropy', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('accountAgeEntropy', 'Account Age Entropy', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('tweetFocus', 'Tweet Focus', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('githubAuthenticity', 'GitHub Authenticity', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('busFactor', 'Bus Factor', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('artificialHype', 'Artificial Hype', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('founderDistraction', 'Founder Distraction', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('engagementAuthenticity', 'Engagement Authenticity', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('tokenomics', 'Tokenomics', Math.floor(Math.random() * 100)));
+  
+  return metrics;
+};
+
 
 interface LocalWatchlistItem extends SharedWatchlistItem {}
 
@@ -223,6 +270,8 @@ export default function IndividualDashboard({
     verdict: VerdictType;
     metrics: MetricData[];
     scanDuration: number;
+    sourceType?: string;    // ✅ Add this
+  sourceUrl?: string;     // ✅ Add this
   } | null>(null);
   
   const [showExportMenu, setShowExportMenu] = useState(false);
@@ -276,7 +325,7 @@ export default function IndividualDashboard({
     setIsAnalyzing(false);
   };
 
-  const startAnalysis = async (projectName: string) => {
+  const startAnalysis = async (projectName: string, sourceType?: string, sourceUrl?: string) => {
     setIsAnalyzing(true);
     setAnalysisResults(null);
     
@@ -285,20 +334,22 @@ export default function IndividualDashboard({
  // Use received metrics if available, otherwise generate full 13 metrics
   const metricsToUse = receivedMetrics.length >= 13 
     ? receivedMetrics 
-    : generateMockMetrics(); // Make sure this returns 13 metrics
+    : generateMockMetricsWithEvidence(); // ✅ Now generates metrics with detailed evidence
   
     const compositeScore = Math.round(metricsToUse.reduce((sum, m) => sum + (m.contribution || 0), 0));
     const riskScore = Math.min(100, Math.max(0, compositeScore));
     let verdict: VerdictType = 'pass';
     if (riskScore >= 60) verdict = 'reject';
     else if (riskScore >= 30) verdict = 'flag';
-    
+    handleSmartInputResolve
     const results = {
       projectName,
       riskScore,
       verdict,
       metrics: metricsToUse,
-      scanDuration: Math.floor(Math.random() * 30) + 30
+      scanDuration: Math.floor(Math.random() * 30) + 30,
+       sourceType: sourceType || 'manual',  // ✅ Add this
+    sourceUrl: sourceUrl || projectName,   // ✅ Add this
     };
     
     setAnalysisResults(results);
@@ -319,10 +370,14 @@ export default function IndividualDashboard({
   };
 
   const handleSmartInputResolve = (result: SmartInputResult) => {
-    if (result.selectedEntity) {
-      startAnalysis(result.selectedEntity.displayName);
-    }
-  };
+  if (result.selectedEntity) {
+    startAnalysis(
+      result.selectedEntity.displayName,
+      result.selectedEntity.platform || 'website',
+      result.selectedEntity.url || result.input
+    );
+  }
+};
 
   const addToWatchlist = (projectName: string, riskScore: number, verdict: VerdictType) => {
     const newItem: LocalWatchlistItem = {
@@ -378,10 +433,47 @@ export default function IndividualDashboard({
     setShowExportMenu(false);
   };
 
-  const exportToPDF = () => {
-    alert('PDF export feature coming soon!');
-    setShowExportMenu(false);
+const exportToPDF = () => {
+  if (!analysisResults) {
+    alert('No analysis results to export');
+    return;
+  }
+  
+  const projectData: ProjectData = {
+    id: `temp_${Date.now()}`,
+    displayName: analysisResults.projectName,
+    canonicalName: analysisResults.projectName.toLowerCase().replace(/\s+/g, '-'),
+    overallRisk: {
+      score: analysisResults.riskScore,
+      verdict: analysisResults.verdict,
+      tier: analysisResults.riskScore < 20 ? 'LOW' : 
+            analysisResults.riskScore < 40 ? 'MODERATE' : 
+            analysisResults.riskScore < 60 ? 'ELEVATED' : 
+            analysisResults.riskScore < 80 ? 'HIGH' : 'CRITICAL',
+      confidence: 85,
+      breakdown: [`Risk score: ${analysisResults.riskScore}/100`]
+    },
+    metrics: analysisResults.metrics,
+    sources: [
+  {
+    type: analysisResults.sourceType || 'manual',
+    url: analysisResults.sourceUrl || analysisResults.projectName,
+    input: analysisResults.projectName
+  }
+],
+    scannedAt: new Date(),
+    processingTime: analysisResults.scanDuration * 1000
   };
+  
+  // Use ExportService if available
+  if (typeof ExportService !== 'undefined' && ExportService.exportToPDF) {
+    ExportService.exportToPDF(projectData);
+  } else {
+    alert('PDF export feature coming soon!');
+  }
+  
+  setShowExportMenu(false);
+};
 
   const exportWatchlist = (format: 'json' | 'csv' | 'pdf') => {
     const data = watchlist.map(item => ({
@@ -573,13 +665,45 @@ export default function IndividualDashboard({
                 </button>
               </div>
 
-              <div>
-                <h3 className="font-bold text-white mb-3 text-sm">13-Metric Breakdown</h3>
-                <div className="space-y-3">
-                  {analysisResults.metrics.map((metric, index) => (
-                    <MetricBar key={index} metric={metric} index={index} />
-                  ))}
-                </div>
+              <div className="mt-6">
+                <h3 className="font-bold text-white mb-4 text-lg">13-Metric Risk Breakdown</h3>
+                
+                <MetricBreakdown 
+                  metrics={analysisResults.metrics}
+                    projectName={analysisResults.projectName}
+                    riskScore={analysisResults.riskScore}
+                     onExport={() => exportAnalysisResults('pdf')}
+                    projectData={receivedProject || {
+                      id: `temp_${Date.now()}`,
+                      displayName: analysisResults.projectName,
+                      canonicalName: analysisResults.projectName.toLowerCase().replace(/\s+/g, '-'),
+                      overallRisk: {
+                        score: analysisResults.riskScore,
+                        verdict: analysisResults.verdict,
+                        tier: analysisResults.riskScore < 20 ? 'LOW' : 
+                              analysisResults.riskScore < 40 ? 'MODERATE' : 
+                              analysisResults.riskScore < 60 ? 'ELEVATED' : 
+                              analysisResults.riskScore < 80 ? 'HIGH' : 'CRITICAL',
+                        confidence: 85,
+                        breakdown: [
+                          `Analysis complete for ${analysisResults.projectName}`,
+                          `Risk score: ${analysisResults.riskScore}/100`,
+                          `Verdict: ${analysisResults.verdict.toUpperCase()}`
+                        ]
+                      },
+                      metrics: analysisResults.metrics,
+                      sources: [
+                        {
+                          type: 'unknown',
+                          url: '',
+                          input: analysisResults.projectName
+                        }
+                      ],
+                      scannedAt: new Date(),
+                      processingTime: analysisResults.scanDuration * 1000
+                    }}
+                    instanceId="individual-dashboard"
+                    />
               </div>
             </div>
           </div>
@@ -1019,75 +1143,75 @@ export default function IndividualDashboard({
                       <button onClick={() => exportRecentScans('csv')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
                         <span className="text-purple-400">📈</span>
                         <span className="text-white">Export as CSV/Excel</span>
-                      </button>
-                      <button onClick={() => exportRecentScans('pdf')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
-                        <span className="text-purple-400">📄</span>
-                        <span className="text-white">Export as PDF</span>
+                        </button>
+                        <button onClick={() => exportRecentScans('pdf')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                          <span className="text-purple-400">📄</span>
+                          <span className="text-white">Export as PDF</span>
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="p-1.5 border-t border-sifter-border">
+                      <button onClick={() => setShowExportMenu(false)} className="w-full px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded text-sm">
+                        Cancel
                       </button>
                     </div>
                   </div>
-                  
-                  <div className="p-1.5 border-t border-sifter-border">
-                    <button onClick={() => setShowExportMenu(false)} className="w-full px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded text-sm">
-                      Cancel
-                    </button>
-                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+            
+            
           </div>
-          
-          
         </div>
-      </div>
 
-      {/* Navigation */}
-      <div className="bg-sifter-card border border-sifter-border rounded-lg p-1">
-        <div className="flex flex-wrap gap-1">
-          {[
-            { id: 'analyze', icon: '🔍', label: 'Analyze' },
-            { id: 'watchlist', icon: '📋', label: `Watchlist (${watchlist.length})` },
-            { id: 'scans', icon: '📊', label: `Scans (${recentScans.length})` },
-            { id: 'learn', icon: '📚', label: 'Learn' }
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => {
-                if (tab.id === 'analyze') resetAnalysis();
-                setActiveTab(tab.id as any);
-              }}
-              className={`px-3 py-1.5 rounded text-sm font-medium transition-all flex items-center gap-1.5 ${
-                activeTab === tab.id
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-800'
-              }`}
-            >
-              <span>{tab.icon}</span>
-              <span>{tab.label}</span>
-            </button>
-          ))}
+        {/* Navigation */}
+        <div className="bg-sifter-card border border-sifter-border rounded-lg p-1">
+          <div className="flex flex-wrap gap-1">
+            {[
+              { id: 'analyze', icon: '🔍', label: 'Analyze' },
+              { id: 'watchlist', icon: '📋', label: `Watchlist (${watchlist.length})` },
+              { id: 'scans', icon: '📊', label: `Scans (${recentScans.length})` },
+              { id: 'learn', icon: '📚', label: 'Learn' }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  if (tab.id === 'analyze') resetAnalysis();
+                  setActiveTab(tab.id as any);
+                }}
+                className={`px-3 py-1.5 rounded text-sm font-medium transition-all flex items-center gap-1.5 ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                }`}
+              >
+                <span>{tab.icon}</span>
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="relative z-10">
-        {activeTab === 'analyze' && renderAnalyzeTab()}
-        {activeTab === 'watchlist' && renderWatchlistTab()}
-        {activeTab === 'scans' && renderScansTab()}
-        {activeTab === 'learn' && renderLearnTab()}
-      </div>
+        {/* Main Content */}
+        <div className="relative z-10">
+          {activeTab === 'analyze' && renderAnalyzeTab()}
+          {activeTab === 'watchlist' && renderWatchlistTab()}
+          {activeTab === 'scans' && renderScansTab()}
+          {activeTab === 'learn' && renderLearnTab()}
+        </div>
 
-      
-      
-      <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out forwards;
-        }
-      `}</style>
-    </div>
-  );
-}
+        
+        
+        <style jsx>{`
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          .animate-fadeIn {
+            animation: fadeIn 0.2s ease-out forwards;
+          }
+        `}</style>
+      </div>
+    );
+  }

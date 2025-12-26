@@ -1,3 +1,4 @@
+
 // components/MetricBreakdown.tsx - UPDATED TO ACCEPT ARRAY
 'use client';
 
@@ -70,6 +71,7 @@ export default function MetricBreakdown({
   projectData,
   instanceId = '' // ✅ ADD THIS with default empty string
 }: MetricBreakdownProps) {
+  console.log('🔍 MetricBreakdown RENDERED with instanceId:', instanceId);
   const [expandedMetric, setExpandedMetric] = useState<string | null>(null);
   const [showShareDialog, setShowShareDialog] = useState(false);
 
@@ -103,6 +105,7 @@ export default function MetricBreakdown({
 
   // Process metrics array into display format
   const processedMetrics = metrics.map((metric, index) => {  // ✅ Add index here
+    
         const score = typeof metric.value === 'number' ? metric.value : 0;
     const details = metricDetails[metric.key] || { 
       icon: '📊', 
@@ -123,21 +126,15 @@ export default function MetricBreakdown({
    
   });
 
-  console.log('expandedMetric:', expandedMetric);
-console.log('instanceId:', instanceId);
 
-// ✅ WITH THIS:
-console.log('=== METRIC IDS ===');
-processedMetrics.forEach((m, i) => {
-  console.log(`${i}: ID="${m.id}" | Key="${m.key}"`);
-});
-console.log('==================');
+// ✅ SIMPLE DEBUG - JUST THIS:
+console.log('Metric IDs:', processedMetrics.map(m => m.id));
+console.log('expandedMetric:', expandedMetric);
 
-  const overallScore = riskScore || 
+const overallScore = riskScore || 
     Math.round(processedMetrics.reduce((sum, metric) => {
       return sum + (metric.score * metric.weight / 100);
     }, 0));
-
   // Simple ShareDialog component
   const ShareDialog = ({ isOpen, onClose, projectData }: any) => {
     if (!isOpen) return null;
@@ -276,80 +273,110 @@ console.log('==================');
 
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {processedMetrics.map((metric) => (
-          <div
-            key={metric.id}
-            className={`border border-sifter-border rounded-xl p-4 cursor-pointer transition-all hover:border-gray-600 ${
-              expandedMetric === metric.id ? 'bg-gray-900/50' : ''
-            }`}
-            onClick={() => toggleMetric(metric.id)}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">{metric.icon}</span>
-                <div>
-                  <h3 className="font-medium text-white">{metric.name}</h3>
-                  <p className="text-xs text-gray-500">Weight: {metric.weight}%</p>
-                </div>
-              </div>
-              <div className={`text-2xl font-bold ${getMetricColor(metric.score)}`}>
-                {metric.score}/100
-              </div>
+   {processedMetrics.map((metric) => {
+  const isExpanded = expandedMetric === metric.id;
+  
+  return (
+    <div
+      key={metric.id}
+      className={`border border-sifter-border rounded-xl cursor-pointer transition-all duration-400 overflow-hidden hover:border-gray-600
+        ${isExpanded
+          ? 'bg-gray-900/50 border-gray-700 shadow-2xl'  // Expanded: full height + highlight
+          : 'max-h-36 hover:bg-gray-800/30'               // Collapsed: FORCED short ~144px
+        }`}
+      onClick={() => toggleMetric(metric.id)}
+    >
+      {/* Header - always visible, matches your original screenshot spacing/fonts */}
+      <div className="flex items-center justify-between p-5">
+        <div className="flex items-center gap-4 min-w-0 flex-1">
+          <span className="text-3xl flex-shrink-0">{metric.icon}</span>
+          <div className="min-w-0">
+            <h3 className="text-lg font-semibold text-white">{metric.name}</h3>
+            <p className="text-sm text-gray-400 mt-1">{metric.description}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 flex-shrink-0">
+          <div className="text-right">
+            <div className={`text-3xl font-bold ${getMetricColor(metric.score)}`}>
+              {metric.score}/100
             </div>
-            
-            <div className={`${getMetricBgColor(metric.score)} rounded-lg h-2 mb-3`}>
-              <div 
+            <p className="text-xs text-gray-500 mt-1">Weight: {metric.weight}%</p>
+          </div>
+
+          <svg
+            className={`w-6 h-6 text-gray-500 transition-transform duration-400 ${
+              isExpanded ? 'rotate-180' : ''
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </div>
+
+      {/* EXPANDED CONTENT - slides in */}
+      {isExpanded && (
+        <div className="px-6 pb-6">
+          {/* Progress Bar */}
+          <div className="mb-6">
+            <div className={`${getMetricBgColor(metric.score)} rounded-lg h-3`}>
+              <div
                 className={`h-full rounded-lg ${getMetricColor(metric.score).replace('text-', 'bg-')}`}
                 style={{ width: `${metric.score}%` }}
               />
             </div>
-            
-            <p className="text-sm text-gray-400 mb-3">{metric.description}</p>
-            
-            {expandedMetric === metric.id && (
-              <div className="mt-4 pt-4 border-t border-sifter-border">
-                <div className="flex items-center gap-2 mb-2">
-                  <span>{getStatusIcon(metric.score)}</span>
-                  <span className="font-medium text-white capitalize">{metric.verdict} Risk</span>
-                </div>
-                <p className="text-sm text-gray-400">{metric.summary}</p>
+          </div>
 
-                          {/* ✅ ADD THIS: Display detailed evidence */}
-              {metric.evidence && metric.evidence.length > 0 && (
-                <div className="mt-4 p-4 bg-gray-900/50 rounded-lg border border-gray-800">
-                  <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-                    <span>🔍</span>
-                    Detailed Analysis
-                  </h4>
-                  <div className="text-sm text-gray-300 whitespace-pre-wrap leading-relaxed max-h-96 overflow-y-auto">
-                    {metric.evidence[0]}
-                  </div>
-                </div>
-              )}
+          {/* Risk Verdict + Summary */}
+          <div className="mb-6">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-2xl">{getStatusIcon(metric.score)}</span>
+              <span className="text-lg font-semibold text-white capitalize">{metric.verdict} Risk</span>
+            </div>
+            <p className="text-base text-gray-300 leading-relaxed">{metric.summary}</p>
+          </div>
 
-                
-                {/* Display flags if any */}
-                {metric.flags && metric.flags.length > 0 && (
-                  <div className="mt-3">
-                    <p className="text-xs text-gray-500 mb-1">Red Flags:</p>
-                    <div className="flex flex-wrap gap-1">
-                      {metric.flags.slice(0, 3).map((flag, index) => (
-                        <span key={index} className="px-2 py-1 bg-red-500/20 text-red-400 text-xs rounded">
-                          {flag}
-                        </span>
-                      ))}
-                      {metric.flags.length > 3 && (
-                        <span className="px-2 py-1 bg-gray-800 text-gray-400 text-xs rounded">
-                          +{metric.flags.length - 3} more
-                        </span>
-                      )}
-                    </div>
-                  </div>
+          {/* Detailed Analysis - SCROLLBAR RESTORED & WORKING ✅ */}
+          {metric.evidence && metric.evidence.length > 0 && (
+            <div className="mb-6">
+              <h4 className="text-base font-semibold text-white mb-4 flex items-center gap-2">
+                🔍 Detailed Analysis
+              </h4>
+              <div className="max-h-96 overflow-y-auto text-base text-gray-300 whitespace-pre-wrap leading-relaxed bg-gray-900/40 rounded-xl p-5 border border-gray-800 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
+                {metric.evidence[0]}
+              </div>
+            </div>
+          )}
+
+          {/* Red Flags */}
+          {metric.flags && metric.flags.length > 0 && (
+            <div>
+              <p className="text-sm text-gray-500 uppercase tracking-wider mb-3">Red Flags</p>
+              <div className="flex flex-wrap gap-2">
+                {metric.flags.slice(0, 6).map((flag, index) => (
+                  <span
+                    key={index}
+                    className="px-4 py-2 bg-red-500/20 text-red-400 text-sm rounded-full border border-red-500/30"
+                  >
+                    {flag}
+                  </span>
+                ))}
+                {metric.flags.length > 6 && (
+                  <span className="px-4 py-2 bg-gray-800 text-gray-400 text-sm rounded-full">
+                    +{metric.flags.length - 6} more
+                  </span>
                 )}
               </div>
-            )}
-          </div>
-        ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+})}
       </div>
 
       {/* Add ShareDialog at the end of the return */}

@@ -290,7 +290,8 @@ const BatchUpload = ({
 // BatchSummaryComponent
 const BatchSummaryComponent = ({ 
   job,
-  batchStats 
+  batchStats, 
+  onOpenBulkFlagging  // ✅ ADD THI
 }: { 
   job: BatchProcessingJob;
   batchStats: {
@@ -298,7 +299,10 @@ const BatchSummaryComponent = ({
     averageProcessingTime: number;
     rejectionRate: number;
     lastBatchDate: Date;
+   
+
   };
+   onOpenBulkFlagging?: () => void;  // ✅ ADD THIS
 }) => {
   const averageRiskScore = job.summary?.averageRiskScore || 0;
   const totalProjects = job.summary?.total || job.projects?.length || 0;
@@ -370,6 +374,34 @@ const BatchSummaryComponent = ({
           </div>
         )}
       </div>
+      {/* ✅ ADD THIS SECTION HERE - before the closing </div> */}
+      {job.summary && job.summary.rejected > 0 && onOpenBulkFlagging && (
+        <div className="mt-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-semibold text-amber-400 flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-1.998-1.333-2.732 0L3.732 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                Suspicious entities detected
+              </div>
+              <div className="text-sm text-gray-400 mt-1">
+                Review entities appearing in multiple rejected projects
+              </div>
+            </div>
+            <button
+              onClick={onOpenBulkFlagging}
+              className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+              </svg>
+              Review Entities
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
@@ -845,13 +877,7 @@ export default function EABatchDashboard({
       const entities = analyzeBatchForEntities(mockProjects);
       setSuspiciousEntities(entities);
       
-      // Show bulk flagging option if we found suspicious entities
-      if (entities.length > 0) {
-        setTimeout(() => {
-          setShowBulkFlagging(true);
-        }, 1000);
-      }
-      
+     
       if (onBatchUploadComplete) {
         onBatchUploadComplete(completedJob);
       }
@@ -1101,6 +1127,8 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
             onClick={() => {
               setShowSingleAnalysis(false);
               setSelectedProject(null);
+              setProjectData(null);
+            setDetailedMetrics([]); // ✅ Clear metrics too
               
           
               
@@ -1116,7 +1144,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
         </div>
 
         <MetricBreakdown
-        instanceId="main-analysis" // ✅ ADD THIS
+        instanceId="batch-analysis" // ✅ ADD UNIQUE ID ADD THIS
           metrics={detailedMetrics}
           projectName={selectedProject.name}
           riskScore={riskScore}
@@ -1169,10 +1197,17 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
           <BatchResultsTable
             projects={batchJob.projects as ExtendedBatchProject[]}
             onViewDetails={(project) => {
-              setSelectedProject(project as ExtendedBatchProject);
-              const mockProjectData = convertBatchToProjectData(project);
-              setProjectData(mockProjectData);
-              setShowSingleAnalysis(true);
+                    const enrichedProject = project as ExtendedBatchProject;
+      
+      // Convert BatchProject to full ProjectData
+      const fullProjectData = convertBatchToProjectData(enrichedProject);
+
+                    // Set the states
+      setSelectedProject(enrichedProject);
+      setProjectData(fullProjectData);
+      setDetailedMetrics(fullProjectData.metrics); // ✅ This is the key!
+      setShowSingleAnalysis(true);
+
               
               if (onViewProjectDetails) {
                 onViewProjectDetails(project);
