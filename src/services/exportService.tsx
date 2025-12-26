@@ -55,7 +55,7 @@ export class ExportService {
       sources: projectData.sources,
       recommendations: projectData.recommendations || [],
       generatedAt: new Date().toISOString(),
-      version: 'Sifter 1.2'
+      version: 'Sifter 1.0'
     };
 
     this.exportToJSON(exportData, `${this.sanitizeFilename(projectData.displayName)}_analysis.json`);
@@ -153,7 +153,7 @@ export class ExportService {
         flagged: projects.filter(p => p.overallRisk.verdict === 'flag').length,
         rejected: projects.filter(p => p.overallRisk.verdict === 'reject').length,
         generatedAt: new Date().toISOString(),
-        version: 'Sifter 1.2'
+        version: 'Sifter 1.0'
       },
       projects: projects.map(p => ({
         name: p.displayName,
@@ -251,14 +251,56 @@ export class ExportService {
             ).join('')}
           </div>
         ` : ''}
-        ${metric.evidence?.length ? `
-          <div class="evidence-list">
-            <strong>Evidence:</strong>
-            ${metric.evidence.map((evidence: string) => 
-              `<div class="evidence-item">• ${evidence}</div>`
-            ).join('')}
-          </div>
-        ` : ''}
+       ${metric.evidence?.length ? `
+  <div class="evidence-list">
+    <strong>📋 Detailed Evidence:</strong>
+    ${metric.evidence.map((evidence: string) => {
+      // Convert markdown to HTML
+      const formattedEvidence = evidence
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold
+        .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italic
+        .split('\n')
+        .map(line => {
+          const trimmed = line.trim();
+          
+          // Main section headers (ending with colon)
+          if (trimmed.endsWith(':') && !trimmed.startsWith('-') && !trimmed.startsWith('•')) {
+            return `<div style="font-weight: 700; margin-top: 16px; margin-bottom: 8px; color: #1a237e; font-size: 15px;">${trimmed}</div>`;
+          }
+          
+          // Bullet points starting with -
+          if (trimmed.startsWith('- ')) {
+            return `<div style="margin-left: 20px; margin-bottom: 4px;">• ${trimmed.substring(2)}</div>`;
+          }
+          
+          // Bullet points starting with •
+          if (trimmed.startsWith('• ')) {
+            return `<div style="margin-left: 20px; margin-bottom: 4px;">${trimmed}</div>`;
+          }
+          
+          // Sub-bullets (indented)
+          if (trimmed.startsWith('  - ') || trimmed.startsWith('    •')) {
+            return `<div style="margin-left: 40px; margin-bottom: 4px; font-size: 13px; color: #555;">○ ${trimmed.trim().substring(2)}</div>`;
+          }
+          
+          // Code blocks
+          if (trimmed.startsWith('```')) {
+            return ''; // Skip code fence markers
+          }
+          
+          // Regular text
+          if (trimmed) {
+            return `<div style="margin: 6px 0; line-height: 1.6;">${trimmed}</div>`;
+          }
+          
+          return '<br>';
+        })
+        .join('');
+      
+      return `<div class="evidence-item">${formattedEvidence}</div>`;
+    }).join('')}
+  </div>
+` : ''}
       </div>`
     ).join('');
 
@@ -478,7 +520,29 @@ export class ExportService {
             color: #666;
             margin-bottom: 5px;
             line-height: 1.4;
-        }
+        }.evidence-list {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #1a237e;
+}
+
+.evidence-item {
+    font-size: 13px;
+    color: #333;
+    line-height: 1.7;
+}
+
+.evidence-item strong {
+    color: #1a237e;
+    font-weight: 600;
+}
+
+.evidence-item em {
+    font-style: italic;
+    color: #555;
+}
         
         .recommendations-list {
             background: #f8f9fa;
@@ -595,7 +659,7 @@ export class ExportService {
     <div class="report-container">
         <div class="header">
             <h1 class="title">SIFTER RESEARCH REPORT</h1>
-            <p class="subtitle">AI-Powered Crypto Project Analysis Platform</p>
+            <p class="subtitle">Deterministic Due Diligence Crypto Analysis Platform</p>
         </div>
         
         <div class="content">
@@ -625,7 +689,9 @@ export class ExportService {
             <div class="section">
                 <h3 class="section-title">Data Sources</h3>
                 <div class="sources-list">
-                    ${projectData.sources?.map(source => `<span class="source-tag">${source}</span>`).join('') || 'No sources available'}
+                    ${projectData.sources?.map(source => 
+  `<span class="source-tag">${typeof source === 'string' ? source : `${source.type || 'Unknown'}: ${source.username ? '@' + source.username : source.url || 'N/A'}`}</span>`
+).join('') || 'No sources available'}
                 </div>
             </div>
             
@@ -666,7 +732,7 @@ export class ExportService {
             <div class="footer-content">
                 <div class="logo">
                     <span>🔬</span>
-                    <span>SIFTER 1.2</span>
+                    <span>SIFTER 1.0</span>
                 </div>
                 <div class="generated-info">
                     Generated on ${new Date().toLocaleString()}<br>
@@ -759,13 +825,13 @@ export class ExportService {
 <body>
     <div class="header">
         <div class="title">SIFTER RESEARCH REPORT</div>
-        <div class="subtitle">AI-Powered Crypto Project Analysis Platform</div>
+        <div class="subtitle">Deterministic Due Diligence Crypto Analysis Platform</div>
     </div>
     <div class="content">
         <pre>${textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
     </div>
     <div class="footer">
-        Generated by Sifter 1.2 • ${new Date().toLocaleString()} • https://sifter.app
+        Generated by Sifter 1.0 • ${new Date().toLocaleString()} • https://sifter.app
     </div>
 </body>
 </html>`;
@@ -811,7 +877,7 @@ ${this.getRecommendationFromScore(projectData.overallRisk.score)}
 
 GENERATED: ${new Date().toLocaleString()}
 ANALYZED: ${projectData.analyzedAt || projectData.scannedAt.toLocaleString()}
-VERSION: Sifter 1.2 Research Edition
+VERSION: Sifter 1.0 Research Edition
 `;
   }
 
@@ -872,7 +938,7 @@ VERSION: Sifter 1.2 Research Edition
               short: true
             }
           ],
-          footer: 'Sifter 1.2 • Batch Analysis',
+          footer: 'Sifter 1.0 • Batch Analysis',
           ts: Math.floor(Date.now() / 1000)
         }]
       };
@@ -907,7 +973,7 @@ VERSION: Sifter 1.2 Research Edition
               short: true
             }
           ],
-          footer: 'Sifter 1.2',
+          footer: 'Sifter 1.0',
           ts: Math.floor(projectData.scannedAt.getTime() / 1000)
         }]
       };

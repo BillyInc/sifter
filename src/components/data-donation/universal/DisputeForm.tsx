@@ -712,117 +712,105 @@ export default function DisputeForm({
     }
   };
 
-  return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 overflow-y-auto">
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-          {/* Header */}
-          <div className="sticky top-0 bg-sifter-card/95 backdrop-blur-sm border-b border-sifter-border p-6">
-            <div className="flex justify-between items-center">
-              <div>
-                <h2 className="text-xl font-bold text-white">Submit Dispute</h2>
-                <div className="text-sm text-gray-400">
-                  Entity: <span className="text-red-400">{entityName}</span> • 
-                  Case: <span className="text-blue-400">{caseId}</span>
-                </div>
-              </div>
-              {step < 7 && (
-                <button
-                  onClick={onCancel}
-                  className="text-gray-400 hover:text-white text-2xl"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-
-            {/* Progress */}
-            {step < 7 && (
-              <div className="mt-4">
-                <div className="flex justify-between text-xs text-gray-500 mb-1">
-                  <span>Step {step} of 6</span>
-                  <span>{Math.round((step / 6) * 100)}% Complete</span>
-                </div>
-                <div className="w-full bg-sifter-border rounded-full h-2">
-                  <div 
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${(step / 6) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Content */}
-          <div className="p-6">
-            {errors.length > 0 && (
-              <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
-                <div className="flex items-center gap-2 text-red-400 mb-2">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.994-.833-2.764 0L4.67 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                  </svg>
-                  <span className="font-medium">Please fix the following:</span>
-                </div>
-                <ul className="text-sm text-red-300 space-y-1">
-                  {errors.map((error, index) => (
-                    <li key={index}>• {error}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {renderStep()}
-
-            {/* Navigation */}
-            {step < 7 && (
-              <div className="mt-8 flex justify-between pt-6 border-t border-sifter-border">
-                <div>
-                  {step > 1 && step < 7 && (
-                    <button
-                      type="button"
-                      onClick={handlePrevStep}
-                      className="px-6 py-3 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg font-medium transition-colors flex items-center gap-2"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                      Back
-                    </button>
-                  )}
-                </div>
-                
-                <button
-                  type="button"
-                  onClick={step < 6 ? handleNextStep : handleSubmit}
-                  disabled={isSubmitting}
-                  className={`px-6 py-3 rounded-lg font-medium transition-all flex items-center gap-2 ${
-                    step < 6
-                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white'
-                      : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <svg className="animate-spin w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Submitting...
-                    </>
-                  ) : (
-                    <>
-                      {step < 6 ? 'Continue' : 'Submit Dispute'}
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </>
-                  )}
-                </button>
-              </div>
-            )}
+return (
+  <div className="w-full">
+    {/* Header */}
+    <div className="mb-6">
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h2 className="text-xl font-bold text-white">Submit Dispute</h2>
+          <div className="text-sm text-gray-400">
+            Entity: <span className="text-red-400">{entityName}</span>
+            {caseId && <> • Case: <span className="text-blue-400">{caseId}</span></>}
           </div>
         </div>
       </div>
+
+      {/* Progress */}
+      {step < 7 && (
+        <div className="mt-4">
+          <div className="flex justify-between text-xs text-gray-500 mb-1">
+            <span>Step {step} of 6</span>
+            <span>{Math.round((step / 6) * 100)}% Complete</span>
+          </div>
+          <div className="w-full bg-sifter-border rounded-full h-2">
+            <div 
+              className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${(step / 6) * 100}%` }}
+            ></div>
+          </div>
+        </div>
+      )}
     </div>
-  );
+
+    {/* Content */}
+    <div>
+      {errors.length > 0 && (
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+          <div className="flex items-center gap-2 text-red-400 mb-2">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.994-.833-2.764 0L4.67 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            <span className="font-medium">Please fix the following:</span>
+          </div>
+          <ul className="text-sm text-red-300 space-y-1">
+            {errors.map((error, index) => (
+              <li key={index}>• {error}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {renderStep()}
+
+      {/* Navigation */}
+      {step < 7 && (
+        <div className="mt-8 flex justify-between pt-6 border-t border-sifter-border">
+          <div>
+            {step > 1 && step < 7 && (
+              <button
+                type="button"
+                onClick={handlePrevStep}
+                className="px-6 py-3 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg font-medium transition-colors flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                Back
+              </button>
+            )}
+          </div>
+          
+          <button
+            type="button"
+            onClick={step < 6 ? handleNextStep : handleSubmit}
+            disabled={isSubmitting}
+            className={`px-6 py-3 rounded-lg font-medium transition-all flex items-center gap-2 ${
+              step < 6
+                ? 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white'
+                : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
+          >
+            {isSubmitting ? (
+              <>
+                <svg className="animate-spin w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Submitting...
+              </>
+            ) : (
+              <>
+                {step < 6 ? 'Continue' : 'Submit Dispute'}
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </>
+            )}
+          </button>
+        </div>
+      )}
+    </div>
+  </div>
+);
 }

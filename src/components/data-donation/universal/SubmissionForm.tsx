@@ -34,25 +34,25 @@ export default function SubmissionForm({
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<SubmissionFormData>({
     // Required properties from your interface
-    id: prefillData.id || '',
-    caseId: prefillData.caseId || '',
-    submittedAt: prefillData.submittedAt || '',
+    id: prefillData?.id || '',
+    caseId: prefillData?.caseId || '',
+    submittedAt: prefillData?.submittedAt || '',
     
     // Existing properties
-    entityType: prefillData.entityType || 'marketing-agency',
+    entityType: prefillData?.entityType || 'marketing-agency',
     entityDetails: { 
-      fullName: prefillData.entityDetails?.fullName || '', 
-      twitterHandle: prefillData.entityDetails?.twitterHandle || '', 
-      telegramHandle: prefillData.entityDetails?.telegramHandle || '', 
-      linkedinProfile: prefillData.entityDetails?.linkedinProfile || '', 
-      website: prefillData.entityDetails?.website || '' 
+      fullName: prefillData?.entityDetails?.fullName || '', 
+      twitterHandle: prefillData?.entityDetails?.twitterHandle || '', 
+      telegramHandle: prefillData?.entityDetails?.telegramHandle || '', 
+      linkedinProfile: prefillData?.entityDetails?.linkedinProfile || '', 
+      website: prefillData?.entityDetails?.website || '' 
     },
-    affectedProjects: prefillData.affectedProjects || [{
+    affectedProjects: prefillData?.affectedProjects || [{
       projectName: '',
       incidentDescription: '',
       date: new Date().toLocaleDateString('en-US', { month: '2-digit', year: 'numeric' })
     }],
-    evidence: prefillData.evidence || [
+    evidence: prefillData?.evidence || [
       { 
         id: `evidence_${Date.now()}_1`, 
         url: '', 
@@ -69,22 +69,22 @@ export default function SubmissionForm({
       }
     ],
     submitterInfo: {
-      email: userEmail || prefillData.submitterInfo?.email || '',
-      name: userName || prefillData.submitterInfo?.name || '',
-      anonymous: prefillData.submitterInfo?.anonymous || false,
-      acknowledgements: prefillData.submitterInfo?.acknowledgements || [false, false, false]
+      email: userEmail || prefillData?.submitterInfo?.email || '',
+      name: userName || prefillData?.submitterInfo?.name || '',
+      anonymous: prefillData?.submitterInfo?.anonymous || false,
+      acknowledgements: prefillData?.submitterInfo?.acknowledgements || [false, false, false]
     },
     mode: mode || 'individual',
     status: 'draft',
     
     // Optional properties with defaults
-    confidenceScore: prefillData.confidenceScore || 0,
-    impactScore: prefillData.impactScore || 0,
-    pointsAwarded: prefillData.pointsAwarded || 0,
-    updatedAt: prefillData.updatedAt || '',
-    title: prefillData.title || '',
-    description: prefillData.description || '',
-    severity: prefillData.severity || 'medium'
+    confidenceScore: prefillData?.confidenceScore || 0,
+    impactScore: prefillData?.impactScore || 0,
+    pointsAwarded: prefillData?.pointsAwarded || 0,
+    updatedAt: prefillData?.updatedAt || '',
+    title: prefillData?.title || '',
+    description: prefillData?.description || '',
+    severity: prefillData?.severity || 'medium'
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);

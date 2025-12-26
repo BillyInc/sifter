@@ -429,7 +429,7 @@ export interface Reward {
   quantityAvailable?: number;
   quantityRemaining?: number;
   tierRequirement?: UserTier;
-  modeRequirement?: UserMode;
+  modeRequirement?: UserMode | undefined | null;
   features?: string[];
   redemptionInstructions: string;
   expiryDate?: string;

@@ -5,8 +5,9 @@ import React, { useState } from 'react';
 // Add these imports at the top:
 import { PointsDisplay } from '@/components/data-donation/gamification';
 import { RewardsShop } from '@/components/data-donation/gamification';
-import { EvidenceUpload } from '@/components/data-donation/universal';
+
 import { DisputeForm } from '@/components/data-donation/universal';
+import { generateDetailedMetricEvidence } from '@/utils/metricHelpers';
 
 // Import the actual types from the central types file
 import { 
@@ -68,7 +69,7 @@ interface EABatchDashboardProps {
   onAnalyze: (input: string) => void;
   onBatchUploadComplete: (job: BatchProcessingJob) => void;
   onViewProjectDetails: (project: BatchProject) => void;
-  onModeChange: () => void;
+
   recentBatches?: BatchProcessingJob[];
   batchStats?: {
     totalProcessed: number;
@@ -97,8 +98,11 @@ interface EABatchDashboardProps {
 }
 
 // Helper function to create a metric data object WITH FIXED SCORE PROPERTY
+
+// Helper function to create a metric data object WITH FIXED SCORE PROPERTY
 const createMetricData = (key: string, name: string, score: number): MetricData => {
   const normalizedScore = Math.min(Math.max(score, 0), 100);
+   const detailedEvidence = generateDetailedMetricEvidence(key, normalizedScore, {});
   
   return {
     id: `metric_${key}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -106,14 +110,16 @@ const createMetricData = (key: string, name: string, score: number): MetricData 
     name,
     value: normalizedScore,
     weight: 10,
-    contribution: normalizedScore,
+    contribution: normalizedScore * 0.1, // Changed from just normalizedScore
     status: score < 30 ? 'low' : score < 50 ? 'moderate' : score < 70 ? 'high' : 'critical',
     confidence: Math.floor(Math.random() * 30) + 70,
     flags: [],
-    evidence: [],
-    score: normalizedScore // Explicitly set the score property
+     evidence: [detailedEvidence],  // ✅ Now has detailed evidence!
+    score: normalizedScore, // Explicitly set the score property
+    scoreValue: normalizedScore // Add this too for compatibility
   };
 };
+
 
 // Fixed: Simple function to ensure metrics have score property (what you asked for)
 const ensureMetricsHaveScore = (metricsArray: MetricData[]): MetricData[] => {
@@ -124,23 +130,23 @@ const ensureMetricsHaveScore = (metricsArray: MetricData[]): MetricData[] => {
 };
 
 // Create metrics array with all 13 metrics
+// Create metrics array with all 13 metrics - RANDOMIZED SCORES
 const createMetricsArray = (): MetricData[] => {
   const metrics: MetricData[] = [];
   
-  // Team metrics
-  metrics.push(createMetricData('teamIdentity', 'Team Identity', 85));
-  metrics.push(createMetricData('teamCompetence', 'Team Competence', 45));
-  metrics.push(createMetricData('contaminatedNetwork', 'Contaminated Network', 92));
-  metrics.push(createMetricData('mercenaryKeywords', 'Mercenary Keywords', 78));
-  metrics.push(createMetricData('messageTimeEntropy', 'Message Time Entropy', 65));
-  metrics.push(createMetricData('accountAgeEntropy', 'Account Age Entropy', 88));
-  metrics.push(createMetricData('tweetFocus', 'Tweet Focus', 32));
-  metrics.push(createMetricData('githubAuthenticity', 'GitHub Authenticity', 25));
-  metrics.push(createMetricData('busFactor', 'Bus Factor', 40));
-  metrics.push(createMetricData('artificialHype', 'Artificial Hype', 95));
-  metrics.push(createMetricData('founderDistraction', 'Founder Distraction', 70));
-  metrics.push(createMetricData('engagementAuthenticity', 'Engagement Authenticity', 55));
-  metrics.push(createMetricData('tokenomics', 'Tokenomics', 60));
+  metrics.push(createMetricData('teamIdentity', 'Team Identity', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('teamCompetence', 'Team Competence', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('contaminatedNetwork', 'Contaminated Network', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('mercenaryKeywords', 'Mercenary Keywords', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('messageTimeEntropy', 'Message Time Entropy', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('accountAgeEntropy', 'Account Age Entropy', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('tweetFocus', 'Tweet Focus', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('githubAuthenticity', 'GitHub Authenticity', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('busFactor', 'Bus Factor', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('artificialHype', 'Artificial Hype', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('founderDistraction', 'Founder Distraction', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('engagementAuthenticity', 'Engagement Authenticity', Math.floor(Math.random() * 100)));
+  metrics.push(createMetricData('tokenomics', 'Tokenomics', Math.floor(Math.random() * 100)));
   
   return metrics;
 };
@@ -550,7 +556,7 @@ export default function EABatchDashboard({
   onAnalyze,
   onBatchUploadComplete,
   onViewProjectDetails,
-  onModeChange,
+ 
   recentBatches = [],
   batchStats = {
     totalProcessed: 0,
@@ -584,6 +590,8 @@ export default function EABatchDashboard({
     projects: string[];
     confidence: number;
   }>>([]);
+   // ✅ ADD THIS LINE HERE (around line 560)
+  const [showDisputeForm, setShowDisputeForm] = useState(false);
 
   // User profile state for data donation components - USING CORRECT TYPE
   const [userProfile] = useState<UserGamificationProfile>({
@@ -727,47 +735,49 @@ export default function EABatchDashboard({
     }
   ]);
 
-  const generateMockBatchProjects = (): ExtendedBatchProject[] => {
-    // Define common suspicious entities
-    const suspiciousEntities = [
-      'RugAgencyX',
+ const generateMockBatchProjects = (): ExtendedBatchProject[] => {
+  const suspiciousEntities = [
+    'RugAgencyX',
       'DevAnonymous',
       'MarketingBotFarm',
       'PumpGroupAlpha',
       'ScamContractor'
-    ];
+  ];
+  
+  return Array.from({ length: 50 }, (_, i) => {
+    // Create consistent hash from project name for seeding
+    const projectName = `Project ${String.fromCharCode(65 + (i % 26))}${Math.floor(i / 26) + 1}`;
+    const seed = projectName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     
-    return Array.from({ length: 50 }, (_, i) => {
-      const riskScore = Math.floor(Math.random() * 100);
-      let verdict: VerdictType = 'reject';
-      
-      if (riskScore < 30) verdict = 'pass';
-      else if (riskScore < 60) verdict = 'flag';
-      
-      // Add flagged entity for high-risk projects
-      const flaggedEntity = riskScore > 60 
-        ? suspiciousEntities[Math.floor(Math.random() * suspiciousEntities.length)]
-        : undefined;
-      
-      return {
-        id: `project_${i}`,
-        name: `Project ${String.fromCharCode(65 + (i % 26))}${Math.floor(i / 26) + 1}`,
-        input: `project${i}.com`,
-        status: 'complete',
-        riskScore,
-        verdict,
-        redFlags: riskScore > 80 ? ['Known rug agency'] : 
-                 riskScore > 60 ? ['Anonymous team'] : 
-                 riskScore > 40 ? ['Mixed signals'] : [],
-        processingTime: Math.floor(Math.random() * 60000) + 30000,
-        scannedAt: new Date(),
-        weight: Math.random(),
-        confidence: Math.floor(Math.random() * 30) + 70,
-        flaggedEntity // Add the missing property
-      };
-    });
-  };
-
+    // Use seed to generate consistent risk score for this project
+    const riskScore = (seed % 80) + 20; // Range: 20-100
+    
+    let verdict: VerdictType = 'reject';
+    if (riskScore < 30) verdict = 'pass';
+    else if (riskScore < 60) verdict = 'flag';
+    
+    const flaggedEntity = riskScore > 60 
+      ? suspiciousEntities[(seed % suspiciousEntities.length)]
+      : undefined;
+    
+    return {
+      id: `project_${i}`,
+      name: projectName,
+      input: `project${i}.com`,
+      status: 'complete',
+      riskScore,
+      verdict,
+      redFlags: riskScore > 80 ? ['Known rug agency'] : 
+               riskScore > 60 ? ['Anonymous team'] : 
+               riskScore > 40 ? ['Mixed signals'] : [],
+      processingTime: Math.floor((seed % 60) * 1000) + 30000,
+      scannedAt: new Date(),
+      weight: Math.random(),
+      confidence: Math.floor((seed % 30)) + 70,
+      flaggedEntity
+    };
+  });
+};
   // NEW: Function to detect suspicious entities from batch results
   const analyzeBatchForEntities = (projects: ExtendedBatchProject[]) => {
     const entities: Record<string, {
@@ -1057,8 +1067,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
   };
 
   // Handle evidence submission
-  const handleEvidenceSubmit = async (evidenceData: Omit<EvidenceItem, 'id' | 'submittedAt'>[])=> {
-
+  const handleEvidenceSubmit = async (evidenceData: Omit<EvidenceItem, 'id' | 'submittedAt'>[]): Promise<void> => {
     console.log('Evidence submitted:', evidenceData);
     // In a real app, this would be an API call
     return new Promise<void>((resolve) => {
@@ -1081,21 +1090,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
     });
   };
 
-  // Entity data for EvidenceUpload and DisputeForm
-  const entityData: EntityEntry[] = [
-    {
-      id: 'batch_analysis_1',
-      name: 'VC Batch Analysis',
-      type: 'advisor-consultant',
-      riskScore: 75,
-      description: 'Batch analysis of portfolio entities',  // ✅ ADD THIS
-    evidenceCount: 15,                                      // ✅ ADD THIS
-    lastUpdated: new Date().toISOString(),                 // ✅ ADD THIS
-      submissionCount: 15,
-      lastFlagged: new Date().toISOString()
-    }
-  ];
-
+  
   if (showSingleAnalysis && selectedProject && projectData) {
     const riskScore = selectedProject.riskScore || 0;
     
@@ -1106,6 +1101,9 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
             onClick={() => {
               setShowSingleAnalysis(false);
               setSelectedProject(null);
+              
+          
+              
             }}
             className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
           >
@@ -1118,6 +1116,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
         </div>
 
         <MetricBreakdown
+        instanceId="main-analysis" // ✅ ADD THIS
           metrics={detailedMetrics}
           projectName={selectedProject.name}
           riskScore={riskScore}
@@ -1216,28 +1215,11 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
             <div className="text-sm text-gray-400">Analyst</div>
             <div className="font-medium text-white">{userEmail}</div>
           </div>
-          <button
-            onClick={onModeChange}
-            className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors flex items-center gap-2"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-            </svg>
-            Switch Mode
-          </button>
+          
         </div>
       </div>
 
-      {/* Back Button */}
-      <button
-        onClick={onBack}
-        className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-      >
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        Back
-      </button>
+   
 
       {/* Tabs */}
       <div className="flex border-b border-sifter-border">
@@ -1359,13 +1341,15 @@ https://projectx.com`}
               <h3 className="text-xl font-semibold text-white mb-4">Quick Actions</h3>
               <div className="grid grid-cols-2 gap-4">
                 <button
-                  onClick={onSingleAnalysis}
-                  className="p-4 border border-sifter-border rounded-xl hover:border-blue-500/50 hover:bg-sifter-card/50 transition-all text-center"
-                >
-                  <div className="text-2xl mb-2">🔍</div>
-                  <div className="font-medium text-white">Single Analysis</div>
-                  <div className="text-sm text-gray-400">Analyze one project</div>
-                </button>
+                onClick={() => {
+                  setActiveTab('single');
+                }}
+                className="p-4 border border-sifter-border rounded-xl hover:border-blue-500/50 hover:bg-sifter-card/50 transition-all text-center"
+              >
+                <div className="text-2xl mb-2">🔍</div>
+                <div className="font-medium text-white">Single Analysis</div>
+                <div className="text-sm text-gray-400">Analyze one project</div>
+              </button>
                 <button
                   onClick={handleAnalyzeClick}
                   className="p-4 border border-sifter-border rounded-xl hover:border-blue-500/50 hover:bg-sifter-card/50 transition-all text-center"
@@ -1415,59 +1399,138 @@ https://projectx.com`}
             <p className="text-gray-600 text-sm mb-3">Quick demo:</p>
             <div className="flex justify-center gap-3">
               <button
-                onClick={() => {
-                  const mockResult: SmartInputResult = {
-                    input: '@moonrocket_fi',
-                    type: 'twitter',
-                    resolvedEntities: [],
-                    selectedEntity: {
-                      id: 'mock_1',
-                      canonicalName: 'moonrocket_fi',
-                      displayName: 'MoonRocket Finance',
-                      platform: 'twitter',
-                      url: 'https://twitter.com/moonrocket_fi',
-                      confidence: 85,
-                      alternativeNames: [],
-                      crossReferences: [],
-                      metadata: {}
-                    },
-                    confidence: 85,
-                    searchHistory: [],
-                    timestamp: new Date()
-                  };
-                  handleSmartInputResolve(mockResult);
-                }}
-                className="text-sm text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-colors"
-              >
-                View REJECT example
-              </button>
-              <button
-                onClick={() => {
-                  const mockResult: SmartInputResult = {
-                    input: 'aave',
-                    type: 'name',
-                    resolvedEntities: [],
-                    selectedEntity: {
-                      id: 'mock_2',
-                      canonicalName: 'aave',
-                      displayName: 'Aave Protocol',
-                      platform: 'website',
-                      url: 'https://aave.com',
-                      confidence: 90,
-                      alternativeNames: [],
-                      crossReferences: [],
-                      metadata: {}
-                    },
-                    confidence: 90,
-                    searchHistory: [],
-                    timestamp: new Date()
-                  };
-                  handleSmartInputResolve(mockResult);
-                }}
-                className="text-sm text-green-400 hover:text-green-300 bg-green-500/10 hover:bg-green-500/20 px-4 py-2 rounded-lg transition-colors"
-              >
-                View PROCEED example
-              </button>
+      onClick={() => {
+        // Force HIGH RISK scores for REJECT example
+        const rejectMetrics = [
+          { key: 'teamIdentity', name: 'Team Identity', score: 85 },
+          { key: 'teamCompetence', name: 'Team Competence', score: 75 },
+          { key: 'contaminatedNetwork', name: 'Contaminated Network', score: 92 },
+          { key: 'mercenaryKeywords', name: 'Mercenary Keywords', score: 88 },
+          { key: 'messageTimeEntropy', name: 'Message Time Entropy', score: 78 },
+          { key: 'accountAgeEntropy', name: 'Account Age Entropy', score: 90 },
+          { key: 'tweetFocus', name: 'Tweet Focus', score: 72 },
+          { key: 'githubAuthenticity', name: 'GitHub Authenticity', score: 85 },
+          { key: 'busFactor', name: 'Bus Factor', score: 80 },
+          { key: 'artificialHype', name: 'Artificial Hype', score: 95 },
+          { key: 'founderDistraction', name: 'Founder Distraction', score: 82 },
+          { key: 'engagementAuthenticity', name: 'Engagement Authenticity', score: 88 },
+          { key: 'tokenomics', name: 'Tokenomics', score: 79 }
+        ].map(m => createMetricData(m.key, m.name, m.score));
+        
+        const metricsWithScore = ensureMetricsHaveScore(rejectMetrics);
+        setDetailedMetrics(metricsWithScore);
+        
+        const compositeScore = Math.round(
+          metricsWithScore.reduce((sum, m) => sum + (m.score || 0), 0) / metricsWithScore.length
+        );
+        
+        const mockProjectData: ProjectData = {
+          id: 'mock_reject',
+          canonicalName: 'moonrocket_fi',
+          displayName: 'MoonRocket Finance',
+          description: `High-risk project analysis`,
+          platform: 'twitter',
+          sources: [{ type: 'twitter', url: 'https://twitter.com/moonrocket_fi', input: '@moonrocket_fi' }],
+          metrics: metricsWithScore,
+          overallRisk: {
+            score: compositeScore,
+            verdict: 'reject',
+            tier: 'CRITICAL',
+            confidence: 85,
+            breakdown: [`High risk detected: ${compositeScore}/100`]
+          },
+          scannedAt: new Date(),
+          processingTime: 45000,
+        };
+        
+        setProjectData(mockProjectData);
+        setSelectedProject({
+          id: 'mock_reject',
+          name: 'MoonRocket Finance',
+          input: '@moonrocket_fi',
+          status: 'complete',
+          riskScore: compositeScore,
+          verdict: 'reject',
+          redFlags: ['Known rug agency', 'Anonymous team'],
+          processingTime: 45000,
+          scannedAt: new Date(),
+          weight: Math.random(),
+          confidence: 85,
+          flaggedEntity: undefined
+        });
+        setShowSingleAnalysis(true);
+      }}
+      className="text-sm text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-colors"
+    >
+      View REJECT example (High Risk 70+)
+    </button>
+    <button
+      onClick={() => {
+        // Force LOW RISK scores for PASS example
+        const passMetrics = [
+          { key: 'teamIdentity', name: 'Team Identity', score: 15 },
+          { key: 'teamCompetence', name: 'Team Competence', score: 20 },
+          { key: 'contaminatedNetwork', name: 'Contaminated Network', score: 10 },
+          { key: 'mercenaryKeywords', name: 'Mercenary Keywords', score: 18 },
+          { key: 'messageTimeEntropy', name: 'Message Time Entropy', score: 12 },
+          { key: 'accountAgeEntropy', name: 'Account Age Entropy', score: 8 },
+          { key: 'tweetFocus', name: 'Tweet Focus', score: 22 },
+          { key: 'githubAuthenticity', name: 'GitHub Authenticity', score: 14 },
+          { key: 'busFactor', name: 'Bus Factor', score: 25 },
+          { key: 'artificialHype', name: 'Artificial Hype', score: 16 },
+          { key: 'founderDistraction', name: 'Founder Distraction', score: 19 },
+          { key: 'engagementAuthenticity', name: 'Engagement Authenticity', score: 11 },
+          { key: 'tokenomics', name: 'Tokenomics', score: 23 }
+        ].map(m => createMetricData(m.key, m.name, m.score));
+        
+        const metricsWithScore = ensureMetricsHaveScore(passMetrics);
+        setDetailedMetrics(metricsWithScore);
+        
+        const compositeScore = Math.round(
+          metricsWithScore.reduce((sum, m) => sum + (m.score || 0), 0) / metricsWithScore.length
+        );
+        
+        const mockProjectData: ProjectData = {
+          id: 'mock_pass',
+          canonicalName: 'aave',
+          displayName: 'Aave Protocol',
+          description: `Low-risk project analysis`,
+          platform: 'website',
+          sources: [{ type: 'website', url: 'https://aave.com', input: 'aave' }],
+          metrics: metricsWithScore,
+          overallRisk: {
+            score: compositeScore,
+            verdict: 'pass',
+            tier: 'LOW',
+            confidence: 90,
+            breakdown: [`Low risk: ${compositeScore}/100`]
+          },
+          scannedAt: new Date(),
+          processingTime: 45000,
+        };
+        
+        setProjectData(mockProjectData);
+        setSelectedProject({
+          id: 'mock_pass',
+          name: 'Aave Protocol',
+          input: 'aave',
+          status: 'complete',
+          riskScore: compositeScore,
+          verdict: 'pass',
+          redFlags: [],
+          processingTime: 45000,
+          scannedAt: new Date(),
+          weight: Math.random(),
+          confidence: 90,
+          flaggedEntity: undefined
+        });
+        setShowSingleAnalysis(true);
+      }}
+      className="text-sm text-green-400 hover:text-green-300 bg-green-500/10 hover:bg-green-500/20 px-4 py-2 rounded-lg transition-colors"
+    >
+      View PASS example (Low Risk {'<'}30)
+    </button>
+
             </div>
           </div>
         </div>
@@ -1494,48 +1557,7 @@ https://projectx.com`}
         </div>
       )}
 
-      {/* Data Donation & Rewards Section - USING CORRECT PROPS */}
-      <div className="mt-12 mb-8">
-        <h2 className="text-xl font-bold text-white mb-6">Data Donation & Rewards</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Evidence Upload Component - USING CORRECT PROPS */}
-          <div className="md:col-span-2">
-            <div className="md:col-span-2">
-  <EvidenceUpload
-    submissionId="batch_analysis"
-    existingEvidence={[]}
-    onUpload={handleEvidenceSubmit}
-    onCancel={() => console.log('Evidence upload cancelled')}
-    mode="ea-vc"
-    maxFiles={10}
-  />
-</div>
-          </div>
-          
-          {/* Dispute Form Component - USING CORRECT PROPS */}
-          <DisputeForm 
-            entityData={entityData.map(e => e.name)} // Convert to string[]
-            userData={[]}
-            onSubmit={handleDisputeSubmit}
-            onCancel={() => console.log('Dispute form cancelled')}
-            userMode="ea-vc"
-          />
-          
-          {/* Points Display Component */}
-          <PointsDisplay
-            userProfile={userProfile}
-            showStreak={true}
-            showLevel={true}
-          />
-          
-          {/* Rewards Shop Component */}
-          <RewardsShop
-            userProfile={userProfile}
-            rewards={rewards}
-            onRedeem={handleRedeemReward}
-          />
-        </div>
-      </div>
+      
     </div>
   );
 }

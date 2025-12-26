@@ -5,7 +5,9 @@ import React, { useState, useEffect } from 'react';
 
 import { PointsDisplay } from '@/components/data-donation/gamification';
 import { RewardsShop } from '@/components/data-donation/gamification';
-import { EvidenceUpload } from '@/components/data-donation/universal';
+import { createMetricsArray } from '@/utils/metricHelpers';
+import { generateDetailedMetricEvidence } from '@/utils/metricHelpers';
+
 import { DisputeForm } from '@/components/data-donation/universal';
 
 import SmartInputParser from './SmartInputParser';
@@ -66,7 +68,7 @@ export const getMetricValue = (metrics: MetricData[], keyOrName: string): number
 interface ResearcherDashboardProps {
   onAnalyze: (input: string) => void;
   userEmail: string;
-  onModeChange: () => void;
+  
   onExportPDF?: (data: ProjectData) => void;
   onExportJSON?: (data: ProjectData) => void;
   onExportCSV?: (data: ProjectData) => void;
@@ -84,7 +86,7 @@ interface ResearcherDashboardProps {
 export default function ResearcherDashboard({ 
   onAnalyze, 
   userEmail,
-  onModeChange,
+
   onExportPDF,
   onExportJSON,
   onExportCSV,
@@ -113,7 +115,7 @@ export default function ResearcherDashboard({
   const [filteredProjects, setFilteredProjects] = useState<ProjectData[]>([]);
   const [expandedProjects, setExpandedProjects] = useState<{[key: string]: boolean}>({});
   const [showAllMetrics, setShowAllMetrics] = useState<{[key: string]: boolean}>({});
-  const [showModeSwitchModal, setShowModeSwitchModal] = useState(false);
+  
   const [projectInput, setProjectInput] = useState('');
   
   const [analysisOptions, setAnalysisOptions] = useState({
@@ -207,6 +209,7 @@ export default function ResearcherDashboard({
   useEffect(() => {
     const displayProjects = recentScans.map(scan => {
       const mockData = generateMockProjectData(scan.projectName);
+      
       return {
         ...mockData,
         id: scan.id,
@@ -479,25 +482,13 @@ export default function ResearcherDashboard({
     const scan = recentScans.find(s => s.id === scanId);
     if (scan && onAddToWatchlist) {
       onAddToWatchlist(scan.projectName, scan.riskScore, scan.verdict);
+      alert(`Added ${scan.projectName} to watchlist!`); // Add confirmation
     } else if (scan) {
       // Fallback: Use internal state if no callback provided
       alert(`Added ${scan.projectName} to watchlist!`);
     }
   };
 
-  // Mode switch handler
-  const handleModeSwitchClick = () => {
-    setShowModeSwitchModal(true);
-  };
-
-  const confirmModeSwitch = () => {
-    onModeChange();
-    setShowModeSwitchModal(false);
-  };
-
-  const cancelModeSwitch = () => {
-    setShowModeSwitchModal(false);
-  };
 
   const calculateHighestRiskMetric = (): string => {
     if (!currentProject || !currentProject.metrics) return 'N/A';
@@ -772,15 +763,7 @@ export default function ResearcherDashboard({
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <button
-            onClick={handleModeSwitchClick}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm font-medium"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-            </svg>
-            Switch Mode
-          </button>
+       
           
           <div className="text-right">
             <div className="text-sm text-gray-400">Researcher</div>
@@ -1075,6 +1058,7 @@ export default function ResearcherDashboard({
                 </div>
                 
                 <MetricBreakdown
+                instanceId="main-analysis" // ✅ ADD THIS
                   metrics={currentProject.metrics}
                   projectName={currentProject.displayName}
                   riskScore={currentProject.overallRisk.score}
@@ -1119,85 +1103,7 @@ export default function ResearcherDashboard({
                 {/* Charts Section - Now uses filteredProjects (converted from recentScans) */}
                 <ResearchCharts projects={filteredProjects} />
 
-                {/* NEW SECTION: Submit Evidence & Earn Rewards */}
-                <div className="border-t border-sifter-border pt-8 mt-8">
-                  <h2 className="text-xl font-bold text-white mb-6">Submit Evidence & Earn Rewards</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Dispute Form Component - CORRECTED WITH ACTUAL TYPES */}
-                    <DisputeForm 
-                      entityData={currentProject ? [currentProject.displayName] : []} // String array
-                      userData={[userEmail || 'anonymous']}
-                      onSubmit={async (disputeData) => {
-                        console.log('Dispute submitted:', disputeData);
-                        // Simulate API call
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                        alert('Dispute submitted successfully!');
-                        return true;
-                      }}
-                      onCancel={() => console.log('Dispute cancelled')}
-                      userMode="researcher"
-                    />
-                    
-                    {/* Points Display Component - USING CORRECT USERPROFILE */}
-                    <PointsDisplay
-                      userProfile={userProfile}
-                      showStreak={true}
-                      showLevel={true}
-                      showRank={true}
-                      onLevelUp={() => {
-                        console.log('Level up!');
-                      }}
-                    />
-
-                    {/* Evidence Upload Component - USING CORRECT TYPES */}
-                    <div className="md:col-span-2">
-                      <div className="md:col-span-2">
-  <EvidenceUpload
-    submissionId={currentProject?.id || 'current_analysis'}
-    existingEvidence={[]}
-      onUpload={async (evidence: Omit<EvidenceItem, 'id' | 'submittedAt'>[]) => {
-
-      console.log('Evidence uploaded:', evidence);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      alert('Evidence submitted successfully! You earned 50 points!');
-    }}
-    onCancel={() => console.log('Evidence cancelled')}
-    mode="researcher"
-    maxFiles={10}
-  />
-</div>
-                    </div>
-
-                    {/* Rewards Shop Component - USING CORRECT TYPES */}
-                    <div className="md:col-span-2">
-                      <RewardsShop
-                        userProfile={userProfile}
-                        rewards={rewards}
-                        onRedeem={async (rewardId: string) => {
-                          try {
-                            // Simulate redemption API call
-                            console.log(`Redeeming reward: ${rewardId}`);
-                            await new Promise(resolve => setTimeout(resolve, 1000));
-                            
-                            const reward = rewards.find(r => r.id === rewardId);
-                            if (reward) {
-                              alert(`Successfully redeemed: ${reward.name}!`);
-                            }
-                            return true;
-                          } catch (error) {
-                            console.error('Redemption failed:', error);
-                            alert('Failed to redeem reward. Please try again.');
-                            return false;
-                          }
-                        }}
-                        onPurchaseCredits={() => {
-                          alert('Redirecting to credits purchase...');
-                        }}
-                        showCategories={true}
-                      />
-                    </div>
-                  </div>
-                </div>
+               
 
                 {/* Detailed Analysis */}
                 <div className="mt-8">
@@ -1682,32 +1588,8 @@ export default function ResearcherDashboard({
         )}
       </div>
 
-      {/* Mode Switch Modal */}
-      {showModeSwitchModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-sifter-card border border-sifter-border rounded-xl p-6 max-w-md w-full">
-            <h3 className="text-xl font-bold text-white mb-4">Switch Mode</h3>
-            <p className="text-gray-400 text-sm mb-6">
-              Are you sure you want to switch modes? Your current research session will be saved.
-            </p>
-            
-            <div className="flex gap-3">
-              <button
-                onClick={confirmModeSwitch}
-                className="flex-1 px-4 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-colors"
-              >
-                Switch Mode
-              </button>
-              <button
-                onClick={cancelModeSwitch}
-                className="flex-1 px-4 py-3 bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg font-medium transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      
+      
 
       {/* Research Report Modal */}
       {showResearchReport && currentProject && (
@@ -1721,7 +1603,7 @@ export default function ResearcherDashboard({
                 setShowResearchReport(false);
               }}
               initialTab={reportActiveTab}
-              projectMetrics={currentProject.metrics}
+                      projectMetrics={currentProject.metrics?.length >= 13 ? currentProject.metrics : projectMetrics}  // ✅ FIX: Fallback to full projectMetrics
               onExport={() => handleExportAnalysis('pdf', currentProject)}
               onShare={() => handleShareAnalysis('clipboard')}
             />

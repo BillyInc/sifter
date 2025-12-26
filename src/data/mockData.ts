@@ -1,5 +1,7 @@
 // data/mockData.ts - FIXED VERSION
 import { ProjectData, MetricData, AnalysisHistory, VerdictType } from '@/types';
+import { generateDetailedMetricEvidence } from '@/utils/metricHelpers';
+import { createMetricsArray } from '@/utils/metricHelpers';
 
 // Define source interface
 interface ProjectSource {
@@ -16,104 +18,11 @@ interface ProjectSource {
 }
 
 export const generateMockProjectData = (projectName: string): ProjectData => {
-  const baseScore = Math.floor(Math.random() * 100);
-  
-  const metrics: MetricData[] = [
-    {
-      id: '1',
-      key: 'teamIdentity',
-      name: 'Team Identity',
-      value: Math.floor(Math.random() * 100),
-      weight: 13,
-      contribution: Math.floor(Math.random() * 20),
-      status: Math.random() > 0.7 ? 'critical' : Math.random() > 0.5 ? 'high' : Math.random() > 0.3 ? 'moderate' : 'low',
-      confidence: Math.floor(Math.random() * 30) + 70,
-      flags: Math.random() > 0.8 ? ['Anonymous team', 'No LinkedIn profiles'] : [],
-      evidence: Math.random() > 0.7 ? ['Team analysis report'] : [],
-      score: Math.floor(Math.random() * 100),
-      scoreValue: Math.floor(Math.random() * 100),
-      subline: Math.random() > 0.5 ? 'Team transparency issues detected' : undefined,
-    },
-    {
-      id: '2',
-      key: 'contaminatedNetwork',
-      name: 'Contaminated Network',
-      value: Math.floor(Math.random() * 100),
-      weight: 19,
-      contribution: Math.floor(Math.random() * 20),
-      status: Math.random() > 0.7 ? 'critical' : Math.random() > 0.5 ? 'high' : Math.random() > 0.3 ? 'moderate' : 'low',
-      confidence: Math.floor(Math.random() * 30) + 70,
-      flags: Math.random() > 0.8 ? ['Known bad actor connections', 'Previous rug associations'] : [],
-      evidence: Math.random() > 0.7 ? ['Network analysis report'] : [],
-      score: Math.floor(Math.random() * 100),
-      scoreValue: Math.floor(Math.random() * 100),
-      subline: Math.random() > 0.5 ? 'Suspicious connections detected' : undefined,
-    },
-    {
-      id: '3',
-      key: 'mercenaryKeywords',
-      name: 'Mercenary Keywords',
-      value: Math.floor(Math.random() * 100),
-      weight: 9,
-      contribution: Math.floor(Math.random() * 20),
-      status: Math.random() > 0.7 ? 'critical' : Math.random() > 0.5 ? 'high' : Math.random() > 0.3 ? 'moderate' : 'low',
-      confidence: Math.floor(Math.random() * 30) + 70,
-      flags: Math.random() > 0.8 ? ['High concentration of hype words', 'Copy-pasta messaging'] : [],
-      evidence: Math.random() > 0.7 ? ['Keyword analysis report'] : [],
-      score: Math.floor(Math.random() * 100),
-      scoreValue: Math.floor(Math.random() * 100),
-      subline: Math.random() > 0.5 ? 'Excessive hype language detected' : undefined,
-    },
-    {
-      id: '4',
-      key: 'githubAuthenticity',
-      name: 'GitHub Authenticity',
-      value: Math.floor(Math.random() * 100),
-      weight: 10,
-      contribution: Math.floor(Math.random() * 20),
-      status: Math.random() > 0.7 ? 'critical' : Math.random() > 0.5 ? 'high' : Math.random() > 0.3 ? 'moderate' : 'low',
-      confidence: Math.floor(Math.random() * 30) + 70,
-      flags: Math.random() > 0.8 ? ['Forked repositories only', 'No recent commits'] : [],
-      evidence: Math.random() > 0.7 ? ['GitHub analysis report'] : [],
-      score: Math.floor(Math.random() * 100),
-      scoreValue: Math.floor(Math.random() * 100),
-      subline: Math.random() > 0.5 ? 'Limited development activity' : undefined,
-    },
-    {
-      id: '5',
-      key: 'founderDistraction',
-      name: 'Founder Distraction',
-      value: Math.floor(Math.random() * 100),
-      weight: 6,
-      contribution: Math.floor(Math.random() * 20),
-      status: Math.random() > 0.7 ? 'critical' : Math.random() > 0.5 ? 'high' : Math.random() > 0.3 ? 'moderate' : 'low',
-      confidence: Math.floor(Math.random() * 30) + 70,
-      flags: Math.random() > 0.8 ? ['Multiple active projects', 'Frequent project hopping'] : [],
-      evidence: Math.random() > 0.7 ? ['Founder activity report'] : [],
-      score: Math.floor(Math.random() * 100),
-      scoreValue: Math.floor(Math.random() * 100),
-      subline: Math.random() > 0.5 ? 'Founder appears overextended' : undefined,
-    },
-    {
-      id: '6',
-      key: 'tokenomics',
-      name: 'Tokenomics',
-      value: Math.floor(Math.random() * 100),
-      weight: 7,
-      contribution: Math.floor(Math.random() * 20),
-      status: Math.random() > 0.7 ? 'critical' : Math.random() > 0.5 ? 'high' : Math.random() > 0.3 ? 'moderate' : 'low',
-      confidence: Math.floor(Math.random() * 30) + 70,
-      flags: Math.random() > 0.8 ? ['High team allocation', 'No vesting schedule'] : [],
-      evidence: Math.random() > 0.7 ? ['Tokenomics analysis report'] : [],
-      score: Math.floor(Math.random() * 100),
-      scoreValue: Math.floor(Math.random() * 100),
-      subline: Math.random() > 0.5 ? 'Unbalanced token distribution' : undefined,
-    }
-  ];
+   const metrics = createMetricsArray(); // Already has detailed evidence!
 
   // Calculate overall risk score
   const overallRiskScore = Math.round(
-    metrics.reduce((sum, metric) => {
+     metrics.reduce((sum: number, metric: MetricData) => {  // ✅ Explicit types
       const score = typeof metric.score === 'number' ? metric.score : 
                    typeof metric.value === 'number' ? metric.value : 0;
       return sum + (score * metric.weight) / 100;
@@ -237,15 +146,23 @@ export const generateMockAnalysisHistory = (count: number = 4): AnalysisHistory[
 };
 
 // Generate mock metrics only
-export const generateMockMetrics = (count: number = 6): MetricData[] => {
+export const generateMockMetrics = (count: number = 13): MetricData[] => {
   const metrics: MetricData[] = [];
   const metricNames = [
-    { key: 'teamIdentity', name: 'Team Identity' },
-    { key: 'contaminatedNetwork', name: 'Contaminated Network' },
-    { key: 'mercenaryKeywords', name: 'Mercenary Keywords' },
-    { key: 'githubAuthenticity', name: 'GitHub Authenticity' },
-    { key: 'founderDistraction', name: 'Founder Distraction' },
-    { key: 'tokenomics', name: 'Tokenomics' }
+    { id: '1', key: 'teamIdentity', name: 'Team Identity', value: 85, score: 85, weight: 15, contribution: 12.75, status: 'high', confidence: 85, flags: [], evidence: [] },
+    { id: '2', key: 'teamCompetence', name: 'Team Competence', value: 60, score: 60, weight: 12, contribution: 7.2, status: 'moderate', confidence: 75, flags: [], evidence: [] },
+    { id: '3', key: 'contaminatedNetwork', name: 'Contaminated Network', value: 45, score: 45, weight: 10, contribution: 4.5, status: 'moderate', confidence: 65, flags: [], evidence: [] },
+    { id: '4', key: 'mercenaryKeywords', name: 'Mercenary Keywords', value: 70, score: 70, weight: 8, contribution: 5.6, status: 'high', confidence: 80, flags: [], evidence: [] },
+    { id: '5', key: 'messageTimeEntropy', name: 'Message Time Entropy', value: 30, score: 30, weight: 7, contribution: 2.1, status: 'low', confidence: 90, flags: [], evidence: [] },
+    { id: '6', key: 'accountAgeEntropy', name: 'Account Age Entropy', value: 25, score: 25, weight: 6, contribution: 1.5, status: 'low', confidence: 85, flags: [], evidence: [] },
+    { id: '7', key: 'tweetFocus', name: 'Tweet Focus', value: 50, score: 50, weight: 5, contribution: 2.5, status: 'moderate', confidence: 70, flags: [], evidence: [] },
+    { id: '8', key: 'githubAuthenticity', name: 'GitHub Authenticity', value: 40, score: 40, weight: 8, contribution: 3.2, status: 'moderate', confidence: 75, flags: [], evidence: [] },
+    { id: '9', key: 'busFactor', name: 'Bus Factor', value: 75, score: 75, weight: 9, contribution: 6.75, status: 'high', confidence: 80, flags: [], evidence: [] },
+    { id: '10', key: 'artificialHype', name: 'Artificial Hype', value: 65, score: 65, weight: 6, contribution: 3.9, status: 'high', confidence: 70, flags: [], evidence: [] },
+    { id: '11', key: 'founderDistraction', name: 'Founder Distraction', value: 55, score: 55, weight: 5, contribution: 2.75, status: 'moderate', confidence: 65, flags: [], evidence: [] },
+    { id: '12', key: 'engagementAuthenticity', name: 'Engagement Authenticity', value: 35, score: 35, weight: 4, contribution: 1.4, status: 'moderate', confidence: 60, flags: [], evidence: [] },
+    { id: '13', key: 'tokenomics', name: 'Tokenomics', value: 80, score: 80, weight: 5, contribution: 4.0, status: 'high', confidence: 85, flags: [], evidence: [] }
+
   ];
 
   for (let i = 0; i < Math.min(count, metricNames.length); i++) {

@@ -14,7 +14,11 @@ interface MetricBreakdownProps {
   projectName?: string;
   riskScore?: number;
   projectData?: ProjectData;
+  instanceId?: string; // ✅ ADD THIS
+
 }
+
+
 
 // Helper function to get metric properties
 const getMetricVerdict = (score: number): string => {
@@ -26,11 +30,7 @@ const getMetricVerdict = (score: number): string => {
 };
 
 const getMetricSummary = (metric: MetricData): string => {
-  // Check for evidence or flags in the metric
-  if (metric.evidence && metric.evidence.length > 0) {
-    return metric.evidence[0];
-  }
-  
+  // ✅ NO EVIDENCE CHECK - Just go straight to flags
   if (metric.flags && metric.flags.length > 0) {
     return `Flag: ${metric.flags[0]}`;
   }
@@ -67,7 +67,8 @@ export default function MetricBreakdown({
   onBack,
   projectName = 'Unknown Project',
   riskScore = 0,
-  projectData
+  projectData,
+  instanceId = '' // ✅ ADD THIS with default empty string
 }: MetricBreakdownProps) {
   const [expandedMetric, setExpandedMetric] = useState<string | null>(null);
   const [showShareDialog, setShowShareDialog] = useState(false);
@@ -101,16 +102,17 @@ export default function MetricBreakdown({
   };
 
   // Process metrics array into display format
-  const processedMetrics = metrics.map(metric => {
-    const score = typeof metric.value === 'number' ? metric.value : 0;
+  const processedMetrics = metrics.map((metric, index) => {  // ✅ Add index here
+        const score = typeof metric.value === 'number' ? metric.value : 0;
     const details = metricDetails[metric.key] || { 
       icon: '📊', 
       description: metric.name || 'No description available',
       weight: metric.weight || 10 
     };
-    
+
     return {
       ...metric,
+      id: `${instanceId}_${metric.key}_${index}`,  // ✅ Simplified, unique per instance
       score,
       icon: details.icon,
       description: details.description,
@@ -118,7 +120,18 @@ export default function MetricBreakdown({
       verdict: getMetricVerdict(score),
       summary: getMetricSummary(metric)
     };
+   
   });
+
+  console.log('expandedMetric:', expandedMetric);
+console.log('instanceId:', instanceId);
+
+// ✅ WITH THIS:
+console.log('=== METRIC IDS ===');
+processedMetrics.forEach((m, i) => {
+  console.log(`${i}: ID="${m.id}" | Key="${m.key}"`);
+});
+console.log('==================');
 
   const overallScore = riskScore || 
     Math.round(processedMetrics.reduce((sum, metric) => {
@@ -300,6 +313,20 @@ export default function MetricBreakdown({
                   <span className="font-medium text-white capitalize">{metric.verdict} Risk</span>
                 </div>
                 <p className="text-sm text-gray-400">{metric.summary}</p>
+
+                          {/* ✅ ADD THIS: Display detailed evidence */}
+              {metric.evidence && metric.evidence.length > 0 && (
+                <div className="mt-4 p-4 bg-gray-900/50 rounded-lg border border-gray-800">
+                  <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                    <span>🔍</span>
+                    Detailed Analysis
+                  </h4>
+                  <div className="text-sm text-gray-300 whitespace-pre-wrap leading-relaxed max-h-96 overflow-y-auto">
+                    {metric.evidence[0]}
+                  </div>
+                </div>
+              )}
+
                 
                 {/* Display flags if any */}
                 {metric.flags && metric.flags.length > 0 && (

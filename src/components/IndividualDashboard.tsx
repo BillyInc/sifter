@@ -4,9 +4,10 @@ import React, { useState, useRef, useEffect } from 'react';
 
 import { PointsDisplay } from '@/components/data-donation/gamification';
 import { RewardsShop } from '@/components/data-donation/gamification';
-import { EvidenceUpload } from '@/components/data-donation/universal';
-import { DisputeForm } from '@/components/data-donation/universal';
 
+import { DisputeForm } from '@/components/data-donation/universal';
+import { createMetricsArray } from '@/utils/metricHelpers';
+import { generateDetailedMetricEvidence } from '@/utils/metricHelpers';
 import SmartInputParser from './SmartInputParser';
 import { 
   SmartInputResult, 
@@ -41,7 +42,7 @@ interface IndividualDashboardProps {
   onAddToWatchlist?: (projectName: string, riskScore: number, verdict: VerdictType) => void;
   onRemoveFromWatchlist?: (projectId: string) => void;
   onViewReport?: (scanId: string) => void;
-  onModeChange?: () => void;
+  
   projectMetrics?: MetricData[];
   currentProject?: ProjectData;
 }
@@ -54,7 +55,7 @@ export default function IndividualDashboard({
   onAddToWatchlist,
   onRemoveFromWatchlist,
   onViewReport,
-  onModeChange,
+  
   projectMetrics = [],
   currentProject
 }: IndividualDashboardProps) {
@@ -223,7 +224,7 @@ export default function IndividualDashboard({
     metrics: MetricData[];
     scanDuration: number;
   } | null>(null);
-  const [showModeSwitch, setShowModeSwitch] = useState(false);
+  
   const [showExportMenu, setShowExportMenu] = useState(false);
   
   const [receivedMetrics, setReceivedMetrics] = useState<MetricData[]>(projectMetrics || []);
@@ -281,7 +282,11 @@ export default function IndividualDashboard({
     
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    const metricsToUse = receivedMetrics.length > 0 ? receivedMetrics : generateMockMetrics();
+ // Use received metrics if available, otherwise generate full 13 metrics
+  const metricsToUse = receivedMetrics.length >= 13 
+    ? receivedMetrics 
+    : generateMockMetrics(); // Make sure this returns 13 metrics
+  
     const compositeScore = Math.round(metricsToUse.reduce((sum, m) => sum + (m.contribution || 0), 0));
     const riskScore = Math.min(100, Math.max(0, compositeScore));
     let verdict: VerdictType = 'pass';
@@ -1032,13 +1037,7 @@ export default function IndividualDashboard({
             )}
           </div>
           
-          <button
-            onClick={() => setShowModeSwitch(true)}
-            className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
-          >
-            <span className="text-sm">🔄</span>
-            Switch Mode
-          </button>
+          
         </div>
       </div>
 
@@ -1078,94 +1077,8 @@ export default function IndividualDashboard({
         {activeTab === 'learn' && renderLearnTab()}
       </div>
 
-      {/* Contribute & Earn Points Section */}
-      <div className="space-y-8">
-        <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
-          <h2 className="text-xl font-bold text-white mb-6">Contribute & Earn Points</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <DisputeForm 
-              entityData={[]}
-              userData={[]}
-              onSubmit={() => Promise.resolve()}
-              onCancel={() => {}}
-              userMode="individual"
-            />
-            
-            <PointsDisplay
-              userProfile={userProfile}
-              showStreak={true}
-              showLevel={true}
-            />
-            
-            <RewardsShop
-              userProfile={userProfile}
-              rewards={rewards}
-              onRedeem={handleRedeemReward}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Mode Switch Modal */}
-      {showModeSwitch && (
-        <div className="fixed inset-0 z-50 animate-fadeIn">
-          <div 
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-            onClick={() => setShowModeSwitch(false)}
-          />
-          
-          <div className="absolute top-10 left-1/2 transform -translate-x-1/2 w-full max-w-sm px-4">
-            <div className="bg-sifter-card border border-sifter-border rounded-xl p-5 shadow-2xl">
-              <h3 className="text-lg font-bold text-white mb-3">Switch Mode</h3>
-              <p className="text-sm text-gray-400 mb-4">Choose your dashboard mode:</p>
-              
-              <div className="space-y-2.5 mb-4">
-                {[
-                  { id: 'ea-vc', icon: '🏢', title: 'EA/VC Mode', desc: 'Portfolio monitoring' },
-                  { id: 'researcher', icon: '🔬', title: 'Researcher', desc: 'Deep analytics' },
-                  { id: 'individual', icon: '👤', title: 'Individual', desc: 'Simple due diligence', current: true }
-                ].map((mode) => (
-                  <button
-                    key={mode.id}
-                    onClick={() => {
-                      if (!mode.current && onModeChange) {
-                        onModeChange();
-                      }
-                      setShowModeSwitch(false);
-                    }}
-                    className={`w-full p-3 border rounded-lg text-left transition-all hover:scale-[1.02] ${
-                      mode.current 
-                        ? 'border-blue-500 bg-blue-500/10' 
-                        : 'border-sifter-border hover:border-blue-500/30'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="text-xl">{mode.icon}</div>
-                      <div>
-                        <div className="font-bold text-white text-sm">{mode.title}</div>
-                        <div className="text-xs text-gray-400">{mode.desc}</div>
-                      </div>
-                      {mode.current && (
-                        <div className="ml-auto bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
-                          Current
-                        </div>
-                      )}
-                    </div>
-                  </button>
-                ))}
-              </div>
-              
-              <button
-                onClick={() => setShowModeSwitch(false)}
-                className="w-full px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
+      
+      
       <style jsx>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
