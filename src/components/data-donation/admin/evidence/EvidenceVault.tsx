@@ -2,8 +2,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { EvidenceVaultItem } from '@/types/evidence';
-import { CheckCircleIcon, ExclamationCircleIcon, ClockIcon, LinkIcon, DocumentIcon, ArchiveIcon, PhotographIcon, ServerIcon } from '@heroicons/react/24/outline';
+import { EvidenceVaultItem } from '@/types/evidence-vault';
+import { CheckCircleIcon, ExclamationCircleIcon, ClockIcon, LinkIcon, DocumentIcon, ArchiveBoxIcon, PhotoIcon, ServerIcon } from '@heroicons/react/24/outline';
 
 interface EvidenceVaultProps {
   evidence: EvidenceVaultItem[];
@@ -85,8 +85,8 @@ export default function EvidenceVault({
   const getBackupStatus = (item: EvidenceVaultItem) => {
     const backups = [
       { name: 'Original', icon: LinkIcon, status: item.verificationResults?.originalAccessible },
-      { name: 'Archive', icon: ArchiveIcon, status: item.verificationResults?.archiveAccessible },
-      { name: 'Screenshot', icon: PhotographIcon, status: item.verificationResults?.screenshotExists },
+      { name: 'Archive', icon: ArchiveBoxIcon, status: item.verificationResults?.archiveAccessible },
+      { name: 'Screenshot', icon: PhotoIcon, status: item.verificationResults?.screenshotExists },
       { name: 'IPFS', icon: ServerIcon, status: item.verificationResults?.ipfsAccessible }
     ];
     
@@ -426,7 +426,7 @@ export default function EvidenceVault({
                     {selectedEvidence.archivedUrl && (
                       <div className="flex items-center justify-between p-3 bg-sifter-dark/50 rounded-lg">
                         <div className="flex items-center gap-3">
-                          <ArchiveIcon className="w-5 h-5 text-green-400" />
+                          <ArchiveBoxIcon className="w-5 h-5 text-green-400" />
                           <div>
                             <div className="text-white">Archived URL</div>
                             <div className="text-sm text-gray-400 truncate max-w-[300px]">
