@@ -21,6 +21,10 @@ const mockDispute = {
   nextSteps: ['Complete identity verification call', 'Review additional evidence', 'Make resolution decision']
 };
 
+export const dynamic = 'force-dynamic';
+// Optional, but safe on Netlify:
+export const runtime = 'nodejs';
+
 export default function DisputeStatusTrackerPage() {
   const searchParams = useSearchParams();
   const caseId = searchParams?.get('caseId') || mockDispute.caseId;

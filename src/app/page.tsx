@@ -12,6 +12,7 @@ import EABatchDashboard from '@/components/EABatchDashboard';
 import LandingPage from '../components/LandingPage';
 import { ExportService } from '@/services/exportService';
 import { createMetricsArray } from '@/utils/metricHelpers';
+import '@/app/globals.css'; // Adjust path to your global CSS
 import { generateDetailedMetricEvidence } from '@/utils/metricHelpers';
 
 // NEW: Import Data Donation Components
@@ -3097,7 +3098,7 @@ const getRewardsForMode = (mode: UserMode | null): Reward[] => {
                 onReset={handleReset}
               />
               
-              <MetricBreakdown
+             <MetricBreakdown
               instanceId="main-analysis" // ✅ ADD THIS
                 metrics={detailedMetrics}  // ✅ Use the state that has detailed evidence!
                 projectName={verdictData.projectName}
@@ -3110,7 +3111,7 @@ const getRewardsForMode = (mode: UserMode | null): Reward[] => {
                     alert('No project data available to export');
                   }
                 }}
-              />
+              /> 
             </div>
           )}
 
