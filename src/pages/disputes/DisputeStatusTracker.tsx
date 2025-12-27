@@ -1,22 +1,13 @@
 'use client';
 
-import { useGamification } from '@/contexts/GamificationContext';
 import { useSearchParams } from 'next/navigation';
 
-// Prevent static prerendering
+// No gamification needed for disputes
 export const dynamic = 'force-dynamic';
-
+export const runtime = 'nodejs';
 const DisputeStatusTracker = () => {
   const searchParams = useSearchParams();
   const caseId = searchParams?.get('caseId') || 'DISP-2024-089';
-  
-  // SIMPLE FIX: Direct optional chaining
-  const gamification = useGamification?.();
-  const userProfile = gamification?.userProfile || null;
-  
-  const hasPremiumAccess = userProfile
-    ? ['platinum', 'diamond', 'vc-elite', 'research-fellow'].includes(userProfile.currentTier)
-    : false;
 
   const steps = [
     { status: 'complete' as const, label: 'Filed', date: 'Jan 15' },
@@ -33,12 +24,7 @@ const DisputeStatusTracker = () => {
           Case ID: <span className="font-mono text-blue-400">{caseId}</span>
         </p>
 
-        {hasPremiumAccess && (
-          <div className="mb-12 p-6 bg-purple-900/30 border border-purple-500 rounded-xl text-center">
-            <div className="text-3xl mb-2">Premium Tracking Enabled</div>
-            <p className="text-purple-300 text-lg">+20% bonus XP on resolution</p>
-          </div>
-        )}
+        {/* No premium banner - disputes are serious, not gamified */}
 
         <div className="space-y-16">
           {steps.map((step, index) => (
@@ -59,11 +45,13 @@ const DisputeStatusTracker = () => {
           ))}
         </div>
 
-        {userProfile && (
-          <div className="mt-16 text-center text-2xl text-green-400">
-            Earn 50 XP for completing this dispute!
-          </div>
-        )}
+        {/* No XP rewards - disputes aren't games */}
+        
+        <div className="mt-16 text-center">
+          <p className="text-lg text-gray-400">
+            This is a serious dispute resolution process. All cases are reviewed impartially.
+          </p>
+        </div>
       </div>
     </div>
   );
