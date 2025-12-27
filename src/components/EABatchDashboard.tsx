@@ -311,7 +311,7 @@ const BatchSummaryComponent = ({
     <div className="bg-sifter-card border border-sifter-border rounded-2xl p-6">
       <h3 className="text-xl font-semibold text-white mb-6">Batch Summary</h3>
       
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="flex overflow-x-auto border-b border-sifter-border -mx-4 px-4 sm:mx-0 sm:px-0">
         <div className="bg-sifter-dark/50 border border-sifter-border rounded-xl p-4">
           <div className="text-2xl font-bold text-white mb-1">{batchStats.totalProcessed}</div>
           <div className="text-sm text-gray-400">Total Processed</div>

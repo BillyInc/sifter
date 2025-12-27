@@ -780,7 +780,7 @@ export default function ResearcherDashboard({
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-6 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <div className="bg-sifter-card border border-sifter-border rounded-lg p-3 hover:border-purple-500/30 transition-colors">
           <div className="text-lg font-bold text-white">{databaseStats.flaggedEntities}</div>
           <div className="text-xs text-gray-400">Flagged Entities</div>
@@ -809,7 +809,7 @@ export default function ResearcherDashboard({
 
       {/* Main Content Tabs */}
       <div className="border-b border-sifter-border">
-        <div className="flex space-x-6">
+        <div className="flex overflow-x-auto space-x-4 sm:space-x-6 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
           {(['analyze', 'compare', 'patterns', 'database', 'exports'] as const).map((tab) => (
             <button
               key={tab}
@@ -1615,6 +1615,8 @@ export default function ResearcherDashboard({
         )}
       </div>
 
+
+
       
       
 
@@ -1637,6 +1639,10 @@ export default function ResearcherDashboard({
           </div>
         </div>
       )}
+       
+
+
+
     </div>
   );
 }

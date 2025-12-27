@@ -114,6 +114,7 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [userName, setUserName] = useState('');
+  const [showMobileDataMenu, setShowMobileDataMenu] = useState(false);
 
   // Individual Mode states
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([
@@ -242,6 +243,19 @@ export default function Home() {
       }
     }
   }, []);
+
+  // Close mobile menu when clicking outside
+useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.mobile-data-menu') && showMobileDataMenu) {
+      setShowMobileDataMenu(false);
+    }
+  };
+  
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => document.removeEventListener('mousedown', handleClickOutside);
+}, [showMobileDataMenu]);
 
   // ADD THIS NEW useEffect:
 useEffect(() => {
@@ -3699,36 +3713,36 @@ const handleNewSubmission = useCallback(() => {
   </div>
 )}
 
-      {/* Mode Selection Modal */}
-      {showModeModal &&!isLoggedIn &&(
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-3xl w-full p-8">
-            <div className="text-center mb-8">
+{/* Mode Selection Modal */}
+      {showModeModal && !isLoggedIn && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-3xl w-full p-4 sm:p-8 my-8 max-h-[90vh] overflow-y-auto">
+            <div className="text-center mb-6 sm:mb-8">
               <div className="flex items-center justify-center gap-3 mb-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-sifter-blue to-blue-600 rounded-xl flex items-center justify-center">
                   <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                   </svg>
                 </div>
-                <h1 className="text-2xl font-bold text-white">SIFTER 1.0</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-white">SIFTER 1.0</h1>
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Choose Your Workflow</h2>
-              <p className="text-gray-400">Select your primary mode to customize your experience</p>
+              <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">Choose Your Workflow</h2>
+              <p className="text-sm sm:text-base text-gray-400">Select your primary mode to customize your experience</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
               {/* EA/VC Mode */}
-              <div className={`p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
+              <div className={`p-4 sm:p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
                 userMode === 'ea-vc'
                   ? 'border-blue-500 bg-blue-500/10'
                   : 'border-sifter-border hover:border-blue-500/50 hover:bg-sifter-card/50'
               }`}
               onClick={() => handleModeSelect('ea-vc')}>
-                <div className="text-4xl mb-4">🏢</div>
-                <h3 className="font-bold text-white mb-2 text-lg">VC/EA Mode</h3>
-                <div className="text-sm text-gray-400 space-y-2">
+                <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">🏢</div>
+                <h3 className="font-bold text-white mb-2 text-base sm:text-lg">VC/EA Mode</h3>
+                <div className="text-xs sm:text-sm text-gray-400 space-y-2">
                   <p>Batch processing, Pass/Flag/Reject</p>
-                  <div className="mt-3 pt-3 border-t border-sifter-border/50">
+                  <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-sifter-border/50">
                     <p className="text-xs text-gray-500">Features:</p>
                     <ul className="text-xs text-gray-400 mt-1 space-y-1">
                       <li>• Batch upload (100 projects)</li>
@@ -3741,17 +3755,17 @@ const handleNewSubmission = useCallback(() => {
               </div>
 
               {/* Researcher Mode */}
-              <div className={`p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
+              <div className={`p-4 sm:p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
                 userMode === 'researcher'
                   ? 'border-purple-500 bg-purple-500/10'
                   : 'border-sifter-border hover:border-purple-500/50 hover:bg-sifter-card/50'
               }`}
               onClick={() => handleModeSelect('researcher')}>
-                <div className="text-4xl mb-4">🔬</div>
-                <h3 className="font-bold text-white mb-2 text-lg">Researcher Mode</h3>
-                <div className="text-sm text-gray-400 space-y-2">
+                <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">🔬</div>
+                <h3 className="font-bold text-white mb-2 text-base sm:text-lg">Researcher Mode</h3>
+                <div className="text-xs sm:text-sm text-gray-400 space-y-2">
                   <p>Deep analysis, export data, comparisons</p>
-                  <div className="mt-3 pt-3 border-t border-sifter-border/50">
+                  <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-sifter-border/50">
                     <p className="text-xs text-gray-500">Features:</p>
                     <ul className="text-xs text-gray-400 mt-1 space-y-1">
                       <li>• Single deep dives</li>
@@ -3764,17 +3778,17 @@ const handleNewSubmission = useCallback(() => {
               </div>
 
               {/* Individual Investor Mode */}
-              <div className={`p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
+              <div className={`p-4 sm:p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
                 userMode === 'individual'
                   ? 'border-green-500 bg-green-500/10'
                   : 'border-sifter-border hover:border-green-500/50 hover:bg-sifter-card/50'
               }`}
               onClick={() => handleModeSelect('individual')}>
-                <div className="text-4xl mb-4">👤</div>
-                <h3 className="font-bold text-white mb-2 text-lg">Individual Investor Mode</h3>
-                <div className="text-sm text-gray-400 space-y-2">
+                <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">👤</div>
+                <h3 className="font-bold text-white mb-2 text-base sm:text-lg">Individual Investor Mode</h3>
+                <div className="text-xs sm:text-sm text-gray-400 space-y-2">
                   <p>Simple yes/no, mobile-friendly</p>
-                  <div className="mt-3 pt-3 border-t border-sifter-border/50">
+                  <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-sifter-border/50">
                     <p className="text-xs text-gray-500">Features:</p>
                     <ul className="text-xs text-gray-400 mt-1 space-y-1">
                       <li>• Mobile-first interface</li>
@@ -3787,17 +3801,17 @@ const handleNewSubmission = useCallback(() => {
               </div>
             </div>
 
-            <div className="flex gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <button
                 onClick={handleModeCancel}
-                className="px-8 py-3 rounded-lg font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 transition-all"
+                className="px-6 sm:px-8 py-3 rounded-lg font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 transition-all order-2 sm:order-1"
               >
                 Cancel
               </button>
               <button
                 onClick={handleModeConfirm}
                 disabled={!userMode}
-                className={`px-8 py-3 rounded-lg font-medium transition-all ${
+                className={`px-6 sm:px-8 py-3 rounded-lg font-medium transition-all order-1 sm:order-2 ${
                   userMode
                     ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white'
                     : 'bg-gray-800 text-gray-500 cursor-not-allowed'
@@ -3806,13 +3820,12 @@ const handleNewSubmission = useCallback(() => {
                 Continue to Login
               </button>
             </div>
-            <p className="text-gray-500 text-sm text-center mt-4">
+            <p className="text-gray-500 text-xs sm:text-sm text-center mt-4">
               (You can change this later in Settings)
             </p>
           </div>
         </div>
       )}
-
       {/* Auth Modal */}
       {showAuthModal && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -3998,61 +4011,137 @@ const handleNewSubmission = useCallback(() => {
               
               <div className="flex items-center gap-6">
                 {/* Data Donation Button */}
-                {isLoggedIn && userMode && (
-    <div className="flex items-center gap-2">
-      <button
-        onClick={() => setShowTrackingDashboard(true)}
-        className="px-3 py-2 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 
-                 border border-amber-500/30 rounded-lg font-medium text-xs transition-colors 
-                 flex items-center justify-center gap-1.5 whitespace-nowrap h-9"
-      >
-        <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
-        <span>Data Donation</span>
-        {userPoints > 0 && (
-          <span className="bg-amber-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">
-            {userPoints} pts
-          </span>
-        )}
-      </button>
-      
-      <button
-        onClick={() => setShowPointsDisplay(true)}
-        className="px-3 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 
-                 text-white rounded-lg font-medium text-xs transition-all 
-                 flex items-center justify-center gap-1.5 whitespace-nowrap h-9"
-      >
-        <span>🏆</span>
-        <span>Points & Rewards</span>
-      </button>
+  {isLoggedIn && userMode && (
+  <div className="hidden md:flex items-center gap-2">
+    {/* Desktop: Show all buttons in a row */}
+    <button
+      onClick={() => setShowTrackingDashboard(true)}
+      className="px-3 py-2 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 
+               border border-amber-500/30 rounded-lg font-medium text-xs transition-colors 
+               flex items-center justify-center gap-1.5 whitespace-nowrap h-9"
+    >
+      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+      <span>Data Donation</span>
+      {userPoints > 0 && (
+        <span className="bg-amber-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">
+          {userPoints} pts
+        </span>
+      )}
+    </button>
+    
+    <button
+      onClick={() => setShowPointsDisplay(true)}
+      className="px-3 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 
+               text-white rounded-lg font-medium text-xs transition-all 
+               flex items-center justify-center gap-1.5 whitespace-nowrap h-9"
+    >
+      <span>🏆</span>
+      <span>Points & Rewards</span>
+    </button>
 
-      <button
-        onClick={() => setShowDisputeForm(true)}
-        className="px-3 py-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 
-                text-white rounded-lg font-medium text-xs transition-all 
-                flex items-center justify-center gap-1.5 whitespace-nowrap h-9"
-      >
-        <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3l-6.928-12c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-        <span>Submit Dispute</span>
-      </button>
+    <button
+      onClick={() => setShowDisputeForm(true)}
+      className="px-3 py-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 
+               text-white rounded-lg font-medium text-xs transition-all 
+               flex items-center justify-center gap-1.5 whitespace-nowrap h-9"
+    >
+      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3l-6.928-12c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <span>Submit Dispute</span>
+    </button>
 
-      <button
-        onClick={() => setShowSubmissionForm(true)}
-        className="px-3 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 
-                 text-white rounded-lg font-medium text-xs transition-all 
-                 flex items-center justify-center gap-1.5 whitespace-nowrap h-9"
-      >
-        <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <span>Submit Report</span>
-      </button>
-    </div>
-  )}
-  
+    <button
+      onClick={() => setShowSubmissionForm(true)}
+      className="px-3 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 
+               text-white rounded-lg font-medium text-xs transition-all 
+               flex items-center justify-center gap-1.5 whitespace-nowrap h-9"
+    >
+      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>Submit Report</span>
+    </button>
+  </div>
+)}
+
+{/* Mobile: Show dropdown menu */}
+{isLoggedIn && userMode && (
+   <div className="md:hidden relative mobile-data-menu">
+    <button
+      onClick={() => setShowMobileDataMenu(!showMobileDataMenu)}
+      className="p-2 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 
+               border border-amber-500/30 rounded-lg transition-colors relative"
+    >
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+      </svg>
+      {userPoints > 0 && (
+        <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">
+          {userPoints}
+        </span>
+      )}
+    </button>
+    
+    {showMobileDataMenu && (
+      <div className="absolute right-0 top-full mt-2 w-56 bg-sifter-card border border-sifter-border rounded-lg shadow-xl z-50">
+        <div className="p-2 space-y-1">
+          <button
+            onClick={() => {
+              setShowTrackingDashboard(true);
+              setShowMobileDataMenu(false);
+            }}
+            className="w-full text-left px-3 py-2 text-amber-400 hover:bg-amber-500/10 rounded-lg transition-colors flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span className="text-sm">Data Donation</span>
+          </button>
+          
+          <button
+            onClick={() => {
+              setShowPointsDisplay(true);
+              setShowMobileDataMenu(false);
+            }}
+            className="w-full text-left px-3 py-2 text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors flex items-center gap-2"
+          >
+            <span>🏆</span>
+            <span className="text-sm">Points & Rewards</span>
+          </button>
+          
+          <button
+            onClick={() => {
+              setShowDisputeForm(true);
+              setShowMobileDataMenu(false);
+            }}
+            className="w-full text-left px-3 py-2 text-orange-400 hover:bg-orange-500/10 rounded-lg transition-colors flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3l-6.928-12c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span className="text-sm">Submit Dispute</span>
+          </button>
+          
+          <button
+            onClick={() => {
+              setShowSubmissionForm(true);
+              setShowMobileDataMenu(false);
+            }}
+            className="w-full text-left px-3 py-2 text-green-400 hover:bg-green-500/10 rounded-lg transition-colors flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="text-sm">Submit Report</span>
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
+)}
   
   
   {isLoggedIn && userMode && (

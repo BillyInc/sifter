@@ -1167,51 +1167,41 @@ const exportToPDF = () => {
 
         {/* Navigation */}
         <div className="bg-sifter-card border border-sifter-border rounded-lg p-1">
-          <div className="flex flex-wrap gap-1">
-            {[
-              { id: 'analyze', icon: '🔍', label: 'Analyze' },
-              { id: 'watchlist', icon: '📋', label: `Watchlist (${watchlist.length})` },
-              { id: 'scans', icon: '📊', label: `Scans (${recentScans.length})` },
-              { id: 'learn', icon: '📚', label: 'Learn' }
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  if (tab.id === 'analyze') resetAnalysis();
-                  setActiveTab(tab.id as any);
-                }}
-                className={`px-3 py-1.5 rounded text-sm font-medium transition-all flex items-center gap-1.5 ${
-                  activeTab === tab.id
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                }`}
-              >
-                <span>{tab.icon}</span>
-                <span>{tab.label}</span>
-              </button>
-            ))}
-          </div>
+        <div className="flex overflow-x-auto gap-1 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+          {[
+            { id: 'analyze', icon: '🔍', label: 'Analyze' },
+            { id: 'watchlist', icon: '📋', label: `Watchlist (${watchlist.length})` },
+            { id: 'scans', icon: '📊', label: `Scans (${recentScans.length})` },
+            { id: 'learn', icon: '📚', label: 'Learn' }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => {
+                if (tab.id === 'analyze') resetAnalysis();
+                setActiveTab(tab.id as any);
+              }}
+              className={`px-3 py-1.5 rounded text-sm font-medium transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
+                activeTab === tab.id
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800'
+              }`}
+            >
+              <span>{tab.icon}</span>
+              <span className="hidden sm:inline">{tab.label}</span>
+              <span className="sm:hidden">{tab.icon}</span>
+            </button>
+          ))}
         </div>
-
-        {/* Main Content */}
-        <div className="relative z-10">
-          {activeTab === 'analyze' && renderAnalyzeTab()}
-          {activeTab === 'watchlist' && renderWatchlistTab()}
-          {activeTab === 'scans' && renderScansTab()}
-          {activeTab === 'learn' && renderLearnTab()}
-        </div>
-
-        
-        
-        <style jsx>{`
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          .animate-fadeIn {
-            animation: fadeIn 0.2s ease-out forwards;
-          }
-        `}</style>
       </div>
+
+      {/* Main Content */}
+      <div className="relative z-10">
+        {activeTab === 'analyze' && renderAnalyzeTab()}
+        {activeTab === 'watchlist' && renderWatchlistTab()}
+        {activeTab === 'scans' && renderScansTab()}
+        {activeTab === 'learn' && renderLearnTab()}
+      </div>
+    </div>
+
     );
   }
