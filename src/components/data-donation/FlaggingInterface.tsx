@@ -183,6 +183,8 @@ export default function FlaggingInterface({
         return { icon: '🔬', color: 'purple', name: 'Researcher Mode' };
       case 'individual':
         return { icon: '👤', color: 'green', name: 'Individual Mode' };
+        default:  // ← ADD THIS
+      return { icon: '👤', color: 'green', name: 'Individual Mode' };
     }
   };
 

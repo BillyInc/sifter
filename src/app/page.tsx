@@ -12,7 +12,7 @@ import EABatchDashboard from '@/components/EABatchDashboard';
 import LandingPage from '../components/LandingPage';
 import { ExportService } from '@/services/exportService';
 import { createMetricsArray } from '@/utils/metricHelpers';
-import '@/app/globals.css'; // Adjust path to your global CSS
+
 import { generateDetailedMetricEvidence } from '@/utils/metricHelpers';
 
 // NEW: Import Data Donation Components
@@ -41,9 +41,6 @@ import {
   SubmissionFormData
 } from '@/types';
 import { generateMockProjectData } from '@/data/mockData'; // Fixed import
-
-
-
 
 
 
@@ -2297,6 +2294,7 @@ const getRewardsForMode = (mode: UserMode | null): Reward[] => {
       return;
     }
     
+    
     const csvData = dataDonationSubmissions.map(sub => ({
       'Case ID': sub.caseId || 'N/A',
       'Entity Name': sub.entityDetails?.fullName || 'Unknown',
@@ -2328,6 +2326,17 @@ const getRewardsForMode = (mode: UserMode | null): Reward[] => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }, [dataDonationSubmissions]);
+
+  // ✅ ADD THIS NEW FUNCTION:
+const handleNewSubmission = useCallback(() => {
+  if (!isLoggedIn) {
+    setShowAuthModal(true);
+    return;
+  }
+   setShowTrackingDashboard(false);  // ✅ ADD THIS LINE - Close dashboard first
+  setShowSubmissionForm(true);
+  setDataDonationPrefill(null);
+}, [isLoggedIn]);
 
   const handleOpenDataDonationWithContext = useCallback((context: {
     entityName: string;
@@ -3479,6 +3488,7 @@ const getRewardsForMode = (mode: UserMode | null): Reward[] => {
                   onExportSubmissions={handleExportSubmissions}
                   userPoints={userPoints}
                   userName={userName}
+                  onNewSubmission={handleNewSubmission}  // ← ADD THIS LINE
                 />
               </div>
             </div>
