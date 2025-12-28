@@ -10,15 +10,15 @@ import { DisputeForm } from '@/components/data-donation/universal';
 import { generateDetailedMetricEvidence } from '@/utils/metricHelpers';
 
 // Import the actual types from the central types file
-import { 
-  UserGamificationProfile, 
-  Reward, 
+import {
+  UserGamificationProfile,
+  Reward,
   RewardType,
   UserMode,
   UserTier,
   Badge,
   Achievement,
-  
+
   EvidenceType,
   EvidenceStatus,
   EntityEntry
@@ -26,9 +26,9 @@ import {
 
 import SmartInputParser from './SmartInputParser';
 import MetricBreakdown from './MetricBreakdown';
-import { 
-  BatchProcessingJob, 
-  BatchProject, 
+import {
+  BatchProcessingJob,
+  BatchProject,
   SmartInputResult,
   ProjectData,
   MetricData,
@@ -102,8 +102,8 @@ interface EABatchDashboardProps {
 // Helper function to create a metric data object WITH FIXED SCORE PROPERTY
 const createMetricData = (key: string, name: string, score: number): MetricData => {
   const normalizedScore = Math.min(Math.max(score, 0), 100);
-   const detailedEvidence = generateDetailedMetricEvidence(key, normalizedScore, {});
-  
+  const detailedEvidence = generateDetailedMetricEvidence(key, normalizedScore, {});
+
   return {
     id: `metric_${key}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     key,
@@ -114,7 +114,7 @@ const createMetricData = (key: string, name: string, score: number): MetricData 
     status: score < 30 ? 'low' : score < 50 ? 'moderate' : score < 70 ? 'high' : 'critical',
     confidence: Math.floor(Math.random() * 30) + 70,
     flags: [],
-     evidence: [detailedEvidence],  // ✅ Now has detailed evidence!
+    evidence: [detailedEvidence],  // ✅ Now has detailed evidence!
     score: normalizedScore, // Explicitly set the score property
     scoreValue: normalizedScore // Add this too for compatibility
   };
@@ -133,7 +133,7 @@ const ensureMetricsHaveScore = (metricsArray: MetricData[]): MetricData[] => {
 // Create metrics array with all 13 metrics - RANDOMIZED SCORES
 const createMetricsArray = (): MetricData[] => {
   const metrics: MetricData[] = [];
-  
+
   metrics.push(createMetricData('teamIdentity', 'Team Identity', Math.floor(Math.random() * 100)));
   metrics.push(createMetricData('teamCompetence', 'Team Competence', Math.floor(Math.random() * 100)));
   metrics.push(createMetricData('contaminatedNetwork', 'Contaminated Network', Math.floor(Math.random() * 100)));
@@ -147,7 +147,7 @@ const createMetricsArray = (): MetricData[] => {
   metrics.push(createMetricData('founderDistraction', 'Founder Distraction', Math.floor(Math.random() * 100)));
   metrics.push(createMetricData('engagementAuthenticity', 'Engagement Authenticity', Math.floor(Math.random() * 100)));
   metrics.push(createMetricData('tokenomics', 'Tokenomics', Math.floor(Math.random() * 100)));
-  
+
   return metrics;
 };
 
@@ -155,11 +155,11 @@ const createMetricsArray = (): MetricData[] => {
 const convertBatchToProjectData = (batchProject: BatchProject): ProjectData => {
   const metricsArray = createMetricsArray();
   const metricsWithScore = ensureMetricsHaveScore(metricsArray); // Fix: Ensure score property exists
-  
+
   const compositeScore = Math.round(
     metricsWithScore.reduce((sum, m) => sum + (m.score || 0), 0) / metricsWithScore.length
   );
-  
+
   // Get verdict with proper type
   const getVerdict = (): VerdictType => {
     const score = batchProject.riskScore || compositeScore;
@@ -208,10 +208,10 @@ const convertBatchToProjectData = (batchProject: BatchProject): ProjectData => {
 };
 
 // BatchUpload Component
-const BatchUpload = ({ 
+const BatchUpload = ({
   onUpload,
-  onUploadComplete 
-}: { 
+  onUploadComplete
+}: {
   onUpload: (files: File[]) => void;
   onUploadComplete: (job: BatchProcessingJob) => void;
 }) => {
@@ -219,7 +219,7 @@ const BatchUpload = ({
 
   const handleFileUpload = (files: File[]) => {
     onUpload(files);
-    
+
     const job: BatchProcessingJob = {
       id: `batch_${Date.now()}`,
       name: `Batch Upload ${new Date().toLocaleDateString()}`,
@@ -237,18 +237,17 @@ const BatchUpload = ({
       createdAt: new Date(),
       completedAt: undefined
     };
-    
+
     onUploadComplete(job);
   };
 
   return (
     <div className="space-y-4">
       <div
-        className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
-          isDragging
+        className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${isDragging
             ? 'border-blue-500 bg-blue-500/10'
             : 'border-sifter-border hover:border-blue-500/50'
-        }`}
+          }`}
         onDragOver={(e) => {
           e.preventDefault();
           setIsDragging(true);
@@ -288,29 +287,29 @@ const BatchUpload = ({
 };
 
 // BatchSummaryComponent
-const BatchSummaryComponent = ({ 
+const BatchSummaryComponent = ({
   job,
-  batchStats, 
+  batchStats,
   onOpenBulkFlagging  // ✅ ADD THI
-}: { 
+}: {
   job: BatchProcessingJob;
   batchStats: {
     totalProcessed: number;
     averageProcessingTime: number;
     rejectionRate: number;
     lastBatchDate: Date;
-   
+
 
   };
-   onOpenBulkFlagging?: () => void;  // ✅ ADD THIS
+  onOpenBulkFlagging?: () => void;  // ✅ ADD THIS
 }) => {
   const averageRiskScore = job.summary?.averageRiskScore || 0;
   const totalProjects = job.summary?.total || job.projects?.length || 0;
-  
+
   return (
     <div className="bg-sifter-card border border-sifter-border rounded-2xl p-6">
       <h3 className="text-xl font-semibold text-white mb-6">Batch Summary</h3>
-      
+
       <div className="flex overflow-x-auto border-b border-sifter-border -mx-4 px-4 sm:mx-0 sm:px-0">
         <div className="bg-sifter-dark/50 border border-sifter-border rounded-xl p-4">
           <div className="text-2xl font-bold text-white mb-1">{batchStats.totalProcessed}</div>
@@ -353,12 +352,11 @@ const BatchSummaryComponent = ({
               <span className="text-white font-medium">{averageRiskScore}/100</span>
             </div>
             <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-              <div 
-                className={`h-full ${
-                  averageRiskScore < 30 ? 'bg-green-500' :
-                  averageRiskScore < 60 ? 'bg-yellow-500' :
-                  'bg-red-500'
-                }`}
+              <div
+                className={`h-full ${averageRiskScore < 30 ? 'bg-green-500' :
+                    averageRiskScore < 60 ? 'bg-yellow-500' :
+                      'bg-red-500'
+                  }`}
                 style={{ width: `${averageRiskScore}%` }}
               />
             </div>
@@ -407,11 +405,11 @@ const BatchSummaryComponent = ({
 };
 
 // ProjectCardWithFlagging Component - NEW
-const ProjectCardWithFlagging = ({ 
+const ProjectCardWithFlagging = ({
   project,
   onViewDetails,
   onStandardForm
-}: { 
+}: {
   project: ExtendedBatchProject;
   onViewDetails: (project: BatchProject) => void;
   onStandardForm?: (entityData: {
@@ -422,11 +420,11 @@ const ProjectCardWithFlagging = ({
   }) => void;
 }) => {
   const riskScore = project.riskScore || 0;
-  const topRedFlag = project.redFlags && project.redFlags.length > 0 
-    ? project.redFlags[0] 
+  const topRedFlag = project.redFlags && project.redFlags.length > 0
+    ? project.redFlags[0]
     : 'No red flags detected';
   const verdict = project.verdict || 'unknown';
-  
+
   // Detect if there's a suspicious entity in this project
   const flaggedEntity = project.flaggedEntity || (riskScore > 60 ? `Suspicious Entity (${project.name})` : null);
 
@@ -438,33 +436,30 @@ const ProjectCardWithFlagging = ({
           <div className="text-xs text-gray-500">{project.input}</div>
         </div>
         <div className="flex items-center gap-2">
-          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
-            riskScore < 30 ? 'bg-green-500/20 text-green-400' :
-            riskScore < 60 ? 'bg-yellow-500/20 text-yellow-400' :
-            'bg-red-500/20 text-red-400'
-          }`}>
-            <div className={`w-2 h-2 rounded-full ${
-              riskScore < 30 ? 'bg-green-500' :
-              riskScore < 60 ? 'bg-yellow-500' :
-              'bg-red-500'
-            }`} />
+          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${riskScore < 30 ? 'bg-green-500/20 text-green-400' :
+              riskScore < 60 ? 'bg-yellow-500/20 text-yellow-400' :
+                'bg-red-500/20 text-red-400'
+            }`}>
+            <div className={`w-2 h-2 rounded-full ${riskScore < 30 ? 'bg-green-500' :
+                riskScore < 60 ? 'bg-yellow-500' :
+                  'bg-red-500'
+              }`} />
             {riskScore}/100
           </div>
         </div>
       </div>
-      
+
       <div className="flex items-center justify-between mb-3">
         <div className="text-sm text-gray-300">{topRedFlag}</div>
-        <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
-          verdict === 'pass' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
-          verdict === 'flag' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
-          'bg-red-500/20 text-red-400 border border-red-500/30'
-        }`}>
-          {verdict === 'pass' ? '✓ Pass' : 
-           verdict === 'flag' ? '⚠ Flag' : '✗ Reject'}
+        <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${verdict === 'pass' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+            verdict === 'flag' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+              'bg-red-500/20 text-red-400 border border-red-500/30'
+          }`}>
+          {verdict === 'pass' ? '✓ Pass' :
+            verdict === 'flag' ? '⚠ Flag' : '✗ Reject'}
         </div>
       </div>
-      
+
       {/* NEW: Data donation section for suspicious entities */}
       {flaggedEntity && riskScore > 60 && (
         <div className="mt-3 pt-3 border-t border-amber-500/30">
@@ -477,19 +472,19 @@ const ProjectCardWithFlagging = ({
                 Detected during batch analysis
               </p>
             </div>
-           {onStandardForm && (
-          <BatchFlagButtonWrapper
-           projectName={project.name}
-           entityName={flaggedEntity}
-           riskScore={riskScore}
-           context="Batch analysis"
-           onFlag={onStandardForm}
-  />
-)}
+            {onStandardForm && (
+              <BatchFlagButtonWrapper
+                projectName={project.name}
+                entityName={flaggedEntity}
+                riskScore={riskScore}
+                context="Batch analysis"
+                onFlag={onStandardForm}
+              />
+            )}
           </div>
         </div>
       )}
-      
+
       <div className="mt-3">
         <button
           onClick={() => onViewDetails(project)}
@@ -503,13 +498,13 @@ const ProjectCardWithFlagging = ({
 };
 
 // BatchResultsTable Component - UPDATED WITH FLAGGING
-const BatchResultsTable = ({ 
-  projects, 
+const BatchResultsTable = ({
+  projects,
   onViewDetails,
   onExportBatch,
   onExportBatchCSV,
   onStandardForm
-}: { 
+}: {
   projects: ExtendedBatchProject[];
   onViewDetails: (project: BatchProject) => void;
   onExportBatch?: (projects: BatchProject[]) => void;
@@ -543,13 +538,13 @@ const BatchResultsTable = ({
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl font-semibold text-white">Batch Results</h3>
         <div className="flex gap-2">
-          <button 
+          <button
             onClick={handleExportCSV}
             className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm"
           >
             Export CSV
           </button>
-          <button 
+          <button
             onClick={handleExportPDF}
             className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm"
           >
@@ -588,7 +583,7 @@ export default function EABatchDashboard({
   onAnalyze,
   onBatchUploadComplete,
   onViewProjectDetails,
- 
+
   recentBatches = [],
   batchStats = {
     totalProcessed: 0,
@@ -622,7 +617,7 @@ export default function EABatchDashboard({
     projects: string[];
     confidence: number;
   }>>([]);
-   // ✅ ADD THIS LINE HERE (around line 560)
+  // ✅ ADD THIS LINE HERE (around line 560)
   const [showDisputeForm, setShowDisputeForm] = useState(false);
 
   // User profile state for data donation components - USING CORRECT TYPE
@@ -767,49 +762,49 @@ export default function EABatchDashboard({
     }
   ]);
 
- const generateMockBatchProjects = (): ExtendedBatchProject[] => {
-  const suspiciousEntities = [
-    'RugAgencyX',
+  const generateMockBatchProjects = (): ExtendedBatchProject[] => {
+    const suspiciousEntities = [
+      'RugAgencyX',
       'DevAnonymous',
       'MarketingBotFarm',
       'PumpGroupAlpha',
       'ScamContractor'
-  ];
-  
-  return Array.from({ length: 50 }, (_, i) => {
-    // Create consistent hash from project name for seeding
-    const projectName = `Project ${String.fromCharCode(65 + (i % 26))}${Math.floor(i / 26) + 1}`;
-    const seed = projectName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    
-    // Use seed to generate consistent risk score for this project
-    const riskScore = (seed % 80) + 20; // Range: 20-100
-    
-    let verdict: VerdictType = 'reject';
-    if (riskScore < 30) verdict = 'pass';
-    else if (riskScore < 60) verdict = 'flag';
-    
-    const flaggedEntity = riskScore > 60 
-      ? suspiciousEntities[(seed % suspiciousEntities.length)]
-      : undefined;
-    
-    return {
-      id: `project_${i}`,
-      name: projectName,
-      input: `project${i}.com`,
-      status: 'complete',
-      riskScore,
-      verdict,
-      redFlags: riskScore > 80 ? ['Known rug agency'] : 
-               riskScore > 60 ? ['Anonymous team'] : 
-               riskScore > 40 ? ['Mixed signals'] : [],
-      processingTime: Math.floor((seed % 60) * 1000) + 30000,
-      scannedAt: new Date(),
-      weight: Math.random(),
-      confidence: Math.floor((seed % 30)) + 70,
-      flaggedEntity
-    };
-  });
-};
+    ];
+
+    return Array.from({ length: 50 }, (_, i) => {
+      // Create consistent hash from project name for seeding
+      const projectName = `Project ${String.fromCharCode(65 + (i % 26))}${Math.floor(i / 26) + 1}`;
+      const seed = projectName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+
+      // Use seed to generate consistent risk score for this project
+      const riskScore = (seed % 80) + 20; // Range: 20-100
+
+      let verdict: VerdictType = 'reject';
+      if (riskScore < 30) verdict = 'pass';
+      else if (riskScore < 60) verdict = 'flag';
+
+      const flaggedEntity = riskScore > 60
+        ? suspiciousEntities[(seed % suspiciousEntities.length)]
+        : undefined;
+
+      return {
+        id: `project_${i}`,
+        name: projectName,
+        input: `project${i}.com`,
+        status: 'complete',
+        riskScore,
+        verdict,
+        redFlags: riskScore > 80 ? ['Known rug agency'] :
+          riskScore > 60 ? ['Anonymous team'] :
+            riskScore > 40 ? ['Mixed signals'] : [],
+        processingTime: Math.floor((seed % 60) * 1000) + 30000,
+        scannedAt: new Date(),
+        weight: Math.random(),
+        confidence: Math.floor((seed % 30)) + 70,
+        flaggedEntity
+      };
+    });
+  };
   // NEW: Function to detect suspicious entities from batch results
   const analyzeBatchForEntities = (projects: ExtendedBatchProject[]) => {
     const entities: Record<string, {
@@ -819,7 +814,7 @@ export default function EABatchDashboard({
       projects: string[];
       confidence: number;
     }> = {};
-    
+
     projects.forEach(project => {
       if (project.flaggedEntity && project.riskScore && project.riskScore > 60) {
         const entityName = project.flaggedEntity;
@@ -836,14 +831,14 @@ export default function EABatchDashboard({
         entities[entityName].projects.push(project.name);
       }
     });
-    
+
     return Object.values(entities);
   };
 
   const handleBatchUploadComplete = (job: BatchProcessingJob) => {
     setBatchJob(job);
     setProcessing(true);
-    
+
     // Simulate processing
     setTimeout(() => {
       const mockProjects = generateMockBatchProjects();
@@ -868,16 +863,16 @@ export default function EABatchDashboard({
           }
         }
       };
-      
+
       setBatchJob(completedJob);
       setProcessing(false);
       setShowBatchResults(true);
-      
+
       // NEW: Analyze for suspicious entities
       const entities = analyzeBatchForEntities(mockProjects);
       setSuspiciousEntities(entities);
-      
-     
+
+
       if (onBatchUploadComplete) {
         onBatchUploadComplete(completedJob);
       }
@@ -897,7 +892,7 @@ export default function EABatchDashboard({
     // This would typically open the universal SubmissionForm with pre-filled data
     alert(`Flagged entity: ${entityData.entityName} from project: ${entityData.projectName}`);
   };
-  
+
   // NEW: Handle bulk flagging
   const handleBulkFlag = (entities: Array<{
     id: string;
@@ -918,11 +913,11 @@ export default function EABatchDashboard({
       const mockMetrics = createMetricsArray();
       const metricsWithScore = ensureMetricsHaveScore(mockMetrics);
       setDetailedMetrics(metricsWithScore);
-      
+
       const compositeScore = Math.round(
         metricsWithScore.reduce((sum, m) => sum + (m.score || 0), 0) / metricsWithScore.length
       );
-      
+
       const mockProjectData: ProjectData = {
         id: 'single_project',
         canonicalName: result.selectedEntity.canonicalName || result.selectedEntity.displayName.toLowerCase().replace(/\s+/g, '_'),
@@ -951,9 +946,9 @@ export default function EABatchDashboard({
         scannedAt: new Date(),
         processingTime: 45000,
       };
-      
+
       setProjectData(mockProjectData);
-      
+
       setSelectedProject({
         id: 'single_project',
         name: result.selectedEntity.displayName,
@@ -961,16 +956,16 @@ export default function EABatchDashboard({
         status: 'complete',
         riskScore: compositeScore,
         verdict: compositeScore >= 60 ? 'reject' : compositeScore >= 30 ? 'flag' : 'pass',
-        redFlags: compositeScore > 80 ? ['Known rug agency'] : 
-                 compositeScore > 60 ? ['Anonymous team'] : 
-                 compositeScore > 40 ? ['Mixed signals'] : [],
+        redFlags: compositeScore > 80 ? ['Known rug agency'] :
+          compositeScore > 60 ? ['Anonymous team'] :
+            compositeScore > 40 ? ['Mixed signals'] : [],
         processingTime: 45000,
         scannedAt: new Date(),
         weight: Math.random(),
         confidence: 85,
         flaggedEntity: undefined
       });
-      
+
       setShowSingleAnalysis(true);
     }
   };
@@ -1003,7 +998,7 @@ export default function EABatchDashboard({
       createdAt: new Date(),
       completedAt: undefined
     };
-    
+
     handleBatchUploadComplete(job);
   };
 
@@ -1067,7 +1062,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
             scannedAt: p.scannedAt || new Date()
           }))
         };
-        
+
         ExportService.exportPartnerPacket(packet);
       }
     } else {
@@ -1097,7 +1092,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
     console.log('Evidence submitted:', evidenceData);
     // In a real app, this would be an API call
     return new Promise<void>((resolve) => {
-            setTimeout(() => {
+      setTimeout(() => {
         alert('Evidence submitted successfully!');
         resolve();
       }, 1000);
@@ -1116,10 +1111,10 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
     });
   };
 
-  
+
   if (showSingleAnalysis && selectedProject && projectData) {
     const riskScore = selectedProject.riskScore || 0;
-    
+
     return (
       <div className="space-y-8">
         <div className="flex items-center justify-between">
@@ -1128,10 +1123,10 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
               setShowSingleAnalysis(false);
               setSelectedProject(null);
               setProjectData(null);
-            setDetailedMetrics([]); // ✅ Clear metrics too
-              
-          
-              
+              setDetailedMetrics([]); // ✅ Clear metrics too
+
+
+
             }}
             className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
           >
@@ -1144,7 +1139,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
         </div>
 
         <MetricBreakdown
-        instanceId="batch-analysis" // ✅ ADD UNIQUE ID ADD THIS
+          instanceId="batch-analysis" // ✅ ADD UNIQUE ID ADD THIS
           metrics={detailedMetrics}
           projectName={selectedProject.name}
           riskScore={riskScore}
@@ -1179,7 +1174,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
         </div>
 
         <BatchSummaryComponent
-          job={batchJob} 
+          job={batchJob}
           batchStats={batchStats}
         />
 
@@ -1192,23 +1187,23 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
             📦 Export Partner Packet
           </button>
         </div>
-        
+
         {batchJob.projects && batchJob.projects.length > 0 && (
           <BatchResultsTable
             projects={batchJob.projects as ExtendedBatchProject[]}
             onViewDetails={(project) => {
-                    const enrichedProject = project as ExtendedBatchProject;
-      
-      // Convert BatchProject to full ProjectData
-      const fullProjectData = convertBatchToProjectData(enrichedProject);
+              const enrichedProject = project as ExtendedBatchProject;
 
-                    // Set the states
-      setSelectedProject(enrichedProject);
-      setProjectData(fullProjectData);
-      setDetailedMetrics(fullProjectData.metrics); // ✅ This is the key!
-      setShowSingleAnalysis(true);
+              // Convert BatchProject to full ProjectData
+              const fullProjectData = convertBatchToProjectData(enrichedProject);
 
-              
+              // Set the states
+              setSelectedProject(enrichedProject);
+              setProjectData(fullProjectData);
+              setDetailedMetrics(fullProjectData.metrics); // ✅ This is the key!
+              setShowSingleAnalysis(true);
+
+
               if (onViewProjectDetails) {
                 onViewProjectDetails(project);
               }
@@ -1250,31 +1245,29 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
             <div className="text-sm text-gray-400">Analyst</div>
             <div className="font-medium text-white">{userEmail}</div>
           </div>
-          
+
         </div>
       </div>
 
-   
+
 
       {/* Tabs */}
       <div className="flex border-b border-sifter-border">
         <button
           onClick={() => setActiveTab('batch')}
-          className={`px-6 py-3 font-medium ${
-            activeTab === 'batch'
+          className={`px-6 py-3 font-medium ${activeTab === 'batch'
               ? 'text-blue-400 border-b-2 border-blue-400'
               : 'text-gray-400 hover:text-gray-300'
-          }`}
+            }`}
         >
           📤 Batch Upload
         </button>
         <button
           onClick={() => setActiveTab('single')}
-          className={`px-6 py-3 font-medium ${
-            activeTab === 'single'
+          className={`px-6 py-3 font-medium ${activeTab === 'single'
               ? 'text-blue-400 border-b-2 border-blue-400'
               : 'text-gray-400 hover:text-gray-300'
-          }`}
+            }`}
         >
           🔍 Single Project
         </button>
@@ -1287,7 +1280,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
           <div className="space-y-6">
             <div className="bg-sifter-card border border-sifter-border rounded-2xl p-6">
               <h3 className="text-xl font-semibold text-white mb-4">Upload Files</h3>
-              <BatchUpload 
+              <BatchUpload
                 onUpload={onBatchUpload}
                 onUploadComplete={handleBatchUploadComplete}
               />
@@ -1306,11 +1299,10 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
                           {batch.summary?.total || batch.projects?.length || 0} projects • {batch.createdAt.toLocaleDateString()}
                         </div>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-sm ${
-                        batch.status === 'complete' ? 'bg-green-500/20 text-green-400' :
-                        batch.status === 'processing' ? 'bg-yellow-500/20 text-yellow-400' :
-                        'bg-blue-500/20 text-blue-400'
-                      }`}>
+                      <span className={`px-3 py-1 rounded-full text-sm ${batch.status === 'complete' ? 'bg-green-500/20 text-green-400' :
+                          batch.status === 'processing' ? 'bg-yellow-500/20 text-yellow-400' :
+                            'bg-blue-500/20 text-blue-400'
+                        }`}>
                         {batch.status}
                       </span>
                     </div>
@@ -1329,7 +1321,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
                   {batchTextInput.split('\n').filter(l => l.trim()).length}/100 projects
                 </div>
               </div>
-              
+
               <textarea
                 value={batchTextInput}
                 onChange={(e) => setBatchTextInput(e.target.value)}
@@ -1345,12 +1337,12 @@ https://projectx.com`}
                 rows={12}
                 className="w-full bg-sifter-dark border border-sifter-border rounded-xl p-4 text-white font-mono text-sm focus:border-blue-500 focus:outline-none resize-none whitespace-pre-wrap break-words"
               />
-              
+
               <div className="flex justify-between items-center mt-4">
                 <div className="text-sm text-gray-400">
                   Max 100 projects. Supports any format.
                 </div>
-                
+
                 <div className="flex gap-3">
                   <button
                     onClick={() => setBatchTextInput('')}
@@ -1359,7 +1351,7 @@ https://projectx.com`}
                   >
                     Clear
                   </button>
-                  
+
                   <button
                     onClick={handleTextBatchProcessing}
                     disabled={!batchTextInput.trim() || processing}
@@ -1376,15 +1368,15 @@ https://projectx.com`}
               <h3 className="text-xl font-semibold text-white mb-4">Quick Actions</h3>
               <div className="grid grid-cols-2 gap-4">
                 <button
-                onClick={() => {
-                  setActiveTab('single');
-                }}
-                className="p-4 border border-sifter-border rounded-xl hover:border-blue-500/50 hover:bg-sifter-card/50 transition-all text-center"
-              >
-                <div className="text-2xl mb-2">🔍</div>
-                <div className="font-medium text-white">Single Analysis</div>
-                <div className="text-sm text-gray-400">Analyze one project</div>
-              </button>
+                  onClick={() => {
+                    setActiveTab('single');
+                  }}
+                  className="p-4 border border-sifter-border rounded-xl hover:border-blue-500/50 hover:bg-sifter-card/50 transition-all text-center"
+                >
+                  <div className="text-2xl mb-2">🔍</div>
+                  <div className="font-medium text-white">Single Analysis</div>
+                  <div className="text-sm text-gray-400">Analyze one project</div>
+                </button>
                 <button
                   onClick={handleAnalyzeClick}
                   className="p-4 border border-sifter-border rounded-xl hover:border-blue-500/50 hover:bg-sifter-card/50 transition-all text-center"
@@ -1419,7 +1411,7 @@ https://projectx.com`}
           <div className="bg-sifter-card border border-sifter-border rounded-2xl p-6">
             <h3 className="text-xl font-semibold text-white mb-4">Single Project Analysis</h3>
             <p className="text-gray-400 mb-6">Deep dive into one project with 13-metric evaluation</p>
-            
+
             <div className="max-w-4xl mx-auto">
               <SmartInputParser
                 onResolve={handleSmartInputResolve}
@@ -1434,137 +1426,137 @@ https://projectx.com`}
             <p className="text-gray-600 text-sm mb-3">Quick demo:</p>
             <div className="flex justify-center gap-3">
               <button
-      onClick={() => {
-        // Force HIGH RISK scores for REJECT example
-        const rejectMetrics = [
-          { key: 'teamIdentity', name: 'Team Identity', score: 85 },
-          { key: 'teamCompetence', name: 'Team Competence', score: 75 },
-          { key: 'contaminatedNetwork', name: 'Contaminated Network', score: 92 },
-          { key: 'mercenaryKeywords', name: 'Mercenary Keywords', score: 88 },
-          { key: 'messageTimeEntropy', name: 'Message Time Entropy', score: 78 },
-          { key: 'accountAgeEntropy', name: 'Account Age Entropy', score: 90 },
-          { key: 'tweetFocus', name: 'Tweet Focus', score: 72 },
-          { key: 'githubAuthenticity', name: 'GitHub Authenticity', score: 85 },
-          { key: 'busFactor', name: 'Bus Factor', score: 80 },
-          { key: 'artificialHype', name: 'Artificial Hype', score: 95 },
-          { key: 'founderDistraction', name: 'Founder Distraction', score: 82 },
-          { key: 'engagementAuthenticity', name: 'Engagement Authenticity', score: 88 },
-          { key: 'tokenomics', name: 'Tokenomics', score: 79 }
-        ].map(m => createMetricData(m.key, m.name, m.score));
-        
-        const metricsWithScore = ensureMetricsHaveScore(rejectMetrics);
-        setDetailedMetrics(metricsWithScore);
-        
-        const compositeScore = Math.round(
-          metricsWithScore.reduce((sum, m) => sum + (m.score || 0), 0) / metricsWithScore.length
-        );
-        
-        const mockProjectData: ProjectData = {
-          id: 'mock_reject',
-          canonicalName: 'moonrocket_fi',
-          displayName: 'MoonRocket Finance',
-          description: `High-risk project analysis`,
-          platform: 'twitter',
-          sources: [{ type: 'twitter', url: 'https://twitter.com/moonrocket_fi', input: '@moonrocket_fi' }],
-          metrics: metricsWithScore,
-          overallRisk: {
-            score: compositeScore,
-            verdict: 'reject',
-            tier: 'CRITICAL',
-            confidence: 85,
-            breakdown: [`High risk detected: ${compositeScore}/100`]
-          },
-          scannedAt: new Date(),
-          processingTime: 45000,
-        };
-        
-        setProjectData(mockProjectData);
-        setSelectedProject({
-          id: 'mock_reject',
-          name: 'MoonRocket Finance',
-          input: '@moonrocket_fi',
-          status: 'complete',
-          riskScore: compositeScore,
-          verdict: 'reject',
-          redFlags: ['Known rug agency', 'Anonymous team'],
-          processingTime: 45000,
-          scannedAt: new Date(),
-          weight: Math.random(),
-          confidence: 85,
-          flaggedEntity: undefined
-        });
-        setShowSingleAnalysis(true);
-      }}
-      className="text-sm text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-colors"
-    >
-      View REJECT example (High Risk 70+)
-    </button>
-    <button
-      onClick={() => {
-        // Force LOW RISK scores for PASS example
-        const passMetrics = [
-          { key: 'teamIdentity', name: 'Team Identity', score: 15 },
-          { key: 'teamCompetence', name: 'Team Competence', score: 20 },
-          { key: 'contaminatedNetwork', name: 'Contaminated Network', score: 10 },
-          { key: 'mercenaryKeywords', name: 'Mercenary Keywords', score: 18 },
-          { key: 'messageTimeEntropy', name: 'Message Time Entropy', score: 12 },
-          { key: 'accountAgeEntropy', name: 'Account Age Entropy', score: 8 },
-          { key: 'tweetFocus', name: 'Tweet Focus', score: 22 },
-          { key: 'githubAuthenticity', name: 'GitHub Authenticity', score: 14 },
-          { key: 'busFactor', name: 'Bus Factor', score: 25 },
-          { key: 'artificialHype', name: 'Artificial Hype', score: 16 },
-          { key: 'founderDistraction', name: 'Founder Distraction', score: 19 },
-          { key: 'engagementAuthenticity', name: 'Engagement Authenticity', score: 11 },
-          { key: 'tokenomics', name: 'Tokenomics', score: 23 }
-        ].map(m => createMetricData(m.key, m.name, m.score));
-        
-        const metricsWithScore = ensureMetricsHaveScore(passMetrics);
-        setDetailedMetrics(metricsWithScore);
-        
-        const compositeScore = Math.round(
-          metricsWithScore.reduce((sum, m) => sum + (m.score || 0), 0) / metricsWithScore.length
-        );
-        
-        const mockProjectData: ProjectData = {
-          id: 'mock_pass',
-          canonicalName: 'aave',
-          displayName: 'Aave Protocol',
-          description: `Low-risk project analysis`,
-          platform: 'website',
-          sources: [{ type: 'website', url: 'https://aave.com', input: 'aave' }],
-          metrics: metricsWithScore,
-          overallRisk: {
-            score: compositeScore,
-            verdict: 'pass',
-            tier: 'LOW',
-            confidence: 90,
-            breakdown: [`Low risk: ${compositeScore}/100`]
-          },
-          scannedAt: new Date(),
-          processingTime: 45000,
-        };
-        
-        setProjectData(mockProjectData);
-        setSelectedProject({
-          id: 'mock_pass',
-          name: 'Aave Protocol',
-          input: 'aave',
-          status: 'complete',
-          riskScore: compositeScore,
-          verdict: 'pass',
-          redFlags: [],
-          processingTime: 45000,
-          scannedAt: new Date(),
-          weight: Math.random(),
-          confidence: 90,
-          flaggedEntity: undefined
-        });
-        setShowSingleAnalysis(true);
-      }}
-      className="text-sm text-green-400 hover:text-green-300 bg-green-500/10 hover:bg-green-500/20 px-4 py-2 rounded-lg transition-colors"
-    >
-      View PASS example (Low Risk {'<'}30)
-    </button>
+                onClick={() => {
+                  // Force HIGH RISK scores for REJECT example
+                  const rejectMetrics = [
+                    { key: 'teamIdentity', name: 'Team Identity', score: 85 },
+                    { key: 'teamCompetence', name: 'Team Competence', score: 75 },
+                    { key: 'contaminatedNetwork', name: 'Contaminated Network', score: 92 },
+                    { key: 'mercenaryKeywords', name: 'Mercenary Keywords', score: 88 },
+                    { key: 'messageTimeEntropy', name: 'Message Time Entropy', score: 78 },
+                    { key: 'accountAgeEntropy', name: 'Account Age Entropy', score: 90 },
+                    { key: 'tweetFocus', name: 'Tweet Focus', score: 72 },
+                    { key: 'githubAuthenticity', name: 'GitHub Authenticity', score: 85 },
+                    { key: 'busFactor', name: 'Bus Factor', score: 80 },
+                    { key: 'artificialHype', name: 'Artificial Hype', score: 95 },
+                    { key: 'founderDistraction', name: 'Founder Distraction', score: 82 },
+                    { key: 'engagementAuthenticity', name: 'Engagement Authenticity', score: 88 },
+                    { key: 'tokenomics', name: 'Tokenomics', score: 79 }
+                  ].map(m => createMetricData(m.key, m.name, m.score));
+
+                  const metricsWithScore = ensureMetricsHaveScore(rejectMetrics);
+                  setDetailedMetrics(metricsWithScore);
+
+                  const compositeScore = Math.round(
+                    metricsWithScore.reduce((sum, m) => sum + (m.score || 0), 0) / metricsWithScore.length
+                  );
+
+                  const mockProjectData: ProjectData = {
+                    id: 'mock_reject',
+                    canonicalName: 'moonrocket_fi',
+                    displayName: 'MoonRocket Finance',
+                    description: `High-risk project analysis`,
+                    platform: 'twitter',
+                    sources: [{ type: 'twitter', url: 'https://twitter.com/moonrocket_fi', input: '@moonrocket_fi' }],
+                    metrics: metricsWithScore,
+                    overallRisk: {
+                      score: compositeScore,
+                      verdict: 'reject',
+                      tier: 'CRITICAL',
+                      confidence: 85,
+                      breakdown: [`High risk detected: ${compositeScore}/100`]
+                    },
+                    scannedAt: new Date(),
+                    processingTime: 45000,
+                  };
+
+                  setProjectData(mockProjectData);
+                  setSelectedProject({
+                    id: 'mock_reject',
+                    name: 'MoonRocket Finance',
+                    input: '@moonrocket_fi',
+                    status: 'complete',
+                    riskScore: compositeScore,
+                    verdict: 'reject',
+                    redFlags: ['Known rug agency', 'Anonymous team'],
+                    processingTime: 45000,
+                    scannedAt: new Date(),
+                    weight: Math.random(),
+                    confidence: 85,
+                    flaggedEntity: undefined
+                  });
+                  setShowSingleAnalysis(true);
+                }}
+                className="text-sm text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-colors"
+              >
+                View REJECT example (High Risk 70+)
+              </button>
+              <button
+                onClick={() => {
+                  // Force LOW RISK scores for PASS example
+                  const passMetrics = [
+                    { key: 'teamIdentity', name: 'Team Identity', score: 15 },
+                    { key: 'teamCompetence', name: 'Team Competence', score: 20 },
+                    { key: 'contaminatedNetwork', name: 'Contaminated Network', score: 10 },
+                    { key: 'mercenaryKeywords', name: 'Mercenary Keywords', score: 18 },
+                    { key: 'messageTimeEntropy', name: 'Message Time Entropy', score: 12 },
+                    { key: 'accountAgeEntropy', name: 'Account Age Entropy', score: 8 },
+                    { key: 'tweetFocus', name: 'Tweet Focus', score: 22 },
+                    { key: 'githubAuthenticity', name: 'GitHub Authenticity', score: 14 },
+                    { key: 'busFactor', name: 'Bus Factor', score: 25 },
+                    { key: 'artificialHype', name: 'Artificial Hype', score: 16 },
+                    { key: 'founderDistraction', name: 'Founder Distraction', score: 19 },
+                    { key: 'engagementAuthenticity', name: 'Engagement Authenticity', score: 11 },
+                    { key: 'tokenomics', name: 'Tokenomics', score: 23 }
+                  ].map(m => createMetricData(m.key, m.name, m.score));
+
+                  const metricsWithScore = ensureMetricsHaveScore(passMetrics);
+                  setDetailedMetrics(metricsWithScore);
+
+                  const compositeScore = Math.round(
+                    metricsWithScore.reduce((sum, m) => sum + (m.score || 0), 0) / metricsWithScore.length
+                  );
+
+                  const mockProjectData: ProjectData = {
+                    id: 'mock_pass',
+                    canonicalName: 'aave',
+                    displayName: 'Aave Protocol',
+                    description: `Low-risk project analysis`,
+                    platform: 'website',
+                    sources: [{ type: 'website', url: 'https://aave.com', input: 'aave' }],
+                    metrics: metricsWithScore,
+                    overallRisk: {
+                      score: compositeScore,
+                      verdict: 'pass',
+                      tier: 'LOW',
+                      confidence: 90,
+                      breakdown: [`Low risk: ${compositeScore}/100`]
+                    },
+                    scannedAt: new Date(),
+                    processingTime: 45000,
+                  };
+
+                  setProjectData(mockProjectData);
+                  setSelectedProject({
+                    id: 'mock_pass',
+                    name: 'Aave Protocol',
+                    input: 'aave',
+                    status: 'complete',
+                    riskScore: compositeScore,
+                    verdict: 'pass',
+                    redFlags: [],
+                    processingTime: 45000,
+                    scannedAt: new Date(),
+                    weight: Math.random(),
+                    confidence: 90,
+                    flaggedEntity: undefined
+                  });
+                  setShowSingleAnalysis(true);
+                }}
+                className="text-sm text-green-400 hover:text-green-300 bg-green-500/10 hover:bg-green-500/20 px-4 py-2 rounded-lg transition-colors"
+              >
+                View PASS example (Low Risk {'<'}30)
+              </button>
 
             </div>
           </div>
@@ -1592,7 +1584,16 @@ https://projectx.com`}
         </div>
       )}
 
-      
+      {/* Data Donation & Rewards Section - ADDED HERE AT THE END */}
+      <div className="mt-12 mb-8">
+        <h2 className="text-xl font-bold text-white mb-6">Data Donation & Rewards</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <PointsDisplay />
+          <RewardsShop />
+          <EvidenceUpload userType="ea-vc" />
+          <DisputeForm />
+        </div>
+      </div>
     </div>
   );
 }

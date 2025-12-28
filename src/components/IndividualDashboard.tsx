@@ -4,12 +4,10 @@ import React, { useState, useRef, useEffect } from 'react';
 
 import { PointsDisplay } from '@/components/data-donation/gamification';
 import { RewardsShop } from '@/components/data-donation/gamification';
-
+import { EvidenceUpload } from '@/components/data-donation/universal';
 import { DisputeForm } from '@/components/data-donation/universal';
-import { createMetricsArray } from '@/utils/metricHelpers';
-import { generateDetailedMetricEvidence } from '@/utils/metricHelpers';
+
 import SmartInputParser from './SmartInputParser';
-import { ExportService } from '@/services/exportService';
 import { 
   SmartInputResult, 
   MetricData,
@@ -21,64 +19,6 @@ import {
 } from '@/types';
 import { generateMockProjectData, generateMockMetrics } from '@/data/mockData';
 
-// Import the actual types from datadonation
-import { 
-  Reward,
-  UserGamificationProfile,
-  RewardType,
-  UserTier,
-  Badge,
-  Achievement,
-  StreakData,
-  Milestone
-} from '@/types/dataDonation';
-
-// Import MetricBreakdown
-import MetricBreakdown from '@/components/MetricBreakdown';  // adjust path if needed
-
-// Helper function to create a metric data object WITH detailed evidence
-const createMetricData = (key: string, name: string, score: number): MetricData => {
-  const normalizedScore = Math.min(Math.max(score, 0), 100);
-  const detailedEvidence = generateDetailedMetricEvidence(key, normalizedScore, {});
-  
-  return {
-    id: `metric_${key}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    key,
-    name,
-    value: normalizedScore,
-    weight: 10,
-    contribution: normalizedScore * 0.1,
-    status: score < 30 ? 'low' : score < 50 ? 'moderate' : score < 70 ? 'high' : 'critical',
-    confidence: Math.floor(Math.random() * 30) + 70,
-    flags: [],
-    evidence: [detailedEvidence],  // ✅ Now has detailed evidence!
-    score: normalizedScore,
-    scoreValue: normalizedScore
-  };
-};
-
-// Create metrics array with all 13 metrics and DETAILED evidence
-const generateMockMetricsWithEvidence = (): MetricData[] => {
-  const metrics: MetricData[] = [];
-  
-  metrics.push(createMetricData('teamIdentity', 'Team Identity', Math.floor(Math.random() * 100)));
-  metrics.push(createMetricData('teamCompetence', 'Team Competence', Math.floor(Math.random() * 100)));
-  metrics.push(createMetricData('contaminatedNetwork', 'Contaminated Network', Math.floor(Math.random() * 100)));
-  metrics.push(createMetricData('mercenaryKeywords', 'Mercenary Keywords', Math.floor(Math.random() * 100)));
-  metrics.push(createMetricData('messageTimeEntropy', 'Message Time Entropy', Math.floor(Math.random() * 100)));
-  metrics.push(createMetricData('accountAgeEntropy', 'Account Age Entropy', Math.floor(Math.random() * 100)));
-  metrics.push(createMetricData('tweetFocus', 'Tweet Focus', Math.floor(Math.random() * 100)));
-  metrics.push(createMetricData('githubAuthenticity', 'GitHub Authenticity', Math.floor(Math.random() * 100)));
-  metrics.push(createMetricData('busFactor', 'Bus Factor', Math.floor(Math.random() * 100)));
-  metrics.push(createMetricData('artificialHype', 'Artificial Hype', Math.floor(Math.random() * 100)));
-  metrics.push(createMetricData('founderDistraction', 'Founder Distraction', Math.floor(Math.random() * 100)));
-  metrics.push(createMetricData('engagementAuthenticity', 'Engagement Authenticity', Math.floor(Math.random() * 100)));
-  metrics.push(createMetricData('tokenomics', 'Tokenomics', Math.floor(Math.random() * 100)));
-  
-  return metrics;
-};
-
-
 interface LocalWatchlistItem extends SharedWatchlistItem {}
 
 interface IndividualDashboardProps {
@@ -89,7 +29,7 @@ interface IndividualDashboardProps {
   onAddToWatchlist?: (projectName: string, riskScore: number, verdict: VerdictType) => void;
   onRemoveFromWatchlist?: (projectId: string) => void;
   onViewReport?: (scanId: string) => void;
-  
+  onModeChange?: () => void;
   projectMetrics?: MetricData[];
   currentProject?: ProjectData;
 }
@@ -102,7 +42,7 @@ export default function IndividualDashboard({
   onAddToWatchlist,
   onRemoveFromWatchlist,
   onViewReport,
-  
+  onModeChange,
   projectMetrics = [],
   currentProject
 }: IndividualDashboardProps) {
@@ -117,147 +57,6 @@ export default function IndividualDashboard({
     { id: 'scan_2', projectName: 'DeFi Alpha', riskScore: 23, verdict: 'pass', scannedAt: new Date(), processingTime: 89000 },
     { id: 'scan_3', projectName: 'TokenSwap Pro', riskScore: 55, verdict: 'flag', scannedAt: new Date(), processingTime: 92000 }
   ]);
-
-  const [userProfile, setUserProfile] = useState<UserGamificationProfile>({
-    userId: `user_${Date.now()}`,
-    mode: 'individual',
-    totalPoints: 1250,
-    availablePoints: 1250,
-    lifetimePoints: 1500,
-    currentLevel: 3,
-    currentTier: 'silver',
-    badges: [
-      {
-        id: '1',
-        name: 'First Scan',
-        description: 'Completed first project scan',
-        icon: '🔍',
-        earnedAt: new Date('2024-01-16').toISOString(),
-        rarity: 'common',
-        category: 'submission',
-        pointsReward: 50
-      },
-      {
-        id: '2',
-        name: 'Week Streak',
-        description: '7-day scanning streak',
-        icon: '🔥',
-        earnedAt: new Date('2024-01-22').toISOString(),
-        rarity: 'uncommon',
-        category: 'consistency',
-        pointsReward: 100
-      }
-    ],
-    achievements: [
-      {
-        id: '1',
-        name: 'Data Contributor',
-        description: 'Submit 5 data points',
-        progress: 3,
-        target: 5,
-        completed: false,
-        pointsReward: 200
-      },
-      {
-        id: '2',
-        name: 'Accuracy Master',
-        description: 'Get 10 accurate scans',
-        progress: 8,
-        target: 10,
-        completed: false,
-        pointsReward: 300
-      }
-    ],
-    streak: {
-      currentStreak: 7,
-      longestStreak: 12,
-      lastActivity: new Date().toISOString(),
-      streakBonus: 1.5
-    },
-    leaderboardPosition: 42,
-    nextMilestone: {
-      pointsNeeded: 500,
-      reward: 'Premium Report Access',
-      unlocks: ['Profile badge', 'Priority review', 'Direct support', 'Early access features']
-    },
-    displayName: userName,
-    pointsMultiplier: 1.0
-  });
-
-  const [rewards, setRewards] = useState<Reward[]>([
-    {
-      id: '1',
-      name: 'Premium Report',
-      description: 'Get an in-depth analysis report',
-      type: 'access' as RewardType,
-      category: 'individual',
-      pointsCost: 500,
-      quantityAvailable: 100,
-      quantityRemaining: 55,
-      tierRequirement: 'silver',
-      modeRequirement: 'individual',
-      features: ['In-depth analysis', 'Risk breakdown', 'Recommendations'],
-      redemptionInstructions: 'The report will be available in your account within 24 hours.',
-      expiryDate: new Date('2024-12-31').toISOString(),
-      createdAt: new Date('2024-01-01').toISOString()
-    },
-    {
-      id: '2',
-      name: 'Priority Scanning',
-      description: 'Jump to the front of the queue',
-      type: 'feature' as RewardType,
-      category: 'individual',
-      pointsCost: 300,
-      tierRequirement: 'bronze',
-      modeRequirement: 'individual',
-      features: ['Faster scans', 'Priority processing'],
-      redemptionInstructions: 'Priority scanning will be enabled for your account immediately.',
-      expiryDate: new Date('2024-12-31').toISOString(),
-      createdAt: new Date('2024-01-01').toISOString()
-    },
-    {
-      id: '3',
-      name: 'Custom Alert',
-      description: 'Set up a custom monitoring alert',
-      type: 'feature' as RewardType,
-      category: 'individual',
-      pointsCost: 200,
-      tierRequirement: 'bronze',
-      modeRequirement: 'individual',
-      features: ['Custom alerts', 'Real-time notifications'],
-      redemptionInstructions: 'Navigate to Alerts section to set up your custom alert.',
-      expiryDate: new Date('2024-12-31').toISOString(),
-      createdAt: new Date('2024-01-01').toISOString()
-    },
-    {
-      id: '4',
-      name: 'Advanced Analytics',
-      description: 'Access to advanced risk metrics',
-      type: 'access' as RewardType,
-      category: 'individual',
-      pointsCost: 750,
-      tierRequirement: 'gold',
-      modeRequirement: 'individual',
-      features: ['Advanced metrics', 'Historical data', 'Trend analysis'],
-      redemptionInstructions: 'Advanced analytics will be unlocked in your dashboard.',
-      expiryDate: new Date('2024-12-31').toISOString(),
-      createdAt: new Date('2024-01-15').toISOString()
-    },
-    {
-      id: '5',
-      name: 'Community Badge',
-      description: 'Show your contributor status',
-      type: 'recognition' as RewardType,
-      category: 'individual',
-      pointsCost: 150,
-      tierRequirement: 'bronze',
-      modeRequirement: 'individual',
-      features: ['Profile badge', 'Recognition'],
-      redemptionInstructions: 'Badge will appear on your profile immediately.',
-      expiryDate: new Date('2024-12-31').toISOString(),
-      createdAt: new Date('2024-01-01').toISOString()
-    }
-  ]);
   
   const watchlist = externalWatchlist || internalWatchlist;
   const recentScans = externalRecentScans || internalRecentScans;
@@ -270,10 +69,8 @@ export default function IndividualDashboard({
     verdict: VerdictType;
     metrics: MetricData[];
     scanDuration: number;
-    sourceType?: string;    // ✅ Add this
-  sourceUrl?: string;     // ✅ Add this
   } | null>(null);
-  
+  const [showModeSwitch, setShowModeSwitch] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
   
   const [receivedMetrics, setReceivedMetrics] = useState<MetricData[]>(projectMetrics || []);
@@ -325,31 +122,25 @@ export default function IndividualDashboard({
     setIsAnalyzing(false);
   };
 
-  const startAnalysis = async (projectName: string, sourceType?: string, sourceUrl?: string) => {
+  const startAnalysis = async (projectName: string) => {
     setIsAnalyzing(true);
     setAnalysisResults(null);
     
     await new Promise(resolve => setTimeout(resolve, 1500));
     
- // Use received metrics if available, otherwise generate full 13 metrics
-  const metricsToUse = receivedMetrics.length >= 13 
-    ? receivedMetrics 
-    : generateMockMetricsWithEvidence(); // ✅ Now generates metrics with detailed evidence
-  
+    const metricsToUse = receivedMetrics.length > 0 ? receivedMetrics : generateMockMetrics();
     const compositeScore = Math.round(metricsToUse.reduce((sum, m) => sum + (m.contribution || 0), 0));
     const riskScore = Math.min(100, Math.max(0, compositeScore));
     let verdict: VerdictType = 'pass';
     if (riskScore >= 60) verdict = 'reject';
     else if (riskScore >= 30) verdict = 'flag';
-    handleSmartInputResolve
+    
     const results = {
       projectName,
       riskScore,
       verdict,
       metrics: metricsToUse,
-      scanDuration: Math.floor(Math.random() * 30) + 30,
-       sourceType: sourceType || 'manual',  // ✅ Add this
-    sourceUrl: sourceUrl || projectName,   // ✅ Add this
+      scanDuration: Math.floor(Math.random() * 30) + 30
     };
     
     setAnalysisResults(results);
@@ -370,14 +161,10 @@ export default function IndividualDashboard({
   };
 
   const handleSmartInputResolve = (result: SmartInputResult) => {
-  if (result.selectedEntity) {
-    startAnalysis(
-      result.selectedEntity.displayName,
-      result.selectedEntity.platform || 'website',
-      result.selectedEntity.url || result.input
-    );
-  }
-};
+    if (result.selectedEntity) {
+      startAnalysis(result.selectedEntity.displayName);
+    }
+  };
 
   const addToWatchlist = (projectName: string, riskScore: number, verdict: VerdictType) => {
     const newItem: LocalWatchlistItem = {
@@ -433,47 +220,10 @@ export default function IndividualDashboard({
     setShowExportMenu(false);
   };
 
-const exportToPDF = () => {
-  if (!analysisResults) {
-    alert('No analysis results to export');
-    return;
-  }
-  
-  const projectData: ProjectData = {
-    id: `temp_${Date.now()}`,
-    displayName: analysisResults.projectName,
-    canonicalName: analysisResults.projectName.toLowerCase().replace(/\s+/g, '-'),
-    overallRisk: {
-      score: analysisResults.riskScore,
-      verdict: analysisResults.verdict,
-      tier: analysisResults.riskScore < 20 ? 'LOW' : 
-            analysisResults.riskScore < 40 ? 'MODERATE' : 
-            analysisResults.riskScore < 60 ? 'ELEVATED' : 
-            analysisResults.riskScore < 80 ? 'HIGH' : 'CRITICAL',
-      confidence: 85,
-      breakdown: [`Risk score: ${analysisResults.riskScore}/100`]
-    },
-    metrics: analysisResults.metrics,
-    sources: [
-  {
-    type: analysisResults.sourceType || 'manual',
-    url: analysisResults.sourceUrl || analysisResults.projectName,
-    input: analysisResults.projectName
-  }
-],
-    scannedAt: new Date(),
-    processingTime: analysisResults.scanDuration * 1000
-  };
-  
-  // Use ExportService if available
-  if (typeof ExportService !== 'undefined' && ExportService.exportToPDF) {
-    ExportService.exportToPDF(projectData);
-  } else {
+  const exportToPDF = () => {
     alert('PDF export feature coming soon!');
-  }
-  
-  setShowExportMenu(false);
-};
+    setShowExportMenu(false);
+  };
 
   const exportWatchlist = (format: 'json' | 'csv' | 'pdf') => {
     const data = watchlist.map(item => ({
@@ -665,45 +415,13 @@ const exportToPDF = () => {
                 </button>
               </div>
 
-              <div className="mt-6">
-                <h3 className="font-bold text-white mb-4 text-lg">13-Metric Risk Breakdown</h3>
-                
-                <MetricBreakdown 
-                  metrics={analysisResults.metrics}
-                    projectName={analysisResults.projectName}
-                    riskScore={analysisResults.riskScore}
-                     onExport={() => exportAnalysisResults('pdf')}
-                    projectData={receivedProject || {
-                      id: `temp_${Date.now()}`,
-                      displayName: analysisResults.projectName,
-                      canonicalName: analysisResults.projectName.toLowerCase().replace(/\s+/g, '-'),
-                      overallRisk: {
-                        score: analysisResults.riskScore,
-                        verdict: analysisResults.verdict,
-                        tier: analysisResults.riskScore < 20 ? 'LOW' : 
-                              analysisResults.riskScore < 40 ? 'MODERATE' : 
-                              analysisResults.riskScore < 60 ? 'ELEVATED' : 
-                              analysisResults.riskScore < 80 ? 'HIGH' : 'CRITICAL',
-                        confidence: 85,
-                        breakdown: [
-                          `Analysis complete for ${analysisResults.projectName}`,
-                          `Risk score: ${analysisResults.riskScore}/100`,
-                          `Verdict: ${analysisResults.verdict.toUpperCase()}`
-                        ]
-                      },
-                      metrics: analysisResults.metrics,
-                      sources: [
-                        {
-                          type: 'unknown',
-                          url: '',
-                          input: analysisResults.projectName
-                        }
-                      ],
-                      scannedAt: new Date(),
-                      processingTime: analysisResults.scanDuration * 1000
-                    }}
-                    instanceId="individual-dashboard"
-                    />
+              <div>
+                <h3 className="font-bold text-white mb-3 text-sm">13-Metric Breakdown</h3>
+                <div className="space-y-3">
+                  {analysisResults.metrics.map((metric, index) => (
+                    <MetricBar key={index} metric={metric} index={index} />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -995,68 +713,6 @@ const exportToPDF = () => {
     </div>
   );
 
-  const handleRedeemReward = async (rewardId: string) => {
-    const reward = rewards.find(r => r.id === rewardId);
-    if (!reward) return false;
-    
-    if (!reward.isAvailable) {
-      alert('This reward is currently unavailable!');
-      return false;
-    }
-    
-    if (userProfile.availablePoints < reward.pointsCost) {
-      alert(`Not enough points! You need ${reward.pointsCost} points but have ${userProfile.availablePoints}.`);
-      return false;
-    }
-    
-    // Check tier requirement
-    const tierOrder: UserTier[] = ['bronze', 'silver', 'gold', 'platinum', 'diamond', 'vc-elite', 'research-fellow'];
-    if (reward.tierRequirement) {
-      const userTierIndex = tierOrder.indexOf(userProfile.currentTier);
-      const requiredTierIndex = tierOrder.indexOf(reward.tierRequirement);
-      if (userTierIndex < requiredTierIndex) {
-        alert(`This reward requires ${reward.tierRequirement} tier or higher. You are currently ${userProfile.currentTier}.`);
-        return false;
-      }
-    }
-    
-    // Check mode requirement
-    if (reward.modeRequirement && reward.modeRequirement !== userProfile.mode) {
-      alert(`This reward is only available for ${reward.modeRequirement} mode users.`);
-      return false;
-    }
-    
-    try {
-      // In a real app, this would be an API call
-      console.log(`Redeeming reward: ${reward.name} for ${reward.pointsCost} points`);
-      
-      // Update user points
-      setUserProfile(prev => ({
-        ...prev,
-        availablePoints: prev.availablePoints - reward.pointsCost,
-        totalPoints: prev.totalPoints - reward.pointsCost
-      }));
-      
-      // Update reward quantity if applicable
-      if (reward.quantityRemaining !== undefined) {
-        setRewards(prev => prev.map(r => 
-          r.id === rewardId 
-            ? { ...r, quantityRemaining: (r.quantityRemaining || 1) - 1 }
-            : r
-        ));
-      }
-      
-      // Show success message
-      alert(`Successfully redeemed: ${reward.name}!\n\n${reward.redemptionInstructions}\n\nYou've been charged ${reward.pointsCost} points.`);
-      
-      return true;
-    } catch (error) {
-      console.error('Failed to redeem reward:', error);
-      alert('Failed to redeem reward. Please try again.');
-      return false;
-    }
-  };
-
   return (
     <div className="space-y-4 animate-fadeIn relative min-h-screen">
       {/* Header */}
@@ -1143,31 +799,37 @@ const exportToPDF = () => {
                       <button onClick={() => exportRecentScans('csv')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
                         <span className="text-purple-400">📈</span>
                         <span className="text-white">Export as CSV/Excel</span>
-                        </button>
-                        <button onClick={() => exportRecentScans('pdf')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
-                          <span className="text-purple-400">📄</span>
-                          <span className="text-white">Export as PDF</span>
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <div className="p-1.5 border-t border-sifter-border">
-                      <button onClick={() => setShowExportMenu(false)} className="w-full px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded text-sm">
-                        Cancel
+                      </button>
+                      <button onClick={() => exportRecentScans('pdf')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                        <span className="text-purple-400">📄</span>
+                        <span className="text-white">Export as PDF</span>
                       </button>
                     </div>
                   </div>
+                  
+                  <div className="p-1.5 border-t border-sifter-border">
+                    <button onClick={() => setShowExportMenu(false)} className="w-full px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded text-sm">
+                      Cancel
+                    </button>
+                  </div>
                 </div>
-              )}
-            </div>
-            
-            
+              </div>
+            )}
           </div>
+          
+          <button
+            onClick={() => setShowModeSwitch(true)}
+            className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
+          >
+            <span className="text-sm">🔄</span>
+            Switch Mode
+          </button>
         </div>
+      </div>
 
-        {/* Navigation */}
-        <div className="bg-sifter-card border border-sifter-border rounded-lg p-1">
-        <div className="flex overflow-x-auto gap-1 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+      {/* Navigation */}
+      <div className="bg-sifter-card border border-sifter-border rounded-lg p-1">
+        <div className="flex flex-wrap gap-1">
           {[
             { id: 'analyze', icon: '🔍', label: 'Analyze' },
             { id: 'watchlist', icon: '📋', label: `Watchlist (${watchlist.length})` },
@@ -1180,15 +842,14 @@ const exportToPDF = () => {
                 if (tab.id === 'analyze') resetAnalysis();
                 setActiveTab(tab.id as any);
               }}
-              className={`px-3 py-1.5 rounded text-sm font-medium transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
+              className={`px-3 py-1.5 rounded text-sm font-medium transition-all flex items-center gap-1.5 ${
                 activeTab === tab.id
                   ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow'
                   : 'text-gray-400 hover:text-white hover:bg-gray-800'
               }`}
             >
               <span>{tab.icon}</span>
-              <span className="hidden sm:inline">{tab.label}</span>
-              <span className="sm:hidden">{tab.icon}</span>
+              <span>{tab.label}</span>
             </button>
           ))}
         </div>
@@ -1201,7 +862,93 @@ const exportToPDF = () => {
         {activeTab === 'scans' && renderScansTab()}
         {activeTab === 'learn' && renderLearnTab()}
       </div>
-    </div>
 
-    );
-  }
+      {/* Contribute & Earn Points Section - ADDED HERE */}
+      <div className="space-y-8">
+        {/* Existing individual analysis content would be above this */}
+
+        {/* TODO: These components need proper props integration
+        <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
+          <h2 className="text-xl font-bold text-white mb-6">Contribute & Earn Points</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <PointsDisplay />
+            <RewardsShop />
+            <EvidenceUpload userType="individual" />
+            <DisputeForm />
+          </div>
+        </div>
+        */}
+      </div>
+
+      {/* Mode Switch Modal */}
+      {showModeSwitch && (
+        <div className="fixed inset-0 z-50 animate-fadeIn">
+          <div 
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => setShowModeSwitch(false)}
+          />
+          
+          <div className="absolute top-10 left-1/2 transform -translate-x-1/2 w-full max-w-sm px-4">
+            <div className="bg-sifter-card border border-sifter-border rounded-xl p-5 shadow-2xl">
+              <h3 className="text-lg font-bold text-white mb-3">Switch Mode</h3>
+              <p className="text-sm text-gray-400 mb-4">Choose your dashboard mode:</p>
+              
+              <div className="space-y-2.5 mb-4">
+                {[
+                  { id: 'ea-vc', icon: '🏢', title: 'EA/VC Mode', desc: 'Portfolio monitoring' },
+                  { id: 'researcher', icon: '🔬', title: 'Researcher', desc: 'Deep analytics' },
+                  { id: 'individual', icon: '👤', title: 'Individual', desc: 'Simple due diligence', current: true }
+                ].map((mode) => (
+                  <button
+                    key={mode.id}
+                    onClick={() => {
+                      if (!mode.current && onModeChange) {
+                        onModeChange();
+                      }
+                      setShowModeSwitch(false);
+                    }}
+                    className={`w-full p-3 border rounded-lg text-left transition-all hover:scale-[1.02] ${
+                      mode.current 
+                        ? 'border-blue-500 bg-blue-500/10' 
+                        : 'border-sifter-border hover:border-blue-500/30'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="text-xl">{mode.icon}</div>
+                      <div>
+                        <div className="font-bold text-white text-sm">{mode.title}</div>
+                        <div className="text-xs text-gray-400">{mode.desc}</div>
+                      </div>
+                      {mode.current && (
+                        <div className="ml-auto bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">
+                          Current
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+              
+              <button
+                onClick={() => setShowModeSwitch(false)}
+                className="w-full px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.2s ease-out forwards;
+        }
+      `}</style>
+    </div>
+  );
+}
