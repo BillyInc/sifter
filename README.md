@@ -2,7 +2,7 @@
 
 **Automated Due Diligence for Web3 Projects**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
 
@@ -157,28 +157,109 @@ Composite Score = Σ (Metric Score × Metric Weight)
 
 ```
 src/
-├── app/
-│   ├── (auth)/           # Authentication routes
-│   │   ├── login/
-│   │   └── register/
-│   ├── dashboard/        # Multi-stakeholder dashboards
-│   ├── api/              # API routes
-│   ├── layout.tsx        # Root layout
-│   ├── globals.css       # Global styles
-│   └── page.tsx          # Landing page
+├── app/                          # Next.js App Router
+│   ├── (auth)/                   # Authentication routes
+│   │   ├── login/                # User login
+│   │   └── register/             # User registration
+│   ├── api/                      # API endpoints
+│   │   ├── analyze/              # Project analysis endpoint
+│   │   ├── data-donation/        # Community submissions API
+│   │   └── webhook/              # External integrations
+│   ├── layout.tsx                # Root layout
+│   ├── globals.css               # Global styles
+│   └── page.tsx                  # Landing page
+│
 ├── components/
-│   ├── SearchInput.tsx   # Project input field
-│   ├── LoadingState.tsx  # Analysis progress UI
-│   ├── VerdictCard.tsx   # Results display
-│   ├── EABatchDashboard.tsx    # EA batch analysis
-│   └── ResearcherDashboard.tsx # Researcher tools
+│   ├── auth/                     # Authentication components
+│   │   ├── ProtectedRoute.tsx    # Route guard
+│   │   └── UserMenu.tsx          # User dropdown menu
+│   │
+│   ├── data-donation/            # Community data contribution system
+│   │   ├── admin/                # Admin review tools
+│   │   │   ├── evidence/         # Evidence verification
+│   │   │   ├── rewards/          # Rewards management
+│   │   │   └── AdminReviewDashboard.tsx
+│   │   ├── ea-vc/                # VC-specific flagging tools
+│   │   ├── gamification/         # Points & rewards system
+│   │   ├── individual/           # Individual user reporting
+│   │   ├── quick-flag/           # Quick flagging by user type
+│   │   ├── researcher/           # Researcher flagging tools
+│   │   ├── universal/            # Shared submission components
+│   │   └── verification/         # Submission verification
+│   │
+│   ├── disputes/                 # Dispute resolution system
+│   │   ├── DisputeFilingForm.tsx # File new disputes
+│   │   ├── DisputesQueuePanel.tsx# Admin dispute queue
+│   │   └── track.tsx             # Dispute status tracking
+│   │
+│   ├── evidence/                 # Evidence management
+│   │   └── EvidenceVault.tsx     # Secure evidence storage
+│   │
+│   ├── export/                   # Data export functionality
+│   │   ├── ExportButton.tsx      # Export trigger
+│   │   └── ExportDropdown.tsx    # Format selection
+│   │
+│   ├── BatchResultsTable.tsx     # Batch analysis results
+│   ├── BatchSummary.tsx          # Batch statistics overview
+│   ├── BatchUpload.tsx           # Bulk project upload
+│   ├── EABatchDashboard.tsx      # VC/EA batch dashboard
+│   ├── IndividualAnalysisView.tsx# Single project deep-dive
+│   ├── IndividualDashboard.tsx   # Individual user dashboard
+│   ├── LandingPage.tsx           # Marketing landing page
+│   ├── LoadingState.tsx          # Analysis progress UI
+│   ├── MetricBreakdown.tsx       # Detailed metric display
+│   ├── ResearchCharts.tsx        # Data visualizations
+│   ├── ResearcherDashboard.tsx   # Researcher tools
+│   ├── ResearchReport.tsx        # Exportable research report
+│   ├── SearchInput.tsx           # Project input field
+│   ├── ShareDialog.tsx           # Share results modal
+│   ├── SmartInputParser.tsx      # Multi-format input detection
+│   └── VerdictCard.tsx           # Risk verdict display
+│
+├── config/
+│   └── gamification.ts           # Points & rewards config
+│
+├── contexts/
+│   ├── AuthContext.tsx           # Authentication state
+│   └── GamificationContext.tsx   # Points system state
+│
 ├── data/
-│   ├── scoring.ts        # Weighted scoring system
-│   └── placeholders.ts   # Demo data
-├── lib/
-│   └── auth.ts           # Authentication utilities
-└── types/
-    └── index.ts          # TypeScript interfaces
+│   ├── mockData.ts               # Development mock data
+│   ├── placeholders.ts           # Demo placeholders
+│   └── scoring.ts                # Weighted scoring system
+│
+├── emails/
+│   └── auth/
+│       └── VerificationEmail.tsx # Email verification template
+│
+├── pages/                        # Next.js Pages Router (legacy)
+│   ├── api/disputes/             # Disputes API
+│   ├── disputes/                 # Dispute pages
+│   ├── entities/                 # Entity detail pages
+│   └── terms.tsx                 # Terms of service
+│
+├── services/
+│   ├── apiService.ts             # API client
+│   ├── datadonation.ts           # Data donation logic
+│   ├── exportService.tsx         # Export generation
+│   ├── gamification.ts           # Points calculation
+│   ├── integrationService.ts     # External integrations
+│   ├── notifications.ts          # User notifications
+│   ├── pdfGenerator.tsx          # PDF report generation
+│   └── workflowService.ts        # Submission workflows
+│
+├── types/
+│   ├── admin.ts                  # Admin interfaces
+│   ├── auth.ts                   # Auth types
+│   ├── dataDonation.ts           # Submission types
+│   ├── dispute.ts                # Dispute types
+│   ├── evidence-vault.ts         # Evidence types
+│   ├── index.ts                  # Core types
+│   └── verification.ts           # Verification types
+│
+└── utils/
+    ├── metricHelpers.ts          # Metric calculations
+    └── metricUtils.ts            # Metric utilities
 ```
 
 ---
@@ -286,30 +367,22 @@ We welcome contributions from the community. Please read our [Contributing Guide
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License, Version 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ```
-MIT License
+Copyright 2024 SIFTER
 
-Copyright (c) 2024 SIFTER
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+    http://www.apache.org/licenses/LICENSE-2.0
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 ```
 
 ---
