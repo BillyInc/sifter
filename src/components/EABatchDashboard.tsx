@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { PointsDisplay } from '@/components/data-donation/gamification';
 import { RewardsShop } from '@/components/data-donation/gamification';
 
-import { DisputeForm } from '@/components/data-donation/universal';
+import { DisputeForm, EvidenceUpload } from '@/components/data-donation/universal';
 import { generateDetailedMetricEvidence } from '@/utils/metricHelpers';
 
 // Import the actual types from the central types file
@@ -245,8 +245,8 @@ const BatchUpload = ({
     <div className="space-y-4">
       <div
         className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${isDragging
-            ? 'border-blue-500 bg-blue-500/10'
-            : 'border-sifter-border hover:border-blue-500/50'
+          ? 'border-blue-500 bg-blue-500/10'
+          : 'border-sifter-border hover:border-blue-500/50'
           }`}
         onDragOver={(e) => {
           e.preventDefault();
@@ -354,8 +354,8 @@ const BatchSummaryComponent = ({
             <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
               <div
                 className={`h-full ${averageRiskScore < 30 ? 'bg-green-500' :
-                    averageRiskScore < 60 ? 'bg-yellow-500' :
-                      'bg-red-500'
+                  averageRiskScore < 60 ? 'bg-yellow-500' :
+                    'bg-red-500'
                   }`}
                 style={{ width: `${averageRiskScore}%` }}
               />
@@ -437,12 +437,12 @@ const ProjectCardWithFlagging = ({
         </div>
         <div className="flex items-center gap-2">
           <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${riskScore < 30 ? 'bg-green-500/20 text-green-400' :
-              riskScore < 60 ? 'bg-yellow-500/20 text-yellow-400' :
-                'bg-red-500/20 text-red-400'
+            riskScore < 60 ? 'bg-yellow-500/20 text-yellow-400' :
+              'bg-red-500/20 text-red-400'
             }`}>
             <div className={`w-2 h-2 rounded-full ${riskScore < 30 ? 'bg-green-500' :
-                riskScore < 60 ? 'bg-yellow-500' :
-                  'bg-red-500'
+              riskScore < 60 ? 'bg-yellow-500' :
+                'bg-red-500'
               }`} />
             {riskScore}/100
           </div>
@@ -452,8 +452,8 @@ const ProjectCardWithFlagging = ({
       <div className="flex items-center justify-between mb-3">
         <div className="text-sm text-gray-300">{topRedFlag}</div>
         <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${verdict === 'pass' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
-            verdict === 'flag' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
-              'bg-red-500/20 text-red-400 border border-red-500/30'
+          verdict === 'flag' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+            'bg-red-500/20 text-red-400 border border-red-500/30'
           }`}>
           {verdict === 'pass' ? '✓ Pass' :
             verdict === 'flag' ? '⚠ Flag' : '✗ Reject'}
@@ -1075,6 +1075,8 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
     ExportService.exportProjectAnalysis(projectDataForExport);
   };
 
+
+
   // Handle reward redemption
   const handleRedeemReward = async (rewardId: string): Promise<boolean> => {
     console.log(`Redeeming reward: ${rewardId}`);
@@ -1256,8 +1258,8 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
         <button
           onClick={() => setActiveTab('batch')}
           className={`px-6 py-3 font-medium ${activeTab === 'batch'
-              ? 'text-blue-400 border-b-2 border-blue-400'
-              : 'text-gray-400 hover:text-gray-300'
+            ? 'text-blue-400 border-b-2 border-blue-400'
+            : 'text-gray-400 hover:text-gray-300'
             }`}
         >
           📤 Batch Upload
@@ -1265,8 +1267,8 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
         <button
           onClick={() => setActiveTab('single')}
           className={`px-6 py-3 font-medium ${activeTab === 'single'
-              ? 'text-blue-400 border-b-2 border-blue-400'
-              : 'text-gray-400 hover:text-gray-300'
+            ? 'text-blue-400 border-b-2 border-blue-400'
+            : 'text-gray-400 hover:text-gray-300'
             }`}
         >
           🔍 Single Project
@@ -1300,8 +1302,8 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
                         </div>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-sm ${batch.status === 'complete' ? 'bg-green-500/20 text-green-400' :
-                          batch.status === 'processing' ? 'bg-yellow-500/20 text-yellow-400' :
-                            'bg-blue-500/20 text-blue-400'
+                        batch.status === 'processing' ? 'bg-yellow-500/20 text-yellow-400' :
+                          'bg-blue-500/20 text-blue-400'
                         }`}>
                         {batch.status}
                       </span>
@@ -1588,10 +1590,37 @@ https://projectx.com`}
       <div className="mt-12 mb-8">
         <h2 className="text-xl font-bold text-white mb-6">Data Donation & Rewards</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <PointsDisplay />
-          <RewardsShop />
-          <EvidenceUpload userType="ea-vc" />
-          <DisputeForm />
+          <PointsDisplay userProfile={userProfile} />
+          <RewardsShop
+            userProfile={userProfile}
+            rewards={rewards}
+            onRedeem={handleRedeemReward}
+          />
+          <EvidenceUpload
+            submissionId="sub_new"
+            existingEvidence={[]}
+            mode="ea-vc"
+            onUpload={handleEvidenceSubmit}
+            onCancel={() => console.log('Cancelled')}
+          />
+          <DisputeForm
+            entityData={[
+              suspiciousEntities[0]?.name || 'Unknown',
+              'sub_def',
+              'case_def',
+              'project',
+              userEmail
+            ]}
+            userData={[
+              userEmail.split('@')[0],
+              userEmail,
+              'Analyst',
+              'Sifter'
+            ]}
+            userMode="ea-vc"
+            onSubmit={handleDisputeSubmit}
+            onCancel={() => console.log('Cancelled')}
+          />
         </div>
       </div>
     </div>

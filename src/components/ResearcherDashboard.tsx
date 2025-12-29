@@ -14,23 +14,23 @@ import SmartInputParser from './SmartInputParser';
 import MetricBreakdown from './MetricBreakdown';
 import ResearchReport from './ResearchReport';
 import ResearchCharts from './ResearchCharts';
-import { 
-  SmartInputResult, 
-  ProjectData, 
-  AnalysisHistory, 
-  ScamPattern, 
+import {
+  SmartInputResult,
+  ProjectData,
+  AnalysisHistory,
+  ScamPattern,
   MetricData,
   PatternExample,
   DetectionRule,
   VerdictType,
-  EvidenceItem 
+  EvidenceItem
 } from '@/types';
 import { generateMockProjectData } from '@/data/mockData';
 import { ExportService } from '@/services/exportService';
 
 // Import the actual types
-import type { 
-  UserGamificationProfile, 
+import type {
+  UserGamificationProfile,
   Reward,
   EntityType,
   EvidenceType,
@@ -40,27 +40,27 @@ import type {
 // Helper function to get metric value by key or name
 export const getMetricValue = (metrics: MetricData[], keyOrName: string): number => {
   if (!metrics || !Array.isArray(metrics)) return 0;
-  
-  const metric = metrics.find(m => 
-    m.key === keyOrName || 
+
+  const metric = metrics.find(m =>
+    m.key === keyOrName ||
     (m.name && m.name.toLowerCase().includes(keyOrName.toLowerCase())) ||
     (keyOrName.toLowerCase().includes(m.name?.toLowerCase() || ''))
   );
-  
+
   if (!metric) return 0;
-  
+
   // Try to get numeric value from different possible properties
   if (typeof metric.value === 'number') return metric.value;
   if (typeof metric.score === 'number') return metric.score;
   if (typeof metric.scoreValue === 'number') return metric.scoreValue;
   if (typeof metric.contribution === 'number') return metric.contribution;
-  
+
   // Try to convert string value to number
   if (typeof metric.value === 'string') {
     const parsed = parseFloat(metric.value);
     if (!isNaN(parsed)) return parsed;
   }
-  
+
   return 0;
 };
 
@@ -68,7 +68,7 @@ export const getMetricValue = (metrics: MetricData[], keyOrName: string): number
 interface ResearcherDashboardProps {
   onAnalyze: (input: string) => void;
   userEmail: string;
-  
+
   onExportPDF?: (data: ProjectData) => void;
   onExportJSON?: (data: ProjectData) => void;
   onExportCSV?: (data: ProjectData) => void;
@@ -81,10 +81,11 @@ interface ResearcherDashboardProps {
   onAddToWatchlist?: (projectName: string, riskScore: number, verdict: VerdictType) => void;
   onViewReport?: (scanId: string) => void;
   onRemoveFromWatchlist?: (projectId: string) => void;
+  onModeChange?: () => void;
 }
 
-export default function ResearcherDashboard({ 
-  onAnalyze, 
+export default function ResearcherDashboard({
+  onAnalyze,
   userEmail,
 
   onExportPDF,
@@ -97,12 +98,13 @@ export default function ResearcherDashboard({
   recentScans: externalRecentScans,
   onAddToWatchlist,
   onViewReport,
-  onRemoveFromWatchlist
+  onRemoveFromWatchlist,
+  onModeChange
 }: ResearcherDashboardProps) {
   const [activeTab, setActiveTab] = useState<'analyze' | 'compare' | 'patterns' | 'database' | 'exports'>('analyze');
   const [currentProject, setCurrentProject] = useState<ProjectData | null>(currentProjectData || null);
   const [comparisonProjects, setComparisonProjects] = useState<ProjectData[]>([]);
-  
+
   // Use external recentScans if provided, otherwise use internal mock data
   const [internalRecentScans, setInternalRecentScans] = useState<AnalysisHistory[]>([
     { id: '1', projectName: 'MoonDoge Protocol', riskScore: 89, verdict: 'reject', scannedAt: new Date(Date.now() - 2 * 60 * 60 * 1000), processingTime: 87 },
@@ -110,14 +112,14 @@ export default function ResearcherDashboard({
     { id: '3', projectName: 'DeFi Alpha Protocol', riskScore: 23, verdict: 'pass', scannedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), processingTime: 92 },
     { id: '4', projectName: 'TokenSwap Pro', riskScore: 55, verdict: 'flag', scannedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), processingTime: 78 },
   ]);
-  
+
   const recentScans = externalRecentScans || internalRecentScans;
   const [filteredProjects, setFilteredProjects] = useState<ProjectData[]>([]);
-  const [expandedProjects, setExpandedProjects] = useState<{[key: string]: boolean}>({});
-  const [showAllMetrics, setShowAllMetrics] = useState<{[key: string]: boolean}>({});
-  
+  const [expandedProjects, setExpandedProjects] = useState<{ [key: string]: boolean }>({});
+  const [showAllMetrics, setShowAllMetrics] = useState<{ [key: string]: boolean }>({});
+
   const [projectInput, setProjectInput] = useState('');
-  
+
   const [analysisOptions, setAnalysisOptions] = useState({
     includeComparative: true,
     generateStatisticalTests: true,
@@ -132,7 +134,7 @@ export default function ResearcherDashboard({
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [showResearchReport, setShowResearchReport] = useState(false);
   const [reportActiveTab, setReportActiveTab] = useState<'metrics' | 'patterns' | 'summary'>('metrics');
-  
+
   const [customWeights, setCustomWeights] = useState({
     teamIdentity: 13,
     teamCompetence: 11,
@@ -193,8 +195,8 @@ export default function ResearcherDashboard({
   });
 
   const handleRemoveFromComparison = (projectId: string) => {
-  setComparisonProjects(prev => prev.filter(p => p.id !== projectId));
-};
+    setComparisonProjects(prev => prev.filter(p => p.id !== projectId));
+  };
 
   // Get metric values using helper function
   const founderDistractionValue = getMetricValue(projectMetrics, 'founderDistraction');
@@ -213,7 +215,7 @@ export default function ResearcherDashboard({
   useEffect(() => {
     const displayProjects = recentScans.map(scan => {
       const mockData = generateMockProjectData(scan.projectName);
-      
+
       return {
         ...mockData,
         id: scan.id,
@@ -255,7 +257,7 @@ export default function ResearcherDashboard({
   const runDeepAnalysis = async (projectName: string) => {
     setIsAnalyzing(true);
     setAnalysisProgress(0);
-    
+
     const interval = setInterval(() => {
       setAnalysisProgress(prev => {
         if (prev >= 100) {
@@ -265,12 +267,12 @@ export default function ResearcherDashboard({
         return prev + 1;
       });
     }, 30);
-    
+
     setTimeout(() => {
       clearInterval(interval);
       const mockData = generateMockProjectData(projectName);
       setCurrentProject(mockData);
-      
+
       const newAnalysis: AnalysisHistory = {
         id: `analysis_${Date.now()}`,
         projectName: mockData.displayName,
@@ -279,12 +281,12 @@ export default function ResearcherDashboard({
         scannedAt: new Date(),
         processingTime: mockData.processingTime
       };
-      
+
       setInternalRecentScans(prev => [newAnalysis, ...prev.slice(0, 9)]);
       setActiveTab('analyze');
       setIsAnalyzing(false);
       setAnalysisProgress(0);
-      
+
       // Call parent's onAnalyze if provided
       if (onAnalyze) {
         onAnalyze(projectName);
@@ -336,7 +338,7 @@ export default function ResearcherDashboard({
             ExportService.exportMetricsToCSV(dataToExport.metrics, dataToExport.displayName);
           }
           break;
-          
+
         case 'json':
           if (onExportJSON) {
             onExportJSON(dataToExport);
@@ -344,7 +346,7 @@ export default function ResearcherDashboard({
             ExportService.exportProjectAnalysis(dataToExport);
           }
           break;
-          
+
         case 'pdf':
           if (onExportPDF) {
             onExportPDF(dataToExport);
@@ -364,10 +366,10 @@ export default function ResearcherDashboard({
       alert('No analysis to share. Please run an analysis first.');
       return;
     }
-    
+
     try {
       let success = false;
-      
+
       if (platform === 'twitter' || platform === 'linkedin') {
         success = await ExportService.shareAnalysis(currentProject, platform);
       } else {
@@ -376,7 +378,7 @@ export default function ResearcherDashboard({
           alert('Analysis summary copied to clipboard!');
         }
       }
-      
+
       if (!success && platform !== 'clipboard') {
         alert('Failed to share. Please try again.');
       }
@@ -410,14 +412,14 @@ export default function ResearcherDashboard({
 
   const renderComparisonChart = () => {
     if (comparisonProjects.length === 0) return null;
-    
+
     const metrics = [
       { name: 'Team Identity', key: 'teamIdentity' },
       { name: 'Contaminated Network', key: 'contaminatedNetwork' },
       { name: 'GitHub Auth', key: 'githubAuthenticity' },
       { name: 'Tokenomics', key: 'tokenomics' }
     ];
-    
+
     return (
       <div className="bg-gray-900/30 p-4 rounded-lg">
         <div className="text-sm font-medium text-gray-300 mb-3">Metric Comparison</div>
@@ -429,12 +431,11 @@ export default function ResearcherDashboard({
                 const metricValue = getMetricValue(project.metrics, metric.key);
                 return (
                   <div key={projIdx} className="flex items-center gap-2">
-                    <div className={`w-3 h-3 rounded-full ${
-                      metricValue >= 80 ? 'bg-red-500' :
-                      metricValue >= 60 ? 'bg-orange-500' :
-                      metricValue >= 40 ? 'bg-yellow-500' :
-                      'bg-green-500'
-                    }`}></div>
+                    <div className={`w-3 h-3 rounded-full ${metricValue >= 80 ? 'bg-red-500' :
+                        metricValue >= 60 ? 'bg-orange-500' :
+                          metricValue >= 40 ? 'bg-yellow-500' :
+                            'bg-green-500'
+                      }`}></div>
                     <div className="text-xs text-gray-300 truncate">{project.displayName}</div>
                     <div className="text-xs font-medium text-white ml-auto">
                       {metricValue}
@@ -473,7 +474,7 @@ export default function ResearcherDashboard({
     if (scan) {
       const mockData = generateMockProjectData(scan.projectName);
       setCurrentProject(mockData);
-      
+
       const format = prompt('Choose export format: csv, json, or pdf', 'csv');
       if (format && ['csv', 'json', 'pdf'].includes(format.toLowerCase())) {
         handleExportAnalysis(format.toLowerCase() as 'csv' | 'json' | 'pdf', mockData);
@@ -496,10 +497,10 @@ export default function ResearcherDashboard({
 
   const calculateHighestRiskMetric = (): string => {
     if (!currentProject || !currentProject.metrics) return 'N/A';
-    
+
     let highestName = '';
     let highestScore = -1;
-    
+
     currentProject.metrics.forEach(metric => {
       const value = getMetricValue([metric], metric.key || metric.name || '');
       if (value > highestScore) {
@@ -507,16 +508,16 @@ export default function ResearcherDashboard({
         highestName = metric.name || metric.key || 'N/A';
       }
     });
-    
+
     return highestName;
   };
 
   const calculateLowestRiskMetric = (): string => {
     if (!currentProject || !currentProject.metrics) return 'N/A';
-    
+
     let lowestName = '';
     let lowestScore = 101;
-    
+
     currentProject.metrics.forEach(metric => {
       const value = getMetricValue([metric], metric.key || metric.name || '');
       if (value < lowestScore) {
@@ -524,23 +525,23 @@ export default function ResearcherDashboard({
         lowestName = metric.name || metric.key || 'N/A';
       }
     });
-    
+
     return lowestName;
   };
 
   const calculateAvgMetricScore = (): number => {
     if (!currentProject || !currentProject.metrics) return 0;
-    
+
     const total = currentProject.metrics.reduce((sum, metric) => {
       return sum + getMetricValue([metric], metric.key || metric.name || '');
     }, 0);
-    
+
     return Math.round(total / currentProject.metrics.length);
   };
 
   const calculateCriticalFlags = (): number => {
     if (!currentProject || !currentProject.metrics) return 0;
-    
+
     return currentProject.metrics.filter(metric => {
       const value = getMetricValue([metric], metric.key || metric.name || '');
       return value >= 80;
@@ -559,7 +560,7 @@ export default function ResearcherDashboard({
         alert('Please run an analysis first to export data.');
         return;
       }
-      
+
       switch (exportFile.type) {
         case 'csv':
           handleExportAnalysis('csv', currentProject);
@@ -580,10 +581,9 @@ export default function ResearcherDashboard({
           {exportData.map((exportFile, idx) => (
             <div key={idx} className="flex justify-between items-center p-3 bg-gray-900/30 rounded">
               <div className="flex items-center gap-3">
-                <div className={`p-2 rounded ${
-                  exportFile.type === 'csv' ? 'bg-blue-500/20' :
-                  exportFile.type === 'json' ? 'bg-green-500/20' : 'bg-red-500/20'
-                }`}>
+                <div className={`p-2 rounded ${exportFile.type === 'csv' ? 'bg-blue-500/20' :
+                    exportFile.type === 'json' ? 'bg-green-500/20' : 'bg-red-500/20'
+                  }`}>
                   {exportFile.type === 'csv' ? '📊' : exportFile.type === 'json' ? '💾' : '📄'}
                 </div>
                 <div>
@@ -591,7 +591,7 @@ export default function ResearcherDashboard({
                   <div className="text-xs text-gray-500">{exportFile.date} • {exportFile.size}</div>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => handleDownload(exportFile)}
                 className="text-purple-400 hover:text-purple-300 text-sm px-3 py-1 bg-purple-500/10 hover:bg-purple-500/20 rounded transition-colors"
               >
@@ -767,8 +767,8 @@ export default function ResearcherDashboard({
           </div>
         </div>
         <div className="flex items-center gap-4">
-       
-          
+
+
           <div className="text-right">
             <div className="text-sm text-gray-400">Researcher</div>
             <div className="font-medium text-white">{userName || userEmail || 'Researcher'}</div>
@@ -814,11 +814,10 @@ export default function ResearcherDashboard({
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`py-3 px-1 font-medium text-sm border-b-2 transition-colors flex items-center gap-2 ${
-                activeTab === tab
+              className={`py-3 px-1 font-medium text-sm border-b-2 transition-colors flex items-center gap-2 ${activeTab === tab
                   ? 'border-purple-500 text-purple-400'
                   : 'border-transparent text-gray-400 hover:text-gray-300'
-              }`}
+                }`}
             >
               {tab === 'analyze' && <>🔬 <span className="hidden sm:inline">Analysis</span></>}
               {tab === 'compare' && <>📊 <span className="hidden sm:inline">Compare</span></>}
@@ -845,23 +844,23 @@ export default function ResearcherDashboard({
                   {showAdvancedOptions ? '▲ Hide' : '▼ Advanced'} Options
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm text-gray-400 mb-2">Project Identifier</label>
-                  <SmartInputParser 
+                  <SmartInputParser
                     onResolve={handleSmartInputResolve}
                     placeholder="Enter Twitter, Discord, GitHub, website, or project name..."
                     disabled={isAnalyzing}
                   />
                 </div>
-                
+
                 {showAdvancedOptions && (
                   <div className="border border-sifter-border rounded-lg p-4 bg-gray-900/30 space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm text-gray-400 mb-2">Analysis Type</label>
-                        <select 
+                        <select
                           className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-3 py-2 text-white text-sm"
                           defaultValue="standard"
                         >
@@ -873,7 +872,7 @@ export default function ResearcherDashboard({
                       </div>
                       <div>
                         <label className="block text-sm text-gray-400 mb-2">Statistical Tests</label>
-                        <select 
+                        <select
                           className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-3 py-2 text-white text-sm"
                           defaultValue="all"
                         >
@@ -884,49 +883,49 @@ export default function ResearcherDashboard({
                         </select>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-3">
                       <div className="text-sm text-gray-400">Advanced Options</div>
                       <div className="grid grid-cols-2 gap-3">
                         <label className="flex items-center gap-2 text-sm text-gray-300">
-                          <input 
-                            type="checkbox" 
-                            className="rounded border-gray-600 bg-sifter-dark" 
+                          <input
+                            type="checkbox"
+                            className="rounded border-gray-600 bg-sifter-dark"
                             checked={analysisOptions.includeComparative}
-                            onChange={(e) => setAnalysisOptions({...analysisOptions, includeComparative: e.target.checked})}
+                            onChange={(e) => setAnalysisOptions({ ...analysisOptions, includeComparative: e.target.checked })}
                           />
                           Comparative analysis
                         </label>
                         <label className="flex items-center gap-2 text-sm text-gray-300">
-                          <input 
-                            type="checkbox" 
-                            className="rounded border-gray-600 bg-sifter-dark" 
+                          <input
+                            type="checkbox"
+                            className="rounded border-gray-600 bg-sifter-dark"
                             checked={analysisOptions.generateStatisticalTests}
-                            onChange={(e) => setAnalysisOptions({...analysisOptions, generateStatisticalTests: e.target.checked})}
+                            onChange={(e) => setAnalysisOptions({ ...analysisOptions, generateStatisticalTests: e.target.checked })}
                           />
                           Statistical tests
                         </label>
                         <label className="flex items-center gap-2 text-sm text-gray-300">
-                          <input 
-                            type="checkbox" 
-                            className="rounded border-gray-600 bg-sifter-dark" 
+                          <input
+                            type="checkbox"
+                            className="rounded border-gray-600 bg-sifter-dark"
                             checked={analysisOptions.exportRawData}
-                            onChange={(e) => setAnalysisOptions({...analysisOptions, exportRawData: e.target.checked})}
+                            onChange={(e) => setAnalysisOptions({ ...analysisOptions, exportRawData: e.target.checked })}
                           />
                           Export raw data
                         </label>
                         <label className="flex items-center gap-2 text-sm text-gray-300">
-                          <input 
-                            type="checkbox" 
-                            className="rounded border-gray-600 bg-sifter-dark" 
+                          <input
+                            type="checkbox"
+                            className="rounded border-gray-600 bg-sifter-dark"
                             checked={analysisOptions.patternMatching}
-                            onChange={(e) => setAnalysisOptions({...analysisOptions, patternMatching: e.target.checked})}
+                            onChange={(e) => setAnalysisOptions({ ...analysisOptions, patternMatching: e.target.checked })}
                           />
                           Pattern matching
                         </label>
                       </div>
                     </div>
-                    
+
                     {analysisOptions.customWeighting && (
                       <div className="border-t border-sifter-border pt-4">
                         <div className="flex justify-between items-center mb-3">
@@ -950,7 +949,7 @@ export default function ResearcherDashboard({
                                 min="0"
                                 max="30"
                                 value={weight}
-                                onChange={(e) => setCustomWeights({...customWeights, [metric]: parseInt(e.target.value)})}
+                                onChange={(e) => setCustomWeights({ ...customWeights, [metric]: parseInt(e.target.value) })}
                                 className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer"
                               />
                             </div>
@@ -965,7 +964,7 @@ export default function ResearcherDashboard({
                   <div className="space-y-3">
                     <div className="text-sm text-gray-300">Running deep analysis...</div>
                     <div className="w-full bg-gray-800 rounded-full h-2">
-                      <div 
+                      <div
                         className="bg-gradient-to-r from-purple-500 to-purple-700 h-2 rounded-full transition-all duration-300"
                         style={{ width: `${analysisProgress}%` }}
                       ></div>
@@ -1032,7 +1031,7 @@ export default function ResearcherDashboard({
                     </button>
                   </div>
                 </div>
-                
+
                 {/* Quick Stats */}
                 <div className="grid grid-cols-4 gap-3">
                   <div className="bg-gray-900/30 p-3 rounded-lg">
@@ -1060,9 +1059,9 @@ export default function ResearcherDashboard({
                     </div>
                   </div>
                 </div>
-                
+
                 <MetricBreakdown
-                instanceId="main-analysis" // ✅ ADD THIS
+                  instanceId="main-analysis" // ✅ ADD THIS
                   metrics={currentProject.metrics}
                   projectName={currentProject.displayName}
                   riskScore={currentProject.overallRisk.score}
@@ -1081,7 +1080,7 @@ export default function ResearcherDashboard({
                     <p className="text-gray-400 text-sm">13-metric risk assessment results</p>
                   </div>
                   <div className="flex gap-2">
-                    <button 
+                    <button
                       onClick={() => {
                         if (currentProject) {
                           handleExportAnalysis('csv', currentProject);
@@ -1095,7 +1094,7 @@ export default function ResearcherDashboard({
                     >
                       Export Data
                     </button>
-                    <button 
+                    <button
                       onClick={() => setActiveTab('compare')}
                       className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors text-sm"
                     >
@@ -1107,12 +1106,12 @@ export default function ResearcherDashboard({
                 {/* Charts Section - Now uses filteredProjects (converted from recentScans) */}
                 <ResearchCharts projects={filteredProjects} />
 
-               
+
 
                 {/* Detailed Analysis */}
                 <div className="mt-8">
                   <h3 className="font-bold text-white mb-4">Detailed Analysis by Project</h3>
-                  
+
                   {recentScans.map((scan) => (
                     <div key={scan.id} className="mb-4">
                       <div className="bg-sifter-dark border border-sifter-border rounded-lg p-4">
@@ -1122,21 +1121,19 @@ export default function ResearcherDashboard({
                           className="w-full flex items-center justify-between text-left"
                         >
                           <div className="flex items-center gap-3">
-                            <div className={`text-xl ${
-                              scan.riskScore >= 60 ? 'text-red-400' :
-                              scan.riskScore >= 30 ? 'text-yellow-400' : 'text-green-400'
-                            }`}>
-                              {scan.riskScore >= 60 ? '🔴' : 
-                               scan.riskScore >= 30 ? '🟡' : '🟢'}
+                            <div className={`text-xl ${scan.riskScore >= 60 ? 'text-red-400' :
+                                scan.riskScore >= 30 ? 'text-yellow-400' : 'text-green-400'
+                              }`}>
+                              {scan.riskScore >= 60 ? '🔴' :
+                                scan.riskScore >= 30 ? '🟡' : '🟢'}
                             </div>
                             <div>
                               <div className="font-bold text-white">{scan.projectName}</div>
                               <div className="flex items-center gap-2 text-sm">
-                                <div className={`px-2 py-0.5 rounded-full text-xs ${
-                                  scan.verdict === 'reject' ? 'bg-red-500/20 text-red-400' :
-                                  scan.verdict === 'flag' ? 'bg-yellow-500/20 text-yellow-400' :
-                                  'bg-green-500/20 text-green-400'
-                                }`}>
+                                <div className={`px-2 py-0.5 rounded-full text-xs ${scan.verdict === 'reject' ? 'bg-red-500/20 text-red-400' :
+                                    scan.verdict === 'flag' ? 'bg-yellow-500/20 text-yellow-400' :
+                                      'bg-green-500/20 text-green-400'
+                                  }`}>
                                   {scan.verdict.toUpperCase()}
                                 </div>
                                 <div className="text-gray-400">
@@ -1157,7 +1154,7 @@ export default function ResearcherDashboard({
                             {(() => {
                               const projectData = filteredProjects.find(p => p.id === scan.id);
                               if (!projectData) return null;
-                              
+
                               return (
                                 <>
                                   {/* Quick Stats with ACTUAL metrics */}
@@ -1194,7 +1191,7 @@ export default function ResearcherDashboard({
                                         {showAllMetrics[scan.id] ? 'Show Less' : 'Show All'}
                                       </button>
                                     </div>
-                                    
+
                                     <div className="space-y-2">
                                       {projectData.metrics
                                         .slice(0, showAllMetrics[scan.id] ? undefined : 3)
@@ -1206,18 +1203,16 @@ export default function ResearcherDashboard({
                                                 {metric.name || metric.key || `Metric ${index}`}
                                               </div>
                                               <div className="flex items-center gap-3">
-                                                <div className={`text-sm font-bold ${
-                                                  metricValue >= 60 ? 'text-red-400' :
-                                                  metricValue >= 30 ? 'text-yellow-400' : 'text-green-400'
-                                                }`}>
+                                                <div className={`text-sm font-bold ${metricValue >= 60 ? 'text-red-400' :
+                                                    metricValue >= 30 ? 'text-yellow-400' : 'text-green-400'
+                                                  }`}>
                                                   {metricValue}/100
                                                 </div>
                                                 <div className="w-16 bg-gray-800 rounded-full h-2">
-                                                  <div 
-                                                    className={`h-2 rounded-full ${
-                                                      metricValue >= 60 ? 'bg-red-500' :
-                                                      metricValue >= 30 ? 'bg-yellow-500' : 'bg-green-500'
-                                                    }`}
+                                                  <div
+                                                    className={`h-2 rounded-full ${metricValue >= 60 ? 'bg-red-500' :
+                                                        metricValue >= 30 ? 'bg-yellow-500' : 'bg-green-500'
+                                                      }`}
                                                     style={{ width: `${metricValue}%` }}
                                                   />
                                                 </div>
@@ -1233,25 +1228,25 @@ export default function ResearcherDashboard({
 
                             {/* Action Buttons - UPDATED to use scan ID */}
                             <div className="flex gap-2 mt-4">
-                              <button 
+                              <button
                                 onClick={() => handleViewFullReport(scan.id)}
                                 className="px-3 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-lg transition-colors text-sm"
                               >
                                 View Full Report
                               </button>
-                              <button 
+                              <button
                                 onClick={() => handleCompareProject(scan.id)}
                                 className="px-3 py-2 bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg transition-colors text-sm"
                               >
                                 Compare
                               </button>
-                              <button 
+                              <button
                                 onClick={() => handleExportProject(scan.id)}
                                 className="px-3 py-2 bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg transition-colors text-sm"
                               >
                                 Export
                               </button>
-                              <button 
+                              <button
                                 onClick={() => handleAddToWatchlistFromScan(scan.id)}
                                 className="px-3 py-2 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border border-purple-500/20 rounded-lg transition-colors text-sm"
                               >
@@ -1279,19 +1274,19 @@ export default function ResearcherDashboard({
                   {comparisonProjects.length} project{comparisonProjects.length !== 1 ? 's' : ''} selected
                 </div>
 
-                  {comparisonProjects.length > 0 && (
-            <button
-              onClick={() => setComparisonProjects([])}
-              className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg text-sm transition-colors"
-            >
-              Clear All
-            </button>
-          )}
+                {comparisonProjects.length > 0 && (
+                  <button
+                    onClick={() => setComparisonProjects([])}
+                    className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg text-sm transition-colors"
+                  >
+                    Clear All
+                  </button>
+                )}
 
 
 
               </div>
-              
+
               {comparisonProjects.length === 0 ? (
                 <div className="text-center py-8">
                   <div className="text-4xl mb-3">📊</div>
@@ -1307,7 +1302,7 @@ export default function ResearcherDashboard({
               ) : (
                 <>
                   {renderComparisonChart()}
-                  
+
                   <div className="overflow-x-auto mt-4">
                     <table className="w-full min-w-[800px]">
                       <thead>
@@ -1316,24 +1311,23 @@ export default function ResearcherDashboard({
                           {comparisonProjects.map((project, idx) => (
                             <th key={idx} className="text-left py-3 px-4 text-gray-400 font-medium text-sm">
                               <div className="flex items-center gap-2">
-                                <div className={`w-2 h-2 rounded-full ${
-                                  project.overallRisk.score >= 80 ? 'bg-red-500' :
-                                  project.overallRisk.score >= 60 ? 'bg-orange-500' :
-                                  project.overallRisk.score >= 40 ? 'bg-yellow-500' : 'bg-green-500'
-                                }`}></div>
+                                <div className={`w-2 h-2 rounded-full ${project.overallRisk.score >= 80 ? 'bg-red-500' :
+                                    project.overallRisk.score >= 60 ? 'bg-orange-500' :
+                                      project.overallRisk.score >= 40 ? 'bg-yellow-500' : 'bg-green-500'
+                                  }`}></div>
                                 {project.displayName}
                                 <div className="text-xs text-gray-500">({project.overallRisk.score})</div>
-                                                                  {/* ADD THIS BUTTON: */}
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleRemoveFromComparison(project.id);
-                                        }}
-                                        className="ml-2 text-red-400 hover:text-red-300 text-xs"
-                                        title="Remove from comparison"
-                                      >
-                                        ✕
-                                      </button>
+                                {/* ADD THIS BUTTON: */}
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRemoveFromComparison(project.id);
+                                  }}
+                                  className="ml-2 text-red-400 hover:text-red-300 text-xs"
+                                  title="Remove from comparison"
+                                >
+                                  ✕
+                                </button>
                               </div>
                             </th>
                           ))}
@@ -1356,11 +1350,10 @@ export default function ResearcherDashboard({
                               return (
                                 <td key={idx} className="py-3 px-4">
                                   <div className="flex items-center gap-2">
-                                    <div className={`w-8 h-1.5 rounded-full ${
-                                      metricValue >= 80 ? 'bg-red-500' :
-                                      metricValue >= 60 ? 'bg-orange-500' :
-                                      metricValue >= 40 ? 'bg-yellow-500' : 'bg-green-500'
-                                    }`}></div>
+                                    <div className={`w-8 h-1.5 rounded-full ${metricValue >= 80 ? 'bg-red-500' :
+                                        metricValue >= 60 ? 'bg-orange-500' :
+                                          metricValue >= 40 ? 'bg-yellow-500' : 'bg-green-500'
+                                      }`}></div>
                                     <span className="font-medium text-white text-sm">{metricValue}</span>
                                   </div>
                                 </td>
@@ -1368,7 +1361,7 @@ export default function ResearcherDashboard({
                             })}
                             <td className="py-3 px-4 text-gray-400 text-sm">
                               {Math.round(
-                                comparisonProjects.reduce((sum, p) => sum + getMetricValue(p.metrics, key), 0) / 
+                                comparisonProjects.reduce((sum, p) => sum + getMetricValue(p.metrics, key), 0) /
                                 comparisonProjects.length
                               )}
                             </td>
@@ -1397,12 +1390,11 @@ export default function ResearcherDashboard({
                             {scan.scannedAt.toLocaleDateString()}
                           </div>
                         </div>
-                        <div className={`px-2 py-1 rounded text-xs ${
-                          scan.riskScore >= 80 ? 'bg-red-500/20 text-red-400' :
-                          scan.riskScore >= 60 ? 'bg-orange-500/20 text-orange-400' :
-                          scan.riskScore >= 40 ? 'bg-yellow-500/20 text-yellow-400' :
-                          'bg-green-500/20 text-green-400'
-                        }`}>
+                        <div className={`px-2 py-1 rounded text-xs ${scan.riskScore >= 80 ? 'bg-red-500/20 text-red-400' :
+                            scan.riskScore >= 60 ? 'bg-orange-500/20 text-orange-400' :
+                              scan.riskScore >= 40 ? 'bg-yellow-500/20 text-yellow-400' :
+                                'bg-green-500/20 text-green-400'
+                          }`}>
                           {scan.riskScore}
                         </div>
                       </div>
@@ -1424,7 +1416,7 @@ export default function ResearcherDashboard({
                   {patterns.length} documented patterns
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 {patterns.map((pattern) => (
                   <div key={pattern.id} className="border border-sifter-border rounded-lg p-4 hover:border-purple-500/50 transition-colors">
@@ -1432,11 +1424,10 @@ export default function ResearcherDashboard({
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-semibold text-white text-base">{pattern.name}</h4>
-                          <span className={`text-xs px-2 py-0.5 rounded ${
-                            pattern.confidence > 90 ? 'bg-green-500/20 text-green-400' :
-                            pattern.confidence > 80 ? 'bg-yellow-500/20 text-yellow-400' :
-                            'bg-orange-500/20 text-orange-400'
-                          }`}>
+                          <span className={`text-xs px-2 py-0.5 rounded ${pattern.confidence > 90 ? 'bg-green-500/20 text-green-400' :
+                              pattern.confidence > 80 ? 'bg-yellow-500/20 text-yellow-400' :
+                                'bg-orange-500/20 text-orange-400'
+                            }`}>
                             {pattern.confidence}% confidence
                           </span>
                         </div>
@@ -1449,7 +1440,7 @@ export default function ResearcherDashboard({
                         Test Pattern
                       </button>
                     </div>
-                    
+
                     <div className="grid grid-cols-3 gap-3 mb-3">
                       {pattern.detectionRules?.map((rule, idx) => (
                         <div key={idx} className="bg-gray-900/50 p-3 rounded">
@@ -1459,7 +1450,7 @@ export default function ResearcherDashboard({
                         </div>
                       ))}
                     </div>
-                    
+
                     <div className="pt-3 border-t border-sifter-border">
                       <div className="text-sm font-medium text-gray-300 mb-2">Historical Matches</div>
                       <div className="space-y-2">
@@ -1467,10 +1458,9 @@ export default function ResearcherDashboard({
                           <div key={idx} className="flex justify-between items-center text-sm">
                             <div className="text-gray-300">{example.projectName}</div>
                             <div className="flex items-center gap-2">
-                              <span className={`px-2 py-0.5 rounded text-xs ${
-                                example.outcome === 'rug' ? 'bg-red-500/20 text-red-400' :
-                                'bg-yellow-500/20 text-yellow-400'
-                              }`}>
+                              <span className={`px-2 py-0.5 rounded text-xs ${example.outcome === 'rug' ? 'bg-red-500/20 text-red-400' :
+                                  'bg-yellow-500/20 text-yellow-400'
+                                }`}>
                                 {example.outcome.toUpperCase()}
                               </span>
                               <span className="text-gray-400">Match: {example.similarityScore}%</span>
@@ -1491,7 +1481,7 @@ export default function ResearcherDashboard({
           <div className="space-y-4">
             <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
               <h3 className="text-lg font-semibold text-white mb-4">Database Explorer</h3>
-              
+
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="bg-gray-900/50 p-4 rounded-lg">
                   <div className="text-lg font-bold text-white">{databaseStats.flaggedEntities}</div>
@@ -1526,11 +1516,10 @@ export default function ResearcherDashboard({
                             <span className="text-xs px-2 py-0.5 bg-gray-800 text-gray-400 rounded">
                               {entity.type}
                             </span>
-                            <span className={`text-xs px-2 py-0.5 rounded ${
-                              entity.confidence === 'verified' ? 'bg-red-500/30 text-red-400' :
-                              entity.confidence === 'high' ? 'bg-orange-500/30 text-orange-400' :
-                              'bg-yellow-500/30 text-yellow-400'
-                            }`}>
+                            <span className={`text-xs px-2 py-0.5 rounded ${entity.confidence === 'verified' ? 'bg-red-500/30 text-red-400' :
+                                entity.confidence === 'high' ? 'bg-orange-500/30 text-orange-400' :
+                                  'bg-yellow-500/30 text-yellow-400'
+                              }`}>
                               {entity.confidence}
                             </span>
                           </div>
@@ -1558,7 +1547,7 @@ export default function ResearcherDashboard({
           <div className="space-y-4">
             <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
               <h3 className="text-lg font-semibold text-white mb-4">Data Export</h3>
-              
+
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <button
                   onClick={() => {
@@ -1575,7 +1564,7 @@ export default function ResearcherDashboard({
                   <h4 className="font-semibold text-white mb-1">CSV Export</h4>
                   <p className="text-sm text-gray-400">Raw data tables for spreadsheet analysis</p>
                 </button>
-                
+
                 <button
                   onClick={() => {
                     if (currentProject) {
@@ -1591,7 +1580,7 @@ export default function ResearcherDashboard({
                   <h4 className="font-semibold text-white mb-1">JSON Export</h4>
                   <p className="text-sm text-gray-400">Structured data for programmatic analysis</p>
                 </button>
-                
+
                 <button
                   onClick={() => {
                     if (currentProject) {
@@ -1617,8 +1606,8 @@ export default function ResearcherDashboard({
 
 
 
-      
-      
+
+
 
       {/* Research Report Modal */}
       {showResearchReport && currentProject && (
@@ -1632,14 +1621,14 @@ export default function ResearcherDashboard({
                 setShowResearchReport(false);
               }}
               initialTab={reportActiveTab}
-                      projectMetrics={currentProject.metrics?.length >= 13 ? currentProject.metrics : projectMetrics}  // ✅ FIX: Fallback to full projectMetrics
+              projectMetrics={currentProject.metrics?.length >= 13 ? currentProject.metrics : projectMetrics}  // ✅ FIX: Fallback to full projectMetrics
               onExport={() => handleExportAnalysis('pdf', currentProject)}
               onShare={() => handleShareAnalysis('clipboard')}
             />
           </div>
         </div>
       )}
-       
+
 
 
 
