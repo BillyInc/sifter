@@ -2,7 +2,6 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import SmartInputParser from '@/components/SmartInputParser';
 import MetricBreakdown from '@/components/MetricBreakdown';
 import LoadingState from '@/components/LoadingState';
@@ -12,8 +11,6 @@ import ResearcherDashboard from '@/components/ResearcherDashboard';
 import EABatchDashboard from '@/components/EABatchDashboard';
 import LandingPage from '../components/LandingPage';
 import { ExportService } from '@/services/exportService';
-import { useAuth } from '@/contexts/AuthContext';
-import { UserMenu } from '@/components/auth';
 import { createMetricsArray } from '@/utils/metricHelpers';
 
 import { generateDetailedMetricEvidence } from '@/utils/metricHelpers';
@@ -26,11 +23,11 @@ import StandardFlagForm from '@/components/data-donation/universal/StandardFlagF
 import { RewardsShop } from '@/components/data-donation/gamification';
 import type { Reward, RewardType, UserTier } from '@/types/dataDonation';
 
-import {
-  AnalysisState,
-  VerdictData,
-  UserMode,
-  SmartInputResult,
+import { 
+  AnalysisState, 
+  VerdictData, 
+  UserMode, 
+  SmartInputResult, 
   MetricData,
   ScoreBreakdown,
   BatchProcessingJob,
@@ -52,18 +49,18 @@ import { generateMockProjectData } from '@/data/mockData'; // Fixed import
 const ExportDropdown = ({ projectData }: { projectData: ProjectData | null }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
-
+  
   if (!projectData) return null;
 
-
+  
 
 
   const [showQuickModeSwitch, setShowQuickModeSwitch] = useState(false);
-
+  
   const handleExport = async (exportType: 'pdf' | 'json' | 'csv') => {
     try {
       setIsExporting(true);
-
+      
       switch (exportType) {
         case 'pdf':
           await ExportService.exportToPDF(projectData);
@@ -79,7 +76,7 @@ const ExportDropdown = ({ projectData }: { projectData: ProjectData | null }) =>
           }
           break;
       }
-
+      
       setIsOpen(false);
     } catch (error) {
       console.error('Export failed:', error);
@@ -91,79 +88,33 @@ const ExportDropdown = ({ projectData }: { projectData: ProjectData | null }) =>
 
 
 
+  
+
+  
 
 
-
-
-
-
-
-
+  
+  
+    
 };
 
 export default function Home() {
-  const router = useRouter();
-  const { user, isAuthenticated, isLoading: authLoading, logout, updateUser, login, register } = useAuth();
-
   const [state, setState] = useState<AnalysisState>('idle');
   const [currentInput, setCurrentInput] = useState('');
   const [verdictData, setVerdictData] = useState<VerdictData | null>(null);
   const [detailedMetrics, setDetailedMetrics] = useState<MetricData[]>([]);
   const [projectData, setProjectData] = useState<ProjectData | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  // Mode modal state (for changing mode while logged in)
+  
+  // Mode and auth states
   const [showModeModal, setShowModeModal] = useState(false);
-  const [selectedMode, setSelectedMode] = useState<UserMode | null>(null);
-
-  // Derived auth values from context
-  const isLoggedIn = isAuthenticated;
-  const userEmail = user?.email || '';
-  const userName = user?.name || '';
-  const userMode = user?.mode || null;
-
-  const [showMobileDataMenu, setShowMobileDataMenu] = useState(false);
-
-  // Auth Modal State
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'signup'>('login');
-
-  // Auth Handlers
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const emailInput = document.getElementById('loginEmail') as HTMLInputElement;
-    const passwordInput = document.getElementById('loginPassword') as HTMLInputElement;
-
-    if (emailInput && passwordInput) {
-      const result = await login({
-        email: emailInput.value,
-        password: passwordInput.value
-      });
-      if (result) {
-        setShowAuthModal(false);
-      }
-    }
-  };
-
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const nameInput = document.getElementById('signupName') as HTMLInputElement;
-    const emailInput = document.getElementById('signupEmail') as HTMLInputElement;
-    const passwordInput = document.getElementById('signupPassword') as HTMLInputElement;
-    const modeSelect = document.getElementById('signupMode') as HTMLSelectElement;
-
-    if (nameInput && emailInput && passwordInput && modeSelect) {
-      const result = await register({
-        name: nameInput.value,
-        email: emailInput.value,
-        password: passwordInput.value,
-        mode: modeSelect.value as any
-      });
-      if (result) {
-        setShowAuthModal(false);
-      }
-    }
-  };
+  const [userMode, setUserMode] = useState<UserMode | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [userName, setUserName] = useState('');
+  const [showMobileDataMenu, setShowMobileDataMenu] = useState(false);
 
   // Individual Mode states
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([
@@ -243,13 +194,13 @@ export default function Home() {
   const [showPointsDisplay, setShowPointsDisplay] = useState(false); // Added
   const [showDisputeForm, setShowDisputeForm] = useState(false); // Added
   const [showStandardForm, setShowStandardForm] = useState(false);
-
+  
   const [dataDonationSubmissions, setDataDonationSubmissions] = useState<SubmissionFormData[]>([]);
   const [selectedSubmissionId, setSelectedSubmissionId] = useState<string | null>(null);
   const [selectedEntityForFlagging, setSelectedEntityForFlagging] = useState<string[]>([]); // Added
   const [selectedEntityForDispute, setSelectedEntityForDispute] = useState<string[]>([]); // Added
   const [dataDonationPrefill, setDataDonationPrefill] = useState<any>(null);
-
+  
   // Points states
   const [userPoints, setUserPoints] = useState(0);
   const [lifetimePoints, setLifetimePoints] = useState(0);
@@ -258,18 +209,25 @@ export default function Home() {
   const [nextMilestone, setNextMilestone] = useState(1000);
   const [userTier, setUserTier] = useState<UserTier>('bronze');
 
-  // Load user-specific data (submissions, points) when user changes
+  // Load user from localStorage on mount
   useEffect(() => {
-    if (isAuthenticated && userEmail) {
+    const savedUser = localStorage.getItem('sifter_user');
+    if (savedUser) {
       try {
+        const userData = JSON.parse(savedUser);
+        setIsLoggedIn(true);
+        setUserName(userData.name);
+        setUserEmail(userData.email);
+        setUserMode(userData.mode);
+        
         // Load data donation submissions
-        const savedSubmissions = localStorage.getItem(`sifter_submissions_${userEmail}`);
+        const savedSubmissions = localStorage.getItem(`sifter_submissions_${userData.email}`);
         if (savedSubmissions) {
           setDataDonationSubmissions(JSON.parse(savedSubmissions));
         }
-
+        
         // Load user points
-        const savedPoints = localStorage.getItem(`sifter_points_${userEmail}`);
+        const savedPoints = localStorage.getItem(`sifter_points_${userData.email}`);
         if (savedPoints) {
           const pointsData = JSON.parse(savedPoints);
           setUserPoints(pointsData.availablePoints || 0);
@@ -280,63 +238,64 @@ export default function Home() {
           setUserTier(pointsData.tier || 'tier-3');
         }
       } catch (err) {
-        console.error('Failed to load user data:', err);
+        console.error('Failed to parse saved user:', err);
+        localStorage.removeItem('sifter_user');
       }
     }
   }, []);
 
   // Close mobile menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (!target.closest('.mobile-data-menu') && showMobileDataMenu) {
-        setShowMobileDataMenu(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showMobileDataMenu]);
+useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.mobile-data-menu') && showMobileDataMenu) {
+      setShowMobileDataMenu(false);
+    }
+  };
+  
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => document.removeEventListener('mousedown', handleClickOutside);
+}, [showMobileDataMenu]);
 
   // ADD THIS NEW useEffect:
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (showDisputeForm) {
-          setShowDisputeForm(false);
-          setSelectedEntityForDispute([]);
-        }
-        if (showStandardForm) {
-          setShowStandardForm(false);
-          setSelectedEntityForFlagging([]);
-        }
-        if (showSubmissionForm) {
-          setShowSubmissionForm(false);
-          setDataDonationPrefill(null);
-        }
-        if (showEvidenceUpload) {
-          setShowEvidenceUpload(false);
-          setSelectedSubmissionId(null);
-        }
-        if (showTrackingDashboard) {
-          setShowTrackingDashboard(false);
-        }
-        if (showPointsDisplay) {
-          setShowPointsDisplay(false);
-        }
+useEffect(() => {
+  const handleEscape = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      if (showDisputeForm) {
+        setShowDisputeForm(false);
+        setSelectedEntityForDispute([]);
       }
-    };
-
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [
-    showDisputeForm,
-    showStandardForm,
-    showSubmissionForm,
-    showEvidenceUpload,
-    showTrackingDashboard,
-    showPointsDisplay
-  ]);
+      if (showStandardForm) {
+        setShowStandardForm(false);
+        setSelectedEntityForFlagging([]);
+      }
+      if (showSubmissionForm) {
+        setShowSubmissionForm(false);
+        setDataDonationPrefill(null);
+      }
+      if (showEvidenceUpload) {
+        setShowEvidenceUpload(false);
+        setSelectedSubmissionId(null);
+      }
+      if (showTrackingDashboard) {
+        setShowTrackingDashboard(false);
+      }
+      if (showPointsDisplay) {
+        setShowPointsDisplay(false);
+      }
+    }
+  };
+  
+  window.addEventListener('keydown', handleEscape);
+  return () => window.removeEventListener('keydown', handleEscape);
+}, [
+  showDisputeForm, 
+  showStandardForm, 
+  showSubmissionForm, 
+  showEvidenceUpload, 
+  showTrackingDashboard,
+  showPointsDisplay
+]);
 
 
 
@@ -366,30 +325,30 @@ export default function Home() {
 
 
   // Helper function to generate detailed, specific evidence
-  // Helper function to generate detailed, specific evidence
-  const generateDetailedMetricEvidence = (
-    metricKey: string,
-    score: number,
-    projectData: {
-      teamMembers?: Array<{ name: string; role: string; linkedin?: string; github?: string; twitter?: string }>;
-      githubRepo?: string;
-      socialAccounts?: { twitter?: string; discord?: string; telegram?: string };
-      advisors?: Array<{ name: string; previousProjects?: string[] }>;
-      marketingAgencies?: Array<{ name: string; trackRecord?: string[] }>;
-      communityModerators?: Array<{ name: string; handle: string; history?: string }>;
-      tokenContract?: string;
-      launchDate?: Date;
-    }
-  ): string => {
-    const completionLine = `\n\n---\n✓ Analysis Complete - ${new Date().toLocaleString()}`;
+// Helper function to generate detailed, specific evidence
+const generateDetailedMetricEvidence = (
+  metricKey: string,
+  score: number,
+  projectData: {
+    teamMembers?: Array<{ name: string; role: string; linkedin?: string; github?: string; twitter?: string }>;
+    githubRepo?: string;
+    socialAccounts?: { twitter?: string; discord?: string; telegram?: string };
+    advisors?: Array<{ name: string; previousProjects?: string[] }>;
+    marketingAgencies?: Array<{ name: string; trackRecord?: string[] }>;
+    communityModerators?: Array<{ name: string; handle: string; history?: string }>;
+    tokenContract?: string;
+    launchDate?: Date;
+  }
+): string => {
+  const completionLine = `\n\n---\n✓ Analysis Complete - ${new Date().toLocaleString()}`;
 
-    switch (metricKey) {
-      case 'teamIdentity':
-        if (score >= 60) {
-          // HIGH RISK - Provide specific missing information
-          const anonymous = projectData.teamMembers?.filter(m => !m.linkedin) || [];
-          const noGithub = projectData.teamMembers?.filter(m => !m.github) || [];
-          return `**Critical Identity Issues Found:**
+  switch (metricKey) {
+    case 'teamIdentity':
+      if (score >= 60) {
+        // HIGH RISK - Provide specific missing information
+        const anonymous = projectData.teamMembers?.filter(m => !m.linkedin) || [];
+        const noGithub = projectData.teamMembers?.filter(m => !m.github) || [];
+        return `**Critical Identity Issues Found:**
 - **Anonymous Team Members:** ${anonymous.length} out of ${projectData.teamMembers?.length || 0} team members have no verifiable LinkedIn profiles
   - ${anonymous.map(m => `"${m.name}" (${m.role}): No LinkedIn, ${m.twitter ? `only Twitter @${m.twitter}` : 'no social media'}`).join('\n  - ') || 'All team members anonymous'}
 - **Unverifiable Claims:**
@@ -403,9 +362,9 @@ export default function Home() {
 - LinkedIn Search: ${projectData.teamMembers?.length || 0} profiles checked
 - GitHub Analysis: ${noGithub.length} members with no commit history
 - Social Media Verification: Cross-referenced ${projectData.socialAccounts ? 'Twitter, Discord, Telegram' : 'available platforms'}${completionLine}`;
-        } else if (score >= 30) {
-          // MEDIUM RISK - Partial verification
-          return `**Partial Identity Verification:**
+      } else if (score >= 30) {
+        // MEDIUM RISK - Partial verification
+        return `**Partial Identity Verification:**
 - **Verified Members:** ${projectData.teamMembers?.filter(m => m.linkedin).length || 0} out of ${projectData.teamMembers?.length || 0} have LinkedIn profiles
   - ${projectData.teamMembers?.filter(m => m.linkedin).map(m => `${m.name} (${m.role}): LinkedIn verified, ${m.github ? 'GitHub active' : 'no GitHub'}`).join('\n  - ') || 'Some verification exists'}
 - **Concerns:**
@@ -417,9 +376,9 @@ export default function Home() {
   - No obvious red flags in available profiles
   - Team responds to verification requests
 **Recommendation:** Request additional KYC documentation before major investment.${completionLine}`;
-        } else {
-          // LOW RISK - Strong verification
-          return `**Strong Identity Verification:**
+      } else {
+        // LOW RISK - Strong verification
+        return `**Strong Identity Verification:**
 - **Fully Verified Team:** ${projectData.teamMembers?.map(m => ` - **${m.name}** (${m.role})
   • LinkedIn: ${m.linkedin || 'Verified'} (5+ years history)
   • GitHub: ${m.github || 'Active'} (2,000+ contributions)
@@ -438,13 +397,13 @@ export default function Home() {
 - GitHub history shows consistent quality contributions
 - Video calls conducted with key team members
 - Background checks completed${completionLine}`;
-        }
+      }
 
-      case 'teamCompetence':
-        if (score >= 60) {
-          // HIGH RISK - Lack of technical skills
-          const repoUrl = projectData.githubRepo || 'github.com/project/repo';
-          return `**Severe Technical Competency Gaps:**
+    case 'teamCompetence':
+      if (score >= 60) {
+        // HIGH RISK - Lack of technical skills
+        const repoUrl = projectData.githubRepo || 'github.com/project/repo';
+        return `**Severe Technical Competency Gaps:**
 - **Claimed vs Actual Skills:**
   - **Claim:** "Building next-generation Layer 2 scaling solution"
   - **Reality:** No Solidity developers identified in team
@@ -466,9 +425,9 @@ export default function Home() {
   - No formal Computer Science degrees
   - No professional software engineering background
 **Risk Assessment:** Team lacks fundamental skills to deliver on technical promises.${completionLine}`;
-        } else if (score >= 30) {
-          // MEDIUM RISK - Some competence but limited
-          return `**Moderate Technical Competence:**
+      } else if (score >= 30) {
+        // MEDIUM RISK - Some competence but limited
+        return `**Moderate Technical Competence:**
 - **Team Skills Audit:**
   - ${projectData.teamMembers?.filter(m => m.github).length || 1} developer(s) with 1-2 years blockchain experience
   - GitHub shows mix of original (50%) and forked (50%) code
@@ -487,9 +446,9 @@ export default function Home() {
   - No formal audit yet scheduled
   - Dependency on external libraries
 **Recommendation:** Team can deliver basic functionality but may struggle with complex features.${completionLine}`;
-        } else {
-          // LOW RISK - Strong technical team
-          return `**Exceptional Technical Competence:**
+      } else {
+        // LOW RISK - Strong technical team
+        return `**Exceptional Technical Competence:**
 - **Team Credentials:** ${projectData.teamMembers?.map(m => ` - **${m.name}** (${m.role})
   • 7+ years Solidity development
   • GitHub: ${m.github || '5,000+'} contributions
@@ -513,12 +472,12 @@ export default function Home() {
   - Original cryptographic primitives
   - Industry-first gas optimization techniques
 **Verdict:** Team demonstrates elite-level technical capabilities.${completionLine}`;
-        }
+      }
 
-      case 'contaminatedNetwork':
-        if (score >= 60) {
-          // HIGH RISK - Connected to bad actors
-          return `**Dangerous Network Associations Detected:**
+    case 'contaminatedNetwork':
+      if (score >= 60) {
+        // HIGH RISK - Connected to bad actors
+        return `**Dangerous Network Associations Detected:**
 - **Marketing Agency Red Flags:**
   - **"CryptoGrowth Labs"** (${projectData.marketingAgencies?.[0]?.name || 'Primary Agency'})
     • Previous clients: RugPullToken (exit scam, $2.3M stolen), MoonScam (abandoned), PumpAndDump (rug pulled)
@@ -543,9 +502,9 @@ export default function Home() {
 - Marketing payments traced to same agency that marketed 3 rug pulls
 - Smart contract deployed by same address as previous failed token
 **Conclusion:** This project shares infrastructure and personnel with confirmed scam operations.${completionLine}`;
-        } else if (score >= 30) {
-          // MEDIUM RISK - Mixed associations
-          return `**Mixed Network Signals:**
+      } else if (score >= 30) {
+        // MEDIUM RISK - Mixed associations
+        return `**Mixed Network Signals:**
 - **Marketing Partners:**
   - **"${projectData.marketingAgencies?.[0]?.name || 'Digital Marketing Co'}"**
     • Track record: 6 successful projects, 2 failed projects
@@ -561,9 +520,9 @@ export default function Home() {
   - No evidence of intentional scam involvement
   - Possible poor judgment rather than malicious intent
 **Recommendation:** Proceed with caution. Not definitive red flags but warrants additional due diligence.${completionLine}`;
-        } else {
-          // LOW RISK - Clean network
-          return `**Clean Network Associations:**
+      } else {
+        // LOW RISK - Clean network
+        return `**Clean Network Associations:**
 - **Reputable Marketing Partners:**
   - **"${projectData.marketingAgencies?.[0]?.name || 'Top Tier Marketing'}"**
     • 10+ successful blockchain projects
@@ -585,12 +544,12 @@ export default function Home() {
 - Associated with top-tier projects and institutions
 - Strong reputation in developer community
 **Conclusion:** Project has excellent network positioning with trustworthy partners.${completionLine}`;
-        }
+      }
 
-      case 'mercenaryKeywords':
-        if (score >= 60) {
-          // HIGH RISK - Excessive pump language
-          return `**Excessive Mercenary Language Detected:**
+    case 'mercenaryKeywords':
+      if (score >= 60) {
+        // HIGH RISK - Excessive pump language
+        return `**Excessive Mercenary Language Detected:**
 - **Keyword Frequency Analysis (Last 30 Days):**
   - "moon" / "mooning": 47 instances
   - "100x" / "1000x": 23 instances
@@ -618,9 +577,9 @@ export default function Home() {
   - Unrealistic promises: 23 instances of "100x" or higher claims
   - FOMO creation: 89% of posts contain urgency language
 **Risk Assessment:** Language patterns match known pump-and-dump schemes.${completionLine}`;
-        } else if (score >= 30) {
-          // MEDIUM RISK - Moderate promotional content
-          return `**Moderate Promotional Language:**
+      } else if (score >= 30) {
+        // MEDIUM RISK - Moderate promotional content
+        return `**Moderate Promotional Language:**
 - **Keyword Analysis:**
   - Pump keywords present but not dominant
   - "moon" / "mooning": 8 instances (last 30 days)
@@ -641,9 +600,9 @@ export default function Home() {
   - Reduce speculative price discussions
   - More focus on use cases and development
 **Recommendation:** Watch for escalation of hype language over time.${completionLine}`;
-        } else {
-          // LOW RISK - Balanced content
-          return `**Balanced Professional Communication:**
+      } else {
+        // LOW RISK - Balanced content
+        return `**Balanced Professional Communication:**
 - **Content Analysis (Last 30 Days):**
   - Technical Updates: 45%
   - Educational Content: 30%
@@ -669,12 +628,12 @@ export default function Home() {
   - "Development update: Test network deployed, audit scheduled for Q2."
   - "Community AMA focuses on protocol mechanics and use cases."
 **Verdict:** Professional communication aligned with legitimate project goals.${completionLine}`;
-        }
+      }
 
-      case 'messageTimeEntropy':
-        if (score >= 60) {
-          // HIGH RISK - Bot-like patterns
-          return `**Suspicious Coordinated Activity Detected:**
+    case 'messageTimeEntropy':
+      if (score >= 60) {
+        // HIGH RISK - Bot-like patterns
+        return `**Suspicious Coordinated Activity Detected:**
 - **Posting Time Analysis (Last 14 Days):**
   - 73% of messages posted within same 2-hour windows daily
   - Peak posting times: 10:00-12:00 UTC (847 messages)
@@ -706,9 +665,9 @@ export default function Home() {
 18:00-24:00: █████ (623 messages)
 \`\`\`
 **Conclusion:** Clear evidence of artificial, coordinated activity. Not organic community behavior.${completionLine}`;
-        } else if (score >= 30) {
-          // MEDIUM RISK - Some irregular patterns
-          return `**Irregular Activity Patterns:**
+      } else if (score >= 30) {
+        // MEDIUM RISK - Some irregular patterns
+        return `**Irregular Activity Patterns:**
 - **Time Distribution:**
   - Mostly natural with some concentration
   - Peak hours: 14:00-18:00 UTC (moderate spike)
@@ -728,9 +687,9 @@ export default function Home() {
   - Natural variation day-to-day
   - Holiday activity patterns change appropriately
 **Recommendation:** Monitor for increasing coordination over time.${completionLine}`;
-        } else {
-          // LOW RISK - Natural patterns
-          return `**Natural Activity Patterns:**
+      } else {
+        // LOW RISK - Natural patterns
+        return `**Natural Activity Patterns:**
 - **24-Hour Distribution:**
   - Messages spread across all time zones
   - Peak activity: 14:00-18:00 UTC (US/EU overlap) - 28%
@@ -759,12 +718,12 @@ export default function Home() {
 18:00-24:00: ████ (US peak)
 \`\`\`
 **Verdict:** Organic community with natural global participation patterns.${completionLine}`;
-        }
+      }
 
-      case 'accountAgeEntropy':
-        if (score >= 60) {
-          // HIGH RISK - Sybil attack pattern
-          return `**Bulk Account Creation Detected (Sybil Attack):**
+    case 'accountAgeEntropy':
+      if (score >= 60) {
+        // HIGH RISK - Sybil attack pattern
+        return `**Bulk Account Creation Detected (Sybil Attack):**
 - **Critical Finding:**
   - **847 community accounts created within 7-day period**
   - Creation dates: March 15-22, 2024
@@ -805,9 +764,9 @@ export default function Home() {
 90+ days: ▁ (23)
 \`\`\`
 **Conclusion:** Clear Sybil attack. Community artificially inflated with fake accounts.${completionLine}`;
-        } else if (score >= 30) {
-          // MEDIUM RISK - Some clustering
-          return `**Account Creation Clustering Detected:**
+      } else if (score >= 30) {
+        // MEDIUM RISK - Some clustering
+        return `**Account Creation Clustering Detected:**
 - **Age Distribution:**
   - 0-30 days: 45% of accounts
   - 31-90 days: 25% of accounts
@@ -827,9 +786,9 @@ export default function Home() {
   - Natural variation in creation dates
   - No obvious automation detected
 **Recommendation:** Acceptable but monitor for increasing manipulation.${completionLine}`;
-        } else {
-          // LOW RISK - Natural distribution
-          return `**Natural Account Age Distribution:**
+      } else {
+        // LOW RISK - Natural distribution
+        return `**Natural Account Age Distribution:**
 - **Healthy Age Spread:**
   - 0-30 days: 22% of accounts
   - 31-90 days: 18% of accounts
@@ -858,12 +817,12 @@ export default function Home() {
 180+ days: ███████ (35%)
 \`\`\`
 **Verdict:** Organic community growth with healthy age distribution.${completionLine}`;
-        }
+      }
 
-      case 'tweetFocus':
-        if (score >= 60) {
-          // HIGH RISK - Excessive promotion focus
-          return `**Twitter Content Heavily Promotional:**
+    case 'tweetFocus':
+      if (score >= 60) {
+        // HIGH RISK - Excessive promotion focus
+        return `**Twitter Content Heavily Promotional:**
 - **Content Analysis (Last 100 Tweets):**
   - Promotional/Hype: 65 tweets (65%)
   - Price Speculation: 20 tweets (20%)
@@ -902,9 +861,9 @@ export default function Home() {
 - Matches pump-and-dump Twitter patterns
 - Zero educational value for community
 **Recommendation:** Avoid. Twitter presence designed to pump price, not build legitimate project.${completionLine}`;
-        } else if (score >= 30) {
-          // MEDIUM RISK - Leans promotional
-          return `**Twitter Content Leans Promotional:**
+      } else if (score >= 30) {
+        // MEDIUM RISK - Leans promotional
+        return `**Twitter Content Leans Promotional:**
 - **Content Distribution (Last 100 Tweets):**
   - Marketing/Promotional: 40 tweets (40%)
   - Community Content: 30 tweets (30%)
@@ -926,9 +885,9 @@ export default function Home() {
   - Less hype language
   - Focus on utility and use cases
 **Recommendation:** Acceptable but monitor for increasing hype over time.${completionLine}`;
-        } else {
-          // LOW RISK - Balanced content
-          return `**Well-Balanced Twitter Content:**
+      } else {
+        // LOW RISK - Balanced content
+        return `**Well-Balanced Twitter Content:**
 - **Content Distribution (Last 100 Tweets):**
   - Technical Updates: 45 tweets (45%)
   - Educational Content: 30 tweets (30%)
@@ -961,13 +920,13 @@ export default function Home() {
   - Regular cadence (not just during pumps)
   - Professional tone maintained
 **Verdict:** Twitter account serves educational and developmental purpose, not just marketing.${completionLine}`;
-        }
+      }
 
-      case 'githubAuthenticity':
-        if (score >= 60) {
-          // HIGH RISK - Copied code
-          const repoUrl = projectData.githubRepo || 'github.com/project/repo';
-          return `**Code Authenticity Failure:**
+    case 'githubAuthenticity':
+      if (score >= 60) {
+        // HIGH RISK - Copied code
+        const repoUrl = projectData.githubRepo || 'github.com/project/repo';
+        return `**Code Authenticity Failure:**
 - **Repository: ${repoUrl}**
 - **Fork Detection Analysis:**
   - 73% code similarity to "OpenZeppelin Generic Template"
@@ -1041,9 +1000,9 @@ No unique features
 No improvements over templates
 Pure copy-paste with rebranding
 Conclusion: This is not original development. Project is essentially a branded template with no technical innovation.${completionLine}`;
-        } else if (score >= 30) {
-          // MEDIUM RISK - Mix of copied and original
-          return `**Mixed Code Authenticity:**
+      } else if (score >= 30) {
+        // MEDIUM RISK - Mix of copied and original
+        return `**Mixed Code Authenticity:**
 Repository: ${projectData.githubRepo || 'github.com/project/repo'}
 Code Origin Analysis:
 Original code: 50%
@@ -1069,9 +1028,9 @@ Complexity: Average (5/10)
 Documentation: Basic but present
 Security: Some best practices followed
 Recommendation: Team shows ability to build on existing code but limited innovation demonstrated.${completionLine}`;
-        } else {
-          // LOW RISK - Mostly original
-          return `**Authentic Original Development:**
+      } else {
+        // LOW RISK - Mostly original
+        return `**Authentic Original Development:**
 Repository: ${projectData.githubRepo || 'github.com/project/repo'}
 Code Authenticity Metrics:
 Original code: 85%
@@ -1105,12 +1064,12 @@ Clear development roadmap
 Regular refactoring
 Continuous improvement visible
 Verdict: Genuine technical innovation with high-quality original development.${completionLine}`;
-        }
+      }
 
-      case 'busFactor':
-        if (score >= 60) {
-          // HIGH RISK - Single point of failure
-          return `**Critical Single Point of Failure:**
+    case 'busFactor':
+      if (score >= 60) {
+        // HIGH RISK - Single point of failure
+        return `**Critical Single Point of Failure:**
 Dependency Analysis:
 Lead Developer "${projectData.teamMembers?.[0]?.name || 'DevLead'}"
 • 89% of all commits (1,247 out of 1,402 total)
@@ -1164,9 +1123,9 @@ Industry standard: 3-5 core contributors
 Healthy projects: No person >30% of contributions
 This project: 89% single contributor
 Conclusion: Extreme vulnerability. Project would likely fail if lead developer departed.${completionLine}`;
-        } else if (score >= 30) {
-          // MEDIUM RISK - Limited distribution
-          return `**Moderate Development Concentration:**
+      } else if (score >= 30) {
+        // MEDIUM RISK - Limited distribution
+        return `**Moderate Development Concentration:**
 Contributor Analysis:
 Primary developer: 45% of commits
 Secondary developer: 35% of commits
@@ -1194,9 +1153,9 @@ Knowledge sharing occurs
 Team can function if one person leaves
 Bus Factor: 2-3 (Manageable but could improve)
 Recommendation: Adequate for current stage but should expand core team.${completionLine}`;
-        } else {
-          // LOW RISK - Well distributed
-          return `**Healthy Development Distribution:**
+      } else {
+        // LOW RISK - Well distributed
+        return `**Healthy Development Distribution:**
 Contributor Profile:
 5 core contributors
 No single contributor >30% of commits
@@ -1243,12 +1202,12 @@ Industry best practice: 3-5
 Project can survive loss of any single member
 Strong redundancy throughout
 Verdict: Project has healthy distribution of knowledge and responsibility. Low single-point-of-failure risk.${completionLine}`;
-        }
+      }
 
-      case 'artificialHype':
-        if (score >= 60) {
-          // HIGH RISK - Fake engagement
-          return `**Artificial Engagement Detected:**
+    case 'artificialHype':
+      if (score >= 60) {
+        // HIGH RISK - Fake engagement
+        return `**Artificial Engagement Detected:**
 Engagement Anomalies:
 Follower Analysis:
 Total followers: 18,247
@@ -1335,9 +1294,9 @@ Twitter Audit: twitteraudit.com/[handle]
 Follower Analysis: Manual sampling of 500 followers
 Engagement Tracking: 30-day observation period
 Conclusion: Overwhelming evidence of purchased followers, likes, and artificial engagement. Community is not organic.${completionLine}`;
-        } else if (score >= 30) {
-          // MEDIUM RISK - Some artificial elements
-          return `**Mixed Engagement Signals:**
+      } else if (score >= 30) {
+        // MEDIUM RISK - Some artificial elements
+        return `**Mixed Engagement Signals:**
 Engagement Metrics:
 Like-to-comment ratio: 25:1 (slightly high)
 Follower quality: 60% appear organic
@@ -1359,9 +1318,9 @@ Engagement could be more consistent
 Some bot-like accounts present
 Quality varies significantly
 Recommendation: Mostly organic but some artificial enhancement suspected. Not as severe as pure bot operations.${completionLine}`;
-        } else {
-          // LOW RISK - Organic engagement
-          return `**Authentic Organic Engagement:**
+      } else {
+        // LOW RISK - Organic engagement
+        return `**Authentic Organic Engagement:**
 Healthy Engagement Metrics:
 Follower Quality:
 Total followers: 12,456
@@ -1412,12 +1371,12 @@ Comment quality: Above average
 Follower retention: Excellent
 Community health: Top 10%
 Verdict: Genuine organic community with high-quality engagement. No evidence of artificial manipulation.${completionLine}`;
-        }
+      }
 
-      case 'founderDistraction':
-        if (score >= 60) {
-          // HIGH RISK - Founder spread too thin
-          return `**Severe Founder Distraction:**
+    case 'founderDistraction':
+      if (score >= 60) {
+        // HIGH RISK - Founder spread too thin
+        return `**Severe Founder Distraction:**
 Concurrent Project Management:
 Active Projects (Confirmed):
 This Project - ${projectData.launchDate ? new Date(projectData.launchDate).toLocaleDateString() : 'Current'}
@@ -1490,9 +1449,9 @@ Current attention level: 25% or less
 Commitment trajectory: Declining
 Project sustainability: Questionable
 Conclusion: Founder is severely overextended. Project is not receiving necessary attention. High abandonment risk.${completionLine}`;
-        } else if (score >= 30) {
-          // MEDIUM RISK - Some distraction
-          return `**Moderate Founder Distraction:**
+      } else if (score >= 30) {
+        // MEDIUM RISK - Some distraction
+        return `**Moderate Founder Distraction:**
 Project Portfolio:
 This project: Primary focus
 Side project: 1 other active venture
@@ -1516,9 +1475,9 @@ Responds to important issues
 Progress continues
 Team not concerned about availability
 Recommendation: Acceptable for current stage but should consolidate focus for critical development phases.${completionLine}`;
-        } else {
-          // LOW RISK - Fully dedicated
-          return `**Full Founder Commitment:**
+      } else {
+        // LOW RISK - Fully dedicated
+        return `**Full Founder Commitment:**
 Project Focus:
 This project: 90%+ of professional activity
 No competing ventures identified
@@ -1559,12 +1518,12 @@ Turned down consulting clients
 No other blockchain projects
 Long-term vision clearly articulated
 Verdict: Founder demonstrates exceptional commitment and focus. Project receives full attention it deserves.${completionLine}`;
-        }
+      }
 
-      case 'engagementAuthenticity':
-        if (score >= 60) {
-          // HIGH RISK - Fake community interaction
-          return `**Artificial Community Interaction Detected:**
+    case 'engagementAuthenticity':
+      if (score >= 60) {
+        // HIGH RISK - Fake community interaction
+        return `**Artificial Community Interaction Detected:**
 Message Quality Analysis (1,000 Recent Messages):
 Copy-Paste Detection:
 Identical messages: 267 (26.7%)
@@ -1654,9 +1613,9 @@ Low message quality (8 words vs healthy 25-40)
 Poor question response (23% vs healthy 70%+)
 Concentrated engagement (78% vs healthy 30-40%)
 Conclusion: Community interaction is largely artificial. Real users receive minimal support. Engagement designed for appearance, not value.${completionLine}`;
-        } else if (score >= 30) {
-          // MEDIUM RISK - Mixed authenticity
-          return `**Mixed Community Authenticity:**
+      } else if (score >= 30) {
+        // MEDIUM RISK - Mixed authenticity
+        return `**Mixed Community Authenticity:**
 Engagement Analysis:
 Unique replies: 60%
 Copy-paste content: 20%
@@ -1677,9 +1636,9 @@ Encourage deeper discussions
 Reduce generic comments
 Better question handling
 Assessment: Community shows mix of authentic and surface-level engagement. Not ideal but not suspicious.${completionLine}`;
-        } else {
-          // LOW RISK - Authentic engagement
-          return `**High-Quality Authentic Engagement:**
+      } else {
+        // LOW RISK - Authentic engagement
+        return `**High-Quality Authentic Engagement:**
 Message Quality Analysis (1,000 Recent Messages):
 Content Uniqueness:
 Unique, thoughtful messages: 85%
@@ -1756,13 +1715,13 @@ Response rates: Excellent (82% vs benchmark 70%)
 Engagement distribution: Optimal
 Help effectiveness: Outstanding (92%)
 Verdict: Genuine, high-value community with authentic interactions. Members actively help each other. Strong foundation for project success.${completionLine}`;
-        }
+      }
 
-      case 'tokenomics':
-        if (score >= 60) {
-          // HIGH RISK - Exploitative distribution
-          const contractAddress = projectData.tokenContract || '0x742d...a8f3';
-          return `**Critical Tokenomics Red Flags:**
+    case 'tokenomics':
+      if (score >= 60) {
+        // HIGH RISK - Exploitative distribution
+        const contractAddress = projectData.tokenContract || '0x742d...a8f3';
+        return `**Critical Tokenomics Red Flags:**
 Token Contract: ${contractAddress}
 Distribution Analysis:
 Team Allocation: 35% (⚠️ Standard: 15-20%)
@@ -1900,9 +1859,9 @@ Sustainability: NONE
 Investor protection: ZERO
 Long-term viability: NONEXISTENT
 Conclusion: Tokenomics designed to maximize team profit at expense of investors. All signs point to eventual rug pull or coordinated dump. AVOID.${completionLine}`;
-        } else if (score >= 30) {
-          // MEDIUM RISK - Acceptable but not optimal
-          return `**Acceptable Tokenomics with Concerns:**
+      } else if (score >= 30) {
+        // MEDIUM RISK - Acceptable but not optimal
+        return `**Acceptable Tokenomics with Concerns:**
 Token Contract: ${projectData.tokenContract || '0x...'}
 Distribution:
 Team allocation: 20-25%
@@ -1925,9 +1884,9 @@ Anti-whale protections would help
 More robust utility needed
 Longer liquidity lock preferable
 Assessment: Not ideal but manageable. Acceptable risk for speculative investment but not for long-term hold.${completionLine}`;
-        } else {
-          // LOW RISK - Strong tokenomics
-          return `**Healthy Sustainable Tokenomics:**
+      } else {
+        // LOW RISK - Strong tokenomics
+        return `**Healthy Sustainable Tokenomics:**
 Token Contract: ${projectData.tokenContract || '0x...'}
 Fair Distribution:
 Allocation Breakdown:
@@ -2042,12 +2001,12 @@ Deflationary pressure over time
 Strong liquidity protection
 Aligned incentives (team locked for years)
 Verdict: Exemplary tokenomics. Strong investor protections, sustainable economics, fair distribution. Built for long-term success, not pump-and-dump.${completionLine}`;
-        }
+      }
 
-      default:
-        return `Analysis complete. No specific metric matched.${completionLine}`;
-    }
-  };
+    default:
+      return `Analysis complete. No specific metric matched.${completionLine}`;
+  }
+};
 
 
 
@@ -2075,165 +2034,165 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
   }, []);
 
   // FIXED: Convert metrics to array with score property
-
+  
   // Add this function inside the Home component, before the return statement
-  const getRewardsForMode = (mode: UserMode | null): Reward[] => {
-    if (!mode) return []; // Return empty array if no mode selected
-
-    const baseRewards: Reward[] = [
-      // Individual Mode Rewards
-      {
-        id: 'premium_report',
-        name: 'Premium Report',
-        description: 'Get an in-depth analysis report with advanced metrics',
-        type: 'access' as RewardType,
-        category: 'individual',
-        pointsCost: 500,
-        quantityAvailable: 100,
-        quantityRemaining: 55,
-        tierRequirement: 'silver' as UserTier,
-        modeRequirement: 'individual' as UserMode,
-        features: ['In-depth analysis', 'Risk breakdown', 'Recommendations'],
-        redemptionInstructions: 'The report will be available in your account within 24 hours.',
-        createdAt: new Date('2024-01-01').toISOString()
-      },
-      {
-        id: 'api_tier',
-        name: 'API Free Tier',
-        description: 'Access to Sifter API with 100 requests/month',
-        type: 'access' as RewardType,
-        category: 'all',
-        pointsCost: 1000,
-        quantityAvailable: 50,
-        quantityRemaining: 30,
-        tierRequirement: 'gold' as UserTier,
-        features: ['100 API calls/month', 'Full endpoint access', 'Documentation'],
-        redemptionInstructions: 'API key will be sent to your email within 1 hour.',
-        createdAt: new Date('2024-01-01').toISOString()
-      },
-      {
-        id: 'gift_card_10',
-        name: '$10 Amazon Gift Card',
-        description: 'Redeem points for a $10 Amazon gift card',
-        type: 'physical' as RewardType,
-        category: 'all',
-        pointsCost: 2000,
-        quantityAvailable: 25,
-        quantityRemaining: 15,
-        tierRequirement: 'silver' as UserTier,
-        features: ['$10 value', 'Instant delivery', 'No expiration'],
-        redemptionInstructions: 'Gift card code will be emailed within 24 hours.',
-        createdAt: new Date('2024-01-15').toISOString()
-      },
-      {
-        id: 'gift_card_25',
-        name: '$25 Amazon Gift Card',
-        description: 'Redeem points for a $25 Amazon gift card',
-        type: 'physical' as RewardType,
-        category: 'all',
-        pointsCost: 4500,
-        quantityAvailable: 15,
-        quantityRemaining: 8,
-        tierRequirement: 'gold' as UserTier,
-        features: ['$25 value', 'Instant delivery', 'No expiration'],
-        redemptionInstructions: 'Gift card code will be emailed within 24 hours.',
-        createdAt: new Date('2024-01-15').toISOString()
-      },
-      {
-        id: 'cash_paypal_50',
-        name: '$50 PayPal Cash',
-        description: 'Direct PayPal transfer of $50',
-        type: 'physical' as RewardType,
-        category: 'all',
-        pointsCost: 9000,
-        quantityAvailable: 10,
-        quantityRemaining: 5,
-        tierRequirement: 'platinum' as UserTier,
-        features: ['$50 cash', 'PayPal transfer', 'Processed within 48h'],
-        redemptionInstructions: 'PayPal email required. Transfer within 2 business days.',
-        createdAt: new Date('2024-02-01').toISOString()
-      },
-
-      // Researcher Mode Rewards
-      {
-        id: 'researcher_export_credits',
-        name: 'Export Credits Pack',
-        description: '10 additional export credits for CSV/JSON/PDF',
-        type: 'feature' as RewardType,
-        category: 'researcher',
-        pointsCost: 750,
-        quantityAvailable: 100,
-        quantityRemaining: 75,
-        tierRequirement: 'bronze' as UserTier,
-        modeRequirement: 'researcher' as UserMode,
-        features: ['10 export credits', 'All formats', 'Never expires'],
-        redemptionInstructions: 'Credits added automatically to your account.',
-        createdAt: new Date('2024-01-01').toISOString()
-      },
-      {
-        id: 'researcher_database_access',
-        name: 'Extended Database Access',
-        description: 'Full historical database access for 30 days',
-        type: 'access' as RewardType,
-        category: 'researcher',
-        pointsCost: 2000,
-        quantityAvailable: 30,
-        quantityRemaining: 18,
-        tierRequirement: 'gold' as UserTier,
-        modeRequirement: 'researcher' as UserMode,
-        features: ['30-day access', 'Full history', 'API endpoints', 'Raw data exports'],
-        redemptionInstructions: 'Access token sent via email within 2 hours.',
-        createdAt: new Date('2024-01-10').toISOString()
-      },
-
-      // VC/EA Mode Rewards
-      {
-        id: 'vc_priority_queue',
-        name: 'Priority Batch Processing',
-        description: 'Skip the queue for 10 batch analyses',
-        type: 'feature' as RewardType,
-        category: 'vc',
-        pointsCost: 1500,
-        quantityAvailable: 20,
-        quantityRemaining: 12,
-        tierRequirement: 'gold' as UserTier,
-        modeRequirement: 'ea-vc' as UserMode,
-        features: ['10 priority slots', 'Instant processing', 'Dedicated support'],
-        redemptionInstructions: 'Priority status activated immediately.',
-        createdAt: new Date('2024-01-05').toISOString()
-      },
-      {
-        id: 'vc_custom_template',
-        name: 'Custom Report Template',
-        description: 'Branded report template for your VC firm',
-        type: 'feature' as RewardType,
-        category: 'vc',
-        pointsCost: 3000,
-        quantityAvailable: 10,
-        quantityRemaining: 6,
-        tierRequirement: 'platinum' as UserTier,
-        modeRequirement: 'ea-vc' as UserMode,
-        features: ['Custom branding', 'VC-specific metrics', 'White-label reports'],
-        redemptionInstructions: 'Our team will contact you within 48 hours.',
-        createdAt: new Date('2024-02-01').toISOString()
-      }
-    ];
-
-    // Filter by mode
-    if (mode === 'individual') {
-      return baseRewards.filter(r => r.category === 'individual' || r.category === 'all');
-    } else if (mode === 'researcher') {
-      return baseRewards.filter(r => r.category === 'researcher' || r.category === 'all');
-    } else if (mode === 'ea-vc') {
-      return baseRewards.filter(r => r.category === 'vc' || r.category === 'all');
+const getRewardsForMode = (mode: UserMode | null): Reward[] => {
+  if (!mode) return []; // Return empty array if no mode selected
+ 
+  const baseRewards: Reward[] = [
+    // Individual Mode Rewards
+    {
+      id: 'premium_report',
+      name: 'Premium Report',
+      description: 'Get an in-depth analysis report with advanced metrics',
+      type: 'access' as RewardType,
+      category: 'individual',
+      pointsCost: 500,
+      quantityAvailable: 100,
+      quantityRemaining: 55,
+      tierRequirement: 'silver' as UserTier,
+      modeRequirement: 'individual' as UserMode,
+      features: ['In-depth analysis', 'Risk breakdown', 'Recommendations'],
+      redemptionInstructions: 'The report will be available in your account within 24 hours.',
+      createdAt: new Date('2024-01-01').toISOString()
+    },
+    {
+      id: 'api_tier',
+      name: 'API Free Tier',
+      description: 'Access to Sifter API with 100 requests/month',
+      type: 'access' as RewardType,
+      category: 'all',
+      pointsCost: 1000,
+      quantityAvailable: 50,
+      quantityRemaining: 30,
+      tierRequirement: 'gold' as UserTier,
+      features: ['100 API calls/month', 'Full endpoint access', 'Documentation'],
+      redemptionInstructions: 'API key will be sent to your email within 1 hour.',
+      createdAt: new Date('2024-01-01').toISOString()
+    },
+    {
+      id: 'gift_card_10',
+      name: '$10 Amazon Gift Card',
+      description: 'Redeem points for a $10 Amazon gift card',
+      type: 'physical' as RewardType,
+      category: 'all',
+      pointsCost: 2000,
+      quantityAvailable: 25,
+      quantityRemaining: 15,
+      tierRequirement: 'silver' as UserTier,
+      features: ['$10 value', 'Instant delivery', 'No expiration'],
+      redemptionInstructions: 'Gift card code will be emailed within 24 hours.',
+      createdAt: new Date('2024-01-15').toISOString()
+    },
+    {
+      id: 'gift_card_25',
+      name: '$25 Amazon Gift Card',
+      description: 'Redeem points for a $25 Amazon gift card',
+      type: 'physical' as RewardType,
+      category: 'all',
+      pointsCost: 4500,
+      quantityAvailable: 15,
+      quantityRemaining: 8,
+      tierRequirement: 'gold' as UserTier,
+      features: ['$25 value', 'Instant delivery', 'No expiration'],
+      redemptionInstructions: 'Gift card code will be emailed within 24 hours.',
+      createdAt: new Date('2024-01-15').toISOString()
+    },
+    {
+      id: 'cash_paypal_50',
+      name: '$50 PayPal Cash',
+      description: 'Direct PayPal transfer of $50',
+      type: 'physical' as RewardType,
+      category: 'all',
+      pointsCost: 9000,
+      quantityAvailable: 10,
+      quantityRemaining: 5,
+      tierRequirement: 'platinum' as UserTier,
+      features: ['$50 cash', 'PayPal transfer', 'Processed within 48h'],
+      redemptionInstructions: 'PayPal email required. Transfer within 2 business days.',
+      createdAt: new Date('2024-02-01').toISOString()
+    },
+    
+    // Researcher Mode Rewards
+    {
+      id: 'researcher_export_credits',
+      name: 'Export Credits Pack',
+      description: '10 additional export credits for CSV/JSON/PDF',
+      type: 'feature' as RewardType,
+      category: 'researcher',
+      pointsCost: 750,
+      quantityAvailable: 100,
+      quantityRemaining: 75,
+      tierRequirement: 'bronze' as UserTier,
+      modeRequirement: 'researcher' as UserMode,
+      features: ['10 export credits', 'All formats', 'Never expires'],
+      redemptionInstructions: 'Credits added automatically to your account.',
+      createdAt: new Date('2024-01-01').toISOString()
+    },
+    {
+      id: 'researcher_database_access',
+      name: 'Extended Database Access',
+      description: 'Full historical database access for 30 days',
+      type: 'access' as RewardType,
+      category: 'researcher',
+      pointsCost: 2000,
+      quantityAvailable: 30,
+      quantityRemaining: 18,
+      tierRequirement: 'gold' as UserTier,
+      modeRequirement: 'researcher' as UserMode,
+      features: ['30-day access', 'Full history', 'API endpoints', 'Raw data exports'],
+      redemptionInstructions: 'Access token sent via email within 2 hours.',
+      createdAt: new Date('2024-01-10').toISOString()
+    },
+    
+    // VC/EA Mode Rewards
+    {
+      id: 'vc_priority_queue',
+      name: 'Priority Batch Processing',
+      description: 'Skip the queue for 10 batch analyses',
+      type: 'feature' as RewardType,
+      category: 'vc',
+      pointsCost: 1500,
+      quantityAvailable: 20,
+      quantityRemaining: 12,
+      tierRequirement: 'gold' as UserTier,
+      modeRequirement: 'ea-vc' as UserMode,
+      features: ['10 priority slots', 'Instant processing', 'Dedicated support'],
+      redemptionInstructions: 'Priority status activated immediately.',
+      createdAt: new Date('2024-01-05').toISOString()
+    },
+    {
+      id: 'vc_custom_template',
+      name: 'Custom Report Template',
+      description: 'Branded report template for your VC firm',
+      type: 'feature' as RewardType,
+      category: 'vc',
+      pointsCost: 3000,
+      quantityAvailable: 10,
+      quantityRemaining: 6,
+      tierRequirement: 'platinum' as UserTier,
+      modeRequirement: 'ea-vc' as UserMode,
+      features: ['Custom branding', 'VC-specific metrics', 'White-label reports'],
+      redemptionInstructions: 'Our team will contact you within 48 hours.',
+      createdAt: new Date('2024-02-01').toISOString()
     }
+  ];
+
+  // Filter by mode
+  if (mode === 'individual') {
+    return baseRewards.filter(r => r.category === 'individual' || r.category === 'all');
+  } else if (mode === 'researcher') {
+    return baseRewards.filter(r => r.category === 'researcher' || r.category === 'all');
+  } else if (mode === 'ea-vc') {
+    return baseRewards.filter(r => r.category === 'vc' || r.category === 'all');
+  }
 
 
 
-
-
-    return baseRewards;
-  };
+  
+  
+  return baseRewards;
+};
 
 
   // ==================== DATA DONATION HANDLERS ====================
@@ -2244,14 +2203,14 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
       const evidenceBonus = formData.evidence.filter((e: any) => e.url).length * 10;
       const projectBonus = formData.affectedProjects.length * 5;
       const tierMultiplier = userTier === 'gold' ? 2.0 : userTier === 'silver' ? 1.5 : 1.0;
-
+      
       const pointsEarned = Math.floor((basePoints + evidenceBonus + projectBonus) * tierMultiplier);
       const newPoints = userPoints + pointsEarned;
       const newLifetimePoints = lifetimePoints + pointsEarned;
-
+      
       setUserPoints(newPoints);
       setLifetimePoints(newLifetimePoints);
-
+      
       // Update user tier if needed
       if (newLifetimePoints >= 1000 && userTier === 'bronze') {
         setUserTier('silver');
@@ -2260,7 +2219,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
         setUserTier('gold');
         setMultiplier(2.0);
       }
-
+      
       // Add to submissions
       const submissionWithId: SubmissionFormData = {
         ...formData,
@@ -2270,15 +2229,15 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
         submittedAt: new Date().toISOString(),
         status: 'submitted'
       };
-
+      
       setDataDonationSubmissions(prev => [submissionWithId, ...prev]);
-
+      
       // Show success message
       alert(`Submission successful! You earned ${pointsEarned} points.`);
-
+      
       // Close form
       setShowSubmissionForm(false);
-
+      
     } catch (error) {
       console.error('Data donation submission failed:', error);
       setError('Submission failed. Please try again.');
@@ -2299,14 +2258,14 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
   const handleUploadEvidence = useCallback(async (evidenceItems: Omit<EvidenceItem, 'id' | 'submittedAt'>[]) => {
     try {
       if (!selectedSubmissionId || !userEmail) return;
-
+      
       // Update the submission with new evidence
       setDataDonationSubmissions(prev =>
         prev.map(submission => {
           if (submission.id === selectedSubmissionId) {
             const newEvidence = evidenceItems.map(item => {
               let type: 'twitter' | 'reddit' | 'news' | 'archive' | 'blockchain' | 'telegram' | 'other' = 'other';
-
+              
               if (item.evidenceType === 'twitter_post') type = 'twitter';
               else if (item.evidenceType === 'reddit_thread') type = 'reddit';
               else if (item.evidenceType === 'blockchain_transaction') type = 'blockchain';
@@ -2333,7 +2292,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
           return submission;
         })
       );
-
+      
       alert('Evidence uploaded successfully! Submission is now under review.');
       setShowEvidenceUpload(false);
       setSelectedSubmissionId(null);
@@ -2348,8 +2307,8 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
       alert('No submissions to export');
       return;
     }
-
-
+    
+    
     const csvData = dataDonationSubmissions.map(sub => ({
       'Case ID': sub.caseId || 'N/A',
       'Entity Name': sub.entityDetails?.fullName || 'Unknown',
@@ -2359,17 +2318,17 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
       'Projects Affected': sub.affectedProjects?.length || 0,
       'Points Earned': sub.pointsAwarded || 0
     }));
-
+    
     const headers = Object.keys(csvData[0]);
     const csvRows = [
       headers.join(','),
-      ...csvData.map(row =>
-        headers.map(header =>
+      ...csvData.map(row => 
+        headers.map(header => 
           `"${String(row[header as keyof typeof row]).replace(/"/g, '""')}"`
         ).join(',')
       )
     ];
-
+    
     const csvString = csvRows.join('\n');
     const blob = new Blob([csvString], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -2383,15 +2342,15 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
   }, [dataDonationSubmissions]);
 
   // ✅ ADD THIS NEW FUNCTION:
-  const handleNewSubmission = useCallback(() => {
-    if (!isLoggedIn) {
-      setShowAuthModal(true);
-      return;
-    }
-    setShowTrackingDashboard(false);  // ✅ ADD THIS LINE - Close dashboard first
-    setShowSubmissionForm(true);
-    setDataDonationPrefill(null);
-  }, [isLoggedIn]);
+const handleNewSubmission = useCallback(() => {
+  if (!isLoggedIn) {
+    setShowAuthModal(true);
+    return;
+  }
+   setShowTrackingDashboard(false);  // ✅ ADD THIS LINE - Close dashboard first
+  setShowSubmissionForm(true);
+  setDataDonationPrefill(null);
+}, [isLoggedIn]);
 
   const handleOpenDataDonationWithContext = useCallback((context: {
     entityName: string;
@@ -2400,18 +2359,18 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
     context: string;
   }) => {
     if (!isLoggedIn) {
-      router.push('/login');
+      setShowAuthModal(true);
       return;
     }
-
+    
     setDataDonationPrefill({
       entityName: context.entityName,
       projectName: context.projectName,
       context: context.context
     });
-
+    
     setShowSubmissionForm(true);
-  }, [isLoggedIn, router]);
+  }, [isLoggedIn]);
 
   // ==================== NEW HANDLERS FOR ADDED COMPONENTS ====================
 
@@ -2421,7 +2380,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
       alert('Minimum 100 points required to enter reward pool');
       return;
     }
-
+    
     const poolEntry = Math.min(points, 1000);
     setUserPoints(prev => prev - poolEntry);
     setPoolPoints(prev => prev + poolEntry);
@@ -2433,7 +2392,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
       alert('Minimum 500 points required to redeem');
       return;
     }
-
+    
     const redeemAmount = Math.min(points, 5000);
     setUserPoints(prev => prev - redeemAmount);
     alert(`Redeemed ${redeemAmount} points! Check your email for reward details.`);
@@ -2457,10 +2416,10 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
       const pointsEarned = flagData[flagData.length - 3] || 0; // Points from FlagEntity component
       const newPoints = userPoints + pointsEarned;
       const newLifetimePoints = lifetimePoints + pointsEarned;
-
+      
       setUserPoints(newPoints);
       setLifetimePoints(newLifetimePoints);
-
+      
       alert(`Entity flagged successfully! You earned ${pointsEarned} points.`);
       setShowStandardForm(false);
     } catch (error) {
@@ -2484,7 +2443,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
       entityData.riskScore.toString(),
       entityData.context
     ]);
-    setShowStandardForm(true);
+   {setShowStandardForm(true)}  // ✅
   }, []);
 
   // Dispute handler
@@ -2509,31 +2468,31 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
   const handleSmartInputResolve = useCallback(async (result: SmartInputResult) => {
     try {
       if (!isLoggedIn) {
-        router.push('/login');
+        setShowAuthModal(true);
         return;
       }
-
+      
       if (!validateInput(result.input)) {
         return;
       }
-
+      
       setError(null);
       setCurrentInput(result.input);
       setState('loading');
-
+      
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
-
+      
       const mockMetrics = createMetricsArray();
       setDetailedMetrics(mockMetrics);
-
+      
       const mockProjectData = generateMockProjectData(result.selectedEntity?.displayName || result.input);
       setProjectData(mockProjectData);
-
+      
       const compositeScore = Math.round(
-        mockMetrics.reduce((sum, m) => sum + m.contribution, 0)
+        mockMetrics.reduce((sum, m) => sum + m.contribution, 0) 
       );
-
+      
       const verdict: VerdictData = {
         projectName: result.selectedEntity?.displayName || result.input,
         riskScore: compositeScore,
@@ -2541,16 +2500,16 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
         confidence: Math.floor(Math.random() * 30) + 70,
         processingTime: Math.floor(Math.random() * 90000) + 30000,
         summary: compositeScore < 30 ? 'Low risk project' :
-          compositeScore < 60 ? 'Moderate risk, needs review' :
-            'High risk, avoid investment',
+                 compositeScore < 60 ? 'Moderate risk, needs review' :
+                 'High risk, avoid investment',
         recommendations: generateRecommendations(compositeScore),
         detailedMetrics: mockMetrics,
         inputValue: result.input,
         metrics: mockMetrics,
         compositeScore,
-        riskTier: compositeScore < 25 ? 'LOW' :
-          compositeScore < 50 ? 'MODERATE' :
-            compositeScore < 75 ? 'ELEVATED' : 'HIGH',
+        riskTier: compositeScore < 25 ? 'LOW' : 
+                 compositeScore < 50 ? 'MODERATE' : 
+                 compositeScore < 75 ? 'ELEVATED' : 'HIGH',
         breakdown: mockMetrics.map((m): ScoreBreakdown => ({
           name: m.name,
           weight: m.weight,
@@ -2560,10 +2519,10 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
         })).sort((a, b) => b.contribution - a.contribution),
         analyzedAt: new Date().toISOString()
       };
-
+      
       setVerdictData(verdict);
       setState('complete');
-
+      
       // Add to recent scans
       if (isLoggedIn && userMode !== 'ea-vc') {
         const newScan: AnalysisHistory = {
@@ -2576,13 +2535,13 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
         };
         setRecentScans(prev => [newScan, ...prev.slice(0, 9)]);
       }
-
+      
     } catch (err) {
       console.error('Analysis failed:', err);
       setError('Analysis failed. Please try again.');
       setState('error');
     }
-  }, [isLoggedIn, userMode, validateInput, generateRecommendations, router]);
+  }, [isLoggedIn, userMode, validateInput, generateRecommendations]);
 
   const handleReset = useCallback(() => {
     setState('idle');
@@ -2598,6 +2557,8 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
     handleReset();
   }, [handleReset]);
 
+ 
+
   const handleProceed = useCallback(() => {
     alert('Proceeding to full due diligence workflow...');
   }, []);
@@ -2610,7 +2571,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
   const handleBatchUpload = useCallback(async (files: File[]) => {
     try {
       console.log('Batch upload:', files);
-
+      
       // Create a new batch job with proper summary
       const newJob: BatchProcessingJob = {
         id: 'batch_' + Date.now(),
@@ -2628,18 +2589,18 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
         },
         createdAt: new Date(),
       };
-
+      
       setRecentBatches(prev => [newJob, ...prev.slice(0, 4)]);
-
+      
       setBatchStats(prev => ({
         ...prev,
         totalProcessed: prev.totalProcessed + files.length,
         lastBatchDate: new Date()
       }));
-
+      
       // Simulate processing
       await new Promise(resolve => setTimeout(resolve, 3000));
-
+      
       const mockProjects: BatchProject[] = files.map((file, index) => ({
         id: `proj_${Date.now()}_${index}`,
         name: file.name.replace(/\.[^/.]+$/, ""),
@@ -2652,7 +2613,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
         scannedAt: new Date(),
         metrics: createMetricsArray()
       }));
-
+      
       // Calculate summary
       const passed = mockProjects.filter(p => p.verdict === 'pass').length;
       const flagged = mockProjects.filter(p => p.verdict === 'flag').length;
@@ -2660,7 +2621,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
       const averageRiskScore = Math.round(
         mockProjects.reduce((sum, p) => sum + (p.riskScore || 0), 0) / mockProjects.length
       );
-
+      
       const updatedJob: BatchProcessingJob = {
         ...newJob,
         status: 'complete',
@@ -2680,19 +2641,19 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
         },
         completedAt: new Date()
       };
-
-      setRecentBatches(prev =>
+      
+      setRecentBatches(prev => 
         prev.map(job => job.id === newJob.id ? updatedJob : job)
       );
-
+      
       setBatchStats(prev => ({
         ...prev,
         averageProcessingTime: Math.floor(Math.random() * 60000) + 30000,
         rejectionRate: Math.floor(Math.random() * 40) + 10,
       }));
-
+      
       handleBatchUploadComplete(updatedJob);
-
+      
     } catch (err) {
       console.error('Batch upload failed:', err);
       setError('Batch upload failed. Please try again.');
@@ -2712,62 +2673,155 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
 
   // Mode selection handlers
   const handleModeSelect = useCallback((mode: UserMode) => {
-    setSelectedMode(mode);
+    setUserMode(mode);
   }, []);
 
   const handleModeConfirm = useCallback(() => {
-    if (selectedMode) {
-      if (isAuthenticated && user) {
-        // User is logged in, update their mode
-        updateUser({ mode: selectedMode });
-        setShowModeModal(false);
-        setSelectedMode(null);
-      } else {
-        // User is not logged in, redirect to register with mode
-        setShowModeModal(false);
-        router.push(`/register?mode=${selectedMode}`);
-      }
+    if (userMode) {
+      setShowModeModal(false);
+      setShowAuthModal(true);
     }
-  }, [selectedMode, isAuthenticated, user, updateUser, router]);
+  }, [userMode]);
 
   const handleModeCancel = useCallback(() => {
     setShowModeModal(false);
-    setSelectedMode(null);
+    
   }, []);
 
-  // Auth handlers - now using AuthContext
-  const handleLogout = useCallback(async () => {
+  // Auth handlers
+  const handleLogin = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    const emailInput = document.getElementById('loginEmail') as HTMLInputElement;
+    const passwordInput = document.getElementById('loginPassword') as HTMLInputElement;
+    
+    if (!emailInput || !passwordInput) {
+      setError('Login form elements not found');
+      return;
+    }
+    
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    
+    if (!email || !password) {
+      setError('Please fill in all fields');
+      return;
+    }
+    
+    if (!email.includes('@')) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    
     try {
-      await logout();
+      const userData = {
+        email,
+        name: email.split('@')[0],
+        mode: userMode
+      };
+      
+      localStorage.setItem('sifter_user', JSON.stringify(userData));
+      setIsLoggedIn(true);
+      setUserName(userData.name);
+      setUserEmail(email);
+      setShowAuthModal(false);
+      setShowModeModal(false);
+      setError(null);
+      
+      alert(`Welcome back, ${userData.name}!`);
+    } catch (err) {
+      console.error('Login failed:', err);
+      setError('Login failed. Please try again.');
+    }
+  }, [userMode]);
+
+  const handleSignup = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    const nameInput = document.getElementById('signupName') as HTMLInputElement;
+    const emailInput = document.getElementById('signupEmail') as HTMLInputElement;
+    const passwordInput = document.getElementById('signupPassword') as HTMLInputElement;
+    const confirmInput = document.getElementById('signupConfirm') as HTMLInputElement;
+    
+    if (!nameInput || !emailInput || !passwordInput || !confirmInput) {
+      setError('Signup form elements not found');
+      return;
+    }
+    
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    const confirm = confirmInput.value;
+    
+    if (!name || !email || !password || !confirm) {
+      setError('Please fill in all fields');
+      return;
+    }
+    
+    if (!email.includes('@')) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+    
+    if (password !== confirm) {
+      setError('Passwords do not match');
+      return;
+    }
+    
+    try {
+      const userData = {
+        email,
+        name,
+        mode: userMode
+      };
+      
+      localStorage.setItem('sifter_user', JSON.stringify(userData));
+      setIsLoggedIn(true);
+      setUserName(name);
+      setUserEmail(email);
+      setShowAuthModal(false);
+      setShowModeModal(false);
+      setError(null);
+      
+      alert(`Account created! Welcome to Sifter, ${name}!`);
+    } catch (err) {
+      console.error('Signup failed:', err);
+      setError('Signup failed. Please try again.');
+    }
+  }, [userMode]);
+
+  const handleLogout = useCallback(() => {
+    try {
+      localStorage.removeItem('sifter_user');
+      setIsLoggedIn(false);
+      setUserName('');
+      setUserEmail('');
+      setUserMode(null);
+      setShowModeModal(true);
       handleReset();
       setError(null);
     } catch (err) {
       console.error('Logout failed:', err);
       setError('Logout failed. Please try again.');
     }
-  }, [logout, handleReset]);
-
-  const handleGoToLogin = useCallback(() => {
-    router.push('/login');
-  }, [router]);
-
-  const handleGoToRegister = useCallback(() => {
-    router.push('/register');
-  }, [router]);
+  }, [handleReset]);
 
   // Get mode display name
   const getModeDisplayName = useCallback((mode: UserMode) => {
     if (!mode) return '';
     return mode === 'ea-vc' ? 'VC/EA Mode' :
-      mode === 'researcher' ? 'Researcher Mode' :
-        'Individual Investor Mode';
+           mode === 'researcher' ? 'Researcher Mode' :
+           'Individual Investor Mode';
   }, []);
 
   // Get mode-specific greeting
   const getModeGreeting = useMemo(() => {
     if (!userMode || !isLoggedIn) return 'Analyze Any Project';
-
-    switch (userMode) {
+    
+    switch(userMode) {
       case 'ea-vc':
         return 'Deal Flow Screening';
       case 'researcher':
@@ -2784,8 +2838,8 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
     if (!userMode || !isLoggedIn) {
       return 'Enter a Twitter handle, Discord invite, Telegram link, GitHub repo, website URL, or just the project name. We\'ll analyze 13 key risk metrics.';
     }
-
-    switch (userMode) {
+    
+    switch(userMode) {
       case 'ea-vc':
         return 'Batch processing for deal flow. Quick Pass/Flag/Reject with volume-optimized UI.';
       case 'researcher':
@@ -2834,21 +2888,21 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
 
     const handleResearcherAnalyze = (input: string) => {
       if (!validateInput(input)) return;
-
+      
       setCurrentInput(input);
       setState('loading');
-
+      
       setTimeout(() => {
         const mockMetrics = createMetricsArray();
         setDetailedMetrics(mockMetrics);
-
+        
         const mockProjectData = generateMockProjectData(input);
         setProjectData(mockProjectData);
-
+        
         const compositeScore = Math.round(
-          mockMetrics.reduce((sum, m) => sum + m.contribution, 0)
+          mockMetrics.reduce((sum, m) => sum + m.contribution, 0) 
         );
-
+        
         const verdict: VerdictData = {
           projectName: input,
           riskScore: compositeScore,
@@ -2856,16 +2910,16 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
           confidence: Math.floor(Math.random() * 30) + 70,
           processingTime: Math.floor(Math.random() * 90000) + 30000,
           summary: compositeScore < 30 ? 'Low risk project' :
-            compositeScore < 60 ? 'Moderate risk, needs review' :
-              'High risk, avoid investment',
+                   compositeScore < 60 ? 'Moderate risk, needs review' :
+                   'High risk, avoid investment',
           recommendations: generateRecommendations(compositeScore),
           detailedMetrics: mockMetrics,
           inputValue: input,
           metrics: mockMetrics,
           compositeScore,
-          riskTier: compositeScore < 25 ? 'LOW' :
-            compositeScore < 50 ? 'MODERATE' :
-              compositeScore < 75 ? 'ELEVATED' : 'HIGH',
+          riskTier: compositeScore < 25 ? 'LOW' : 
+                   compositeScore < 50 ? 'MODERATE' : 
+                   compositeScore < 75 ? 'ELEVATED' : 'HIGH',
           breakdown: mockMetrics.map((m): ScoreBreakdown => ({
             name: m.name,
             weight: m.weight,
@@ -2875,7 +2929,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
           })).sort((a, b) => b.contribution - a.contribution),
           analyzedAt: new Date().toISOString()
         };
-
+        
         setVerdictData(verdict);
         setState('complete');
       }, 1500);
@@ -2900,7 +2954,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
         <ResearcherDashboard
           onAnalyze={handleResearcherAnalyze}
           userEmail={userEmail}
-          onModeChange={handleResearcherModeChange}
+          
           onExportPDF={handleExportPDF}
           onExportJSON={handleExportJSON}
           onExportCSV={handleExportCSV}
@@ -2921,17 +2975,17 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
 
     const handleIndividualAnalyze = (input: string) => {
       if (!validateInput(input)) return;
-
+      
       setCurrentInput(input);
       setState('loading');
-
+      
       setTimeout(() => {
         const mockMetrics = createMetricsArray();
         setDetailedMetrics(mockMetrics);
-
+        
         const mockProjectData = generateMockProjectData(input);
         setProjectData(mockProjectData);
-
+        
         setState('complete');
       }, 1500);
     };
@@ -2947,7 +3001,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
           onRemoveFromWatchlist={handleRemoveFromWatchlist}
           userName={userName}
           projectMetrics={detailedMetrics}
-          onModeChange={handleIndividualModeChange}
+          
           currentProject={projectData || undefined}
         />
       </div>
@@ -2989,7 +3043,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
         <div className="mt-8">
           {state === 'idle' && (
             <div className="max-w-4xl mx-auto">
-              <SmartInputParser
+              <SmartInputParser 
                 onResolve={handleSmartInputResolve}
                 placeholder={getModeDescription}
                 disabled={!isLoggedIn}
@@ -3004,11 +3058,11 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
               onComplete={() => {
                 const mockMetrics = createMetricsArray();
                 setDetailedMetrics(mockMetrics);
-
+                
                 const compositeScore = Math.round(
-                  mockMetrics.reduce((sum, m) => sum + m.contribution, 0)
+                  mockMetrics.reduce((sum, m) => sum + m.contribution, 0) 
                 );
-
+                
                 const verdict: VerdictData = {
                   projectName: currentInput,
                   riskScore: compositeScore,
@@ -3016,16 +3070,16 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
                   confidence: Math.floor(Math.random() * 30) + 70,
                   processingTime: Math.floor(Math.random() * 90000) + 30000,
                   summary: compositeScore < 30 ? 'Low risk project' :
-                    compositeScore < 60 ? 'Moderate risk, needs review' :
-                      'High risk, avoid investment',
+                           compositeScore < 60 ? 'Moderate risk, needs review' :
+                           'High risk, avoid investment',
                   recommendations: generateRecommendations(compositeScore),
                   detailedMetrics: mockMetrics,
                   inputValue: currentInput,
                   metrics: mockMetrics,
                   compositeScore,
-                  riskTier: compositeScore < 25 ? 'LOW' :
-                    compositeScore < 50 ? 'MODERATE' :
-                      compositeScore < 75 ? 'ELEVATED' : 'HIGH',
+                  riskTier: compositeScore < 25 ? 'LOW' : 
+                           compositeScore < 50 ? 'MODERATE' : 
+                           compositeScore < 75 ? 'ELEVATED' : 'HIGH',
                   breakdown: mockMetrics.map((m): ScoreBreakdown => ({
                     name: m.name,
                     weight: m.weight,
@@ -3035,7 +3089,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
                   })).sort((a, b) => b.contribution - a.contribution),
                   analyzedAt: new Date().toISOString()
                 };
-
+                
                 setVerdictData(verdict);
                 setState('complete');
               }}
@@ -3059,16 +3113,16 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
                   </>
                 )}
               </div>
-
+              
               <VerdictCard
                 data={verdictData}
                 onReject={handleReject}
                 onProceed={handleProceed}
                 onReset={handleReset}
               />
-
-              <MetricBreakdown
-                instanceId="main-analysis" // ✅ ADD THIS
+              
+             <MetricBreakdown
+              instanceId="main-analysis" // ✅ ADD THIS
                 metrics={detailedMetrics}  // ✅ Use the state that has detailed evidence!
                 projectName={verdictData.projectName}
                 riskScore={verdictData.riskScore}
@@ -3080,7 +3134,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
                     alert('No project data available to export');
                   }
                 }}
-              />
+              /> 
             </div>
           )}
 
@@ -3233,7 +3287,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
             Single Project Analysis (EA/VC Mode)
           </div>
         </div>
-
+        
         <div className="mt-8">
           {error && (
             <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
@@ -3259,7 +3313,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
 
           {state === 'idle' && (
             <div className="max-w-4xl mx-auto">
-              <SmartInputParser
+              <SmartInputParser 
                 onResolve={handleSmartInputResolve}
                 placeholder="Enter Twitter handle, Discord, Telegram, GitHub, or project name..."
                 disabled={false}
@@ -3274,11 +3328,11 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
               onComplete={() => {
                 const mockMetrics = createMetricsArray();
                 setDetailedMetrics(mockMetrics);
-
+                
                 const compositeScore = Math.round(
-                  mockMetrics.reduce((sum, m) => sum + m.contribution, 0)
+                  mockMetrics.reduce((sum, m) => sum + m.contribution, 0) 
                 );
-
+                
                 const verdict: VerdictData = {
                   projectName: currentInput,
                   riskScore: compositeScore,
@@ -3286,16 +3340,16 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
                   confidence: Math.floor(Math.random() * 30) + 70,
                   processingTime: Math.floor(Math.random() * 90000) + 30000,
                   summary: compositeScore < 30 ? 'Low risk project' :
-                    compositeScore < 60 ? 'Moderate risk, needs review' :
-                      'High risk, avoid investment',
+                           compositeScore < 60 ? 'Moderate risk, needs review' :
+                           'High risk, avoid investment',
                   recommendations: generateRecommendations(compositeScore),
                   detailedMetrics: mockMetrics,
                   inputValue: currentInput,
                   metrics: mockMetrics,
                   compositeScore,
-                  riskTier: compositeScore < 25 ? 'LOW' :
-                    compositeScore < 50 ? 'MODERATE' :
-                      compositeScore < 75 ? 'ELEVATED' : 'HIGH',
+                  riskTier: compositeScore < 25 ? 'LOW' : 
+                           compositeScore < 50 ? 'MODERATE' : 
+                           compositeScore < 75 ? 'ELEVATED' : 'HIGH',
                   breakdown: mockMetrics.map((m): ScoreBreakdown => ({
                     name: m.name,
                     weight: m.weight,
@@ -3305,7 +3359,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
                   })).sort((a, b) => b.contribution - a.contribution),
                   analyzedAt: new Date().toISOString()
                 };
-
+                
                 setVerdictData(verdict);
                 setState('complete');
               }}
@@ -3329,7 +3383,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
                   </>
                 )}
               </div>
-
+              
               <VerdictCard
                 data={verdictData}
                 onReject={handleReject}
@@ -3342,9 +3396,9 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
                   setProjectData(null);
                 }}
               />
-
+              
               <MetricBreakdown
-                instanceId="main-analysis" // ✅ ADD THIS
+              instanceId="main-analysis" // ✅ ADD THIS
                 metrics={detailedMetrics}  // ✅ Use the state that has detailed evidence!
                 projectName={verdictData.projectName}
                 riskScore={verdictData.riskScore}
@@ -3384,8 +3438,8 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
       </div>
     );
   }, [
-    showBatchView, state, currentInput, verdictData, detailedMetrics,
-    projectData, error, handleSmartInputResolve, getRandomDuration,
+    showBatchView, state, currentInput, verdictData, detailedMetrics, 
+    projectData, error, handleSmartInputResolve, getRandomDuration, 
     generateRecommendations, handleReject, handleProceed
   ]);
 
@@ -3393,7 +3447,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
   return (
     <main className="min-h-screen bg-sifter-dark">
       {/* ==================== DATA DONATION MODALS ==================== */}
-
+      
       {/* Submission Form Modal */}
       {showSubmissionForm && (
         <SubmissionForm
@@ -3439,7 +3493,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
                     ✕
                   </button>
                 </div>
-
+                
                 <TrackingDashboard
                   submissions={dataDonationSubmissions}
                   userMode={userMode || 'individual'}
@@ -3457,209 +3511,209 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
       )}
 
       {showPointsDisplay && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 overflow-y-auto">
-          <div className="min-h-screen flex items-start justify-center p-4 pt-20">
-            <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-6xl w-full max-h-[80vh] overflow-y-auto">
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-white">Points & Rewards</h2>
-                  <button
-                    onClick={() => setShowPointsDisplay(false)}
-                    className="text-gray-400 hover:text-white text-2xl"
-                  >
-                    ✕
-                  </button>
-                </div>
+  <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 overflow-y-auto">
+    <div className="min-h-screen flex items-start justify-center p-4 pt-20">
+      <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-6xl w-full max-h-[80vh] overflow-y-auto">
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-white">Points & Rewards</h2>
+            <button
+              onClick={() => setShowPointsDisplay(false)}
+              className="text-gray-400 hover:text-white text-2xl"
+            >
+              ✕
+            </button>
+          </div>
+          
+          {/* Points Display */}
+          <div className="mb-8">
+            <PointsDisplay
+              pointsData={[userPoints, lifetimePoints, poolPoints, multiplier, nextMilestone]}
+              userTier={userTier}
+              userMode={userMode || 'individual'}
+              onEnterRewardPool={handleEnterRewardPool}
+              onRedeemPoints={handleRedeemPoints}
+            />
+          </div>
 
-                {/* Points Display */}
-                <div className="mb-8">
-                  <PointsDisplay
-                    pointsData={[userPoints, lifetimePoints, poolPoints, multiplier, nextMilestone]}
-                    userTier={userTier}
-                    userMode={userMode || 'individual'}
-                    onEnterRewardPool={handleEnterRewardPool}
-                    onRedeemPoints={handleRedeemPoints}
-                  />
-                </div>
-
-                {/* Rewards Shop */}
-                <div>
-                  <RewardsShop
-                    userProfile={{
-                      userId: userEmail,
-                      mode: userMode || 'individual',
-                      totalPoints: userPoints,
-                      availablePoints: userPoints,
-                      lifetimePoints: lifetimePoints,
-                      currentLevel: Math.floor(lifetimePoints / 1000) + 1,
-                      currentTier: userTier,
-                      badges: [],
-                      achievements: [],
-                      streak: {
-                        currentStreak: 7,
-                        longestStreak: 14,
-                        lastActivity: new Date().toISOString(),
-                        streakBonus: 1.5
-                      },
-                      leaderboardPosition: 42,
-                      nextMilestone: {
-                        pointsNeeded: nextMilestone,
-                        reward: 'Premium Features',
-                        unlocks: ['API access', 'Priority support', 'Custom reports']
-                      },
-                      displayName: userName,
-                      pointsMultiplier: multiplier
-                    }}
-                    rewards={getRewardsForMode(userMode || 'individual')}
-                    onRedeem={async (rewardId: string) => {
-                      console.log('Redeeming reward:', rewardId);
-                      // Deduct points
-                      const reward = getRewardsForMode(userMode || 'individual').find(r => r.id === rewardId);
-                      if (reward) {
-                        setUserPoints(prev => prev - reward.pointsCost);
-                        alert(`Successfully redeemed: ${reward.name}!`);
-                        return true;
-                      }
-                      return false;
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
+          {/* Rewards Shop */}
+          <div>
+            <RewardsShop
+              userProfile={{
+                userId: userEmail,
+                mode: userMode || 'individual',
+                totalPoints: userPoints,
+                availablePoints: userPoints,
+                lifetimePoints: lifetimePoints,
+                currentLevel: Math.floor(lifetimePoints / 1000) + 1,
+                currentTier: userTier,
+                badges: [],
+                achievements: [],
+                streak: {
+                  currentStreak: 7,
+                  longestStreak: 14,
+                  lastActivity: new Date().toISOString(),
+                  streakBonus: 1.5
+                },
+                leaderboardPosition: 42,
+                nextMilestone: {
+                  pointsNeeded: nextMilestone,
+                  reward: 'Premium Features',
+                  unlocks: ['API access', 'Priority support', 'Custom reports']
+                },
+                displayName: userName,
+                pointsMultiplier: multiplier
+              }}
+              rewards={getRewardsForMode(userMode || 'individual')}
+              onRedeem={async (rewardId: string) => {
+                console.log('Redeeming reward:', rewardId);
+                // Deduct points
+                const reward = getRewardsForMode(userMode || 'individual').find(r => r.id === rewardId);
+                if (reward) {
+                  setUserPoints(prev => prev - reward.pointsCost);
+                  alert(`Successfully redeemed: ${reward.name}!`);
+                  return true;
+                }
+                return false;
+              }}
+            />
           </div>
         </div>
-      )}
+      </div>
+    </div>
+  </div>
+)}
 
       {showDisputeForm && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 overflow-y-auto">
-          <div className="min-h-screen flex items-start justify-center p-4 pt-20">
-            <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-6xl w-full max-h-[80vh] overflow-y-auto">
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-white">File a Dispute</h2>
-                  <button
-                    onClick={() => {
-                      setShowDisputeForm(false);
-                      setSelectedEntityForDispute([]);
-                    }}
-                    className="text-gray-400 hover:text-white text-2xl hover:bg-gray-800/50 rounded-lg p-2 transition-colors"
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                {selectedEntityForDispute.length > 0 ? (
-                  <DisputeForm
-                    entityData={selectedEntityForDispute}
-                    userData={[userName, userEmail, userMode || 'individual', '']}
-                    onSubmit={handleSubmitDispute}
-                    onCancel={() => {
-                      setShowDisputeForm(false);
-                      setSelectedEntityForDispute([]);
-                    }}
-                    userMode={userMode || 'individual'}
-                  />
-                ) : (
-                  <div className="text-center py-12">
-                    <div className="text-4xl mb-4">⚠️</div>
-                    <p className="text-gray-400 mb-4">No entity selected for dispute</p>
-                    <button
-                      onClick={() => setShowDisputeForm(false)}
-                      className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-all"
-                    >
-                      Close
-                    </button>
-                  </div>
-                )}
-              </div>{showDisputeForm && (
-                <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 overflow-y-auto">
-                  <div className="min-h-screen flex items-start justify-center p-4 pt-20">
-                    <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-6xl w-full max-h-[80vh] overflow-y-auto">
-                      <div className="p-6">
-                        <div className="flex justify-between items-center mb-6">
-                          <h2 className="text-2xl font-bold text-white">File a Dispute</h2>
-                          <button
-                            onClick={() => {
-                              setShowDisputeForm(false);
-                              setSelectedEntityForDispute([]);
-                            }}
-                            className="text-gray-400 hover:text-white text-2xl hover:bg-gray-800/50 rounded-lg p-2 transition-colors"
-                          >
-                            ✕
-                          </button>
-                        </div>
-
-                        {/* ONLY DisputeForm - no other components */}
-                        <DisputeForm
-                          entityData={selectedEntityForDispute.length > 0 ? selectedEntityForDispute : ['', '', '', '', '']}
-                          userData={[userName, userEmail, userMode || 'individual', '']}
-                          onSubmit={handleSubmitDispute}
-                          onCancel={() => {
-                            setShowDisputeForm(false);
-                            setSelectedEntityForDispute([]);
-                          }}
-                          userMode={userMode || 'individual'}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+  <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 overflow-y-auto">
+    <div className="min-h-screen flex items-start justify-center p-4 pt-20">
+      <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-6xl w-full max-h-[80vh] overflow-y-auto">
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-white">File a Dispute</h2>
+            <button
+              onClick={() => {
+                setShowDisputeForm(false);
+                setSelectedEntityForDispute([]);
+              }}
+              className="text-gray-400 hover:text-white text-2xl hover:bg-gray-800/50 rounded-lg p-2 transition-colors"
+            >
+              ✕
+            </button>
           </div>
-        </div>
-      )}
-
-
-
-      {showStandardForm && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 overflow-y-auto">
-          <div className="min-h-screen flex items-start justify-center p-4 pt-20">
-            <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-6xl w-full max-h-[80vh] overflow-y-auto">
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-white">Flag Entity</h2>
-                  <button
-                    onClick={() => {
-                      setShowStandardForm(false);
-                      setSelectedEntityForFlagging([]);
-                    }}
-                    className="text-gray-400 hover:text-white text-2xl hover:bg-gray-800/50 rounded-lg p-2 transition-colors"
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                {selectedEntityForFlagging.length > 0 ? (
-                  <StandardFlagForm
-                    entityData={selectedEntityForFlagging}
-                    userData={[userEmail || 'user', userEmail, userMode || 'individual', userName]}
-                    onSubmit={handleSubmitFlag}
-                    onCancel={() => {
-                      setShowStandardForm(false);
-                      setSelectedEntityForFlagging([]);
-                    }}
-                    showQuickActions={userMode === 'ea-vc'}
-                  />
-                ) : (
-                  <div className="text-center py-12">
-                    <div className="text-4xl mb-4">🚩</div>
-                    <p className="text-gray-400 mb-4">No entity selected for flagging</p>
-                    <button
-                      onClick={() => setShowStandardForm(false)}
-                      className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-all"
-                    >
-                      Close
-                    </button>
-                  </div>
-                )}
-              </div>
+          
+          {selectedEntityForDispute.length > 0 ? (
+            <DisputeForm
+              entityData={selectedEntityForDispute}
+              userData={[userName, userEmail, userMode || 'individual', '']}
+              onSubmit={handleSubmitDispute}
+              onCancel={() => {
+                setShowDisputeForm(false);
+                setSelectedEntityForDispute([]);
+              }}
+              userMode={userMode || 'individual'}
+            />
+          ) : (
+            <div className="text-center py-12">
+              <div className="text-4xl mb-4">⚠️</div>
+              <p className="text-gray-400 mb-4">No entity selected for dispute</p>
+              <button
+                onClick={() => setShowDisputeForm(false)}
+                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-all"
+              >
+                Close
+              </button>
             </div>
+          )}
+        </div>{showDisputeForm && (
+  <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 overflow-y-auto">
+    <div className="min-h-screen flex items-start justify-center p-4 pt-20">
+      <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-6xl w-full max-h-[80vh] overflow-y-auto">
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-white">File a Dispute</h2>
+            <button
+              onClick={() => {
+                setShowDisputeForm(false);
+                setSelectedEntityForDispute([]);
+              }}
+              className="text-gray-400 hover:text-white text-2xl hover:bg-gray-800/50 rounded-lg p-2 transition-colors"
+            >
+              ✕
+            </button>
           </div>
+          
+          {/* ONLY DisputeForm - no other components */}
+          <DisputeForm 
+            entityData={selectedEntityForDispute.length > 0 ? selectedEntityForDispute : ['', '', '', '', '']}
+            userData={[userName, userEmail, userMode || 'individual', '']}
+            onSubmit={handleSubmitDispute}
+            onCancel={() => {
+              setShowDisputeForm(false);
+              setSelectedEntityForDispute([]);
+            }}
+            userMode={userMode || 'individual'}
+          />
         </div>
-      )}
+      </div>
+    </div>
+  </div>
+)}
+      </div>
+    </div>
+  </div>
+)}
 
-      {/* Mode Selection Modal */}
+
+  
+{showStandardForm && (
+  <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 overflow-y-auto">
+    <div className="min-h-screen flex items-start justify-center p-4 pt-20">
+      <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-6xl w-full max-h-[80vh] overflow-y-auto">
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-white">Flag Entity</h2>
+            <button
+              onClick={() => {
+                setShowStandardForm(false);
+                setSelectedEntityForFlagging([]);
+              }}
+              className="text-gray-400 hover:text-white text-2xl hover:bg-gray-800/50 rounded-lg p-2 transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+          
+          {selectedEntityForFlagging.length > 0 ? (
+            <StandardFlagForm
+              entityData={selectedEntityForFlagging}
+              userData={[userEmail || 'user', userEmail, userMode || 'individual', userName]}
+              onSubmit={handleSubmitFlag}
+              onCancel={() => {
+                setShowStandardForm(false);
+                setSelectedEntityForFlagging([]);
+              }}
+              showQuickActions={userMode === 'ea-vc'}
+            />
+          ) : (
+            <div className="text-center py-12">
+              <div className="text-4xl mb-4">🚩</div>
+              <p className="text-gray-400 mb-4">No entity selected for flagging</p>
+              <button
+                onClick={() => setShowStandardForm(false)}
+                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-all"
+              >
+                Close
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+{/* Mode Selection Modal */}
       {showModeModal && !isLoggedIn && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-3xl w-full p-4 sm:p-8 my-8 max-h-[90vh] overflow-y-auto">
@@ -3678,11 +3732,12 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
               {/* EA/VC Mode */}
-              <div className={`p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${userMode === 'ea-vc'
-                ? 'border-blue-500 bg-blue-500/10'
-                : 'border-sifter-border hover:border-blue-500/50 hover:bg-sifter-card/50'
-                }`}
-                onClick={() => handleModeSelect('ea-vc')}>
+              <div className={`p-4 sm:p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
+                userMode === 'ea-vc'
+                  ? 'border-blue-500 bg-blue-500/10'
+                  : 'border-sifter-border hover:border-blue-500/50 hover:bg-sifter-card/50'
+              }`}
+              onClick={() => handleModeSelect('ea-vc')}>
                 <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">🏢</div>
                 <h3 className="font-bold text-white mb-2 text-base sm:text-lg">VC/EA Mode</h3>
                 <div className="text-xs sm:text-sm text-gray-400 space-y-2">
@@ -3700,11 +3755,12 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
               </div>
 
               {/* Researcher Mode */}
-              <div className={`p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${userMode === 'researcher'
-                ? 'border-purple-500 bg-purple-500/10'
-                : 'border-sifter-border hover:border-purple-500/50 hover:bg-sifter-card/50'
-                }`}
-                onClick={() => handleModeSelect('researcher')}>
+              <div className={`p-4 sm:p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
+                userMode === 'researcher'
+                  ? 'border-purple-500 bg-purple-500/10'
+                  : 'border-sifter-border hover:border-purple-500/50 hover:bg-sifter-card/50'
+              }`}
+              onClick={() => handleModeSelect('researcher')}>
                 <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">🔬</div>
                 <h3 className="font-bold text-white mb-2 text-base sm:text-lg">Researcher Mode</h3>
                 <div className="text-xs sm:text-sm text-gray-400 space-y-2">
@@ -3722,11 +3778,12 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
               </div>
 
               {/* Individual Investor Mode */}
-              <div className={`p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${userMode === 'individual'
-                ? 'border-green-500 bg-green-500/10'
-                : 'border-sifter-border hover:border-green-500/50 hover:bg-sifter-card/50'
-                }`}
-                onClick={() => handleModeSelect('individual')}>
+              <div className={`p-4 sm:p-6 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
+                userMode === 'individual'
+                  ? 'border-green-500 bg-green-500/10'
+                  : 'border-sifter-border hover:border-green-500/50 hover:bg-sifter-card/50'
+              }`}
+              onClick={() => handleModeSelect('individual')}>
                 <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">👤</div>
                 <h3 className="font-bold text-white mb-2 text-base sm:text-lg">Individual Investor Mode</h3>
                 <div className="text-xs sm:text-sm text-gray-400 space-y-2">
@@ -3754,28 +3811,28 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
               <button
                 onClick={handleModeConfirm}
                 disabled={!userMode}
-                className={`px-8 py-3 rounded-lg font-medium transition-all ${userMode
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white'
-                  : 'bg-gray-800 text-gray-500 cursor-not-allowed'
-                  }`}
+                className={`px-6 sm:px-8 py-3 rounded-lg font-medium transition-all order-1 sm:order-2 ${
+                  userMode
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white'
+                    : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                }`}
               >
-                {isAuthenticated ? 'Save Mode' : 'Continue to Sign Up'}
+                Continue to Login
               </button>
             </div>
-            <p className="text-gray-500 text-sm text-center mt-4">
+            <p className="text-gray-500 text-xs sm:text-sm text-center mt-4">
               (You can change this later in Settings)
             </p>
           </div>
         </div>
       )}
-
       {/* Auth Modal */}
       {showAuthModal && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-md w-full">
             <div className="p-8">
               <div className="flex justify-between items-center mb-8">
-                <h3 className="text-xl font-bold text-white">Welcome to Sifter 1.2</h3>
+                <h3 className="text-xl font-bold text-white">Welcome to Sifter 1.0</h3>
                 <button
                   onClick={() => {
                     setShowAuthModal(false);
@@ -3790,19 +3847,21 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
               <div className="flex border-b border-sifter-border mb-6">
                 <button
                   onClick={() => setAuthTab('login')}
-                  className={`flex-1 py-3 font-medium ${authTab === 'login'
-                    ? 'text-blue-500 border-b-2 border-blue-500'
-                    : 'text-gray-400'
-                    }`}
+                  className={`flex-1 py-3 font-medium ${
+                    authTab === 'login'
+                      ? 'text-blue-500 border-b-2 border-blue-500'
+                      : 'text-gray-400'
+                  }`}
                 >
                   Login
                 </button>
                 <button
                   onClick={() => setAuthTab('signup')}
-                  className={`flex-1 py-3 font-medium ${authTab === 'signup'
-                    ? 'text-blue-500 border-b-2 border-blue-500'
-                    : 'text-gray-400'
-                    }`}
+                  className={`flex-1 py-3 font-medium ${
+                    authTab === 'signup'
+                      ? 'text-blue-500 border-b-2 border-blue-500'
+                      : 'text-gray-400'
+                  }`}
                 >
                   Sign Up
                 </button>
@@ -3949,91 +4008,173 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
                   )}
                 </div>
               </div>
-
+              
               <div className="flex items-center gap-6">
                 {/* Data Donation Button */}
-                {isLoggedIn && userMode && (
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => setShowTrackingDashboard(true)}
-                      className="px-4 py-2 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 
-                               border border-amber-500/30 rounded-lg font-medium text-sm transition-colors flex items-center gap-2"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                      </svg>
-                      Data Donation
-                      {userPoints > 0 && (
-                        <span className="bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full">
-                          {userPoints} pts
-                        </span>
-                      )}
-                    </button>
+  {isLoggedIn && userMode && (
+  <div className="hidden md:flex items-center gap-2">
+    {/* Desktop: Show all buttons in a row */}
+    <button
+      onClick={() => setShowTrackingDashboard(true)}
+      className="px-3 py-2 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 
+               border border-amber-500/30 rounded-lg font-medium text-xs transition-colors 
+               flex items-center justify-center gap-1.5 whitespace-nowrap h-9"
+    >
+      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
+      <span>Data Donation</span>
+      {userPoints > 0 && (
+        <span className="bg-amber-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">
+          {userPoints} pts
+        </span>
+      )}
+    </button>
+    
+    <button
+      onClick={() => setShowPointsDisplay(true)}
+      className="px-3 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 
+               text-white rounded-lg font-medium text-xs transition-all 
+               flex items-center justify-center gap-1.5 whitespace-nowrap h-9"
+    >
+      <span>🏆</span>
+      <span>Points & Rewards</span>
+    </button>
 
-                    <button
-                      onClick={() => setShowPointsDisplay(true)}
-                      className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 
-                               text-white rounded-lg font-medium text-sm transition-all flex items-center gap-2"
-                    >
-                      🏆 Points
-                    </button>
+    <button
+      onClick={() => setShowDisputeForm(true)}
+      className="px-3 py-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 
+               text-white rounded-lg font-medium text-xs transition-all 
+               flex items-center justify-center gap-1.5 whitespace-nowrap h-9"
+    >
+      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3l-6.928-12c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <span>Submit Dispute</span>
+    </button>
 
-                    <button
-                      onClick={() => setShowSubmissionForm(true)}
-                      className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 
-                               text-white rounded-lg font-medium text-sm transition-all flex items-center gap-2"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      Submit Report
-                    </button>
+    <button
+      onClick={() => setShowSubmissionForm(true)}
+      className="px-3 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 
+               text-white rounded-lg font-medium text-xs transition-all 
+               flex items-center justify-center gap-1.5 whitespace-nowrap h-9"
+    >
+      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>Submit Report</span>
+    </button>
+  </div>
+)}
+
+{/* Mobile: Show dropdown menu */}
+{isLoggedIn && userMode && (
+   <div className="md:hidden relative mobile-data-menu">
+    <button
+      onClick={() => setShowMobileDataMenu(!showMobileDataMenu)}
+      className="p-2 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 
+               border border-amber-500/30 rounded-lg transition-colors relative"
+    >
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+      </svg>
+      {userPoints > 0 && (
+        <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">
+          {userPoints}
+        </span>
+      )}
+    </button>
+    
+    {showMobileDataMenu && (
+      <div className="absolute right-0 top-full mt-2 w-56 bg-sifter-card border border-sifter-border rounded-lg shadow-xl z-50">
+        <div className="p-2 space-y-1">
+          <button
+            onClick={() => {
+              setShowTrackingDashboard(true);
+              setShowMobileDataMenu(false);
+            }}
+            className="w-full text-left px-3 py-2 text-amber-400 hover:bg-amber-500/10 rounded-lg transition-colors flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span className="text-sm">Data Donation</span>
+          </button>
+          
+          <button
+            onClick={() => {
+              setShowPointsDisplay(true);
+              setShowMobileDataMenu(false);
+            }}
+            className="w-full text-left px-3 py-2 text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors flex items-center gap-2"
+          >
+            <span>🏆</span>
+            <span className="text-sm">Points & Rewards</span>
+          </button>
+          
+          <button
+            onClick={() => {
+              setShowDisputeForm(true);
+              setShowMobileDataMenu(false);
+            }}
+            className="w-full text-left px-3 py-2 text-orange-400 hover:bg-orange-500/10 rounded-lg transition-colors flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3l-6.928-12c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span className="text-sm">Submit Dispute</span>
+          </button>
+          
+          <button
+            onClick={() => {
+              setShowSubmissionForm(true);
+              setShowMobileDataMenu(false);
+            }}
+            className="w-full text-left px-3 py-2 text-green-400 hover:bg-green-500/10 rounded-lg transition-colors flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="text-sm">Submit Report</span>
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
+)}
+  
+  
+  {isLoggedIn && userMode && (
+    <div className="flex items-center gap-2 ml-2 pl-2 border-l border-sifter-border">
+      <div className={`px-2.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap ${
+        userMode === 'ea-vc' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+        userMode === 'researcher' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
+        'bg-green-500/20 text-green-400 border border-green-500/30'
+      }`}>
+        {getModeDisplayName(userMode)}
+      </div>
+      <div className="text-right">
+        <p className="text-xs font-medium text-white truncate max-w-[120px]">{userName}</p>
+        <p className="text-xs text-gray-500 truncate max-w-[120px]">{userEmail}</p>
+      </div>
+      <button
+        onClick={handleLogout}
+        className="text-gray-400 hover:text-white text-xs hover:bg-gray-800/50 
+                 px-2.5 py-1.5 rounded-lg transition-colors font-medium h-9 
+                 flex items-center justify-center"
+      >
+        Logout
+      </button>
                   </div>
+                  
+
+
+
                 )}
 
-                {state === 'complete' && projectData && (
-                  <div className="flex items-center gap-2">
-                    <ExportDropdown projectData={projectData} />
-                    <button
-                      onClick={() => ExportService.shareAnalysis(projectData)}
-                      className="px-3 py-1.5 bg-green-500/20 text-green-400 hover:bg-green-500/30 
-                               border border-green-500/30 rounded-lg text-sm font-medium 
-                               flex items-center gap-2 transition-colors"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                      </svg>
-                      Share
-                    </button>
-                  </div>
-                )}
 
-                {isLoggedIn && userMode && (
-                  <div className="flex items-center gap-3">
-                    <div className={`px-3 py-1.5 rounded-full text-sm font-medium ${userMode === 'ea-vc' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
-                      userMode === 'researcher' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
-                        'bg-green-500/20 text-green-400 border border-green-500/30'
-                      }`}>
-                      {getModeDisplayName(userMode)}
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-white">{userName}</p>
-                      <p className="text-xs text-gray-500">{userEmail}</p>
-                    </div>
-                    <button
-                      onClick={handleLogout}
-                      className="text-gray-400 hover:text-white text-sm hover:bg-gray-800/50 px-3 py-1.5 rounded-lg transition-colors"
-                    >
-                      Logout
-                    </button>
-                  </div>
-
-
-
-
-                )}
-
+                
+                
                 <nav className="flex items-center gap-4">
                   <span className="text-gray-500 text-sm">Project Due Diligence</span>
                 </nav>
@@ -4047,7 +4188,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
       <div className="max-w-7xl mx-auto">
         {!isLoggedIn ? (
           <div className="min-h-screen">
-            <LandingPage
+            <LandingPage 
               onGetStarted={() => {
                 setShowModeModal(true);
               }}
@@ -4063,19 +4204,19 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
                 userEmail={userEmail}
                 onAnalyze={(input: string) => {
                   if (!validateInput(input)) return;
-
+                  
                   setCurrentInput(input);
                   setShowBatchView(false);
                   setState('loading');
-
+                  
                   setTimeout(() => {
                     const mockMetrics = createMetricsArray();
                     setDetailedMetrics(mockMetrics);
-
+                    
                     const compositeScore = Math.round(
-                      mockMetrics.reduce((sum, m) => sum + m.contribution, 0)
+                      mockMetrics.reduce((sum, m) => sum + m.contribution, 0) 
                     );
-
+                    
                     const verdict: VerdictData = {
                       projectName: input,
                       riskScore: compositeScore,
@@ -4083,16 +4224,16 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
                       confidence: Math.floor(Math.random() * 30) + 70,
                       processingTime: Math.floor(Math.random() * 90000) + 30000,
                       summary: compositeScore < 30 ? 'Low risk project' :
-                        compositeScore < 60 ? 'Moderate risk, needs review' :
-                          'High risk, avoid investment',
+                               compositeScore < 60 ? 'Moderate risk, needs review' :
+                               'High risk, avoid investment',
                       recommendations: generateRecommendations(compositeScore),
                       detailedMetrics: mockMetrics,
                       inputValue: input,
                       metrics: mockMetrics,
                       compositeScore,
-                      riskTier: compositeScore < 25 ? 'LOW' :
-                        compositeScore < 50 ? 'MODERATE' :
-                          compositeScore < 75 ? 'ELEVATED' : 'HIGH',
+                      riskTier: compositeScore < 25 ? 'LOW' : 
+                               compositeScore < 50 ? 'MODERATE' : 
+                               compositeScore < 75 ? 'ELEVATED' : 'HIGH',
                       breakdown: mockMetrics.map((m): ScoreBreakdown => ({
                         name: m.name,
                         weight: m.weight,
@@ -4102,14 +4243,14 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
                       })).sort((a, b) => b.contribution - a.contribution),
                       analyzedAt: new Date().toISOString()
                     };
-
+                    
                     setVerdictData(verdict);
                     setState('complete');
                   }, 2000);
                 }}
                 onBatchUploadComplete={handleBatchUploadComplete}
                 onViewProjectDetails={handleViewProjectDetails}
-
+                
                 recentBatches={recentBatches}
                 batchStats={batchStats}
                 onExportBatch={(projects: BatchProject[]) => {
@@ -4123,9 +4264,9 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
                       overallRisk: {
                         score: p.riskScore || 0,
                         verdict: p.verdict || 'pass',
-                        tier: (p.riskScore || 0) < 25 ? 'LOW' :
-                          (p.riskScore || 0) < 50 ? 'MODERATE' :
-                            (p.riskScore || 0) < 75 ? 'ELEVATED' : 'HIGH',
+                        tier: (p.riskScore || 0) < 25 ? 'LOW' : 
+                              (p.riskScore || 0) < 50 ? 'MODERATE' : 
+                              (p.riskScore || 0) < 75 ? 'ELEVATED' : 'HIGH',
                         confidence: Math.floor(Math.random() * 30) + 70
                       },
                       scannedAt: p.scannedAt || new Date(),
@@ -4133,7 +4274,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
                       weight: 100, // Default weight
                       analyzedAt: new Date().toISOString()
                     }));
-
+                    
                     ExportService.exportAllAnalyses(projectDataArray);
                   }
                 }}
@@ -4157,7 +4298,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
                       scannedAt: p.scannedAt || new Date()
                     }))
                   };
-
+                  
                   const blob = new Blob([JSON.stringify(packet, null, 2)], { type: 'application/json' });
                   const url = URL.createObjectURL(blob);
                   const a = document.createElement('a');
@@ -4175,11 +4316,11 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
                     verdict: p.verdict || 'unknown',
                     redFlags: (p.redFlags || ['No red flags']).join('; ')
                   }));
-
+                  
                   const headers = ['Name', 'Risk Score', 'Verdict', 'Red Flags'];
                   const csvRows = [
                     headers.join(','),
-                    ...csvData.map(row =>
+                    ...csvData.map(row => 
                       [
                         `"${row.name.replace(/"/g, '""')}"`,
                         row.riskScore,
@@ -4188,7 +4329,7 @@ Verdict: Exemplary tokenomics. Strong investor protections, sustainable economic
                       ].join(',')
                     )
                   ];
-
+                  
                   const csvString = csvRows.join('\n');
                   const blob = new Blob([csvString], { type: 'text/csv' });
                   const url = URL.createObjectURL(blob);
