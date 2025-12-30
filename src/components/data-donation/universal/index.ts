@@ -15,7 +15,7 @@ export const TrackingDashboard = TrackingDashboardComponent;
 export const EvidenceUpload = EvidenceUploadComponent;
 export const DisputeForm = DisputeFormComponent;
 export const StandardFlagForm = StandardFlagFormComponent;
-export { default as PointsDisplay } from './PointsDisplay';  // ✅ Make sure this file exists
+export const PointsDisplay = PointsDisplayComponent;
 
 // Helper function (optional)
 export const getUniversalComponents = () => ({
@@ -24,7 +24,7 @@ export const getUniversalComponents = () => ({
   EvidenceUpload,
   DisputeForm,
   StandardFlagForm,
-
+  PointsDisplay
 });
 
 // Type exports - ONLY export types that actually exist as named exports

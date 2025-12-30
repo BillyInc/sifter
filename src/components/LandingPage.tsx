@@ -2,16 +2,31 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 
-// Add the onGetStarted prop to the interface
 interface LandingPageProps {
-  onGetStarted: () => void; // Add this line
-  // ... other props if you have them
+  onGetStarted: () => void;
 }
 
 export default function LandingPage({ onGetStarted }: LandingPageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-sifter-dark to-sifter-card">
+      {/* Top nav for sign in */}
+      <div className="absolute top-4 right-4 flex items-center gap-4">
+        <Link
+          href="/login"
+          className="text-gray-400 hover:text-white transition-colors"
+        >
+          Sign in
+        </Link>
+        <Link
+          href="/register"
+          className="px-4 py-2 bg-sifter-blue hover:bg-blue-600 text-white rounded-lg transition-colors"
+        >
+          Sign up
+        </Link>
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="text-center">
           <div className="flex items-center justify-center gap-3 mb-6">
@@ -22,16 +37,16 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             </div>
             <h1 className="text-4xl font-bold text-white">SIFTER 1.0</h1>
           </div>
-          
+
           <h2 className="text-5xl font-bold text-white mb-6">
             Automated Project <span className="text-transparent bg-clip-text bg-gradient-to-r from-sifter-blue to-purple-600">Due Diligence</span>
           </h2>
-          
+
           <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-            Analyze any crypto project using 13 risk metrics. Enter a Twitter handle, Discord, Telegram, 
+            Analyze any crypto project using 13 risk metrics. Enter a Twitter handle, Discord, Telegram,
             GitHub repo, website URL, or just the project name.
           </p>
-          
+
           <div className="flex justify-center gap-4 mb-12">
             <button
               onClick={onGetStarted}
