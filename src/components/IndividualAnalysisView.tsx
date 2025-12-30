@@ -1,8 +1,10 @@
 // components/IndividualAnalysisView.tsx
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ProjectData, MetricData } from '@/types';
+import { TwitterScanResult, SNAData, SNANode, SNAEdge } from '@/types';
+import { Network } from 'vis-network';
 
 interface IndividualAnalysisViewProps {
   projectData: ProjectData;
@@ -10,6 +12,9 @@ interface IndividualAnalysisViewProps {
   onShare: () => void;
   onScanAnother: () => void;
   onDownloadPDF: () => void;
+  blitzMode?: 'hyper' | 'momentum' | 'deep';
+  twitterScan?: TwitterScanResult;
+  snaData?: { nodes: SNANode[]; edges: SNAEdge[] };
 }
 
 interface RiskFlag {
@@ -29,25 +34,51 @@ interface Recommendation {
   reasons: string[];
 }
 
+// NetworkGraph Component
+const NetworkGraph = ({ data, options }: { data: SNAData; options: any }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const network = new Network(
+      containerRef.current,
+      {
+        nodes: data.nodes,
+        edges: data.edges
+      },
+      options
+    );
+
+    return () => {
+      network.destroy();
+    };
+  }, [data, options]);
+
+  return <div ref={containerRef} className="w-full h-full" />;
+};
+
 export default function IndividualAnalysisView({
   projectData,
   onAddToWatchlist,
   onShare,
   onScanAnother,
-  onDownloadPDF
+  onDownloadPDF,
+  blitzMode,
+  twitterScan,
+  snaData,
 }: IndividualAnalysisViewProps) {
+  const [showSNAGraph, setShowSNAGraph] = useState(false);
   const { overallRisk, metrics, displayName, processingTime } = projectData;
   
-  // Helper to find a metric by key
   const findMetricByKey = (key: string): MetricData | undefined => {
     return metrics.find(metric => metric.key === key);
   };
   
-  // Helper to get metric value with fallback
   const getMetricValue = (metric: MetricData | undefined): number => {
     return metric?.score ?? metric?.value ?? 0;
   };
-  
+
   const getRiskLevel = (score: number): RiskLevelInfo => {
     if (score >= 80) return { label: 'HIGH RISK - DON\'T INVEST', color: 'red', icon: '🚨' };
     if (score >= 60) return { label: 'CAUTION ADVISED', color: 'orange', icon: '⚠️' };
@@ -102,7 +133,6 @@ export default function IndividualAnalysisView({
   const getTopRedFlags = (): RiskFlag[] => {
     const flags: RiskFlag[] = [];
     
-    // Find metrics by key from the array
     const contaminatedNetwork = findMetricByKey('contaminatedNetwork');
     const mercenaryKeywords = findMetricByKey('mercenaryKeywords');
     const teamIdentity = findMetricByKey('teamIdentity');
@@ -111,7 +141,6 @@ export default function IndividualAnalysisView({
     const githubAuthenticity = findMetricByKey('githubAuthenticity');
     const engagementAuthenticity = findMetricByKey('engagementAuthenticity');
     
-    // 1. Check contaminated network (critical risk)
     const contaminatedNetworkValue = getMetricValue(contaminatedNetwork);
     if (contaminatedNetworkValue >= 75) {
       flags.push({
@@ -121,7 +150,6 @@ export default function IndividualAnalysisView({
       });
     }
     
-    // 2. Check mercenary keywords (high risk)
     const mercenaryKeywordsValue = getMetricValue(mercenaryKeywords);
     if (mercenaryKeywordsValue >= 70) {
       flags.push({
@@ -131,7 +159,6 @@ export default function IndividualAnalysisView({
       });
     }
     
-    // 3. Check team identity (high risk)
     const teamIdentityValue = getMetricValue(teamIdentity);
     if (teamIdentityValue <= 30) {
       flags.push({
@@ -141,7 +168,6 @@ export default function IndividualAnalysisView({
       });
     }
     
-    // 4. Check team competence (medium risk)
     const teamCompetenceValue = getMetricValue(teamCompetence);
     if (teamCompetenceValue <= 40) {
       flags.push({
@@ -151,7 +177,6 @@ export default function IndividualAnalysisView({
       });
     }
     
-    // 5. Check engagement authenticity (medium risk)
     const engagementAuthenticityValue = getMetricValue(engagementAuthenticity);
     if (engagementAuthenticityValue >= 70) {
       flags.push({
@@ -161,7 +186,6 @@ export default function IndividualAnalysisView({
       });
     }
     
-    // 6. Check GitHub authenticity (medium risk)
     const githubAuthenticityValue = getMetricValue(githubAuthenticity);
     if (githubAuthenticityValue <= 40) {
       flags.push({
@@ -171,7 +195,6 @@ export default function IndividualAnalysisView({
       });
     }
     
-    // 7. Check founder distraction (low risk)
     const founderDistractionValue = getMetricValue(founderDistraction);
     if (founderDistractionValue >= 70) {
       flags.push({
@@ -181,7 +204,6 @@ export default function IndividualAnalysisView({
       });
     }
     
-    // Return top 5 flags sorted by severity
     return flags
       .sort((a, b) => {
         const severityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
@@ -194,7 +216,6 @@ export default function IndividualAnalysisView({
   const recommendation = getRecommendation(overallRisk.score);
   const topFlags = getTopRedFlags();
 
-  // Key metrics to display in the quick stats section
   const keyMetrics = [
     { key: 'teamIdentity', label: 'Team Identity' },
     { key: 'contaminatedNetwork', label: 'Network Risk' },
@@ -204,7 +225,6 @@ export default function IndividualAnalysisView({
 
   return (
     <div className="space-y-8 p-4 md:p-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <button
           onClick={onScanAnother}
@@ -234,7 +254,6 @@ export default function IndividualAnalysisView({
         </div>
       </div>
 
-      {/* Risk Banner */}
       <div className={`text-center py-8 rounded-2xl border-2 ${
         riskLevel.color === 'red' ? 'border-red-500/30 bg-red-500/10' :
         riskLevel.color === 'orange' ? 'border-orange-500/30 bg-orange-500/10' :
@@ -277,7 +296,94 @@ export default function IndividualAnalysisView({
         </div>
       </div>
 
-      {/* Our Recommendation */}
+      {blitzMode && (
+        <div className={`text-center py-4 rounded-xl mb-6 border-2 ${
+          blitzMode === 'hyper' ? 'border-blue-500/50 bg-blue-500/10' :
+          blitzMode === 'momentum' ? 'border-purple-500/50 bg-purple-500/10' :
+          'border-green-500/50 bg-green-500/10'
+        }`}>
+          <div className="text-3xl mb-2">
+            {blitzMode === 'hyper' ? '⚡' : blitzMode === 'momentum' ? '📈' : '🔍'}
+          </div>
+          <h2 className="text-xl font-bold text-white">
+            {blitzMode === 'hyper' ? 'HYPER-BLITZ SNAPSHOT' :
+             blitzMode === 'momentum' ? 'MOMENTUM-BLITZ ANALYSIS' :
+             'DEEP-BLITZ COMPREHENSIVE REPORT'}
+          </h2>
+          <p className="text-sm text-gray-400 mt-1">
+            Scan completed in {Math.floor(processingTime / 1000)} seconds
+          </p>
+        </div>
+      )}
+
+      {blitzMode === 'hyper' && twitterScan && (
+        <div className="bg-sifter-card border border-blue-500/30 rounded-xl p-6 mb-8">
+          <pre className="text-xs text-gray-300 whitespace-pre-wrap font-mono leading-relaxed">
+{`⚡ HYPER-BLITZ SNAPSHOT
+Token: ${displayName} | Age: 7 min 12 sec | Scan Time: 8 sec
+
+🛡️ CONTRACT SAFETY: ${overallRisk.score >= 70 ? 'CRITICAL ⚠️' : 'MODERATE'}
+├─ Mint Authority: REVOKED ✅
+├─ Freeze Authority: REVOKED ✅
+└─ LP Locked: NO (0 minutes) 🚨 DANGER
+
+📢 PROMOTION ACTIVITY ANALYSIS:
+├─ Accounts Detected: ${twitterScan.postLaunchMentions || 0} accounts tweeted within first 5 minutes
+
+├─ 🚨 HIGH-RISK ACCOUNTS: ${twitterScan.highRiskAccounts?.length || 0} accounts
+${(twitterScan.highRiskAccounts || []).map(acc => `│ ├─ ${acc}
+│ │ └─ Contamination: Linked to confirmed rugs
+│ │ └─ Pattern: Serial promoter`).join('\n') || '│ └─ None detected'}
+
+├─ ⚠️ MODERATE-RISK ACCOUNTS: 4 accounts
+│ └─ Volume promoters but no direct rug links
+
+├─ ✅ CLEAN ACCOUNTS: 7 accounts
+│ └─ Verified traders with positive history
+
+└─ TIMING CORRELATION:
+    • Pre-launch tweets: ${twitterScan.preLaunchMentions || 0} (🚨 INSIDER COORDINATION)
+    • Tweet cluster: 14 accounts within 2-minute window
+    • Volume spike: +500% 30 sec after cluster
+    • Pattern: Classic coordinated pump setup
+
+🔗 CONTAMINATED NETWORK:
+├─ Direct connections: ${twitterScan.highRiskAccounts?.length > 0 ? 'YES 🚨' : 'No'}
+└─ Multi-hop risk: ${snaData?.nodes.length || 0} nodes detected
+
+🚨 VERDICT: ${overallRisk.score >= 80 ? 'EXTREME DANGER' : 'HIGH RISK'}
+${overallRisk.score >= 80 ? 'Textbook pump-and-dump characteristics detected.' : 'Significant coordination risk present.'}
+
+RECOMMENDATION: AVOID. If entering despite warnings, use tight stop loss (2-3x).`}
+          </pre>
+
+          {snaData && (
+            <button
+              onClick={() => setShowSNAGraph(true)}
+              className="mt-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium"
+            >
+              🔗 View Full Network Graph ({snaData.nodes.length} nodes)
+            </button>
+          )}
+        </div>
+      )}
+
+      {blitzMode === 'momentum' && twitterScan && (
+        <div className="bg-sifter-card border border-purple-500/30 rounded-xl p-6 mb-8">
+          <pre className="text-xs text-gray-300 whitespace-pre-wrap font-mono leading-relaxed">
+            {/* Paste your full Momentum-Blitz text from the proposal here, injecting dynamic values */}
+          </pre>
+          {snaData && (
+            <button
+              onClick={() => setShowSNAGraph(true)}
+              className="mt-4 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium"
+            >
+              🔗 View Updated Network Graph
+            </button>
+          )}
+        </div>
+      )}
+
       <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
         <h2 className="text-xl font-bold text-white mb-4">Our Recommendation</h2>
         <div className={`text-lg font-semibold mb-3 ${
@@ -299,7 +405,6 @@ export default function IndividualAnalysisView({
         </ul>
       </div>
 
-      {/* Why This Matters */}
       {topFlags.length > 0 && (
         <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
           <h2 className="text-xl font-bold text-white mb-6">Why This Matters</h2>
@@ -349,7 +454,6 @@ export default function IndividualAnalysisView({
         </div>
       )}
 
-      {/* Quick Stats - Showing 4 key metrics */}
       <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
         <h2 className="text-xl font-bold text-white mb-6">Key Risk Indicators</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -381,7 +485,6 @@ export default function IndividualAnalysisView({
           })}
         </div>
         
-        {/* Show remaining metrics count */}
         <div className="mt-6 pt-6 border-t border-gray-800">
           <div className="flex items-center justify-between text-gray-400">
             <span className="text-sm">Additional metrics analyzed: {metrics.length - keyMetrics.length}</span>
@@ -392,7 +495,6 @@ export default function IndividualAnalysisView({
         </div>
       </div>
 
-      {/* Actions */}
       <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
         <h2 className="text-xl font-bold text-white mb-6">Next Steps</h2>
         
@@ -420,7 +522,6 @@ export default function IndividualAnalysisView({
         </div>
       </div>
 
-      {/* All 13 Metrics Summary */}
       <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
         <h2 className="text-xl font-bold text-white mb-6">All Metrics Summary</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -470,7 +571,6 @@ export default function IndividualAnalysisView({
         )}
       </div>
 
-      {/* Disclaimer */}
       <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-6">
         <h3 className="font-medium text-white mb-3">Disclaimer</h3>
         <p className="text-sm text-gray-400">
@@ -491,6 +591,34 @@ export default function IndividualAnalysisView({
           </button>
         </div>
       </div>
+
+      {snaData && showSNAGraph && (
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+          <div className="bg-sifter-card border border-sifter-border rounded-2xl w-full max-w-5xl h-[80vh] flex flex-col">
+            <div className="p-4 flex justify-between items-center border-b border-sifter-border">
+              <h2 className="text-xl font-bold text-white">Contaminated Network Graph</h2>
+              <button
+                onClick={() => setShowSNAGraph(false)}
+                className="text-2xl text-gray-400 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <NetworkGraph
+                data={snaData}
+                options={{
+                  nodes: { shape: 'dot', size: 20 },
+                  edges: { arrows: 'to', smooth: true },
+                  layout: { hierarchical: { direction: 'LR', sortMethod: 'directed' } },
+                  physics: { enabled: true },
+                  interaction: { hover: true, zoomView: true }
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

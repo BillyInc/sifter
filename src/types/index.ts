@@ -14,6 +14,10 @@ export type EvidenceType = 'twitter_post' | 'reddit_thread' | 'blockchain_transa
 export type EvidenceStatus = 'pending' | 'verified' | 'disputed' | 'invalid';
 export type SeverityLevel = 'low' | 'medium' | 'high' | 'critical';
 export type ContributorTier = 'tier-1' | 'tier-2' | 'tier-3';
+export type TwitterScan = TwitterScanResult; // Add this alias
+export type { UserTier, Reward, RewardType } from './dataDonation';
+// Add these data donation types
+
 
 // src/types/index.ts - UPDATED SubmissionFormData
 export interface SubmissionFormData {
@@ -280,6 +284,9 @@ export interface ProjectData {
   analyzedAt?: string;
   flags?: any[];
   recommendations?: any[];
+  blitzMode?: BlitzMode;
+  twitterScan?: TwitterScanResult;
+  snaData?: SNAData;
 }
 
 // ============= BATCH PROCESSING TYPES =============
@@ -644,4 +651,37 @@ export type InputType = 'twitter' | 'discord' | 'telegram' | 'github' | 'website
 // ============= UTILITY TYPES =============
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export type { CompatibleSubmissionFormData } from './dataDonation';
+
+// ============= BLITZ MODE TYPES =============
+export type BlitzMode = 'hyper' | 'momentum' | 'deep';
+
+export interface TwitterScanResult {
+  preLaunchMentions: number;
+  postLaunchMentions: number;
+  highRiskAccounts: string[];
+  coordinationScore: number;
+  evidence: string[];
+  preLaunchInsiderFlag: boolean;
+}
+
+export interface SNANode {
+  id: string;
+  label: string;
+  group: 'deployer' | 'promoter' | 'rugger' | 'financial' | 'clean';
+  level: number; // hop distance
+  riskScore?: number;
+}
+
+export interface SNAEdge {
+  from: string;
+  to: string;
+  label: string;
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  dashes?: boolean;
+}
+
+export interface SNAData {
+  nodes: SNANode[];
+  edges: SNAEdge[];
+}
 
