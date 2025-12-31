@@ -1,29 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-
-// Add these imports at the top:
-import { PointsDisplay } from '@/components/data-donation/gamification';
-import { RewardsShop } from '@/components/data-donation/gamification';
-
-import { DisputeForm, EvidenceUpload } from '@/components/data-donation/universal';
-import { generateDetailedMetricEvidence } from '@/utils/metricHelpers';
-
-// Import the actual types from the central types file
-import {
-  UserGamificationProfile,
-  Reward,
-  RewardType,
-  UserMode,
-  UserTier,
-  Badge,
-  Achievement,
-
-  EvidenceType,
-  EvidenceStatus,
-  EntityEntry
-} from '@/types/dataDonation';
-
 import SmartInputParser from './SmartInputParser';
 import MetricBreakdown from './MetricBreakdown';
 import {
@@ -33,12 +10,12 @@ import {
   ProjectData,
   MetricData,
   VerdictType,
-  EvidenceItem,
 } from '@/types';
 import { generateMockProjectData } from '@/data/mockData';
 import { ExportService } from '@/services/exportService';
-import { BatchFlagButton } from '@/components/data-donation/ea-vc'; // Import from correct path
-import BulkFlaggingModal from '@/components/data-donation/ea-vc/BulkFlaggingOption'; // Correct component name
+import { BatchFlagButton } from '@/components/data-donation/ea-vc';
+import BulkFlaggingModal from '@/components/data-donation/ea-vc/BulkFlaggingOption';
+import { generateDetailedMetricEvidence } from '@/utils/metricHelpers';
 
 // ADD THIS WRAPPER COMPONENT HERE
 const BatchFlagButtonWrapper: React.FC<{
@@ -98,8 +75,6 @@ interface EABatchDashboardProps {
 }
 
 // Helper function to create a metric data object WITH FIXED SCORE PROPERTY
-
-// Helper function to create a metric data object WITH FIXED SCORE PROPERTY
 const createMetricData = (key: string, name: string, score: number): MetricData => {
   const normalizedScore = Math.min(Math.max(score, 0), 100);
   const detailedEvidence = generateDetailedMetricEvidence(key, normalizedScore, {});
@@ -110,18 +85,17 @@ const createMetricData = (key: string, name: string, score: number): MetricData 
     name,
     value: normalizedScore,
     weight: 10,
-    contribution: normalizedScore * 0.1, // Changed from just normalizedScore
+    contribution: normalizedScore * 0.1,
     status: score < 30 ? 'low' : score < 50 ? 'moderate' : score < 70 ? 'high' : 'critical',
     confidence: Math.floor(Math.random() * 30) + 70,
     flags: [],
-    evidence: [detailedEvidence],  // ✅ Now has detailed evidence!
-    score: normalizedScore, // Explicitly set the score property
-    scoreValue: normalizedScore // Add this too for compatibility
+    evidence: [detailedEvidence],
+    score: normalizedScore,
+    scoreValue: normalizedScore
   };
 };
 
-
-// Fixed: Simple function to ensure metrics have score property (what you asked for)
+// Fixed: Simple function to ensure metrics have score property
 const ensureMetricsHaveScore = (metricsArray: MetricData[]): MetricData[] => {
   return metricsArray.map(metric => ({
     ...metric,
@@ -129,7 +103,6 @@ const ensureMetricsHaveScore = (metricsArray: MetricData[]): MetricData[] => {
   }));
 };
 
-// Create metrics array with all 13 metrics
 // Create metrics array with all 13 metrics - RANDOMIZED SCORES
 const createMetricsArray = (): MetricData[] => {
   const metrics: MetricData[] = [];
@@ -154,7 +127,7 @@ const createMetricsArray = (): MetricData[] => {
 // Helper function to convert BatchProject to ProjectData
 const convertBatchToProjectData = (batchProject: BatchProject): ProjectData => {
   const metricsArray = createMetricsArray();
-  const metricsWithScore = ensureMetricsHaveScore(metricsArray); // Fix: Ensure score property exists
+  const metricsWithScore = ensureMetricsHaveScore(metricsArray);
 
   const compositeScore = Math.round(
     metricsWithScore.reduce((sum, m) => sum + (m.score || 0), 0) / metricsWithScore.length
@@ -190,7 +163,7 @@ const convertBatchToProjectData = (batchProject: BatchProject): ProjectData => {
         input: batchProject.input || 'batch_input'
       }
     ],
-    metrics: metricsWithScore, // Use the fixed metrics array
+    metrics: metricsWithScore,
     overallRisk: {
       score: batchProject.riskScore || compositeScore,
       verdict: getVerdict(),
@@ -290,7 +263,7 @@ const BatchUpload = ({
 const BatchSummaryComponent = ({
   job,
   batchStats,
-  onOpenBulkFlagging  // ✅ ADD THI
+  onOpenBulkFlagging
 }: {
   job: BatchProcessingJob;
   batchStats: {
@@ -298,10 +271,8 @@ const BatchSummaryComponent = ({
     averageProcessingTime: number;
     rejectionRate: number;
     lastBatchDate: Date;
-
-
   };
-  onOpenBulkFlagging?: () => void;  // ✅ ADD THIS
+  onOpenBulkFlagging?: () => void;
 }) => {
   const averageRiskScore = job.summary?.averageRiskScore || 0;
   const totalProjects = job.summary?.total || job.projects?.length || 0;
@@ -399,7 +370,6 @@ const BatchSummaryComponent = ({
           </div>
         </div>
       )}
-
     </div>
   );
 };
@@ -617,150 +587,12 @@ export default function EABatchDashboard({
     projects: string[];
     confidence: number;
   }>>([]);
-  // ✅ ADD THIS LINE HERE (around line 560)
-  const [showDisputeForm, setShowDisputeForm] = useState(false);
 
-  // User profile state for data donation components - USING CORRECT TYPE
-  const [userProfile] = useState<UserGamificationProfile>({
-    userId: 'user_123',
-    name: userEmail.split('@')[0],
-    email: userEmail,
-    mode: 'ea-vc' as UserMode,
-    totalPoints: 1500,
-    lifetimePoints: 2500,
-    availablePoints: 1250,
-    currentLevel: 3,
-    currentTier: 'vc-elite' as UserTier,
-    badges: [
-      {
-        id: 'badge_1',
-        name: 'Early Contributor',
-        description: 'Submitted first batch analysis',
-        icon: '🏆',
-        earnedAt: new Date().toISOString(),
-        rarity: 'rare',
-        category: 'submission',
-        pointsReward: 100
-      },
-      {
-        id: 'badge_2',
-        name: 'Batch Master',
-        description: 'Processed 10+ batch analyses',
-        icon: '⚡',
-        earnedAt: new Date().toISOString(),
-        rarity: 'epic',
-        category: 'consistency',
-        pointsReward: 250
-      }
-    ],
-    achievements: [
-      {
-        id: 'ach_1',
-        name: 'VC Analyst',
-        description: 'Complete 50 project analyses',
-        progress: 35,
-        target: 50,
-        completed: false,
-        pointsReward: 500
-      },
-      {
-        id: 'ach_2',
-        name: 'Data Donor',
-        description: 'Submit 20 evidence items',
-        progress: 12,
-        target: 20,
-        completed: false,
-        pointsReward: 300
-      }
-    ],
-    streak: {
-      currentStreak: 7,
-      longestStreak: 14,
-      lastActivity: new Date().toISOString(),
-      streakBonus: 1.5
-    },
-    leaderboardPosition: 42,
-    nextMilestone: {
-      pointsNeeded: 500,
-      reward: 'Advanced Analytics Access',
-      unlocks: ['Bulk submission tools', 'Team dashboard', 'Advanced analytics', 'Dedicated support']
-    },
-    displayName: userEmail.split('@')[0],
-    pointsMultiplier: 2.0
-  });
-
-  // Rewards data for RewardsShop component - USING CORRECT TYPE
-  const [rewards] = useState<Reward[]>([
-    {
-      id: 'reward_1',
-      name: 'Early Access Feature',
-      description: 'Get 1-week early access to new analysis features',
-      type: 'access' as RewardType,
-      category: 'vc',
-      pointsCost: 500,
-      quantityAvailable: 50,
-      quantityRemaining: 25,
-      tierRequirement: 'silver' as UserTier,
-      modeRequirement: 'ea-vc' as UserMode,
-      features: ['Early access', 'Beta testing'],
-      redemptionInstructions: 'Feature will be unlocked in your account settings after redemption.',
-      createdAt: new Date('2024-01-15').toISOString()
-    },
-    {
-      id: 'reward_2',
-      name: 'Priority Support',
-      description: 'Get priority in customer support queue',
-      type: 'access' as RewardType,
-      category: 'vc',
-      pointsCost: 300,
-      quantityAvailable: 100,
-      quantityRemaining: 75,
-      tierRequirement: 'bronze' as UserTier,
-      redemptionInstructions: 'Priority support activated automatically for 30 days.',
-      createdAt: new Date('2024-01-20').toISOString()
-    },
-    {
-      id: 'reward_3',
-      name: 'Custom Report Template',
-      description: 'Get a custom report template for your VC firm',
-      type: 'feature' as RewardType,
-      category: 'vc',
-      pointsCost: 1000,
-      quantityAvailable: 10,
-      quantityRemaining: 8,
-      tierRequirement: 'gold' as UserTier,
-      modeRequirement: 'ea-vc' as UserMode,
-      features: ['Custom branding', 'VC-specific metrics'],
-      redemptionInstructions: 'Our team will contact you within 48 hours to discuss template requirements.',
-      createdAt: new Date('2024-02-01').toISOString()
-    },
-    {
-      id: 'reward_4',
-      name: 'API Credit Boost',
-      description: 'Get 1000 extra API credits for batch processing',
-      type: 'feature' as RewardType,
-      category: 'vc',
-      pointsCost: 750,
-      quantityAvailable: 25,
-      quantityRemaining: 15,
-      tierRequirement: 'silver' as UserTier,
-      redemptionInstructions: 'Credits will be added to your account balance immediately.',
-      createdAt: new Date('2024-02-10').toISOString()
-    },
-    {
-      id: 'reward_5',
-      name: 'Verified Analyst Badge',
-      description: 'Display a verified badge on your profile',
-      type: 'recognition' as RewardType,
-      category: 'all',
-      pointsCost: 1500,
-      quantityAvailable: 100,
-      quantityRemaining: 45,
-      tierRequirement: 'platinum' as UserTier,
-      redemptionInstructions: 'Badge will appear on your profile within 24 hours.',
-      createdAt: new Date('2024-02-15').toISOString()
-    }
-  ]);
+  // Single analysis state - MOVED TO TOP LEVEL
+  const [inputValue, setInputValue] = useState('');
+  const [showBlitzSelector, setShowBlitzSelector] = useState(false);
+  const [selectedBlitzMode, setSelectedBlitzMode] = useState<'hyper' | 'momentum' | 'deep'>('deep');
+  const [isMemecoin, setIsMemecoin] = useState(false);
 
   const generateMockBatchProjects = (): ExtendedBatchProject[] => {
     const suspiciousEntities = [
@@ -805,6 +637,7 @@ export default function EABatchDashboard({
       };
     });
   };
+  
   // NEW: Function to detect suspicious entities from batch results
   const analyzeBatchForEntities = (projects: ExtendedBatchProject[]) => {
     const entities: Record<string, {
@@ -872,7 +705,6 @@ export default function EABatchDashboard({
       const entities = analyzeBatchForEntities(mockProjects);
       setSuspiciousEntities(entities);
 
-
       if (onBatchUploadComplete) {
         onBatchUploadComplete(completedJob);
       }
@@ -889,7 +721,6 @@ export default function EABatchDashboard({
     if (onStandardForm) {
       onStandardForm(entityData);
     }
-    // This would typically open the universal SubmissionForm with pre-filled data
     alert(`Flagged entity: ${entityData.entityName} from project: ${entityData.projectName}`);
   };
 
@@ -1036,12 +867,13 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
     }
   };
 
-  // Handle partner packet export
+  // Handle partner packet export - FIXED VERSION
   const handleExportPartnerPacket = () => {
     if (batchJob && batchJob.projects && batchJob.summary) {
       if (onExportPartnerPacket) {
         onExportPartnerPacket(batchJob.summary, batchJob.projects);
       } else {
+        // ✅ Create properly typed packet
         const packet = {
           summary: {
             total: batchJob.summary.total,
@@ -1056,7 +888,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
           projects: batchJob.projects.map(p => ({
             name: p.name,
             riskScore: p.riskScore || 0,
-            verdict: p.verdict || 'unknown',
+            verdict: (p.verdict || 'unknown') as VerdictType | 'unknown', // ✅ Explicit type assertion
             redFlags: p.redFlags || [],
             processingTime: p.processingTime || 0,
             scannedAt: p.scannedAt || new Date()
@@ -1075,44 +907,86 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
     ExportService.exportProjectAnalysis(projectDataForExport);
   };
 
+  // Helper function for single analysis
+  const performSingleAnalysis = (projectName: string, mode: 'hyper' | 'momentum' | 'deep') => {
+    setProcessing(true);
 
+    setTimeout(() => {
+      const allMetrics = createMetricsArray();
+      let filteredMetrics = allMetrics;
 
-  // Handle reward redemption
-  const handleRedeemReward = async (rewardId: string): Promise<boolean> => {
-    console.log(`Redeeming reward: ${rewardId}`);
-    // In a real app, this would be an API call
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        alert(`Successfully redeemed reward! Points deducted.`);
-        resolve(true);
-      }, 1000);
-    });
+      if (mode === 'hyper') {
+        filteredMetrics = allMetrics.filter(m =>
+          ['contaminatedNetwork', 'tokenomics', 'teamIdentity', 'githubAuthenticity'].includes(m.key)
+        );
+      } else if (mode === 'momentum') {
+        filteredMetrics = allMetrics.filter(m =>
+          ['artificialHype', 'engagementAuthenticity', 'mercenaryKeywords', 'tweetFocus'].includes(m.key)
+        );
+      }
+
+      const compositeScore = Math.round(filteredMetrics.reduce((sum, m) => sum + m.contribution, 0));
+
+      const mockProjectData: ProjectData = {
+        id: `proj_${Date.now()}`,
+        displayName: projectName,
+        canonicalName: projectName.toLowerCase().replace(/\s+/g, '-'),
+        overallRisk: {
+          score: compositeScore,
+          verdict: compositeScore >= 60 ? 'reject' : compositeScore >= 30 ? 'flag' : 'pass',
+          tier: compositeScore < 25 ? 'LOW' : compositeScore < 50 ? 'MODERATE' : compositeScore < 75 ? 'ELEVATED' : 'HIGH',
+          confidence: 85
+        },
+        metrics: filteredMetrics,
+        sources: [{ type: 'manual', url: '' }],
+        scannedAt: new Date(),
+        processingTime: mode === 'hyper' ? 8000 : mode === 'momentum' ? 52000 : 227000,
+      };
+
+      setProjectData(mockProjectData);
+      setDetailedMetrics(filteredMetrics);
+      setSelectedProject({
+        id: `project_${Date.now()}`,
+        name: projectName,
+        input: projectName,
+        status: 'complete',
+        riskScore: compositeScore,
+        verdict: compositeScore >= 60 ? 'reject' : compositeScore >= 30 ? 'flag' : 'pass',
+        redFlags: compositeScore > 80 ? ['Known rug agency'] :
+          compositeScore > 60 ? ['Anonymous team'] :
+            compositeScore > 40 ? ['Mixed signals'] : [],
+        processingTime: mockProjectData.processingTime,
+        scannedAt: new Date(),
+        weight: Math.random(),
+        confidence: 85,
+        flaggedEntity: undefined
+      });
+
+      setProcessing(false);
+      setShowSingleAnalysis(true);
+    }, 2000);
   };
 
-  // Handle evidence submission
-  const handleEvidenceSubmit = async (evidenceData: Omit<EvidenceItem, 'id' | 'submittedAt'>[]): Promise<void> => {
-    console.log('Evidence submitted:', evidenceData);
-    // In a real app, this would be an API call
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        alert('Evidence submitted successfully!');
-        resolve();
-      }, 1000);
-    });
-  };
+  // Handle smart input for single analysis
+  const handleSmartInputResolveSingle = (result: SmartInputResult) => {
+    if (!result.selectedEntity) return;
 
-  // Handle dispute submission
-  const handleDisputeSubmit = async (disputeData: any[]): Promise<void> => {
-    console.log('Dispute submitted:', disputeData);
-    // In a real app, this would be an API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        alert('Dispute submitted successfully!');
-        resolve();
-      }, 1000);
-    });
-  };
+    setInputValue(result.input);
 
+    const tokenAgeMinutes = Math.floor(Math.random() * 60);
+    const hasVolumeSpike = Math.random() > 0.6;
+    const detectedAsMemecoin = tokenAgeMinutes < 20 || hasVolumeSpike;
+
+    setIsMemecoin(detectedAsMemecoin);
+
+    if (detectedAsMemecoin) {
+      setSelectedBlitzMode('hyper');
+      setShowBlitzSelector(true);
+    } else {
+      setSelectedBlitzMode('deep');
+      performSingleAnalysis(result.selectedEntity.displayName, 'deep');
+    }
+  };
 
   if (showSingleAnalysis && selectedProject && projectData) {
     const riskScore = selectedProject.riskScore || 0;
@@ -1125,10 +999,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
               setShowSingleAnalysis(false);
               setSelectedProject(null);
               setProjectData(null);
-              setDetailedMetrics([]); // ✅ Clear metrics too
-
-
-
+              setDetailedMetrics([]);
             }}
             className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
           >
@@ -1141,7 +1012,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
         </div>
 
         <MetricBreakdown
-          instanceId="batch-analysis" // ✅ ADD UNIQUE ID ADD THIS
+          instanceId="batch-analysis"
           metrics={detailedMetrics}
           projectName={selectedProject.name}
           riskScore={riskScore}
@@ -1178,6 +1049,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
         <BatchSummaryComponent
           job={batchJob}
           batchStats={batchStats}
+          onOpenBulkFlagging={() => setShowBulkFlagging(true)}
         />
 
         {/* Partner Packet Export Button */}
@@ -1202,9 +1074,8 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
               // Set the states
               setSelectedProject(enrichedProject);
               setProjectData(fullProjectData);
-              setDetailedMetrics(fullProjectData.metrics); // ✅ This is the key!
+              setDetailedMetrics(fullProjectData.metrics);
               setShowSingleAnalysis(true);
-
 
               if (onViewProjectDetails) {
                 onViewProjectDetails(project);
@@ -1247,11 +1118,8 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
             <div className="text-sm text-gray-400">Analyst</div>
             <div className="font-medium text-white">{userEmail}</div>
           </div>
-
         </div>
       </div>
-
-
 
       {/* Tabs */}
       <div className="flex border-b border-sifter-border">
@@ -1416,150 +1284,76 @@ https://projectx.com`}
 
             <div className="max-w-4xl mx-auto">
               <SmartInputParser
-                onResolve={handleSmartInputResolve}
+                onResolve={handleSmartInputResolveSingle}
                 placeholder="Enter project name, Twitter handle, Discord invite, GitHub repo, or website URL..."
                 compact={false}
               />
             </div>
           </div>
 
+          {/* Blitz Selector */}
+          {showBlitzSelector && (
+            <div className="bg-sifter-card border border-blue-500/30 rounded-xl p-6 animate-fadeIn">
+              <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
+                <span className="text-3xl">⚡</span>
+                Memecoin Detected — Choose Your Scan Speed
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button
+                  onClick={() => performSingleAnalysis(inputValue, 'hyper')}
+                  className={`p-6 rounded-lg border-2 transition-all ${selectedBlitzMode === 'hyper'
+                      ? 'border-blue-500 bg-blue-500/10'
+                      : 'border-sifter-border hover:border-blue-500/50'
+                    }`}
+                >
+                  <div className="text-5xl mb-3">⚡</div>
+                  <h4 className="font-bold text-white text-lg">Hyper-Blitz</h4>
+                  <p className="text-sm text-gray-400 mt-2">5–10 seconds • New launches</p>
+                </button>
+
+                <button
+                  onClick={() => performSingleAnalysis(inputValue, 'momentum')}
+                  className={`p-6 rounded-lg border-2 transition-all ${selectedBlitzMode === 'momentum'
+                      ? 'border-purple-500 bg-purple-500/10'
+                      : 'border-sifter-border hover:border-purple-500/50'
+                    }`}
+                >
+                  <div className="text-5xl mb-3">📈</div>
+                  <h4 className="font-bold text-white text-lg">Momentum-Blitz</h4>
+                  <p className="text-sm text-gray-400 mt-2">30–90 seconds • Active tokens</p>
+                </button>
+
+                <button
+                  onClick={() => performSingleAnalysis(inputValue, 'deep')}
+                  className={`p-6 rounded-lg border-2 transition-all ${selectedBlitzMode === 'deep'
+                      ? 'border-green-500 bg-green-500/10'
+                      : 'border-sifter-border hover:border-green-500/50'
+                    }`}
+                >
+                  <div className="text-5xl mb-3">🔍</div>
+                  <h4 className="font-bold text-white text-lg">Deep-Blitz</h4>
+                  <p className="text-sm text-gray-400 mt-2">2–5 minutes • Full analysis</p>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Quick Examples */}
           <div className="text-center">
             <p className="text-gray-600 text-sm mb-3">Quick demo:</p>
             <div className="flex justify-center gap-3">
               <button
-                onClick={() => {
-                  // Force HIGH RISK scores for REJECT example
-                  const rejectMetrics = [
-                    { key: 'teamIdentity', name: 'Team Identity', score: 85 },
-                    { key: 'teamCompetence', name: 'Team Competence', score: 75 },
-                    { key: 'contaminatedNetwork', name: 'Contaminated Network', score: 92 },
-                    { key: 'mercenaryKeywords', name: 'Mercenary Keywords', score: 88 },
-                    { key: 'messageTimeEntropy', name: 'Message Time Entropy', score: 78 },
-                    { key: 'accountAgeEntropy', name: 'Account Age Entropy', score: 90 },
-                    { key: 'tweetFocus', name: 'Tweet Focus', score: 72 },
-                    { key: 'githubAuthenticity', name: 'GitHub Authenticity', score: 85 },
-                    { key: 'busFactor', name: 'Bus Factor', score: 80 },
-                    { key: 'artificialHype', name: 'Artificial Hype', score: 95 },
-                    { key: 'founderDistraction', name: 'Founder Distraction', score: 82 },
-                    { key: 'engagementAuthenticity', name: 'Engagement Authenticity', score: 88 },
-                    { key: 'tokenomics', name: 'Tokenomics', score: 79 }
-                  ].map(m => createMetricData(m.key, m.name, m.score));
-
-                  const metricsWithScore = ensureMetricsHaveScore(rejectMetrics);
-                  setDetailedMetrics(metricsWithScore);
-
-                  const compositeScore = Math.round(
-                    metricsWithScore.reduce((sum, m) => sum + (m.score || 0), 0) / metricsWithScore.length
-                  );
-
-                  const mockProjectData: ProjectData = {
-                    id: 'mock_reject',
-                    canonicalName: 'moonrocket_fi',
-                    displayName: 'MoonRocket Finance',
-                    description: `High-risk project analysis`,
-                    platform: 'twitter',
-                    sources: [{ type: 'twitter', url: 'https://twitter.com/moonrocket_fi', input: '@moonrocket_fi' }],
-                    metrics: metricsWithScore,
-                    overallRisk: {
-                      score: compositeScore,
-                      verdict: 'reject',
-                      tier: 'CRITICAL',
-                      confidence: 85,
-                      breakdown: [`High risk detected: ${compositeScore}/100`]
-                    },
-                    scannedAt: new Date(),
-                    processingTime: 45000,
-                  };
-
-                  setProjectData(mockProjectData);
-                  setSelectedProject({
-                    id: 'mock_reject',
-                    name: 'MoonRocket Finance',
-                    input: '@moonrocket_fi',
-                    status: 'complete',
-                    riskScore: compositeScore,
-                    verdict: 'reject',
-                    redFlags: ['Known rug agency', 'Anonymous team'],
-                    processingTime: 45000,
-                    scannedAt: new Date(),
-                    weight: Math.random(),
-                    confidence: 85,
-                    flaggedEntity: undefined
-                  });
-                  setShowSingleAnalysis(true);
-                }}
+                onClick={() => performSingleAnalysis('MoonRocket Finance', 'deep')}
                 className="text-sm text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-colors"
               >
                 View REJECT example (High Risk 70+)
               </button>
               <button
-                onClick={() => {
-                  // Force LOW RISK scores for PASS example
-                  const passMetrics = [
-                    { key: 'teamIdentity', name: 'Team Identity', score: 15 },
-                    { key: 'teamCompetence', name: 'Team Competence', score: 20 },
-                    { key: 'contaminatedNetwork', name: 'Contaminated Network', score: 10 },
-                    { key: 'mercenaryKeywords', name: 'Mercenary Keywords', score: 18 },
-                    { key: 'messageTimeEntropy', name: 'Message Time Entropy', score: 12 },
-                    { key: 'accountAgeEntropy', name: 'Account Age Entropy', score: 8 },
-                    { key: 'tweetFocus', name: 'Tweet Focus', score: 22 },
-                    { key: 'githubAuthenticity', name: 'GitHub Authenticity', score: 14 },
-                    { key: 'busFactor', name: 'Bus Factor', score: 25 },
-                    { key: 'artificialHype', name: 'Artificial Hype', score: 16 },
-                    { key: 'founderDistraction', name: 'Founder Distraction', score: 19 },
-                    { key: 'engagementAuthenticity', name: 'Engagement Authenticity', score: 11 },
-                    { key: 'tokenomics', name: 'Tokenomics', score: 23 }
-                  ].map(m => createMetricData(m.key, m.name, m.score));
-
-                  const metricsWithScore = ensureMetricsHaveScore(passMetrics);
-                  setDetailedMetrics(metricsWithScore);
-
-                  const compositeScore = Math.round(
-                    metricsWithScore.reduce((sum, m) => sum + (m.score || 0), 0) / metricsWithScore.length
-                  );
-
-                  const mockProjectData: ProjectData = {
-                    id: 'mock_pass',
-                    canonicalName: 'aave',
-                    displayName: 'Aave Protocol',
-                    description: `Low-risk project analysis`,
-                    platform: 'website',
-                    sources: [{ type: 'website', url: 'https://aave.com', input: 'aave' }],
-                    metrics: metricsWithScore,
-                    overallRisk: {
-                      score: compositeScore,
-                      verdict: 'pass',
-                      tier: 'LOW',
-                      confidence: 90,
-                      breakdown: [`Low risk: ${compositeScore}/100`]
-                    },
-                    scannedAt: new Date(),
-                    processingTime: 45000,
-                  };
-
-                  setProjectData(mockProjectData);
-                  setSelectedProject({
-                    id: 'mock_pass',
-                    name: 'Aave Protocol',
-                    input: 'aave',
-                    status: 'complete',
-                    riskScore: compositeScore,
-                    verdict: 'pass',
-                    redFlags: [],
-                    processingTime: 45000,
-                    scannedAt: new Date(),
-                    weight: Math.random(),
-                    confidence: 90,
-                    flaggedEntity: undefined
-                  });
-                  setShowSingleAnalysis(true);
-                }}
+                onClick={() => performSingleAnalysis('Aave Protocol', 'deep')}
                 className="text-sm text-green-400 hover:text-green-300 bg-green-500/10 hover:bg-green-500/20 px-4 py-2 rounded-lg transition-colors"
               >
                 View PASS example (Low Risk {'<'}30)
               </button>
-
             </div>
           </div>
         </div>
@@ -1585,44 +1379,6 @@ https://projectx.com`}
           </div>
         </div>
       )}
-
-      {/* Data Donation & Rewards Section - ADDED HERE AT THE END */}
-      <div className="mt-12 mb-8">
-        <h2 className="text-xl font-bold text-white mb-6">Data Donation & Rewards</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <PointsDisplay userProfile={userProfile} />
-          <RewardsShop
-            userProfile={userProfile}
-            rewards={rewards}
-            onRedeem={handleRedeemReward}
-          />
-          <EvidenceUpload
-            submissionId="sub_new"
-            existingEvidence={[]}
-            mode="ea-vc"
-            onUpload={handleEvidenceSubmit}
-            onCancel={() => console.log('Cancelled')}
-          />
-          <DisputeForm
-            entityData={[
-              suspiciousEntities[0]?.name || 'Unknown',
-              'sub_def',
-              'case_def',
-              'project',
-              userEmail
-            ]}
-            userData={[
-              userEmail.split('@')[0],
-              userEmail,
-              'Analyst',
-              'Sifter'
-            ]}
-            userMode="ea-vc"
-            onSubmit={handleDisputeSubmit}
-            onCancel={() => console.log('Cancelled')}
-          />
-        </div>
-      </div>
     </div>
   );
 }

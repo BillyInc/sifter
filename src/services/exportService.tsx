@@ -1,5 +1,14 @@
 // /src/services/exportService.ts
-import { ProjectData, MetricData, BatchSummary, BatchProject, VerdictData, PartnerPacket, VerdictType, RiskTier } from '@/types';
+import { 
+  ProjectData, 
+  MetricData, 
+  BatchSummary, 
+  BatchProject, 
+  VerdictData, 
+  PartnerPacket, 
+  VerdictType, 
+  RiskTier 
+} from '@/types';
 import React from 'react';
 
 export class ExportService {
@@ -180,7 +189,7 @@ export class ExportService {
     const projects = selectedProjects.map(p => ({
       name: p.name,
       riskScore: p.riskScore || 0,
-      verdict: p.verdict || 'unknown',
+      verdict: (p.verdict || 'unknown') as VerdictType | 'unknown', // ✅ Fixed: Explicit type assertion
       redFlags: p.redFlags || [],
       processingTime: p.processingTime || 0,
       scannedAt: p.scannedAt || new Date()
@@ -1037,7 +1046,6 @@ VERSION: Sifter 1.0 Research Edition
               "value": `${projectData.overallRisk.confidence}%`
             }
           ],
-          // FIXED: Removed reference to overallRisk.summary which doesn't exist
           "text": this.generateRiskSummary(projectData.overallRisk) || 'Analysis complete'
         }]
       };

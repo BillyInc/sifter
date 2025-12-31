@@ -1,4 +1,4 @@
-// src/types/index.ts - CONSOLIDATED VERSION WITH DATA DONATION TYPES
+// src/types/index.ts - COMPLETE UPDATED VERSION
 // ============= CORE TYPES =============
 export type AnalysisState = 'idle' | 'loading' | 'complete' | 'error';
 export type UserMode = 'ea-vc' | 'researcher' | 'individual' | null;
@@ -6,30 +6,31 @@ export type VerdictType = 'pass' | 'flag' | 'reject';
 export type VerdictResult = VerdictType | 'unknown';
 export type RiskTier = 'LOW' | 'MODERATE' | 'ELEVATED' | 'HIGH' | 'CRITICAL';
 export type PlatformType = 'twitter' | 'discord' | 'telegram' | 'github' | 'website' | 'name' | 'unknown';
+export type InputType = 'twitter' | 'discord' | 'telegram' | 'github' | 'website' | 'name' | 'unknown';
+export type BlitzMode = 'hyper' | 'momentum' | 'deep';
 
 // ============= DATA DONATION TYPES =============
-export type EntityType = 'marketing-agency' | 'advisor-consultant' | 'influencer-kol' | 'team-member';
+export type EntityType = 'marketing-agency' | 'advisor-consultant' | 'influencer-kol' | 'team-member' | 'unknown';
 export type SubmissionStatus = 'draft' | 'submitted' | 'under-review' | 'approved' | 'rejected' | 'needs-info';
 export type EvidenceType = 'twitter_post' | 'reddit_thread' | 'blockchain_transaction' | 'news_article' | 'archived_website' | 'telegram' | 'other';
 export type EvidenceStatus = 'pending' | 'verified' | 'disputed' | 'invalid';
 export type SeverityLevel = 'low' | 'medium' | 'high' | 'critical';
-export type ContributorTier = 'tier-1' | 'tier-2' | 'tier-3';
-export type TwitterScan = TwitterScanResult; // Add this alias
-export type { UserTier, Reward, RewardType } from './dataDonation';
-// Add these data donation types
+export type ContributorTier = 'tier-1' | 'tier-2' | 'tier-3' | 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond' | 'vc-elite' | 'research-fellow';
+export type UserTier = 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond' | 'vc-elite' | 'research-fellow';
+export type RewardType = 'access' | 'feature' | 'recognition' | 'physical';
 
-
-// src/types/index.ts - UPDATED SubmissionFormData
+// ============= SUBMISSION FORM DATA =============
 export interface SubmissionFormData {
   id: string;
   caseId: string;
-  entityType: 'marketing-agency' | 'advisor-consultant' | 'influencer-kol' | 'team-member';
+  entityType: EntityType;
   entityDetails: {
     fullName: string;
     twitterHandle?: string;
     telegramHandle?: string;
     linkedinProfile?: string;
     website?: string;
+    notes?: string;
   };
   affectedProjects: Array<{
     id?: string;
@@ -37,6 +38,7 @@ export interface SubmissionFormData {
     incidentDescription: string;
     date: string; // MM/YYYY
     evidence?: string[];
+    riskScore?: number;
   }>;
   evidence: Array<{
     id: string;
@@ -45,24 +47,26 @@ export interface SubmissionFormData {
     type: 'twitter' | 'reddit' | 'news' | 'archive' | 'blockchain' | 'telegram' | 'other';
     status: 'pending' | 'verified' | 'disputed' | 'invalid';
     submittedAt?: Date;
+    severity?: SeverityLevel;
   }>;
   submitterInfo: {
     email: string;
     name?: string;
     anonymous: boolean;
     acknowledgements: boolean[];
+    mode?: UserMode;
   };
   mode: UserMode;
-  status: 'draft' | 'submitted' | 'under-review' | 'approved' | 'rejected' | 'needs-info';
+  status: SubmissionStatus;
   submittedAt: string;
   confidenceScore?: number;
-  impactScore?: number; // ADD THIS
-  pointsAwarded?: number; // ADD THIS
+  impactScore?: number;
+  pointsAwarded?: number;
   updatedAt?: string;
-  // Add any other missing properties you're using
-  title?: string; // Add if used
-  description?: string; // Add if used
-  severity?: 'low' | 'medium' | 'high' | 'critical'; // Add if used
+  title?: string;
+  description?: string;
+  severity?: SeverityLevel;
+  category?: string;
 }
 
 export interface EvidenceItem {
@@ -124,45 +128,23 @@ export interface UserPointsData {
   };
 }
 
-export interface RewardItem {
+export interface Reward {
   id: string;
   name: string;
   description: string;
-  pointsRequired: number;
-  category: 'badge' | 'access' | 'physical' | 'service';
-  availability: 'available' | 'limited' | 'sold-out';
+  type: RewardType;
+  category: 'all' | 'vc' | 'researcher' | 'individual';
+  pointsCost: number;
+  quantityAvailable?: number;
+  quantityRemaining?: number;
+  tierRequirement?: UserTier;
+  modeRequirement?: UserMode;
+  features?: string[];
+  redemptionInstructions: string;
+  isAvailable?: boolean;
+  expiryDate?: string;
+  createdAt: string;
   imageUrl?: string;
-  claimable: boolean;
-}
-
-// ============= EVIDENCE & FLAG TYPES =============
-export interface Evidence {
-  type: string;
-  content: string;
-  source: string;
-  confidence: number;
-  timestamp?: Date;
-}
-
-export interface MetricFlag {
-  type: 'warning' | 'critical' | 'info';
-  message: string;
-  metric: string;
-  severity: number;
-}
-
-export interface SubMetric {
-  name: string;
-  value: number;
-  weight: number;
-  description: string;
-}
-
-export interface MetricBreakdown {
-  subMetrics: SubMetric[];
-  weightedScore: number;
-  calculationDetails: string;
-  algorithmVersion?: string;
 }
 
 // ============= SMART INPUT TYPES =============
@@ -234,29 +216,6 @@ export interface VerdictData {
   analyzedAt: string;
 }
 
-// ============= DETECTION RULES & PATTERNS =============
-export interface DetectionRule {
-  condition: string;
-  weight: number;
-  description: string;
-}
-
-export interface PatternExample {
-  projectName: string;
-  outcome: string;
-  evidence: string[];
-  similarityScore: number;
-}
-
-export interface ScamPattern {
-  id: string;
-  name: string;
-  description: string;
-  confidence: number;
-  examples: PatternExample[];
-  detectionRules?: DetectionRule[];
-}
-
 // ============= PROJECT DATA TYPES =============
 export interface ProjectData {
   id: string;
@@ -266,6 +225,7 @@ export interface ProjectData {
   sources: Array<{
     type: string;
     url: string;
+    input?: string;
     [key: string]: any;
   }>;
   platform?: PlatformType | string;
@@ -288,6 +248,36 @@ export interface ProjectData {
   twitterScan?: TwitterScanResult;
   snaData?: SNAData;
 }
+
+
+// ... [existing code above]
+
+// ============= RESEARCH PATTERN TYPES =============
+export interface PatternExample {
+  projectName: string;
+  outcome: 'rug' | 'failure' | 'abandoned' | 'success';
+  evidence: string[];
+  similarityScore: number;
+}
+
+export interface DetectionRule {
+  condition: string;
+  weight: number;
+  description: string;
+}
+
+export interface ScamPattern {
+  id: string;
+  name: string;
+  description: string;
+  confidence: number;
+  examples: PatternExample[];
+  detectionRules: DetectionRule[];
+}
+
+// ============= CHAIN DETECTION TYPES =============
+
+// ... [rest of your existing code]
 
 // ============= BATCH PROCESSING TYPES =============
 export interface BatchProject {
@@ -345,26 +335,35 @@ export interface AnalysisHistory {
   processingTime: number;
 }
 
-// ============= PARTNER PACKET =============
-export interface PartnerPacket {
-  summary: {
-    total: number;
-    passed: number;
-    flagged: number;
-    rejected: number;
-    averageRiskScore: number;
-    processingTime: number;
-    generatedAt: string;
-    redFlagDistribution: Record<string, number>;
-  };
-  projects: Array<{
-    name: string;
-    riskScore: number;
-    verdict: string;
-    redFlags: string[];
-    processingTime: number;
-    scannedAt: Date;
-  }>;
+// ============= BLITZ MODE & TWITTER TYPES =============
+export interface TwitterScanResult {
+  preLaunchMentions: number;
+  postLaunchMentions: number;
+  highRiskAccounts: string[];
+  coordinationScore: number;
+  evidence: string[];
+  preLaunchInsiderFlag: boolean;
+}
+
+export interface SNANode {
+  id: string;
+  label: string;
+  group: 'deployer' | 'promoter' | 'rugger' | 'financial' | 'clean';
+  level: number; // hop distance
+  riskScore?: number;
+}
+
+export interface SNAEdge {
+  from: string;
+  to: string;
+  label: string;
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  dashes?: boolean;
+}
+
+export interface SNAData {
+  nodes: SNANode[];
+  edges: SNAEdge[];
 }
 
 // ============= COMPOSITE SCORE CONFIGURATION =============
@@ -476,6 +475,63 @@ export const TIER_INFO: Record<ContributorTier, ContributorTierInfo> = {
     basePoints: 50,
     verificationPriority: 'standard',
     maxPoints: 999,
+  },
+  'bronze': {
+    id: 'bronze',
+    name: 'Bronze',
+    credibilityWeight: 1.0,
+    basePoints: 50,
+    verificationPriority: 'standard',
+    maxPoints: 999,
+  },
+  'silver': {
+    id: 'silver',
+    name: 'Silver',
+    credibilityWeight: 1.5,
+    basePoints: 75,
+    verificationPriority: 'high',
+    minPoints: 1000,
+    maxPoints: 4999,
+  },
+  'gold': {
+    id: 'gold',
+    name: 'Gold',
+    credibilityWeight: 2.0,
+    basePoints: 100,
+    verificationPriority: 'priority',
+    minPoints: 5000,
+  },
+  'platinum': {
+    id: 'platinum',
+    name: 'Platinum',
+    credibilityWeight: 2.5,
+    basePoints: 150,
+    verificationPriority: 'priority',
+    minPoints: 10000,
+  },
+  'diamond': {
+    id: 'diamond',
+    name: 'Diamond',
+    credibilityWeight: 3.0,
+    basePoints: 200,
+    verificationPriority: 'priority',
+    minPoints: 25000,
+  },
+  'vc-elite': {
+    id: 'vc-elite',
+    name: 'VC Elite',
+    credibilityWeight: 3.5,
+    basePoints: 250,
+    verificationPriority: 'priority',
+    minPoints: 50000,
+  },
+  'research-fellow': {
+    id: 'research-fellow',
+    name: 'Research Fellow',
+    credibilityWeight: 4.0,
+    basePoints: 300,
+    verificationPriority: 'priority',
+    minPoints: 100000,
   },
 };
 
@@ -604,9 +660,12 @@ export function calculateSubmissionPoints(formData: SubmissionFormData, tier: Co
 }
 
 export function getTierFromPoints(points: number): ContributorTier {
-  if (points >= 5000) return 'tier-1';
-  if (points >= 1000) return 'tier-2';
-  return 'tier-3';
+  if (points >= 50000) return 'vc-elite';
+  if (points >= 25000) return 'diamond';
+  if (points >= 10000) return 'platinum';
+  if (points >= 5000) return 'gold';
+  if (points >= 1000) return 'silver';
+  return 'bronze';
 }
 
 // ============= HELPER FUNCTIONS =============
@@ -646,42 +705,256 @@ export const getMetricValueFromArray = (metrics: MetricData[], key: string): num
 
 export const getMetricByKey = getMetricValueFromArray;
 
-export type InputType = 'twitter' | 'discord' | 'telegram' | 'github' | 'website' | 'name' | 'unknown';
-
 // ============= UTILITY TYPES =============
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-export type { CompatibleSubmissionFormData } from './dataDonation';
 
-// ============= BLITZ MODE TYPES =============
-export type BlitzMode = 'hyper' | 'momentum' | 'deep';
+// ============= CHAIN DETECTION TYPES =============
+export type ChainType = 'solana' | 'ethereum' | 'base' | 'polygon' | 'avalanche' | 'arbitrum' | 'unknown';
 
-export interface TwitterScanResult {
-  preLaunchMentions: number;
-  postLaunchMentions: number;
-  highRiskAccounts: string[];
-  coordinationScore: number;
-  evidence: string[];
-  preLaunchInsiderFlag: boolean;
+export interface ChainInfo {
+  id: ChainType;
+  name: string;
+  nativeSymbol: string;
+  icon: string;
+  color: string;
+  explorerUrl: string;
+  isEVM: boolean;
 }
 
-export interface SNANode {
-  id: string;
-  label: string;
-  group: 'deployer' | 'promoter' | 'rugger' | 'financial' | 'clean';
-  level: number; // hop distance
-  riskScore?: number;
+export const CHAIN_INFO: Record<ChainType, ChainInfo> = {
+  'solana': {
+    id: 'solana',
+    name: 'Solana',
+    nativeSymbol: 'SOL',
+    icon: '◎',
+    color: '#00FFA3',
+    explorerUrl: 'https://solscan.io/token/',
+    isEVM: false
+  },
+  'ethereum': {
+    id: 'ethereum',
+    name: 'Ethereum',
+    nativeSymbol: 'ETH',
+    icon: '⧫',
+    color: '#627EEA',
+    explorerUrl: 'https://etherscan.io/token/',
+    isEVM: true
+  },
+  'base': {
+    id: 'base',
+    name: 'Base',
+    nativeSymbol: 'ETH',
+    icon: '⎔',
+    color: '#0052FF',
+    explorerUrl: 'https://basescan.org/token/',
+    isEVM: true
+  },
+  'polygon': {
+    id: 'polygon',
+    name: 'Polygon',
+    nativeSymbol: 'MATIC',
+    icon: '⬢',
+    color: '#8247E5',
+    explorerUrl: 'https://polygonscan.com/token/',
+    isEVM: true
+  },
+  'avalanche': {
+    id: 'avalanche',
+    name: 'Avalanche',
+    nativeSymbol: 'AVAX',
+    icon: '❄️',
+    color: '#E84142',
+    explorerUrl: 'https://snowtrace.io/token/',
+    isEVM: true
+  },
+  'arbitrum': {
+    id: 'arbitrum',
+    name: 'Arbitrum',
+    nativeSymbol: 'ETH',
+    icon: '⎔',
+    color: '#28A0F0',
+    explorerUrl: 'https://arbiscan.io/token/',
+    isEVM: true
+  },
+  'unknown': {
+    id: 'unknown',
+    name: 'Unknown',
+    nativeSymbol: '?',
+    icon: '❓',
+    color: '#666666',
+    explorerUrl: '',
+    isEVM: false
+  }
+};
+
+// ============= CHAIN DETECTION FUNCTIONS =============
+export function detectChainFromAddress(address: string): ChainType {
+  const cleanAddress = address.trim();
+  
+  // Check known addresses first
+  const knownAddresses: Partial<Record<ChainType, string[]>> = {
+    'solana': [
+      'So11111111111111111111111111111111111111112', // SOL
+      'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // USDC
+      'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB', // USDT
+      'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263', // BONK
+    ],
+    'ethereum': [
+      '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
+      '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
+      '0x6982508145454Ce325dDbE47a25d4ec3d2311933', // PEPE
+    ],
+    'base': [
+      '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC
+      '0x4200000000000000000000000000000000000006', // WETH
+      '0x4ed4e862860bed51a9570b96d89af5e1b0efefed', // DEGEN
+    ],
+    'polygon': [
+      '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359', // USDC
+      '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', // USDC (old)
+    ],
+    'avalanche': [
+      '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E', // USDC
+      '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7', // USDT
+    ],
+    'arbitrum': [
+      '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9', // USDT
+      '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', // USDC
+    ]
+  };
+  
+  for (const [chain, addresses] of Object.entries(knownAddresses)) {
+    if (addresses?.some(addr => addr.toLowerCase() === cleanAddress.toLowerCase())) {
+      return chain as ChainType;
+    }
+  }
+  
+  // Detect by format
+  if (/^0x[a-fA-F0-9]{40}$/.test(cleanAddress)) {
+    // EVM address - random assignment for demo
+    const evmChains: ChainType[] = ['ethereum', 'base', 'polygon', 'avalanche', 'arbitrum'];
+    return evmChains[Math.floor(Math.random() * evmChains.length)];
+  }
+  
+  if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(cleanAddress)) {
+    return 'solana';
+  }
+  
+  return 'unknown';
+}
+export function isMultiChainAddress(input: string): boolean {
+  const cleanInput = input.trim();
+  
+  // Ethereum/Base/Polygon/Arbitrum/etc (0x...)
+  if (/^0x[a-fA-F0-9]{40}$/.test(cleanInput)) {
+    return true;
+  }
+  
+  // Solana (base58, 32-44 chars)
+  if (/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(cleanInput)) {
+    return true;
+  }
+  
+  // Avalanche X-Chain (C-chain uses 0x, P-Chain different)
+  if (cleanInput.startsWith('0x') && cleanInput.length === 42) {
+    return true;
+  }
+  
+  return false;
 }
 
-export interface SNAEdge {
-  from: string;
-  to: string;
-  label: string;
-  severity: 'critical' | 'high' | 'medium' | 'low';
-  dashes?: boolean;
+export function getChainIcon(chain: ChainType): string {
+  return CHAIN_INFO[chain]?.icon || '❓';
 }
 
-export interface SNAData {
-  nodes: SNANode[];
-  edges: SNAEdge[];
+export function getChainColor(chain: ChainType): string {
+  return CHAIN_INFO[chain]?.color || '#666666';
+}
+
+// ============= FORMATTING FUNCTIONS =============
+export function formatAddress(address: string, chain?: ChainType): string {
+  if (!address) return '';
+  
+  if (chain === 'solana') {
+    return `${address.slice(0, 4)}...${address.slice(-4)}`;
+  }
+  
+  // Default EVM formatting
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
+
+export function formatProcessingTime(ms: number, chain?: ChainType): string {
+  const seconds = Math.floor(ms / 1000);
+  
+  if (chain === 'solana') {
+    if (seconds < 5) return '3–5 seconds';
+    if (seconds < 10) return '5–8 seconds';
+    return '8–12 seconds';
+  }
+  
+  if (chain === 'base') {
+    if (seconds < 8) return '5–8 seconds';
+    if (seconds < 15) return '8–15 seconds';
+    return '15–25 seconds';
+  }
+  
+  // Default
+  if (seconds < 10) return '5–10 seconds';
+  if (seconds < 30) return '10–30 seconds';
+  if (seconds < 60) return '30–60 seconds';
+  if (seconds < 120) return '1–2 minutes';
+  return '2–5 minutes';
+}
+
+// ============= TYPE GUARDS =============
+export function isProjectData(obj: any): obj is ProjectData {
+  return obj && 
+    typeof obj.id === 'string' && 
+    typeof obj.displayName === 'string' &&
+    Array.isArray(obj.metrics) &&
+    obj.overallRisk &&
+    typeof obj.overallRisk.score === 'number';
+}
+
+export function isSmartInputResult(obj: any): obj is SmartInputResult {
+  return obj &&
+    typeof obj.input === 'string' &&
+    Array.isArray(obj.resolvedEntities) &&
+    typeof obj.confidence === 'number';
+}
+
+export function isBatchProcessingJob(obj: any): obj is BatchProcessingJob {
+  return obj &&
+    typeof obj.id === 'string' &&
+    typeof obj.name === 'string' &&
+    typeof obj.status === 'string' &&
+    Array.isArray(obj.projects);
+}
+
+
+// ============= PARTNER PACKET TYPES =============
+export interface PartnerPacketProject {
+  name: string;
+  riskScore: number;
+  verdict: VerdictType | 'unknown'; // Allow 'unknown' as valid value
+  redFlags: string[];
+  processingTime: number;
+  scannedAt: Date;
+}
+
+export interface PartnerPacketSummary {
+  total: number;
+  passed: number;
+  flagged: number;
+  rejected: number;
+  averageRiskScore: number;
+  processingTime: number;
+  generatedAt: string;
+  redFlagDistribution?: Record<string, number>;
+}
+
+export interface PartnerPacket {
+  summary: PartnerPacketSummary;
+  projects: PartnerPacketProject[];
 }
 

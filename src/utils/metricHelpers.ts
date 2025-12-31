@@ -1776,3 +1776,35 @@ export const createMetricsArray = (): MetricData[] => {
   
   return metrics;
 };
+
+
+// Simple version for metrics without project context
+export const generateMetricEvidence = (key: string, score: number): string => {
+  const categories = {
+    teamIdentity: "Team Identity Verification",
+    teamCompetence: "Technical Competence",
+    contaminatedNetwork: "Network Associations",
+    mercenaryKeywords: "Marketing Language",
+    messageTimeEntropy: "Activity Patterns",
+    accountAgeEntropy: "Account Distribution",
+    tweetFocus: "Content Quality",
+    githubAuthenticity: "Code Originality",
+    busFactor: "Team Redundancy",
+    artificialHype: "Engagement Authenticity",
+    founderDistraction: "Founder Focus",
+    engagementAuthenticity: "Community Quality",
+    tokenomics: "Token Economics"
+  };
+
+  const category = categories[key as keyof typeof categories] || key;
+  
+  if (score >= 70) {
+    return `🚨 **Critical Risk**: ${category} score ${score}/100 indicates severe issues requiring immediate attention.`;
+  } else if (score >= 50) {
+    return `⚠️ **High Risk**: ${category} score ${score}/100 shows significant concerns.`;
+  } else if (score >= 30) {
+    return `🔶 **Moderate Risk**: ${category} score ${score}/100 suggests areas for improvement.`;
+  } else {
+    return `✅ **Low Risk**: ${category} score ${score}/100 indicates healthy performance.`;
+  }
+};
