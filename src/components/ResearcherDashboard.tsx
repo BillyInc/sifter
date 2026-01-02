@@ -1,4 +1,4 @@
-// components/ResearcherDashboard.tsx - CORRECTED WITH ACTUAL TYPES
+// components/ResearcherDashboard.tsx - FIXED VERSION
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -878,6 +878,9 @@ export default function ResearcherDashboard({
                     placeholder="Enter Twitter, Discord, GitHub, website, or project name..."
                     disabled={isAnalyzing}
                     compact={compact}
+                    // ADD THESE TWO PROPS TO SYNC STATE:
+                    value={projectInput}
+                    onChange={(value: string) => setProjectInput(value)}
                   />
                 </div>
 
@@ -1009,7 +1012,7 @@ export default function ResearcherDashboard({
                         runDeepAnalysis(projectName);
                       }}
                       className={`${compactClasses.button} bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white rounded-lg font-medium transition-all flex items-center gap-2`}
-                      disabled={!projectInput}
+                     
                     >
                       <span>🔬</span>
                       Run Deep Analysis

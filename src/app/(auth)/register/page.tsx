@@ -76,7 +76,7 @@ function RegisterContent() {
         )}
 
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-black mb-2">
+          <label htmlFor="name" className="block text-sm font-medium text-white mb-2">
             Name
           </label>
           <input
@@ -86,13 +86,13 @@ function RegisterContent() {
             onChange={(e) => setName(e.target.value)}
             required
             autoComplete="name"
-            className="w-full bg-gray-50 border border-sifter-border rounded-lg py-3 px-4 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sifter-blue focus:border-transparent transition-all"
+            className="w-full bg-white border border-gray-300 rounded-lg py-3 px-4 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sifter-blue focus:border-transparent transition-all"
             placeholder="Your name"
           />
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
+          <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
             Email
           </label>
           <input
@@ -102,13 +102,13 @@ function RegisterContent() {
             onChange={(e) => setEmail(e.target.value)}
             required
             autoComplete="email"
-            className="w-full bg-gray-50 border border-sifter-border rounded-lg py-3 px-4 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sifter-blue focus:border-transparent transition-all"
+            className="w-full bg-white border border-gray-300 rounded-lg py-3 px-4 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sifter-blue focus:border-transparent transition-all"
             placeholder="you@example.com"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-black mb-2">
+          <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
             Password
           </label>
           <input
@@ -118,13 +118,13 @@ function RegisterContent() {
             onChange={(e) => setPassword(e.target.value)}
             required
             autoComplete="new-password"
-            className="w-full bg-gray-50 border border-sifter-border rounded-lg py-3 px-4 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sifter-blue focus:border-transparent transition-all"
+            className="w-full bg-white border border-gray-300 rounded-lg py-3 px-4 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sifter-blue focus:border-transparent transition-all"
             placeholder="Min. 8 characters"
           />
         </div>
 
         <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-black mb-2">
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-white mb-2">
             Confirm Password
           </label>
           <input
@@ -134,13 +134,13 @@ function RegisterContent() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             autoComplete="new-password"
-            className="w-full bg-gray-50 border border-sifter-border rounded-lg py-3 px-4 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sifter-blue focus:border-transparent transition-all"
+            className="w-full bg-white border border-gray-300 rounded-lg py-3 px-4 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sifter-blue focus:border-transparent transition-all"
             placeholder="Confirm your password"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-black mb-3">
+          <label className="block text-sm font-medium text-white mb-3">
             Account Type
           </label>
           <div className="space-y-2">
@@ -161,7 +161,7 @@ function RegisterContent() {
                   className="mt-1 mr-3"
                 />
                 <div>
-                  <div className="text-black font-medium">{option.label}</div>
+                  <div className="text-white font-medium">{option.label}</div>
                   <div className="text-gray-600 text-sm">{option.description}</div>
                 </div>
               </label>
@@ -186,7 +186,7 @@ function RegisterContent() {
       </form>
 
       <div className="mt-6 text-center">
-        <p className="text-gray-600 text-sm">
+        <p className="text-white-600 text-sm">
           Already have an account?{' '}
           <Link href="/login" className="text-sifter-blue hover:underline">
             Sign in

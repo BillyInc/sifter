@@ -9,6 +9,8 @@ interface SmartInputParserProps {
   placeholder?: string;
   disabled?: boolean;
   compact?: boolean;
+    value?: string;
+  onChange?: (value: string) => void;
 }
 
 export default function SmartInputParser({ 
@@ -205,7 +207,7 @@ export default function SmartInputParser({
             }
           }}
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-          placeholder={placeholder || "Enter Twitter handle, Discord invite, GitHub repo, website, or project name..."}
+          placeholder={placeholder || "Enter Contract address, Twitter handle, Discord invite, GitHub, project name..."}
           disabled={disabled || isProcessing}
           className={`w-full bg-[#0A0A0F] border border-gray-700 rounded-xl text-white placeholder:text-gray-500 focus:border-blue-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
             compact 

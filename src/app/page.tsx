@@ -80,13 +80,13 @@ const ExportDropdown = ({ projectData, compact = false }: { projectData: Project
       <button
         onClick={() => setIsOpen(!isOpen)}
         disabled={isExporting}
-        className={`${compact ? 'px-3 py-1.5 text-xs' : 'px-4 py-2'} bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg flex items-center gap-2 transition-colors`}
+        className={`${compact ? 'px-3 py-1.5 text-xs' : 'px-4 py-2'}bg-blue-500 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg flex items-center gap-2 transition-colors`}
       >
         {isExporting ? (
           <>
             <svg className="animate-spin h-3 w-3 text-white" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <path className="opacity-40" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
             <span>Exporting...</span>
           </>
@@ -2168,7 +2168,7 @@ export default function Home() {
                       <input
                         id="loginEmail"
                         type="email"
-                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:outline-none transition-colors"
+                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-black focus:border-blue-500 focus:outline-none transition-colors"
                         placeholder="you@example.com"
                         required
                       />
@@ -2178,7 +2178,7 @@ export default function Home() {
                       <input
                         id="loginPassword"
                         type="password"
-                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:outline-none transition-colors"
+                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-black focus:border-blue-500 focus:outline-none transition-colors"
                         placeholder="Enter your password"
                         required
                       />
@@ -2211,7 +2211,7 @@ export default function Home() {
                       <input
                         id="signupName"
                         type="text"
-                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:outline-none transition-colors"
+                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-black focus:border-blue-500 focus:outline-none transition-colors"
                         placeholder="John Doe"
                         required
                       />
@@ -2221,7 +2221,7 @@ export default function Home() {
                       <input
                         id="signupEmail"
                         type="email"
-                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:outline-none transition-colors"
+                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-black focus:border-blue-500 focus:outline-none transition-colors"
                         placeholder="you@example.com"
                         required
                       />
@@ -2231,7 +2231,7 @@ export default function Home() {
                       <input
                         id="signupPassword"
                         type="password"
-                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:outline-none transition-colors"
+                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-black focus:border-blue-500 focus:outline-none transition-colors"
                         placeholder="Create a strong password"
                         required
                       />
@@ -2241,7 +2241,7 @@ export default function Home() {
                       <input
                         id="signupConfirm"
                         type="password"
-                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-white focus:border-blue-500 focus:outline-none transition-colors"
+                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-black focus:border-blue-500 focus:outline-none transition-colors"
                         placeholder="Confirm your password"
                         required
                       />
@@ -2308,6 +2308,39 @@ export default function Home() {
                 {/* Data Donation Button */}
                 {isLoggedIn && userMode && (
                   <div className="hidden md:flex items-center gap-2">
+                    {/* Points & Rewards Button */}
+                    <button
+                      onClick={() => setShowPointsDisplay(true)}
+                      className={`${compactMode ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-xs'} bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg font-medium transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap`}
+                    >
+                      <svg className={`${compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} flex-shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>Points & Rewards</span>
+                    </button>
+                    
+                    {/* Submit Evidence Button */}
+                    <button
+                      onClick={handleNewSubmission}
+                      className={`${compactMode ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-xs'} bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 rounded-lg font-medium transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap`}
+                    >
+                      <svg className={`${compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} flex-shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>Submit Evidence</span>
+                    </button>
+                    
+                    {/* Dispute Button */}
+                    <button
+                      onClick={() => setShowDisputeForm(true)}
+                      className={`${compactMode ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-xs'} bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 rounded-lg font-medium transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap`}
+                    >
+                      <svg className={`${compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} flex-shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>File Dispute</span>
+                    </button>
+                    
                     <button
                       onClick={() => setShowTrackingDashboard(true)}
                       className={`${compactMode ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-xs'} bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 border border-amber-500/30 rounded-lg font-medium transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap`}
@@ -2327,7 +2360,7 @@ export default function Home() {
 
                 {/* Mobile: Show dropdown menu */}
                 {isLoggedIn && userMode && (
-                  <div className="md:hidden relative mobile-data-menu">
+                  <div className="md:hidden relative mobile-data-menu z-[60]">
                     <button
                       onClick={() => setShowMobileDataMenu(!showMobileDataMenu)}
                       className={`p-1.5 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 border border-amber-500/30 rounded-lg transition-colors relative`}
@@ -2343,8 +2376,9 @@ export default function Home() {
                     </button>
                     
                     {showMobileDataMenu && (
-                      <div className="absolute right-0 top-full mt-1 w-48 bg-sifter-card border border-sifter-border rounded-lg shadow-xl z-50">
+                      <div className="absolute right-0 top-full mt-1 w-48 bg-sifter-card border border-sifter-border rounded-lg shadow-xl z-[100]">
                         <div className="p-1 space-y-1">
+                          {/* Data Donation Button */}
                           <button
                             onClick={() => {
                               setShowTrackingDashboard(true);
@@ -2358,6 +2392,49 @@ export default function Home() {
                             <span className="text-xs">Data Donation</span>
                           </button>
                           
+                          {/* Points & Rewards Button */}
+                          <button
+                            onClick={() => {
+                              setShowPointsDisplay(true);
+                              setShowMobileDataMenu(false);
+                            }}
+                            className="w-full text-left px-3 py-2 text-blue-400 hover:bg-blue-500/10 rounded text-sm transition-colors flex items-center gap-2"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-xs">Points & Rewards</span>
+                          </button>
+
+                          {/* Submit Evidence Button */}
+                          <button
+                            onClick={() => {
+                              handleNewSubmission();
+                              setShowMobileDataMenu(false);
+                            }}
+                            className="w-full text-left px-3 py-2 text-green-400 hover:bg-green-500/10 rounded text-sm transition-colors flex items-center gap-2"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-xs">Submit Evidence</span>
+                          </button>
+
+                          {/* Dispute Button */}
+                          <button
+                            onClick={() => {
+                              setShowDisputeForm(true);
+                              setShowMobileDataMenu(false);
+                            }}
+                            className="w-full text-left px-3 py-2 text-red-400 hover:bg-red-500/10 rounded text-sm transition-colors flex items-center gap-2"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-xs">File Dispute</span>
+                          </button>
+                          
+                          {/* Compact mode toggle */}
                           <button
                             onClick={() => {
                               setCompactMode(!compactMode);

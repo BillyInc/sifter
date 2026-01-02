@@ -30,7 +30,10 @@ import {
   getChainIcon,
   getChainColor,
   formatProcessingTime,
-  CHAIN_INFO
+  CHAIN_INFO,
+  ResolvedEntity,
+  InputType,
+  PlatformType
 } from '@/types';
 import { generateMockProjectData } from '@/data/mockData';
 
@@ -47,8 +50,152 @@ import {
 
 import MetricBreakdown from '@/components/MetricBreakdown';
 
-// Add this helper function - UPDATED WITH COMPREHENSIVE DATA
-const generateModeSpecificData = (projectName: string, mode: BlitzMode, riskScore: number, detectedChain: ChainType) => {
+// Define ModeSpecificData interface locally since it's not exported from types
+interface ModeSpecificData {
+  hyperBlitzReport?: {
+    token: string;
+    age: string;
+    chain: string;
+    volumeSpike: string;
+    contractSafety: string;
+    mintAuthority: string;
+    freezeAuthority: string;
+    lpLocked: string;
+    taxSettings: string;
+    proxyContract: string;
+    networkStructure?: {
+      totalAccounts: number;
+      clustersDetected: number;
+      networkDensity: string;
+    };
+    timingAnalysis?: {
+      prePumpActivity: string;
+      volumeCorrelation: string;
+      coordinationEvidence: string;
+    };
+    historicalContext?: {
+      clusterHistory: string;
+      failureRate: string;
+      networkContaminationScore: number;
+    };
+    financialCorrelation?: {
+      whaleActivity: string;
+      whalePromoterConnections: string;
+      exitLiquidity: string;
+    };
+    onChainMomentum?: {
+      volume: string;
+      holderConcentration: string;
+      liquidity: string;
+      exitRisk: string;
+    };
+    verdict: string;
+    criticalIssues: string[];
+    recommendation: string;
+  };
+  
+  momentumBlitzReport?: {
+    token: string;
+    age: string;
+    chain: string;
+    priceChange: string;
+    currentPrice: string;
+    ath: string;
+    volume: string;
+    volumeTrend: string;
+    communityHealth: {
+      messageTimingEntropy: string;
+      accountAgeEntropy: string;
+      engagementDistribution: string;
+    };
+    networkEvolution: {
+      initialNetwork: {
+        highRiskConnections: number;
+        density: string;
+        founderCentrality: string;
+      };
+      currentNetwork: {
+        newClusters: number;
+        density: string;
+        founderCentrality: string;
+        promoterCentrality: string;
+      };
+      trend: string;
+      promoterInfiltration: string;
+      communitySegmentation: string;
+    };
+    engagementQuality: {
+      substantiveDiscussion: string;
+      mercenaryContent: string;
+      spamBotContent: string;
+      trend: string;
+    };
+    founderActivity: {
+      tweetFocus: {
+        projectUpdates: string;
+        promotionalContent: string;
+        personalContent: string;
+      };
+      responsePatterns: {
+        technicalQuestions: string;
+        priceQuestions: string;
+        responseRate: string;
+      };
+      activityTrend: string;
+      githubCommits: string;
+    };
+    artificialHype: {
+      coordinationPatterns: string;
+      botNetwork: {
+        amplificationRate: string;
+        followerQuality: string;
+        fakeEngagement: string;
+      };
+      influencePurchasing: string;
+      followerGrowth: string;
+    };
+    networkBasedAssessment: {
+      strengths: string[];
+      concerns: string[];
+      pressurePoints: {
+        tippingPoint: string;
+        timeframe: string;
+      };
+    };
+    verdict: string;
+    recommendation: string;
+  };
+  
+  deepBlitzReport?: {
+    token: string;
+    analysisTime: string;
+    chain: string;
+    overallScore: number;
+    overallVerdict: string;
+    metrics: Array<{
+      key: string;
+      name: string;
+      weight: number;
+      score: number;
+      points: string;
+      status: string;
+      breakdown: string;
+    }>;
+    criticalRedFlags: string[];
+    strengths: string[];
+    networkAwareStrategy: {
+      positionSizing: string;
+      entryTiming: string;
+      exitStrategy: string;
+      monitoringChecklist: string[];
+    };
+    finalVerdict: string;
+    recommendation: string;
+  };
+}
+
+// Add this helper function - FIXED SYNTAX ERRORS
+const generateModeSpecificData = (projectName: string, mode: BlitzMode, riskScore: number, detectedChain: ChainType): ModeSpecificData => {
   if (mode === 'hyper') {
     return {
       hyperBlitzReport: {
@@ -398,6 +545,12 @@ export default function IndividualDashboard({
   const [isMemecoin, setIsMemecoin] = useState(false);
   const [isCheckingContract, setIsCheckingContract] = useState(false);
   const [detectedChain, setDetectedChain] = useState<ChainType>('unknown');
+  const [isProjectName, setIsProjectName] = useState(false); // NEW: Track if input is project name
+  
+  // Add quiz state
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [quizAnswers, setQuizAnswers] = useState<number[]>([]);
+  const [quizCompleted, setQuizCompleted] = useState(false);
   
   const [internalWatchlist, setInternalWatchlist] = useState<LocalWatchlistItem[]>([
     { projectId: '1', projectName: 'DeFi Alpha', riskScore: 23, verdict: 'pass', addedAt: new Date(), alertsEnabled: true, lastChecked: new Date() },
@@ -565,7 +718,8 @@ export default function IndividualDashboard({
     twitterScan?: TwitterScanResult;
     snaData?: SNAData;
     detectedChain?: ChainType;
-    modeSpecificData?: any;
+    modeSpecificData?: ModeSpecificData;
+    isProjectName?: boolean; // NEW: Track if this is a project name analysis
   } | null>(null);
   
   const [showExportMenu, setShowExportMenu] = useState(false);
@@ -624,6 +778,7 @@ export default function IndividualDashboard({
     setShowBlitzSelector(false);
     setIsMemecoin(false);
     setDetectedChain('unknown');
+    setIsProjectName(false); // Reset project name flag
   };
 
   const handleSmartInputResolve = async (result: SmartInputResult) => {
@@ -638,11 +793,22 @@ export default function IndividualDashboard({
 
     setInputValue(input);
 
+    // DETERMINE: Is this a contract address or project name?
     const isContractAddress = isMultiChainAddress(input.trim());
+    
+    console.log('SmartInputResolve:', { 
+      input, 
+      isContractAddress, 
+      projectName,
+      type: result.type 
+    });
 
     if (isContractAddress) {
+      // CONTRACT ADDRESS: Show blitz selector
+      console.log('Contract address detected, showing blitz selector');
       const chain = detectChainFromAddress(input);
       setDetectedChain(chain);
+      setIsProjectName(false); // Not a project name
       
       setIsCheckingContract(true);
 
@@ -676,49 +842,49 @@ export default function IndividualDashboard({
           setShowBlitzSelector(true);
         } else {
           setSelectedBlitzMode('deep');
-          performAnalysis(projectName, 'deep');
+          setShowBlitzSelector(true); // Always show blitz selector for contract addresses
         }
       }, delayTime);
     } else {
-      const tokenName = projectName.toLowerCase();
-      
-      const memecoinKeywords = [
-        'pepe', 'doge', 'shib', 'bonk', 'floki', 'wojak', 'wif',
-        'moon', 'rocket', 'elon', '100x', '1000x', 'to the moon',
-        'inu', 'cat', 'frog', 'hamster', 'degods', 'mad lads',
-        'degod', 'sats', 'ordi', 'rats', 'smole', 'toshi'
-      ];
-      
-      const hasMemecoinKeyword = memecoinKeywords.some(keyword => 
-        tokenName.includes(keyword)
-      );
-      
-      const isTickerLike = /^[A-Z0-9]{2,6}$/.test(input);
-      
-      const detectedAsMemecoin = hasMemecoinKeyword || isTickerLike || Math.random() > 0.75;
-
-      setIsMemecoin(detectedAsMemecoin);
-
-      if (detectedAsMemecoin) {
-        setSelectedBlitzMode('hyper');
-        setShowBlitzSelector(true);
-      } else {
-        setSelectedBlitzMode('deep');
-        performAnalysis(projectName, 'deep');
-      }
+      // PROJECT NAME OR SOCIAL HANDLE: Go directly to MetricBreakdown (deep mode without blitz selector)
+      console.log('Project name/social handle detected, going directly to MetricBreakdown');
+      setDetectedChain('unknown');
+      setIsProjectName(true); // Mark as project name
+      setShowBlitzSelector(false); // Don't show blitz selector for project names
+      performAnalysis(projectName, 'deep', false, true); // Force deep mode, skip blitz selector, mark as project name
     }
   };
 
-  const performAnalysis = (projectName: string, mode: BlitzMode) => {
+  // Updated performAnalysis with isProjectName parameter
+  const performAnalysis = (projectName: string, mode: BlitzMode = 'deep', showBlitz = false, isProjectNameInput = false) => {
+    console.log('performAnalysis START:', { 
+      projectName, 
+      mode, 
+      showBlitz, 
+      isAnalyzing, 
+      showBlitzSelector,
+      isProjectNameInput 
+    });
     setIsAnalyzing(true);
-    setShowBlitzSelector(false);
+    
+    // For project names, ALWAYS use deep mode and skip blitz selector
+    if (isProjectNameInput) {
+      mode = 'deep';
+      showBlitz = false;
+      console.log('Project name detected, forcing deep mode, no blitz selector');
+    }
+
+    if (!showBlitz) {
+      console.log('Setting showBlitzSelector to false');
+      setShowBlitzSelector(false);
+    }
 
     let scanTime = 2000;
     if (mode === 'hyper') scanTime = 800;
     if (mode === 'momentum') scanTime = 1500;
     
-    if (detectedChain === 'solana') scanTime *= 0.7;
-    if (detectedChain === 'base') scanTime *= 0.8;
+    if (detectedChain === 'solana') scanTime = scanTime * 0.7;
+    if (detectedChain === 'base') scanTime = scanTime * 0.8;
 
     setTimeout(() => {
       const allMetrics = generateMockMetricsWithEvidence();
@@ -734,7 +900,10 @@ export default function IndividualDashboard({
         );
       }
 
-      const compositeScore = Math.round(filteredMetrics.reduce((sum, m) => sum + m.contribution, 0));
+      const compositeScore = Math.round(filteredMetrics.reduce((sum, m) => {
+        const contribution = safeToNumber(m.contribution);
+        return sum + contribution;
+      }, 0));
 
       const mockTwitterScan: TwitterScanResult = {
         preLaunchMentions: mode === 'hyper' && Math.random() > 0.5 ? 3 : 0,
@@ -762,8 +931,8 @@ export default function IndividualDashboard({
         ] : []
       };
 
-      // Generate comprehensive mode-specific data
-      const modeSpecificData = generateModeSpecificData(projectName, mode, compositeScore, detectedChain);
+      // Generate mode-specific data ONLY for contract addresses
+      const modeSpecificData = !isProjectNameInput ? generateModeSpecificData(projectName, mode, compositeScore, detectedChain) : null;
 
       const projectData: ProjectData = {
         id: `proj_${Date.now()}`,
@@ -779,15 +948,11 @@ export default function IndividualDashboard({
         sources: [{ type: 'manual', url: '' }],
         scannedAt: new Date(),
         processingTime: mode === 'hyper' ? 8000 : mode === 'momentum' ? 52000 : 227000,
-        blitzMode: mode,
+        blitzMode: !isProjectNameInput ? mode : 'deep', // Only show blitz mode for contracts
         twitterScan: mockTwitterScan,
         snaData: mockSNA,
-        modeSpecificData: modeSpecificData
+        modeSpecificData: modeSpecificData || undefined, // Convert null to undefined
       };
-
-      if (onAnalyze) {
-        // Assume parent handles navigation
-      }
 
       setAnalysisResults({
         projectName,
@@ -795,11 +960,12 @@ export default function IndividualDashboard({
         verdict: projectData.overallRisk.verdict,
         metrics: filteredMetrics,
         scanDuration: Math.floor(projectData.processingTime / 1000),
-        blitzMode: mode,
+        blitzMode: !isProjectNameInput ? mode : 'deep', // Only for contracts
         twitterScan: mockTwitterScan,
         snaData: mockSNA,
-        detectedChain,
-        modeSpecificData: modeSpecificData
+        detectedChain: !isProjectNameInput ? detectedChain : 'unknown', // Only for contracts
+        modeSpecificData: modeSpecificData || undefined, // Convert null to undefined
+        isProjectName: isProjectNameInput // Track if this is a project name analysis
       });
 
       setIsAnalyzing(false);
@@ -829,14 +995,22 @@ export default function IndividualDashboard({
   };
 
   const renderAnalyzeTab = () => {
+    console.log('renderAnalyzeTab state:', { 
+      isAnalyzing, 
+      showBlitzSelector, 
+      analysisResults: !!analysisResults,
+      isProjectName: analysisResults?.isProjectName 
+    });
+    
     if (isAnalyzing) {
       return (
         <div className="text-center py-12">
           <div className="inline-block">
             <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
             <p className="text-white">
-              Running {selectedBlitzMode === 'hyper' ? 'Hyper' : 
-                       selectedBlitzMode === 'momentum' ? 'Momentum' : 'Deep'}-Blitz Analysis...
+               {isProjectName ? 'Analyzing Project...' : 
+   `Running ${selectedBlitzMode === 'hyper' ? 'Hyper' : 
+             selectedBlitzMode === 'momentum' ? 'Momentum' : 'Deep'}-Blitz Analysis...`}
             </p>
             {detectedChain !== 'unknown' && (
               <p className="text-sm text-gray-400 mt-2">
@@ -849,6 +1023,43 @@ export default function IndividualDashboard({
     }
 
     if (analysisResults) {
+      // For project names, show MetricBreakdown directly
+      if (analysisResults.isProjectName) {
+        return (
+          <div className="animate-fadeIn">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-white">{analysisResults.projectName}</h2>
+                <p className="text-gray-400 text-sm">Project Analysis Report</p>
+              </div>
+              <button
+                onClick={resetAnalysis}
+                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-all"
+              >
+                ← Back to Analyze
+              </button>
+            </div>
+            
+            {/* MetricBreakdown for project names */}
+            <MetricBreakdown
+                    metrics={analysisResults.metrics}
+                    riskScore={analysisResults.riskScore} 
+                    projectName={analysisResults.projectName}
+                  />
+            
+            <div className="mt-6 pt-6 border-t border-sifter-border">
+              <button
+                onClick={resetAnalysis}
+                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-all w-full"
+              >
+                Analyze Another Project
+              </button>
+            </div>
+          </div>
+        );
+      }
+      
+      // For contract addresses, show the full IndividualAnalysisView with blitz reports
       return (
         <IndividualAnalysisView
           projectData={{
@@ -861,17 +1072,12 @@ export default function IndividualDashboard({
             },
             metrics: analysisResults.metrics,
             processingTime: analysisResults.scanDuration * 1000,
-           
             modeSpecificData: analysisResults.modeSpecificData
           }}
-
-                blitzMode={analysisResults.blitzMode}          // ✅ ADD THIS LINE
-            twitterScan={analysisResults.twitterScan}      // ✅ ADD THIS LINE
-            snaData={analysisResults.snaData}              // ✅ ADD THIS LINE
-            detectedChain={analysisResults.detectedChain}
-
-
-
+          blitzMode={analysisResults.blitzMode}
+          twitterScan={analysisResults.twitterScan}
+          snaData={analysisResults.snaData}
+          detectedChain={analysisResults.detectedChain}
           onAddToWatchlist={() => addToWatchlist(analysisResults.projectName, analysisResults.riskScore, analysisResults.verdict)}
           onShare={() => alert('Share coming soon')}
           onScanAnother={resetAnalysis}
@@ -882,64 +1088,90 @@ export default function IndividualDashboard({
 
     return (
       <div className="space-y-6">
-        {/* Dashboard Overview Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-white text-lg">Recent Scans</h3>
-              <button
-                onClick={() => setActiveTab('scans')}
-                className="text-sm text-blue-400 hover:text-blue-300 transition-all"
-              >
-                View All →
-              </button>
-            </div>
-            <div className="space-y-3">
-              {recentScans.slice(0, 3).map((scan) => (
-                <div key={scan.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-900/50 hover:bg-gray-900 transition-all">
-                  <div className="flex items-center gap-3">
-                    <div className={`text-lg ${
-                      scan.verdict === 'reject' ? 'text-red-400' :
-                      scan.verdict === 'flag' ? 'text-yellow-400' : 'text-green-400'
-                    }`}>
-                      {scan.verdict === 'reject' ? '🔴' : 
-                       scan.verdict === 'flag' ? '🟡' : '🟢'}
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-white text-sm">{scan.projectName}</h4>
-                      <p className="text-xs text-gray-400">{scan.scannedAt.toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                  <ScoreBadge score={scan.riskScore} verdict={scan.verdict} />
-                </div>
-              ))}
-              {recentScans.length === 0 && (
-                <div className="text-center py-4">
-                  <p className="text-gray-400 text-sm">No scans yet</p>
-                </div>
-              )}
-            </div>
+        {/* Main Input Section with SmartInputParser */}
+        <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-white mb-2">Check a Project</h2>
+            <p className="text-gray-400">
+              Is this crypto project safe? Get your answer in 90 seconds.
+            </p>
           </div>
+          
+          <SmartInputParser onResolve={handleSmartInputResolve} />
 
-          <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
-            <h3 className="font-bold text-white text-lg mb-4">Quick Stats</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-900/30 rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-white mb-1">{watchlist.length}</div>
-                <div className="text-xs text-gray-400">Watchlist Items</div>
-              </div>
-              <div className="bg-gray-900/30 rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-white mb-1">{recentScans.length}</div>
-                <div className="text-xs text-gray-400">Total Scans</div>
-              </div>
-              <div className="bg-gray-900/30 rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-white mb-1">{userProfile.availablePoints}</div>
-                <div className="text-xs text-gray-400">Points</div>
-              </div>
-              <div className="bg-gray-900/30 rounded-lg p-4 text-center">
-                <div className="text-2xl font-bold text-white mb-1">{userProfile.currentTier}</div>
-                <div className="text-xs text-gray-400">Your Tier</div>
-              </div>
+          <div className="mt-6">
+            <p className="text-sm text-gray-400 mb-3">Try these examples:</p>
+            <div className="flex flex-wrap gap-2">
+              {['@moonrocket_6', 'discord.gg/crypte', 'github.com/project', 'project.com'].map((example, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setInputValue(example);
+                    
+                    // Use the same detection logic as SmartInputParser
+                    const detectInputType = (value: string): InputType => {
+                      const normalized = value.trim().toLowerCase();
+                      if (normalized.startsWith('@')) return 'twitter';
+                      if (normalized.includes('discord.gg/') || normalized.includes('discord.com/invite/')) return 'discord';
+                      if (normalized.includes('github.com/')) return 'github';
+                      if (normalized.startsWith('http') || (normalized.includes('.') && !normalized.includes(' '))) return 'website';
+                      if (normalized.length > 2 && /^[a-zA-Z0-9\s]+$/.test(normalized)) return 'name';
+                      return 'unknown';
+                    };
+                    
+                    const convertInputTypeToPlatformType = (inputType: InputType): PlatformType => {
+                      switch (inputType) {
+                        case 'twitter': return 'twitter';
+                        case 'discord': return 'discord';
+                        case 'telegram': return 'telegram';
+                        case 'github': return 'github';
+                        case 'website': return 'website';
+                        case 'name': return 'name';
+                        default: return 'unknown';
+                      }
+                    };
+                    
+                    const inputType = detectInputType(example);
+                    const platformType = convertInputTypeToPlatformType(inputType);
+                    
+                    // Create a complete SmartInputResult object matching what SmartInputParser produces
+                    const result: SmartInputResult = {
+                      input: example,
+                      type: inputType,
+                      resolvedEntities: [{
+                        id: `example_${Date.now()}_${index}`,
+                        canonicalName: example.toLowerCase().replace(/[^a-z0-9]/g, '_'),
+                        displayName: example,
+                        platform: platformType,
+                        url: '', // Optional in ResolvedEntity
+                        confidence: 85,
+                        alternativeNames: [example, example.replace(/\s+/g, '')],
+                        crossReferences: [],
+                        metadata: {}
+                      }],
+                      selectedEntity: {
+                        id: `example_${Date.now()}_${index}`,
+                        canonicalName: example.toLowerCase().replace(/[^a-z0-9]/g, '_'),
+                        displayName: example,
+                        platform: platformType,
+                        url: '',
+                        confidence: 85,
+                        alternativeNames: [example, example.replace(/\s+/g, '')],
+                        crossReferences: [],
+                        metadata: {}
+                      },
+                      confidence: 85,
+                      searchHistory: [],
+                      timestamp: new Date()
+                    };
+                    
+                    handleSmartInputResolve(result);
+                  }}
+                  className="px-3 py-1.5 text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-all"
+                >
+                  {example}
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -992,33 +1224,7 @@ export default function IndividualDashboard({
           </div>
         )}
 
-        {/* Main Input Section */}
-        <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-white mb-2">Check a Project</h2>
-            <p className="text-gray-400">
-              Is this crypto project safe? Get your answer in 90 seconds.
-            </p>
-          </div>
-          
-          <SmartInputParser onResolve={handleSmartInputResolve} />
-
-          <div className="mt-6">
-            <p className="text-sm text-gray-400 mb-3">Try these examples:</p>
-            <div className="flex flex-wrap gap-2">
-              {['@moonrocket_6', 'discord.gg/crypte', 'github.com/project', 'project.com'].map((example, index) => (
-                <button
-                  key={index}
-                  onClick={() => setInputValue(example)}
-                  className="px-3 py-1.5 text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-all"
-                >
-                  {example}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
+        {/* Blitz Selector - Only for contract addresses */}
         {showBlitzSelector && (
           <div className="bg-sifter-card border border-blue-500/30 rounded-xl p-6 animate-fadeIn">
             <div className="flex items-center gap-3 mb-4">
@@ -1039,7 +1245,7 @@ export default function IndividualDashboard({
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* HYPER-BLITZ CARD - UPDATED WITH COMPREHENSIVE DESCRIPTION */}
+              {/* HYPER-BLITZ CARD */}
               <button
                 onClick={() => performAnalysis(inputValue, 'hyper')}
                 className={`p-6 rounded-lg border-2 transition-all ${
@@ -1079,7 +1285,7 @@ export default function IndividualDashboard({
                 </div>
               </button>
 
-              {/* MOMENTUM-BLITZ CARD - UPDATED WITH COMPREHENSIVE DESCRIPTION */}
+              {/* MOMENTUM-BLITZ CARD */}
               <button
                 onClick={() => performAnalysis(inputValue, 'momentum')}
                 className={`p-6 rounded-lg border-2 transition-all ${
@@ -1119,7 +1325,7 @@ export default function IndividualDashboard({
                 </div>
               </button>
 
-              {/* DEEP-BLITZ CARD - UPDATED WITH COMPREHENSIVE DESCRIPTION */}
+              {/* DEEP-BLITZ CARD */}
               <button
                 onClick={() => performAnalysis(inputValue, 'deep')}
                 className={`p-6 rounded-lg border-2 transition-all ${
@@ -1184,6 +1390,68 @@ export default function IndividualDashboard({
             )}
           </div>
         )}
+
+        {/* Dashboard Overview Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-white text-lg">Recent Scans</h3>
+              <button
+                onClick={() => setActiveTab('scans')}
+                className="text-sm text-blue-400 hover:text-blue-300 transition-all"
+              >
+                View All →
+              </button>
+            </div>
+            <div className="space-y-3">
+              {recentScans.slice(0, 3).map((scan) => (
+                <div key={scan.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-900/50 hover:bg-gray-900 transition-all">
+                  <div className="flex items-center gap-3">
+                    <div className={`text-lg ${
+                      scan.verdict === 'reject' ? 'text-red-400' :
+                      scan.verdict === 'flag' ? 'text-yellow-400' : 'text-green-400'
+                    }`}>
+                      {scan.verdict === 'reject' ? '🔴' : 
+                       scan.verdict === 'flag' ? '🟡' : '🟢'}
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-white text-sm">{scan.projectName}</h4>
+                      <p className="text-xs text-gray-400">{scan.scannedAt.toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                  <ScoreBadge score={scan.riskScore} verdict={scan.verdict} />
+                </div>
+              ))}
+              {recentScans.length === 0 && (
+                <div className="text-center py-4">
+                  <p className="text-gray-400 text-sm">No scans yet</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
+            <h3 className="font-bold text-white text-lg mb-4">Quick Stats</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-gray-900/30 rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-white mb-1">{watchlist.length}</div>
+                <div className="text-xs text-gray-400">Watchlist Items</div>
+              </div>
+              <div className="bg-gray-900/30 rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-white mb-1">{recentScans.length}</div>
+                <div className="text-xs text-gray-400">Total Scans</div>
+              </div>
+              <div className="bg-gray-900/30 rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-white mb-1">{userProfile.availablePoints}</div>
+                <div className="text-xs text-gray-400">Points</div>
+              </div>
+              <div className="bg-gray-900/30 rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-white mb-1">{userProfile.currentTier}</div>
+                <div className="text-xs text-gray-400">Your Tier</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   };
@@ -1406,13 +1674,25 @@ export default function IndividualDashboard({
               
               <div className="grid grid-cols-2 gap-2">
                 <button
-                  onClick={() => performAnalysis(item.projectName, 'deep')}
+                  onClick={() => {
+                    // For watchlist items (project names), go directly to MetricBreakdown
+                    setInputValue(item.projectName);
+                    setDetectedChain('unknown');
+                    performAnalysis(item.projectName, 'deep', false, true); // Mark as project name
+                    setActiveTab('analyze');
+                  }}
                   className="px-2.5 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg text-xs transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1.5"
                 >
                   🔄 Rescan
                 </button>
                 <button
-                  onClick={() => performAnalysis(item.projectName, 'deep')}
+                  onClick={() => {
+                    // For watchlist items (project names), go directly to MetricBreakdown
+                    setInputValue(item.projectName);
+                    setActiveTab('analyze');
+                    setDetectedChain('unknown');
+                    performAnalysis(item.projectName, 'deep', false, true); // Mark as project name
+                  }}
                   className="px-2.5 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-xs transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1.5"
                 >
                   📊 Details
@@ -1472,7 +1752,13 @@ export default function IndividualDashboard({
               <div className="flex items-center gap-3">
                 <ScoreBadge score={scan.riskScore} verdict={scan.verdict} />
                 <button
-                  onClick={() => performAnalysis(scan.projectName, 'deep')}
+                  onClick={() => {
+                    // For recent scans (project names), go directly to MetricBreakdown
+                    setInputValue(scan.projectName);
+                    setActiveTab('analyze');
+                    setDetectedChain('unknown');
+                    performAnalysis(scan.projectName, 'deep', false, true); // Mark as project name
+                  }}
                   className="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg text-xs transition-all hover:scale-105 active:scale-95"
                 >
                   🔄 Rescan
@@ -1535,7 +1821,7 @@ export default function IndividualDashboard({
             <h3 className="font-bold text-white text-sm mb-2">Risk Assessment Quiz</h3>
             <p className="text-xs text-gray-400 mb-4">Test your scam detection skills</p>
             <button
-              onClick={() => setActiveTab('analyze')}
+              onClick={() => setShowQuiz(true)}
               className="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95 w-full"
             >
               Start Quiz
@@ -1561,17 +1847,58 @@ export default function IndividualDashboard({
           </div>
         </div>
       </div>
+      
+      {/* Quiz Modal */}
+      {showQuiz && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 backdrop-blur-sm border border-sifter-border rounded-xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+            <h3 className="text-xl font-bold text-white mb-4">Risk Assessment Quiz</h3>
+            
+            {!quizCompleted ? (
+              <div className="space-y-4">
+                <p className="text-gray-300">Test your scam detection knowledge!</p>
+                <div className="space-y-3">
+                  <div className="p-3 bg-gray-800 rounded-lg">
+                    <p className="text-white mb-2">1. A project promises guaranteed 10x returns in 30 days. This is:</p>
+                    <div className="space-y-1.5">
+                      {['A safe investment', 'A moderate risk', 'A major red flag'].map((option, i) => (
+                        <label key={i} className="flex items-center gap-2 cursor-pointer">
+                          <input type="radio" name="q1" className="accent-blue-500" />
+                          <span className="text-gray-300">{option}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setQuizCompleted(true);
+                    // Show results
+                    alert('Quiz completed! You scored 3/5. Good job!');
+                    setShowQuiz(false);
+                  }}
+                  className="w-full px-4 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg"
+                >
+                  Complete Quiz (Demo)
+                </button>
+              </div>
+            ) : null}
+            
+            <button
+              onClick={() => setShowQuiz(false)}
+              className="mt-4 w-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 
   const handleRedeemReward = async (rewardId: string) => {
     const reward = rewards.find((r: Reward) => r.id === rewardId);
     if (!reward) return false;
-    
-    if (!reward.isAvailable) {
-      alert('This reward is currently unavailable!');
-      return false;
-    }
     
     if (userProfile.availablePoints < reward.pointsCost) {
       alert(`Not enough points! You need ${reward.pointsCost} points but have ${userProfile.availablePoints}.`);
@@ -1656,13 +1983,14 @@ export default function IndividualDashboard({
                 ref={exportMenuRef}
                 className="absolute top-full right-0 mt-1.5 z-50 animate-fadeIn shadow-2xl"
               >
-                <div className="bg-sifter-card border border-sifter-border rounded-lg w-56 overflow-hidden">
-                  <div className="p-3 border-b border-sifter-border bg-sifter-card/95">
+                {/* FIXED: Added bg-opacity-100 to make dropdown opaque */}
+                <div className="bg-gray-900 border border-sifter-border rounded-lg w-56 overflow-hidden bg-opacity-100">
+                 <div className="bg-gray-900 backdrop-blur-sm border border-sifter-border rounded-lg w-56 overflow-hidden">
                     <h3 className="font-bold text-white text-sm">Export Data</h3>
                     <p className="text-xs text-gray-400">Choose format and data</p>
                   </div>
                   
-                  <div className="p-1.5 max-h-80 overflow-y-auto">
+                  <div className="bg-gray-900 backdrop-blur-sm border border-sifter-border rounded-lg w-56 overflow-hidden">
                     {analysisResults && (
                       <div className="mb-1.5">
                         <div className="px-2 py-1 text-xs font-medium text-gray-500">CURRENT ANALYSIS</div>
@@ -1714,7 +2042,7 @@ export default function IndividualDashboard({
                     </div>
                   </div>
                   
-                  <div className="p-1.5 border-t border-sifter-border">
+                  <div className="bg-gray-900 backdrop-blur-sm border border-sifter-border rounded-lg w-56 overflow-hidden">
                     <button onClick={() => setShowExportMenu(false)} className="w-full px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded text-sm">
                       Cancel
                     </button>
