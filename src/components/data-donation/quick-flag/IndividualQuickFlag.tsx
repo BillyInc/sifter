@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { QuickFlagData, UserMode } from '@/types/dataDonation';
 
 interface IndividualQuickFlagProps {
+  compact?: boolean;
   entityName: string;
   context: string;
   onSubmit: (data: QuickFlagData) => Promise<void>;
@@ -21,7 +22,7 @@ export default function IndividualQuickFlag({
   onCancel,
   onEvidenceCountChange,
   onTemplateSelect,
-  onExperienceShare
+  onExperienceShare, compact = false
 }: IndividualQuickFlagProps) {
   const [reason, setReason] = useState('');
   const [severity, setSeverity] = useState<'critical' | 'high' | 'medium'>('medium');

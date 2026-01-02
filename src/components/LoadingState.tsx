@@ -6,6 +6,7 @@ interface LoadingStateProps {
   projectName: string;
   onComplete: () => void;
   duration: number; // in milliseconds
+  compact?: boolean;  // ✅ ADD THIS LINE
 }
 
 const analysisSteps = [

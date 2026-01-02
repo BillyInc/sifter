@@ -68,7 +68,6 @@ export const getMetricValue = (metrics: MetricData[], keyOrName: string): number
 interface ResearcherDashboardProps {
   onAnalyze: (input: string) => void;
   userEmail: string;
-
   onExportPDF?: (data: ProjectData) => void;
   onExportJSON?: (data: ProjectData) => void;
   onExportCSV?: (data: ProjectData) => void;
@@ -82,12 +81,13 @@ interface ResearcherDashboardProps {
   onViewReport?: (scanId: string) => void;
   onRemoveFromWatchlist?: (projectId: string) => void;
   onModeChange?: () => void;
+  // NEW: Compact mode support
+  compact?: boolean;
 }
 
 export default function ResearcherDashboard({
   onAnalyze,
   userEmail,
-
   onExportPDF,
   onExportJSON,
   onExportCSV,
@@ -99,7 +99,9 @@ export default function ResearcherDashboard({
   onAddToWatchlist,
   onViewReport,
   onRemoveFromWatchlist,
-  onModeChange
+  onModeChange,
+  // NEW: Compact mode
+  compact = false
 }: ResearcherDashboardProps) {
   const [activeTab, setActiveTab] = useState<'analyze' | 'compare' | 'patterns' | 'database' | 'exports'>('analyze');
   const [currentProject, setCurrentProject] = useState<ProjectData | null>(currentProjectData || null);
@@ -193,6 +195,28 @@ export default function ResearcherDashboard({
     avgProcessingTime: 87,
     lastUpdated: '2 hours ago',
   });
+
+  // Compact mode styles
+  const compactClasses = {
+    container: compact ? 'space-y-4' : 'space-y-6',
+    header: compact ? 'py-2' : 'py-0',
+    logo: compact ? 'w-8 h-8' : 'w-10 h-10',
+    logoIcon: compact ? 'text-lg' : 'text-xl',
+    title: compact ? 'text-xl' : 'text-2xl',
+    subtitle: compact ? 'text-xs' : 'text-sm',
+    statsGrid: compact ? 'grid-cols-3 gap-2' : 'grid-cols-3 lg:grid-cols-6 gap-3',
+    statCard: compact ? 'p-2' : 'p-3',
+    statValue: compact ? 'text-base' : 'text-lg',
+    statLabel: compact ? 'text-xs' : 'text-xs',
+    tabButton: compact ? 'py-2 text-xs' : 'py-3 text-sm',
+    contentCard: compact ? 'p-3' : 'p-5',
+    contentTitle: compact ? 'text-base' : 'text-lg',
+    button: compact ? 'px-3 py-1.5 text-xs' : 'px-4 py-2.5 text-sm',
+    buttonSmall: compact ? 'px-2 py-1 text-xs' : 'px-3 py-1.5 text-sm',
+    tableCell: compact ? 'py-2 px-2 text-xs' : 'py-3 px-4 text-sm',
+    metricValue: compact ? 'text-sm' : 'text-base',
+    metricLabel: compact ? 'text-xs' : 'text-sm',
+  };
 
   const handleRemoveFromComparison = (projectId: string) => {
     setComparisonProjects(prev => prev.filter(p => p.id !== projectId));
@@ -421,23 +445,23 @@ export default function ResearcherDashboard({
     ];
 
     return (
-      <div className="bg-gray-900/30 p-4 rounded-lg">
-        <div className="text-sm font-medium text-gray-300 mb-3">Metric Comparison</div>
+      <div className={`bg-gray-900/30 p-4 rounded-lg ${compact ? 'p-3' : 'p-4'}`}>
+        <div className={`${compact ? 'text-xs' : 'text-sm'} font-medium text-gray-300 mb-3`}>Metric Comparison</div>
         <div className="grid grid-cols-4 gap-4">
           {metrics.map((metric, metricIdx) => (
             <div key={metricIdx} className="space-y-2">
-              <div className="text-xs text-gray-400">{metric.name}</div>
+              <div className={`${compact ? 'text-xs' : 'text-sm'} text-gray-400`}>{metric.name}</div>
               {comparisonProjects.map((project, projIdx) => {
                 const metricValue = getMetricValue(project.metrics, metric.key);
                 return (
                   <div key={projIdx} className="flex items-center gap-2">
-                    <div className={`w-3 h-3 rounded-full ${metricValue >= 80 ? 'bg-red-500' :
+                    <div className={`w-2 h-2 rounded-full ${metricValue >= 80 ? 'bg-red-500' :
                         metricValue >= 60 ? 'bg-orange-500' :
                           metricValue >= 40 ? 'bg-yellow-500' :
                             'bg-green-500'
                       }`}></div>
-                    <div className="text-xs text-gray-300 truncate">{project.displayName}</div>
-                    <div className="text-xs font-medium text-white ml-auto">
+                    <div className={`${compact ? 'text-xs' : 'text-sm'} text-gray-300 truncate`}>{project.displayName}</div>
+                    <div className={`${compact ? 'text-xs' : 'text-sm'} font-medium text-white ml-auto`}>
                       {metricValue}
                     </div>
                   </div>
@@ -493,7 +517,6 @@ export default function ResearcherDashboard({
       alert(`Added ${scan.projectName} to watchlist!`);
     }
   };
-
 
   const calculateHighestRiskMetric = (): string => {
     if (!currentProject || !currentProject.metrics) return 'N/A';
@@ -752,59 +775,61 @@ export default function ResearcherDashboard({
   ];
 
   return (
-    <div className="space-y-6">
+    <div className={compactClasses.container}>
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className={`flex justify-between items-center ${compact ? 'py-2' : ''}`}>
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg flex items-center justify-center">
-              <span className="text-xl">🔬</span>
+            <div className={`${compactClasses.logo} bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg flex items-center justify-center`}>
+              <span className={compactClasses.logoIcon}>🔬</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Research Lab</h1>
-              <p className="text-gray-400 text-sm">Deep analysis, data export, comparative studies</p>
+              <h1 className={`${compactClasses.title} font-bold text-white`}>Research Lab</h1>
+              <p className={`${compactClasses.subtitle} text-gray-400`}>Deep analysis, data export, comparative studies</p>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-4">
-
-
           <div className="text-right">
-            <div className="text-sm text-gray-400">Researcher</div>
-            <div className="font-medium text-white">{userName || userEmail || 'Researcher'}</div>
+            <div className={`${compact ? 'text-xs' : 'text-sm'} text-gray-400`}>Researcher</div>
+            <div className={`${compact ? 'text-sm' : 'text-base'} font-medium text-white`}>{userName || userEmail || 'Researcher'}</div>
           </div>
-          <div className="px-3 py-1.5 rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/30 text-sm font-medium">
+          <div className={`${compact ? 'px-2 py-1 text-xs' : 'px-3 py-1.5 text-sm'} rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/30 font-medium`}>
             🔬 Researcher Mode
           </div>
         </div>
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div className={`grid ${compactClasses.statsGrid}`}>
         <div className="bg-sifter-card border border-sifter-border rounded-lg p-3 hover:border-purple-500/30 transition-colors">
-          <div className="text-lg font-bold text-white">{databaseStats.flaggedEntities}</div>
-          <div className="text-xs text-gray-400">Flagged Entities</div>
+          <div className={`${compactClasses.statValue} font-bold text-white`}>{databaseStats.flaggedEntities}</div>
+          <div className={compactClasses.statLabel}>Flagged Entities</div>
         </div>
         <div className="bg-sifter-card border border-sifter-border rounded-lg p-3 hover:border-purple-500/30 transition-colors">
-          <div className="text-lg font-bold text-white">{databaseStats.projectsScanned}</div>
-          <div className="text-xs text-gray-400">Projects</div>
+          <div className={`${compactClasses.statValue} font-bold text-white`}>{databaseStats.projectsScanned}</div>
+          <div className={compactClasses.statLabel}>Projects</div>
         </div>
         <div className="bg-sifter-card border border-sifter-border rounded-lg p-3 hover:border-purple-500/30 transition-colors">
-          <div className="text-lg font-bold text-white">{databaseStats.patternsDocumented}</div>
-          <div className="text-xs text-gray-400">Patterns</div>
+          <div className={`${compactClasses.statValue} font-bold text-white`}>{databaseStats.patternsDocumented}</div>
+          <div className={compactClasses.statLabel}>Patterns</div>
         </div>
-        <div className="bg-sifter-card border border-sifter-border rounded-lg p-3 hover:border-purple-500/30 transition-colors">
-          <div className="text-lg font-bold text-green-400">{databaseStats.historicalSuccessRate}%</div>
-          <div className="text-xs text-gray-400">Accuracy</div>
-        </div>
-        <div className="bg-sifter-card border border-sifter-border rounded-lg p-3 hover:border-purple-500/30 transition-colors">
-          <div className="text-lg font-bold text-white">{databaseStats.avgProcessingTime}s</div>
-          <div className="text-xs text-gray-400">Avg. Time</div>
-        </div>
-        <div className="bg-sifter-card border border-sifter-border rounded-lg p-3 hover:border-purple-500/30 transition-colors">
-          <div className="text-lg font-bold text-blue-400">13</div>
-          <div className="text-xs text-gray-400">Metrics</div>
-        </div>
+        {!compact && (
+          <>
+            <div className="bg-sifter-card border border-sifter-border rounded-lg p-3 hover:border-purple-500/30 transition-colors">
+              <div className={`${compactClasses.statValue} font-bold text-green-400`}>{databaseStats.historicalSuccessRate}%</div>
+              <div className={compactClasses.statLabel}>Accuracy</div>
+            </div>
+            <div className="bg-sifter-card border border-sifter-border rounded-lg p-3 hover:border-purple-500/30 transition-colors">
+              <div className={`${compactClasses.statValue} font-bold text-white`}>{databaseStats.avgProcessingTime}s</div>
+              <div className={compactClasses.statLabel}>Avg. Time</div>
+            </div>
+            <div className="bg-sifter-card border border-sifter-border rounded-lg p-3 hover:border-purple-500/30 transition-colors">
+              <div className={`${compactClasses.statValue} font-bold text-blue-400`}>13</div>
+              <div className={compactClasses.statLabel}>Metrics</div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Main Content Tabs */}
@@ -814,7 +839,7 @@ export default function ResearcherDashboard({
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`py-3 px-1 font-medium text-sm border-b-2 transition-colors flex items-center gap-2 ${activeTab === tab
+              className={`${compactClasses.tabButton} px-1 font-medium border-b-2 transition-colors flex items-center gap-2 ${activeTab === tab
                   ? 'border-purple-500 text-purple-400'
                   : 'border-transparent text-gray-400 hover:text-gray-300'
                 }`}
@@ -832,34 +857,35 @@ export default function ResearcherDashboard({
       {/* Tab Content */}
       <div className="pt-4">
         {activeTab === 'analyze' && (
-          <div className="space-y-6">
+          <div className={compact ? 'space-y-4' : 'space-y-6'}>
             {/* New Analysis Section */}
             <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-white">New Analysis</h3>
+                <h3 className={`${compact ? 'text-base' : 'text-lg'} font-semibold text-white`}>New Analysis</h3>
                 <button
                   onClick={toggleAdvancedOptions}
-                  className="text-sm text-purple-400 hover:text-purple-300 flex items-center gap-1"
+                  className={`${compact ? 'text-xs' : 'text-sm'} text-purple-400 hover:text-purple-300 flex items-center gap-1`}
                 >
                   {showAdvancedOptions ? '▲ Hide' : '▼ Advanced'} Options
                 </button>
               </div>
 
-              <div className="space-y-4">
+              <div className={compact ? 'space-y-3' : 'space-y-4'}>
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">Project Identifier</label>
+                  <label className={`${compact ? 'text-xs' : 'text-sm'} block text-gray-400 mb-2`}>Project Identifier</label>
                   <SmartInputParser
                     onResolve={handleSmartInputResolve}
                     placeholder="Enter Twitter, Discord, GitHub, website, or project name..."
                     disabled={isAnalyzing}
+                    compact={compact}
                   />
                 </div>
 
                 {showAdvancedOptions && (
-                  <div className="border border-sifter-border rounded-lg p-4 bg-gray-900/30 space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                  <div className={`border border-sifter-border rounded-lg p-4 bg-gray-900/30 ${compact ? 'space-y-3' : 'space-y-4'}`}>
+                    <div className={`grid ${compact ? 'grid-cols-1 gap-3' : 'grid-cols-2 gap-4'}`}>
                       <div>
-                        <label className="block text-sm text-gray-400 mb-2">Analysis Type</label>
+                        <label className={`${compact ? 'text-xs' : 'text-sm'} block text-gray-400 mb-2`}>Analysis Type</label>
                         <select
                           className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-3 py-2 text-white text-sm"
                           defaultValue="standard"
@@ -871,7 +897,7 @@ export default function ResearcherDashboard({
                         </select>
                       </div>
                       <div>
-                        <label className="block text-sm text-gray-400 mb-2">Statistical Tests</label>
+                        <label className={`${compact ? 'text-xs' : 'text-sm'} block text-gray-400 mb-2`}>Statistical Tests</label>
                         <select
                           className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-3 py-2 text-white text-sm"
                           defaultValue="all"
@@ -885,9 +911,9 @@ export default function ResearcherDashboard({
                     </div>
 
                     <div className="space-y-3">
-                      <div className="text-sm text-gray-400">Advanced Options</div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <label className="flex items-center gap-2 text-sm text-gray-300">
+                      <div className={`${compact ? 'text-xs' : 'text-sm'} text-gray-400`}>Advanced Options</div>
+                      <div className={`grid ${compact ? 'grid-cols-1' : 'grid-cols-2'} gap-3`}>
+                        <label className={`flex items-center gap-2 ${compact ? 'text-xs' : 'text-sm'} text-gray-300`}>
                           <input
                             type="checkbox"
                             className="rounded border-gray-600 bg-sifter-dark"
@@ -896,7 +922,7 @@ export default function ResearcherDashboard({
                           />
                           Comparative analysis
                         </label>
-                        <label className="flex items-center gap-2 text-sm text-gray-300">
+                        <label className={`flex items-center gap-2 ${compact ? 'text-xs' : 'text-sm'} text-gray-300`}>
                           <input
                             type="checkbox"
                             className="rounded border-gray-600 bg-sifter-dark"
@@ -905,7 +931,7 @@ export default function ResearcherDashboard({
                           />
                           Statistical tests
                         </label>
-                        <label className="flex items-center gap-2 text-sm text-gray-300">
+                        <label className={`flex items-center gap-2 ${compact ? 'text-xs' : 'text-sm'} text-gray-300`}>
                           <input
                             type="checkbox"
                             className="rounded border-gray-600 bg-sifter-dark"
@@ -914,7 +940,7 @@ export default function ResearcherDashboard({
                           />
                           Export raw data
                         </label>
-                        <label className="flex items-center gap-2 text-sm text-gray-300">
+                        <label className={`flex items-center gap-2 ${compact ? 'text-xs' : 'text-sm'} text-gray-300`}>
                           <input
                             type="checkbox"
                             className="rounded border-gray-600 bg-sifter-dark"
@@ -929,15 +955,15 @@ export default function ResearcherDashboard({
                     {analysisOptions.customWeighting && (
                       <div className="border-t border-sifter-border pt-4">
                         <div className="flex justify-between items-center mb-3">
-                          <div className="text-sm font-medium text-gray-300">Custom Metric Weights</div>
+                          <div className={`${compact ? 'text-xs' : 'text-sm'} font-medium text-gray-300`}>Custom Metric Weights</div>
                           <button
                             onClick={resetCustomWeights}
-                            className="text-xs text-purple-400 hover:text-purple-300"
+                            className={`${compact ? 'text-xs' : 'text-sm'} text-purple-400 hover:text-purple-300`}
                           >
                             Reset to Default
                           </button>
                         </div>
-                        <div className="grid grid-cols-3 gap-3">
+                        <div className={`grid ${compact ? 'grid-cols-2' : 'grid-cols-3'} gap-3`}>
                           {Object.entries(customWeights).map(([metric, weight]) => (
                             <div key={metric} className="space-y-1">
                               <div className="flex justify-between text-xs">
@@ -961,8 +987,8 @@ export default function ResearcherDashboard({
                 )}
 
                 {isAnalyzing ? (
-                  <div className="space-y-3">
-                    <div className="text-sm text-gray-300">Running deep analysis...</div>
+                  <div className={compact ? 'space-y-2' : 'space-y-3'}>
+                    <div className={`${compact ? 'text-xs' : 'text-sm'} text-gray-300`}>Running deep analysis...</div>
                     <div className="w-full bg-gray-800 rounded-full h-2">
                       <div
                         className="bg-gradient-to-r from-purple-500 to-purple-700 h-2 rounded-full transition-all duration-300"
@@ -982,7 +1008,7 @@ export default function ResearcherDashboard({
                         const projectName = projectInput || 'New Project';
                         runDeepAnalysis(projectName);
                       }}
-                      className="px-5 py-2.5 bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white rounded-lg font-medium transition-all flex items-center gap-2"
+                      className={`${compactClasses.button} bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white rounded-lg font-medium transition-all flex items-center gap-2`}
                       disabled={!projectInput}
                     >
                       <span>🔬</span>
@@ -990,13 +1016,13 @@ export default function ResearcherDashboard({
                     </button>
                     <button
                       onClick={runStatisticalTest}
-                      className="px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors text-sm"
+                      className={`${compactClasses.buttonSmall} bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors`}
                     >
                       Run Statistical Test
                     </button>
                     <button
                       onClick={runHistoricalPattern}
-                      className="px-4 py-2.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors text-sm"
+                      className={`${compactClasses.buttonSmall} bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors`}
                     >
                       Historical Pattern
                     </button>
@@ -1007,25 +1033,25 @@ export default function ResearcherDashboard({
 
             {/* Current Analysis Results */}
             {currentProject && !isAnalyzing && (
-              <div className="space-y-6">
+              <div className={compact ? 'space-y-4' : 'space-y-6'}>
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold text-white">Analysis Results</h3>
+                  <h3 className={`${compact ? 'text-base' : 'text-lg'} font-semibold text-white`}>Analysis Results</h3>
                   <div className="flex gap-2">
                     <button
                       onClick={() => setCurrentProject(null)}
-                      className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors"
+                      className={`${compactClasses.buttonSmall} bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors`}
                     >
                       ✕ Clear Results
                     </button>
                     <button
                       onClick={() => handleAddToComparison(currentProject.displayName)}
-                      className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border border-purple-500/30 rounded-lg text-sm font-medium transition-colors"
+                      className={`${compactClasses.buttonSmall} bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border border-purple-500/30 rounded-lg font-medium transition-colors`}
                     >
                       📈 Add to Comparison
                     </button>
                     <button
                       onClick={() => setShowResearchReport(true)}
-                      className="px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border border-blue-500/30 rounded-lg text-sm font-medium transition-colors"
+                      className={`${compactClasses.buttonSmall} bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border border-blue-500/30 rounded-lg font-medium transition-colors`}
                     >
                       📊 View Full Report
                     </button>
@@ -1033,40 +1059,41 @@ export default function ResearcherDashboard({
                 </div>
 
                 {/* Quick Stats */}
-                <div className="grid grid-cols-4 gap-3">
+                <div className={`grid ${compact ? 'grid-cols-2 gap-2' : 'grid-cols-4 gap-3'}`}>
                   <div className="bg-gray-900/30 p-3 rounded-lg">
-                    <div className="text-xs text-gray-400">Highest Risk</div>
-                    <div className="text-base font-bold text-red-400">
+                    <div className={`${compact ? 'text-xs' : 'text-sm'} text-gray-400`}>Highest Risk</div>
+                    <div className={`${compact ? 'text-sm' : 'text-base'} font-bold text-red-400`}>
                       {calculateHighestRiskMetric()}
                     </div>
                   </div>
                   <div className="bg-gray-900/30 p-3 rounded-lg">
-                    <div className="text-xs text-gray-400">Lowest Risk</div>
-                    <div className="text-base font-bold text-green-400">
+                    <div className={`${compact ? 'text-xs' : 'text-sm'} text-gray-400`}>Lowest Risk</div>
+                    <div className={`${compact ? 'text-sm' : 'text-base'} font-bold text-green-400`}>
                       {calculateLowestRiskMetric()}
                     </div>
                   </div>
                   <div className="bg-gray-900/30 p-3 rounded-lg">
-                    <div className="text-xs text-gray-400">Avg. Metric Score</div>
-                    <div className="text-base font-bold text-white">
+                    <div className={`${compact ? 'text-xs' : 'text-sm'} text-gray-400`}>Avg. Metric Score</div>
+                    <div className={`${compact ? 'text-sm' : 'text-base'} font-bold text-white`}>
                       {calculateAvgMetricScore()}
                     </div>
                   </div>
                   <div className="bg-gray-900/30 p-3 rounded-lg">
-                    <div className="text-xs text-gray-400">Critical Flags</div>
-                    <div className="text-base font-bold text-orange-400">
+                    <div className={`${compact ? 'text-xs' : 'text-sm'} text-gray-400`}>Critical Flags</div>
+                    <div className={`${compact ? 'text-sm' : 'text-base'} font-bold text-orange-400`}>
                       {calculateCriticalFlags()}
                     </div>
                   </div>
                 </div>
 
                 <MetricBreakdown
-                  instanceId="main-analysis" // ✅ ADD THIS
+                  instanceId="main-analysis"
                   metrics={currentProject.metrics}
                   projectName={currentProject.displayName}
                   riskScore={currentProject.overallRisk.score}
                   onExport={() => handleExportAnalysis('pdf', currentProject)}
                   projectData={currentProject}
+                  compact={compact}
                 />
               </div>
             )}
@@ -1076,8 +1103,8 @@ export default function ResearcherDashboard({
               <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-xl font-bold text-white mb-1">Analysis Dashboard</h2>
-                    <p className="text-gray-400 text-sm">13-metric risk assessment results</p>
+                    <h2 className={`${compact ? 'text-lg' : 'text-xl'} font-bold text-white mb-1`}>Analysis Dashboard</h2>
+                    <p className={`${compact ? 'text-xs' : 'text-sm'} text-gray-400`}>13-metric risk assessment results</p>
                   </div>
                   <div className="flex gap-2">
                     <button
@@ -1090,13 +1117,13 @@ export default function ResearcherDashboard({
                           alert('Please run an analysis first to export data.');
                         }
                       }}
-                      className="px-4 py-2 bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg font-medium transition-colors text-sm"
+                      className={`${compactClasses.buttonSmall} bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg font-medium transition-colors`}
                     >
                       Export Data
                     </button>
                     <button
                       onClick={() => setActiveTab('compare')}
-                      className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors text-sm"
+                      className={`${compactClasses.buttonSmall} bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors`}
                     >
                       Compare Selected
                     </button>
@@ -1104,9 +1131,7 @@ export default function ResearcherDashboard({
                 </div>
 
                 {/* Charts Section - Now uses filteredProjects (converted from recentScans) */}
-                <ResearchCharts projects={filteredProjects} />
-
-
+                <ResearchCharts projects={filteredProjects} compact={compact} />
 
                 {/* Detailed Analysis */}
                 <div className="mt-8">
@@ -1158,21 +1183,21 @@ export default function ResearcherDashboard({
                               return (
                                 <>
                                   {/* Quick Stats with ACTUAL metrics */}
-                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                                  <div className={`grid ${compact ? 'grid-cols-2' : 'grid-cols-2 md:grid-cols-4'} gap-3 mb-4`}>
                                     <div className="text-center p-3 bg-sifter-card rounded-lg">
-                                      <div className="text-lg font-bold text-white">{getMetricValue(projectData.metrics, 'teamIdentity')}</div>
+                                      <div className={`${compact ? 'text-base' : 'text-lg'} font-bold text-white`}>{getMetricValue(projectData.metrics, 'teamIdentity')}</div>
                                       <div className="text-xs text-gray-400">Team Identity</div>
                                     </div>
                                     <div className="text-center p-3 bg-sifter-card rounded-lg">
-                                      <div className="text-lg font-bold text-white">{getMetricValue(projectData.metrics, 'contaminatedNetwork')}</div>
+                                      <div className={`${compact ? 'text-base' : 'text-lg'} font-bold text-white`}>{getMetricValue(projectData.metrics, 'contaminatedNetwork')}</div>
                                       <div className="text-xs text-gray-400">Network Risk</div>
                                     </div>
                                     <div className="text-center p-3 bg-sifter-card rounded-lg">
-                                      <div className="text-lg font-bold text-white">{getMetricValue(projectData.metrics, 'githubAuthenticity')}</div>
+                                      <div className={`${compact ? 'text-base' : 'text-lg'} font-bold text-white`}>{getMetricValue(projectData.metrics, 'githubAuthenticity')}</div>
                                       <div className="text-xs text-gray-400">Code Auth</div>
                                     </div>
                                     <div className="text-center p-3 bg-sifter-card rounded-lg">
-                                      <div className="text-lg font-bold text-white">{getMetricValue(projectData.metrics, 'tokenomics')}</div>
+                                      <div className={`${compact ? 'text-base' : 'text-lg'} font-bold text-white`}>{getMetricValue(projectData.metrics, 'tokenomics')}</div>
                                       <div className="text-xs text-gray-400">Tokenomics</div>
                                     </div>
                                   </div>
@@ -1230,25 +1255,25 @@ export default function ResearcherDashboard({
                             <div className="flex gap-2 mt-4">
                               <button
                                 onClick={() => handleViewFullReport(scan.id)}
-                                className="px-3 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-lg transition-colors text-sm"
+                                className={`${compactClasses.buttonSmall} bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-lg transition-colors`}
                               >
                                 View Full Report
                               </button>
                               <button
                                 onClick={() => handleCompareProject(scan.id)}
-                                className="px-3 py-2 bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg transition-colors text-sm"
+                                className={`${compactClasses.buttonSmall} bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg transition-colors`}
                               >
                                 Compare
                               </button>
                               <button
                                 onClick={() => handleExportProject(scan.id)}
-                                className="px-3 py-2 bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg transition-colors text-sm"
+                                className={`${compactClasses.buttonSmall} bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg transition-colors`}
                               >
                                 Export
                               </button>
                               <button
                                 onClick={() => handleAddToWatchlistFromScan(scan.id)}
-                                className="px-3 py-2 bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border border-purple-500/20 rounded-lg transition-colors text-sm"
+                                className={`${compactClasses.buttonSmall} bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border border-purple-500/20 rounded-lg transition-colors`}
                               >
                                 ⭐ Add to Watchlist
                               </button>
@@ -1266,25 +1291,22 @@ export default function ResearcherDashboard({
 
         {/* Compare Tab */}
         {activeTab === 'compare' && (
-          <div className="space-y-6">
+          <div className={compact ? 'space-y-4' : 'space-y-6'}>
             <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-white">Comparative Analysis</h3>
-                <div className="text-sm text-gray-400">
+                <h3 className={`${compact ? 'text-base' : 'text-lg'} font-semibold text-white`}>Comparative Analysis</h3>
+                <div className={`${compact ? 'text-xs' : 'text-sm'} text-gray-400`}>
                   {comparisonProjects.length} project{comparisonProjects.length !== 1 ? 's' : ''} selected
                 </div>
 
                 {comparisonProjects.length > 0 && (
                   <button
                     onClick={() => setComparisonProjects([])}
-                    className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg text-sm transition-colors"
+                    className={`${compactClasses.buttonSmall} bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg transition-colors`}
                   >
                     Clear All
                   </button>
                 )}
-
-
-
               </div>
 
               {comparisonProjects.length === 0 ? (
@@ -1294,7 +1316,7 @@ export default function ResearcherDashboard({
                   <p className="text-gray-400 text-sm mb-4">Add projects from recent analyses to compare metrics</p>
                   <button
                     onClick={() => setActiveTab('analyze')}
-                    className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-colors"
+                    className={`${compactClasses.button} bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-colors`}
                   >
                     Go to Analysis
                   </button>
@@ -1307,9 +1329,9 @@ export default function ResearcherDashboard({
                     <table className="w-full min-w-[800px]">
                       <thead>
                         <tr className="border-b border-sifter-border">
-                          <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Metric</th>
+                          <th className={`text-left ${compactClasses.tableCell} text-gray-400 font-medium`}>Metric</th>
                           {comparisonProjects.map((project, idx) => (
-                            <th key={idx} className="text-left py-3 px-4 text-gray-400 font-medium text-sm">
+                            <th key={idx} className={`text-left ${compactClasses.tableCell} text-gray-400 font-medium`}>
                               <div className="flex items-center gap-2">
                                 <div className={`w-2 h-2 rounded-full ${project.overallRisk.score >= 80 ? 'bg-red-500' :
                                     project.overallRisk.score >= 60 ? 'bg-orange-500' :
@@ -1331,7 +1353,7 @@ export default function ResearcherDashboard({
                               </div>
                             </th>
                           ))}
-                          <th className="text-left py-3 px-4 text-gray-400 font-medium text-sm">Avg</th>
+                          <th className={`text-left ${compactClasses.tableCell} text-gray-400 font-medium`}>Avg</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1344,11 +1366,11 @@ export default function ResearcherDashboard({
                           { name: 'Tokenomics', key: 'tokenomics' },
                         ].map(({ name, key }) => (
                           <tr key={key} className="border-b border-sifter-border/30 hover:bg-gray-900/20">
-                            <td className="py-3 px-4 text-gray-300 text-sm">{name}</td>
+                            <td className={`${compactClasses.tableCell} text-gray-300`}>{name}</td>
                             {comparisonProjects.map((project, idx) => {
                               const metricValue = getMetricValue(project.metrics, key);
                               return (
-                                <td key={idx} className="py-3 px-4">
+                                <td key={idx} className={`${compactClasses.tableCell}`}>
                                   <div className="flex items-center gap-2">
                                     <div className={`w-8 h-1.5 rounded-full ${metricValue >= 80 ? 'bg-red-500' :
                                         metricValue >= 60 ? 'bg-orange-500' :
@@ -1359,7 +1381,7 @@ export default function ResearcherDashboard({
                                 </td>
                               );
                             })}
-                            <td className="py-3 px-4 text-gray-400 text-sm">
+                            <td className={`${compactClasses.tableCell} text-gray-400`}>
                               {Math.round(
                                 comparisonProjects.reduce((sum, p) => sum + getMetricValue(p.metrics, key), 0) /
                                 comparisonProjects.length
@@ -1375,7 +1397,7 @@ export default function ResearcherDashboard({
 
               <div className="mt-6 pt-5 border-t border-sifter-border">
                 <h4 className="font-medium text-white mb-3 text-sm">Add Projects to Comparison</h4>
-                <div className="grid grid-cols-3 gap-3">
+                <div className={`grid ${compact ? 'grid-cols-2' : 'grid-cols-3'} gap-3`}>
                   {recentScans.slice(0, 6).map((scan) => (
                     <button
                       key={scan.id}
@@ -1408,11 +1430,11 @@ export default function ResearcherDashboard({
 
         {/* Patterns Tab */}
         {activeTab === 'patterns' && (
-          <div className="space-y-4">
+          <div className={compact ? 'space-y-3' : 'space-y-4'}>
             <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-white">Pattern Library</h3>
-                <div className="text-sm text-gray-400">
+                <h3 className={`${compact ? 'text-base' : 'text-lg'} font-semibold text-white`}>Pattern Library</h3>
+                <div className={`${compact ? 'text-xs' : 'text-sm'} text-gray-400`}>
                   {patterns.length} documented patterns
                 </div>
               </div>
@@ -1423,7 +1445,7 @@ export default function ResearcherDashboard({
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-semibold text-white text-base">{pattern.name}</h4>
+                          <h4 className={`${compact ? 'text-sm' : 'text-base'} font-semibold text-white`}>{pattern.name}</h4>
                           <span className={`text-xs px-2 py-0.5 rounded ${pattern.confidence > 90 ? 'bg-green-500/20 text-green-400' :
                               pattern.confidence > 80 ? 'bg-yellow-500/20 text-yellow-400' :
                                 'bg-orange-500/20 text-orange-400'
@@ -1431,28 +1453,28 @@ export default function ResearcherDashboard({
                             {pattern.confidence}% confidence
                           </span>
                         </div>
-                        <p className="text-gray-400 text-sm">{pattern.description}</p>
+                        <p className={`${compact ? 'text-xs' : 'text-sm'} text-gray-400`}>{pattern.description}</p>
                       </div>
                       <button
                         onClick={() => runHistoricalPattern()}
-                        className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border border-purple-500/30 rounded text-sm transition-colors"
+                        className={`${compactClasses.buttonSmall} bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border border-purple-500/30 rounded transition-colors`}
                       >
                         Test Pattern
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-3 mb-3">
+                    <div className={`grid ${compact ? 'grid-cols-2' : 'grid-cols-3'} gap-3 mb-3`}>
                       {pattern.detectionRules?.map((rule, idx) => (
                         <div key={idx} className="bg-gray-900/50 p-3 rounded">
                           <div className="text-xs text-gray-400 mb-1">{rule.condition}</div>
-                          <div className="text-sm text-white">{rule.description}</div>
+                          <div className={`${compact ? 'text-xs' : 'text-sm'} text-white`}>{rule.description}</div>
                           <div className="text-xs text-gray-500 mt-1">Weight: {rule.weight}%</div>
                         </div>
                       ))}
                     </div>
 
                     <div className="pt-3 border-t border-sifter-border">
-                      <div className="text-sm font-medium text-gray-300 mb-2">Historical Matches</div>
+                      <div className={`${compact ? 'text-xs' : 'text-sm'} font-medium text-gray-300 mb-2`}>Historical Matches</div>
                       <div className="space-y-2">
                         {pattern.examples?.map((example, idx) => (
                           <div key={idx} className="flex justify-between items-center text-sm">
@@ -1478,22 +1500,22 @@ export default function ResearcherDashboard({
 
         {/* Database Tab */}
         {activeTab === 'database' && (
-          <div className="space-y-4">
+          <div className={compact ? 'space-y-3' : 'space-y-4'}>
             <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
-              <h3 className="text-lg font-semibold text-white mb-4">Database Explorer</h3>
+              <h3 className={`${compact ? 'text-base' : 'text-lg'} font-semibold text-white mb-4`}>Database Explorer</h3>
 
-              <div className="grid grid-cols-3 gap-4 mb-6">
+              <div className={`grid ${compact ? 'grid-cols-2' : 'grid-cols-3'} gap-4 mb-6`}>
                 <div className="bg-gray-900/50 p-4 rounded-lg">
-                  <div className="text-lg font-bold text-white">{databaseStats.flaggedEntities}</div>
-                  <div className="text-sm text-gray-400">Flagged Entities</div>
+                  <div className={`${compact ? 'text-base' : 'text-lg'} font-bold text-white`}>{databaseStats.flaggedEntities}</div>
+                  <div className={`${compact ? 'text-xs' : 'text-sm'} text-gray-400`}>Flagged Entities</div>
                 </div>
                 <div className="bg-gray-900/50 p-4 rounded-lg">
-                  <div className="text-lg font-bold text-white">{databaseStats.projectsScanned}</div>
-                  <div className="text-sm text-gray-400">Projects Scanned</div>
+                  <div className={`${compact ? 'text-base' : 'text-lg'} font-bold text-white`}>{databaseStats.projectsScanned}</div>
+                  <div className={`${compact ? 'text-xs' : 'text-sm'} text-gray-400`}>Projects Scanned</div>
                 </div>
                 <div className="bg-gray-900/50 p-4 rounded-lg">
-                  <div className="text-lg font-bold text-white">{databaseStats.patternsDocumented}</div>
-                  <div className="text-sm text-gray-400">Patterns</div>
+                  <div className={`${compact ? 'text-base' : 'text-lg'} font-bold text-white`}>{databaseStats.patternsDocumented}</div>
+                  <div className={`${compact ? 'text-xs' : 'text-sm'} text-gray-400`}>Patterns</div>
                 </div>
               </div>
 
@@ -1526,7 +1548,7 @@ export default function ResearcherDashboard({
                         </div>
                         <div className="text-right">
                           <div className="text-sm text-gray-400">Track Record</div>
-                          <div className="text-base font-semibold text-red-400">
+                          <div className={`${compact ? 'text-sm' : 'text-base'} font-semibold text-red-400`}>
                             {entity.failed}/{entity.projects} failed
                           </div>
                           <div className="text-xs text-gray-500">
@@ -1544,11 +1566,11 @@ export default function ResearcherDashboard({
 
         {/* Exports Tab */}
         {activeTab === 'exports' && (
-          <div className="space-y-4">
+          <div className={compact ? 'space-y-3' : 'space-y-4'}>
             <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
-              <h3 className="text-lg font-semibold text-white mb-4">Data Export</h3>
+              <h3 className={`${compact ? 'text-base' : 'text-lg'} font-semibold text-white mb-4`}>Data Export</h3>
 
-              <div className="grid grid-cols-3 gap-4 mb-6">
+              <div className={`grid ${compact ? 'grid-cols-1' : 'grid-cols-3'} gap-4 mb-6`}>
                 <button
                   onClick={() => {
                     if (currentProject) {
@@ -1604,11 +1626,6 @@ export default function ResearcherDashboard({
         )}
       </div>
 
-
-
-
-
-
       {/* Research Report Modal */}
       {showResearchReport && currentProject && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -1624,14 +1641,11 @@ export default function ResearcherDashboard({
               projectMetrics={currentProject.metrics?.length >= 13 ? currentProject.metrics : projectMetrics}  // ✅ FIX: Fallback to full projectMetrics
               onExport={() => handleExportAnalysis('pdf', currentProject)}
               onShare={() => handleShareAnalysis('clipboard')}
+              compact={compact}
             />
           </div>
         </div>
       )}
-
-
-
-
     </div>
   );
 }

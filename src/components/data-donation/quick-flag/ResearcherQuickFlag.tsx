@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { QuickFlagData, UserMode } from '@/types/dataDonation';
 
 interface ResearcherQuickFlagProps {
+  compact?: boolean;
   entityName: string;
   context: string;
   onSubmit: (data: QuickFlagData) => Promise<void>;
@@ -21,7 +22,7 @@ export default function ResearcherQuickFlag({
   onCancel,
   onEvidenceCountChange,
   onMethodologyChange,
-  onPatternAnalysisChange
+  onPatternAnalysisChange, compact = false
 }: ResearcherQuickFlagProps) {
   const [severity, setSeverity] = useState<'critical' | 'high' | 'medium'>('high');
   const [methodology, setMethodology] = useState('');

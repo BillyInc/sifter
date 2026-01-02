@@ -9,6 +9,7 @@ interface BatchResultsTableProps {
   projects: BatchProject[];
   onViewDetails: (project: BatchProject) => void;
   onExport: (type: 'csv' | 'pdf') => void;
+  compact?: boolean;  // ✅ ADD THIS LINE
 }
 
 // Use VerdictType from your types (excludes 'unknown')

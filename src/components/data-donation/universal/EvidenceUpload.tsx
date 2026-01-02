@@ -21,6 +21,8 @@ export interface EvidenceUploadProps {
   onCancel: () => void;
   mode: 'ea-vc' | 'researcher' | 'individual';
   maxFiles?: number;
+  compact?: boolean;
+  
 }
 
 export default function EvidenceUpload({
@@ -28,6 +30,8 @@ export default function EvidenceUpload({
   existingEvidence = [],
   onUpload,
   onCancel,
+  compact = false,  // ADD THIS LINE
+
   mode,
   maxFiles = 10
 }: EvidenceUploadProps) {

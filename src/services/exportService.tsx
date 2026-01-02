@@ -1,3 +1,5 @@
+'use client';
+
 // /src/services/exportService.ts
 import { 
   ProjectData, 

@@ -207,7 +207,7 @@ export default function SmartInputParser({
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
           placeholder={placeholder || "Enter Twitter handle, Discord invite, GitHub repo, website, or project name..."}
           disabled={disabled || isProcessing}
-          className={`w-full bg-sifter-dark border border-sifter-border rounded-xl text-white focus:border-blue-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+          className={`w-full bg-[#0A0A0F] border border-gray-700 rounded-xl text-white placeholder:text-gray-500 focus:border-blue-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
             compact 
               ? 'px-4 py-3 text-sm pr-28' 
               : 'px-6 py-4 text-lg pr-40'

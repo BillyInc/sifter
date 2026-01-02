@@ -7,6 +7,7 @@ import { BatchProcessingJob } from '@/types';
 interface BatchSummaryProps {
   job: BatchProcessingJob;
   onOpenBulkFlagging?: () => void; // ADD
+ 
 }
 
 export default function BatchSummary({ job, onOpenBulkFlagging }: BatchSummaryProps) {

@@ -72,6 +72,7 @@ interface EABatchDashboardProps {
     projects: string[];
     confidence: number;
   }>) => void;
+  compact?: boolean;  // ✅ ADD THIS LINE
 }
 
 // Helper function to create a metric data object WITH FIXED SCORE PROPERTY
@@ -545,7 +546,7 @@ const BatchResultsTable = ({
   );
 };
 
-export default function EABatchDashboard({
+const EABatchDashboard: React.FC<EABatchDashboardProps> =({
   onBatchUpload,
   onSingleAnalysis,
   onBack,
@@ -568,7 +569,7 @@ export default function EABatchDashboard({
   // NEW: Data donation props
   onStandardForm,
   onBulkFlagEntities
-}: EABatchDashboardProps) {
+}: EABatchDashboardProps) => {
   const [activeTab, setActiveTab] = useState<'single' | 'batch'>('batch');
   const [batchJob, setBatchJob] = useState<BatchProcessingJob | null>(null);
   const [showBatchResults, setShowBatchResults] = useState(false);
@@ -1381,4 +1382,6 @@ https://projectx.com`}
       )}
     </div>
   );
+  
 }
+export default EABatchDashboard;  // ← ADD THIS LINE HERE

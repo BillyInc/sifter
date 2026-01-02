@@ -1,4 +1,4 @@
-// src/types/index.ts - COMPLETE UPDATED VERSION
+// src/types/index.ts - UPDATED VERSION
 // ============= CORE TYPES =============
 export type AnalysisState = 'idle' | 'loading' | 'complete' | 'error';
 export type UserMode = 'ea-vc' | 'researcher' | 'individual' | null;
@@ -216,6 +216,42 @@ export interface VerdictData {
   analyzedAt: string;
 }
 
+// ============= MODE SPECIFIC DATA TYPES =============
+export interface HyperModeData {
+  contractSafety: {
+    mintAuthority: string;
+    freezeAuthority: string;
+    lpLocked: string;
+    taxSettings: string;
+    proxyContract: string;
+  };
+}
+
+export interface MomentumModeData {
+  momentumMetrics: {
+    priceChange24h: string;
+    volumeChange: string;
+    holderGrowth: string;
+    socialEngagement: string;
+    whaleActivity: string;
+    volatilityIndex: string;
+  };
+}
+
+export interface DeepModeData {
+  deepAnalysis: {
+    codeAudit: string;
+    teamDoxxing: string;
+    tokenDistribution: string;
+    roadmapClarity: string;
+    communityGovernance: string;
+    liquidityDepth: string;
+    vestingSchedule: string;
+  };
+}
+
+
+
 // ============= PROJECT DATA TYPES =============
 export interface ProjectData {
   id: string;
@@ -247,8 +283,8 @@ export interface ProjectData {
   blitzMode?: BlitzMode;
   twitterScan?: TwitterScanResult;
   snaData?: SNAData;
+  modeSpecificData?: ModeSpecificData; // Add this property
 }
-
 
 // ... [existing code above]
 
@@ -958,3 +994,336 @@ export interface PartnerPacket {
   projects: PartnerPacketProject[];
 }
 
+// Add to your existing types in types/index.ts
+
+export interface HyperBlitzAnalysis {
+  mode: 'hyper';
+  token: string;
+  age: string;
+  chain: string;
+  scanTime: string;
+  volumeSpike: string;
+  contractSafety: {
+    mintAuthority: string;
+    freezeAuthority: string;
+    lpLocked: string;
+    lpLockedTime?: string;
+  };
+  networkStructure: {
+    totalAccounts: number;
+    clusters: Array<{
+      id: string;
+      size: number;
+      connected: string;
+      density: number;
+      leader?: string;
+      centrality: number;
+    }>;
+    overallDensity: number;
+  };
+  timingAnalysis: {
+    prePumpActivity: {
+      clusterTweets: string;
+      sequence: string[];
+      interval: string;
+    };
+    volumeCorrelation: {
+      tweetCluster: number;
+      volumeSpike: string;
+      timing: string;
+    };
+    coordinationEvidence: {
+      talkingPoints: string[];
+      crossPlatform: boolean;
+      pattern: string;
+    };
+  };
+  historicalContext: {
+    clusterHistory: {
+      tokensPromoted: number;
+      failures: number;
+      patternMatch: number;
+    };
+    individualRisk: Array<{
+      account: string;
+      tokens: number;
+      failureRate: number;
+    }>;
+    contaminationScore: number;
+  };
+  financialCorrelation: {
+    whaleActivity: Array<{
+      whale: string;
+      action: string;
+      amount: string;
+      timing: string;
+    }>;
+    whalePromoterConnections: {
+      promotersFollowing: number;
+      pattern: string;
+    };
+    exitLiquidity: {
+      topBuyers: string;
+      expectedDump: string;
+      drainCapacity: string;
+    };
+  };
+  onChainMomentum: {
+    volume: string;
+    holderConcentration: string;
+    liquidity: string;
+    exitRisk: string;
+    slippage: string;
+  };
+  verdict: string;
+  recommendation: string;
+}
+
+export interface MomentumBlitzAnalysis {
+  mode: 'momentum';
+  token: string;
+  age: string;
+  chain: string;
+  scanTime: string;
+  priceContext: {
+    current: string;
+    change24h: string;
+    ath: string;
+    volume: string;
+    trend: 'rising' | 'declining' | 'stable';
+  };
+  communityHealth: {
+    messageTimingEntropy: number;
+    accountAgeEntropy: number;
+    engagementDistribution: number;
+  };
+  networkEvolution: {
+    initial: {
+      cleanStructure: boolean;
+      density: number;
+      founderCentrality: number;
+    };
+    current: {
+      promoterInfiltration: number;
+      density: number;
+      founderCentrality: number;
+      promoterCentrality: number;
+    };
+    healthTrend: string;
+  };
+  engagementQuality: {
+    substantiveDiscussion: number;
+    mercenaryContent: number;
+    spamBotContent: number;
+  };
+  founderActivity: {
+    tweetFocus: {
+      projectUpdates: number;
+      promotionalContent: number;
+      personalContent: number;
+    };
+    responsePatterns: {
+      technical: number;
+      price: number;
+      timeline: number;
+    };
+    activityTrend: string;
+  };
+  artificialHype: {
+    coordinationPatterns: {
+      naturalBursts: number;
+      lightCoordination: boolean;
+      sustainedManipulation: boolean;
+    };
+    botNetwork: {
+      amplificationRate: number;
+      followerQuality: number;
+      engagementPatterns: string;
+    };
+    influencePurchasing: {
+      followerGrowth: string;
+      fakeEngagement: number;
+    };
+  };
+  verdict: string;
+  recommendation: string;
+}
+
+export interface DeepBlitzAnalysis {
+  mode: 'deep';
+  token: string;
+  chain: string;
+  scanTime: string;
+  overallScore: number;
+  metrics: Array<{
+    name: string;
+    score: number;
+    weight: number;
+    points: number;
+  }>;
+  strengths: string[];
+  weaknesses: string[];
+  criticalFlags: Array<{
+    title: string;
+    description: string;
+    severity: 'critical' | 'high' | 'medium' | 'low';
+  }>;
+  networkAwareStrategy: {
+    positionSizing: string;
+    entryTiming: string[];
+    exitStrategy: {
+      immediate: string[];
+      gradual: string[];
+    };
+  };
+  verdict: string;
+  recommendation: string;
+}
+
+// Add to your types file or create locally in IndividualAnalysisView.tsx
+
+interface ModeSpecificData {
+  hyperBlitzReport?: {
+    token: string;
+    age: string;
+    chain: string;
+    volumeSpike: string;
+    contractSafety: string;
+    mintAuthority: string;
+    freezeAuthority: string;
+    lpLocked: string;
+    taxSettings: string;
+    proxyContract: string;
+    networkStructure?: {
+      totalAccounts: number;
+      clustersDetected: number;
+      networkDensity: string;
+    };
+    timingAnalysis?: {
+      prePumpActivity: string;
+      volumeCorrelation: string;
+      coordinationEvidence: string;
+    };
+    historicalContext?: {
+      clusterHistory: string;
+      failureRate: string;
+      networkContaminationScore: number;
+    };
+    financialCorrelation?: {
+      whaleActivity: string;
+      whalePromoterConnections: string;
+      exitLiquidity: string;
+    };
+    onChainMomentum?: {
+      volume: string;
+      holderConcentration: string;
+      liquidity: string;
+      exitRisk: string;
+    };
+    verdict: string;
+    criticalIssues: string[];
+    recommendation: string;
+  };
+  
+  momentumBlitzReport?: {
+    token: string;
+    age: string;
+    chain: string;
+    priceChange: string;
+    currentPrice: string;
+    ath: string;
+    volume: string;
+    volumeTrend: string;
+    communityHealth: {
+      messageTimingEntropy: string;
+      accountAgeEntropy: string;
+      engagementDistribution: string;
+    };
+    networkEvolution: {
+      initialNetwork: {
+        highRiskConnections: number;
+        density: string;
+        founderCentrality: string;
+      };
+      currentNetwork: {
+        newClusters: number;
+        density: string;
+        founderCentrality: string;
+        promoterCentrality: string;
+      };
+      trend: string;
+      promoterInfiltration: string;
+      communitySegmentation: string;
+    };
+    engagementQuality: {
+      substantiveDiscussion: string;
+      mercenaryContent: string;
+      spamBotContent: string;
+      trend: string;
+    };
+    founderActivity: {
+      tweetFocus: {
+        projectUpdates: string;
+        promotionalContent: string;
+        personalContent: string;
+      };
+      responsePatterns: {
+        technicalQuestions: string;
+        priceQuestions: string;
+        responseRate: string;
+      };
+      activityTrend: string;
+      githubCommits: string;
+    };
+    artificialHype: {
+      coordinationPatterns: string;
+      botNetwork: {
+        amplificationRate: string;
+        followerQuality: string;
+        fakeEngagement: string;
+      };
+      influencePurchasing: string;
+      followerGrowth: string;
+    };
+    networkBasedAssessment: {
+      strengths: string[];
+      concerns: string[];
+      pressurePoints: {
+        tippingPoint: string;
+        timeframe: string;
+      };
+    };
+    verdict: string;
+    recommendation: string;
+  };
+  
+  deepBlitzReport?: {
+    token: string;
+    analysisTime: string;
+    chain: string;
+    overallScore: number;
+    overallVerdict: string;
+    metrics: Array<{
+      key: string;
+      name: string;
+      weight: number;
+      score: number;
+      points: string;
+      status: string;
+      breakdown: string;
+    }>;
+    criticalRedFlags: string[];
+    strengths: string[];
+    networkAwareStrategy: {
+      positionSizing: string;
+      entryTiming: string;
+      exitStrategy: string;
+      monitoringChecklist: string[];
+    };
+    finalVerdict: string;
+    recommendation: string;
+  };
+}
+
+
+export type AnalysisReport = HyperBlitzAnalysis | MomentumBlitzAnalysis | DeepBlitzAnalysis;

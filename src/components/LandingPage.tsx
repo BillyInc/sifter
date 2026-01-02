@@ -6,9 +6,10 @@ import Link from 'next/link';
 
 interface LandingPageProps {
   onGetStarted: () => void;
+   compact?: boolean;  // ✅ ADD THIS LINE
 }
 
-export default function LandingPage({ onGetStarted }: LandingPageProps) {
+export default function LandingPage({ onGetStarted, compact = false }: LandingPageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-sifter-dark to-sifter-card">
       {/* Top nav for sign in */}

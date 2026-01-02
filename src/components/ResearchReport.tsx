@@ -41,6 +41,7 @@ interface ResearchReportProps {
   patternMatches?: PatternMatch[];
   onExport?: () => void;
   onShare?: () => void;
+  compact?: boolean;  // ADD THIS LINE
 }
 
 // Statistical methods for dropdown
@@ -58,6 +59,7 @@ export default function ResearchReport({
   onClose,
   initialTab = 'metrics',
   onExport,
+  compact = false,  // ADD THIS LINE
   onShare
 }: ResearchReportProps): React.ReactElement {
   const [activeTab, setActiveTab] = useState<'metrics' | 'patterns' | 'summary'>(initialTab);

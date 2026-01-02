@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,6 +8,9 @@
   --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 10, 10, 15;
   --background-end-rgb: 10, 10, 15;
+  
+  /* Nansen-style: Smaller base font */
+  --base-font-size: 14px;
 }
 
 body {
@@ -17,30 +22,48 @@ body {
     )
     rgb(var(--background-start-rgb));
   min-height: 100vh;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: var(--base-font-size); /* 14px like Nansen */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+  
+  /* Nansen-style compact utilities */
+  .compact-text {
+    font-size: 0.875rem; /* 14px */
+  }
+  
+  .compact-spacing {
+    padding: 0.75rem; /* 12px */
+  }
+  
+  .compact-gap {
+    gap: 0.5rem; /* 8px */
+  }
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - Nansen style */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #12121a;
+  background: #0A0E1A; /* Darker like Nansen */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2a2a3a;
+  background: #1F2937;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3a3a4a;
+  background: #374151;
 }
 
 /* Loading animation */
@@ -63,7 +86,8 @@ body {
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
-/* Fade in animation for mobile */
+
+/* Fade in animation */
 @keyframes fadeIn {
   from { 
     opacity: 0; 
@@ -87,4 +111,30 @@ body {
 .overflow-x-auto {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Nansen-style card */
+.nansen-card {
+  background: #141824;
+  border: 1px solid #1F2937;
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+/* Nansen-style button */
+.nansen-btn {
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+.nansen-btn-primary {
+  background: #00D4AA;
+  color: white;
+}
+
+.nansen-btn-primary:hover {
+  background: #00C199;
 }

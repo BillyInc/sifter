@@ -9,6 +9,7 @@ export interface StandardFlagFormProps {
   onCancel: () => void;
   showQuickActions?: boolean;
   onEvidenceCountChange?: (count: number) => void;  // ← ADD THIS
+  compact?: boolean;
 
 }
 
@@ -17,7 +18,8 @@ export default function StandardFlagForm({
   userData = ['', '', '', ''],
   onSubmit,
   onCancel,
-  showQuickActions = true
+  showQuickActions = true,
+  compact = false
 }: StandardFlagFormProps) {
   const [view, setView] = useState<'quick' | 'detailed'>(showQuickActions ? 'quick' : 'detailed');
   const [isSubmitting, setIsSubmitting] = useState(false);

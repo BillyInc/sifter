@@ -10,6 +10,7 @@ import {
 
 // Define the props interface as a named export
 export interface SubmissionFormProps {
+  compact?: boolean;
   mode: UserMode;
   prefillData?: Partial<SubmissionFormData>;
     onSubmit: (data: any) => Promise<void>;  // Accept any type
@@ -24,7 +25,7 @@ export interface SubmissionFormProps {
 
 export default function SubmissionForm({ 
   mode, 
-  prefillData = {}, 
+  prefillData = {}, compact = false,
   onSubmit, 
   isOpen, 
   onClose,

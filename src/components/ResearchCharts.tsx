@@ -47,12 +47,14 @@ interface ResearchChartsProps {
   riskCategories?: any[];
   metricDistribution?: any[];
   projects?: any[];
+  compact?: boolean;  // ADD THIS LINE
 }
 
 export default function ResearchCharts({
   riskCategories = [],
   metricDistribution = [],
-  projects = []
+  projects = [],
+  compact = false // Default to false
 }: ResearchChartsProps) {
   
   // Default mock data if none provided

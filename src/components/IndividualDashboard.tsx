@@ -47,6 +47,283 @@ import {
 
 import MetricBreakdown from '@/components/MetricBreakdown';
 
+// Add this helper function - UPDATED WITH COMPREHENSIVE DATA
+const generateModeSpecificData = (projectName: string, mode: BlitzMode, riskScore: number, detectedChain: ChainType) => {
+  if (mode === 'hyper') {
+    return {
+      hyperBlitzReport: {
+        token: projectName,
+        age: `${Math.floor(Math.random() * 10)} min ${Math.floor(Math.random() * 60)} sec`,
+        chain: detectedChain,
+        volumeSpike: `${Math.floor(Math.random() * 800) + 100}% in 2min`,
+        contractSafety: riskScore >= 70 ? 'CRITICAL ⚠️' : 'MODERATE',
+        mintAuthority: 'REVOKED ✅',
+        freezeAuthority: 'REVOKED ✅',
+        lpLocked: riskScore >= 80 ? 'NO (0 minutes) 🚨 DANGER' : riskScore >= 50 ? 'PARTIAL (30 days) ⚠️' : 'YES (6 months) ✅',
+        taxSettings: riskScore >= 75 ? 'HIGH TAX (15%+) ⚠️' : 'REASONABLE (<10%) ✅',
+        proxyContract: riskScore >= 65 ? 'YES (UPGRADEABLE) ⚠️' : 'NO (IMMUTABLE) ✅',
+        networkStructure: {
+          totalAccounts: Math.floor(Math.random() * 20) + 10,
+          clustersDetected: Math.floor(Math.random() * 3) + 1,
+          networkDensity: (Math.random() * 0.8).toFixed(2)
+        },
+        timingAnalysis: {
+          prePumpActivity: 'Sequential tweets detected',
+          volumeCorrelation: `${Math.floor(Math.random() * 600) + 200}% spike post-tweets`,
+          coordinationEvidence: riskScore >= 60 ? 'YES - Classic pump pattern' : 'Minimal'
+        },
+        historicalContext: {
+          clusterHistory: `${Math.floor(Math.random() * 10) + 1} previous tokens together`,
+          failureRate: `${Math.floor(Math.random() * 100)}%`,
+          networkContaminationScore: Math.floor(Math.random() * 100)
+        },
+        financialCorrelation: {
+          whaleActivity: riskScore >= 70 ? 'Heavy buying detected' : 'Normal activity',
+          whalePromoterConnections: riskScore >= 65 ? 'YES - Insider coordination' : 'None detected',
+          exitLiquidity: riskScore >= 75 ? 'Insufficient - dump risk' : 'Adequate'
+        },
+        onChainMomentum: {
+          volume: `$${(Math.random() * 5).toFixed(1)}M`,
+          holderConcentration: `${Math.floor(Math.random() * 50) + 30}%`,
+          liquidity: `$${(Math.random() * 3).toFixed(1)}M`,
+          exitRisk: riskScore >= 70 ? 'HIGH - Large holders trapped' : 'MANAGEABLE'
+        },
+        verdict: riskScore >= 80 ? 'EXTREME DANGER - COORDINATED PUMP' : 
+                 riskScore >= 60 ? 'HIGH RISK - SUSPECTED PUMP' : 
+                 riskScore >= 40 ? 'MODERATE RISK - MONITOR CLOSELY' : 'LOW RISK - NATURAL GROWTH',
+        criticalIssues: riskScore >= 70 ? [
+          'No LP lock = Instant dump capability 🚨',
+          'Insider whale coordination detected',
+          'Professional gang operation pattern',
+          'Exit liquidity insufficient'
+        ] : ['Standard risks present'],
+        recommendation: riskScore >= 70 ? 'AVOID. If gambling: 1% max, 2x stop loss, exit within 30 min.' :
+                    riskScore >= 50 ? 'CAUTION - Small position only with tight stop loss' :
+                    'MONITOR - Potential opportunity with proper risk management'
+      }
+    };
+  } else if (mode === 'momentum') {
+    return {
+      momentumBlitzReport: {
+        token: projectName,
+        age: `${Math.floor(Math.random() * 7) + 1} days ${Math.floor(Math.random() * 24)} hours`,
+        chain: detectedChain,
+        priceChange: `${Math.floor(Math.random() * 200) - 50}% in 24h`,
+        currentPrice: `$${(Math.random() * 0.001).toFixed(5)}`,
+        ath: `$${(Math.random() * 0.002).toFixed(5)}`,
+        volume: `$${(Math.random() * 5).toFixed(1)}M`,
+        volumeTrend: riskScore >= 60 ? 'Declining ⚠️' : 'Stable or Growing',
+        
+        communityHealth: {
+          messageTimingEntropy: (0.5 + Math.random() * 0.4).toFixed(2),
+          accountAgeEntropy: (0.6 + Math.random() * 0.3).toFixed(2),
+          engagementDistribution: (0.5 + Math.random() * 0.3).toFixed(2)
+        },
+        
+        networkEvolution: {
+          initialNetwork: {
+            highRiskConnections: 0,
+            density: (0.3 + Math.random() * 0.2).toFixed(2),
+            founderCentrality: (0.4 + Math.random() * 0.1).toFixed(2)
+          },
+          currentNetwork: {
+            newClusters: Math.floor(Math.random() * 3),
+            density: (0.4 + Math.random() * 0.2).toFixed(2),
+            founderCentrality: (0.3 + Math.random() * 0.2).toFixed(2),
+            promoterCentrality: (0.2 + Math.random() * 0.2).toFixed(2)
+          },
+          trend: riskScore >= 60 ? '⚠️ Deteriorating' : '✅ Stable or Improving',
+          promoterInfiltration: `${Math.floor(Math.random() * 20)}% increase`,
+          communitySegmentation: riskScore >= 65 ? 'Beginning' : 'Not detected'
+        },
+        
+        engagementQuality: {
+          substantiveDiscussion: `${Math.floor(Math.random() * 40) + 20}%`,
+          mercenaryContent: `${Math.floor(Math.random() * 40) + 10}%`,
+          spamBotContent: `${Math.floor(Math.random() * 30)}%`,
+          trend: riskScore >= 60 ? 'Declining quality' : 'Stable quality'
+        },
+        
+        founderActivity: {
+          tweetFocus: {
+            projectUpdates: `${Math.floor(Math.random() * 40) + 40}%`,
+            promotionalContent: `${Math.floor(Math.random() * 40)}%`,
+            personalContent: `${Math.floor(Math.random() * 20)}%`
+          },
+          responsePatterns: {
+            technicalQuestions: `${Math.floor(Math.random() * 40) + 50}% answered`,
+            priceQuestions: `${Math.floor(Math.random() * 40) + 20}% answered`,
+            responseRate: `${Math.floor(Math.random() * 40) + 40}%`
+          },
+          activityTrend: 'Stable ✅',
+          githubCommits: riskScore >= 70 ? 'Stopped' : 'Continuing'
+        },
+        
+        artificialHype: {
+          coordinationPatterns: riskScore >= 70 ? 'Sustained manipulation' : 
+                               riskScore >= 50 ? 'Light coordination' : 'Natural bursts',
+          botNetwork: {
+            amplificationRate: (1 + Math.random() * 0.5).toFixed(1) + 'x',
+            followerQuality: `${Math.floor(Math.random() * 50) + 30}% real accounts`,
+            fakeEngagement: `${Math.floor(Math.random() * 15)}% detected`
+          },
+          influencePurchasing: riskScore >= 65 ? 'Suspected' : 'Not detected',
+          followerGrowth: `${Math.floor(Math.random() * 10) + 2}%/week`
+        },
+        
+        networkBasedAssessment: {
+          strengths: [
+            'Organic community growth',
+            riskScore <= 40 ? 'Founder network technical-focused' : 'Mixed network',
+            'Natural engagement patterns',
+            riskScore <= 30 ? 'No direct scammer connections' : 'Limited connections'
+          ].filter(Boolean),
+          concerns: [
+            riskScore >= 50 ? 'Promoter infiltration increasing' : null,
+            riskScore >= 60 ? 'Mercenary content rising' : null,
+            riskScore >= 55 ? 'Founder centrality decreasing' : null,
+            riskScore >= 50 ? 'Network density increasing' : null
+          ].filter(Boolean) as string[],
+          pressurePoints: {
+            tippingPoint: riskScore >= 60 ? 'Mercenary content >40%' : 'Currently stable',
+            timeframe: riskScore >= 60 ? '2-4 weeks to assess trend' : 'No immediate pressure'
+          }
+        },
+        
+        verdict: riskScore >= 70 ? 'HIGH RISK - MANIPULATION SUSPECTED' :
+                 riskScore >= 50 ? 'MODERATE RISK - HEALTHY BUT UNDER PRESSURE' :
+                 'LOW RISK - ORGANIC GROWTH',
+        recommendation: riskScore >= 70 ? 'AVOID - Clear manipulation patterns' :
+                       riskScore >= 50 ? 'CAUTIOUS OPTIMISM - Monitor closely' :
+                       'CONSIDER - Healthy growth metrics'
+      }
+    };
+  } else if (mode === 'deep') {
+    // Generate mock metrics for deep analysis
+    const metrics = [
+      { key: 'teamIdentity', name: 'Team Identity', weight: 13, score: Math.floor(Math.random() * 100) },
+      { key: 'teamCompetence', name: 'Team Competence', weight: 11, score: Math.floor(Math.random() * 100) },
+      { key: 'contaminatedNetwork', name: 'Contaminated Network', weight: 19, score: Math.floor(Math.random() * 100) },
+      { key: 'mercenaryKeywords', name: 'Mercenary Keywords', weight: 9, score: Math.floor(Math.random() * 100) },
+      { key: 'messageTimeEntropy', name: 'Message Time Entropy', weight: 5, score: Math.floor(Math.random() * 100) },
+      { key: 'accountAgeEntropy', name: 'Account Age Entropy', weight: 5, score: Math.floor(Math.random() * 100) },
+      { key: 'tweetFocus', name: 'Tweet Focus', weight: 7, score: Math.floor(Math.random() * 100) },
+      { key: 'githubAuthenticity', name: 'GitHub Authenticity', weight: 10, score: Math.floor(Math.random() * 100) },
+      { key: 'busFactor', name: 'Bus Factor', weight: 2, score: Math.floor(Math.random() * 100) },
+      { key: 'artificialHype', name: 'Artificial Hype', weight: 5, score: Math.floor(Math.random() * 100) },
+      { key: 'founderDistraction', name: 'Founder Distraction', weight: 6, score: Math.floor(Math.random() * 100) },
+      { key: 'engagementAuthenticity', name: 'Engagement Authenticity', weight: 10, score: Math.floor(Math.random() * 100) },
+      { key: 'tokenomics', name: 'Tokenomics', weight: 7, score: Math.floor(Math.random() * 100) }
+    ];
+    
+    const weightedScore = metrics.reduce((sum, m) => sum + (m.score * m.weight / 100), 0);
+    const overallScore = Math.round(weightedScore);
+    
+    return {
+      deepBlitzReport: {
+        token: projectName,
+        analysisTime: `${Math.floor(Math.random() * 4) + 2} min ${Math.floor(Math.random() * 60)} sec`,
+        chain: detectedChain,
+        overallScore: overallScore,
+        overallVerdict: overallScore >= 70 ? 'HIGH RISK' : 
+                       overallScore >= 50 ? 'MODERATE RISK' : 
+                       overallScore >= 30 ? 'LOW RISK' : 'VERY LOW RISK',
+        
+        metrics: metrics.map(m => ({
+          ...m,
+          points: (m.score * m.weight / 100).toFixed(2),
+          status: m.score >= 70 ? '🚨' : m.score >= 50 ? '⚠️' : '✅',
+          breakdown: generateMetricBreakdown(m.key, m.score, detectedChain)
+        })),
+        
+        criticalRedFlags: metrics
+          .filter(m => m.score >= 70)
+          .map(m => `${m.name} (${m.score}/100)`),
+        
+        strengths: metrics
+          .filter(m => m.score <= 30)
+          .map(m => `${m.name} (${m.score}/100)`),
+        
+        networkAwareStrategy: {
+          positionSizing: overallScore >= 70 ? 'AVOID' : 
+                         overallScore >= 50 ? '2-3% of portfolio' : 
+                         overallScore >= 30 ? '3-5% of portfolio' : '5-10% of portfolio',
+          entryTiming: overallScore <= 40 ? 'Consider entry on pullback' : 'Wait for improvement',
+          exitStrategy: generateExitStrategy(overallScore, detectedChain),
+          monitoringChecklist: generateMonitoringChecklist(overallScore)
+        },
+        
+        finalVerdict: overallScore >= 70 ? 'HIGH RISK - AVOID INVESTMENT' :
+                     overallScore >= 50 ? 'MODERATE RISK - SPECULATIVE ONLY' :
+                     overallScore >= 30 ? 'LOW RISK - CONSIDER FOR PORTFOLIO' : 
+                     'VERY LOW RISK - STRONG FUNDAMENTALS',
+        
+        recommendation: overallScore >= 70 ? 'AVOID - Multiple critical red flags detected' :
+                       overallScore >= 50 ? 'SMALL SPECULATIVE POSITION ONLY (2-5%) - Active monitoring required' :
+                       overallScore >= 30 ? 'MODERATE POSITION (3-7%) - Standard due diligence' :
+                       'GOOD OPPORTUNITY (5-10%) - Strong fundamentals, monitor standard risks'
+      }
+    };
+  }
+  return {};
+};
+
+// Helper functions for deep analysis
+const generateMetricBreakdown = (key: string, score: number, chain: ChainType): string => {
+  const breakdowns: Record<string, string[]> = {
+    teamIdentity: [
+      'Founder: Pseudonymous (Twitter: @CryptoBuilder)',
+      'Team: 3 anonymous members',
+      'Public Reputation: Zero (no doxxing, no KYC)',
+      'Accountability Risk: HIGH - Can disappear'
+    ],
+    teamCompetence: [
+      'Prior Projects: None verified',
+      'Domain Experience: Unclear (no public track record)',
+      'Delivery Track Record: 40% milestones met (2/5)',
+      'Technical Depth: Basic smart contracts only'
+    ],
+    contaminatedNetwork: [
+      'Network Structure: 3 clusters (tech, community, promoters)',
+      'Density: 0.42 (healthy decentralization)',
+      'Centrality: Founder = 0.45 (appropriate leadership)',
+      'Connections: Minimal to bad actors'
+    ],
+    mercenaryKeywords: [
+      'Prevalence: 18% of messages contain urgency terms',
+      'SNA Context: Concentrated in promoter cluster',
+      'Top Keywords: "moon" (47), "gem" (31), "100x" (8)',
+      'Trend: Increasing as price rises'
+    ]
+  };
+  
+  return breakdowns[key]?.[Math.floor(Math.random() * breakdowns[key].length)] || 'Analysis complete';
+};
+
+const generateExitStrategy = (score: number, chain: ChainType): string => {
+  if (score >= 70) return 'IMMEDIATE: Founder silence >2 weeks, marketing wallet dump >50%';
+  if (score >= 50) return 'GRADUAL: Promoter cluster exceeds 30%, mercenary content >40%';
+  return 'STANDARD: Monitor standard risk metrics monthly';
+};
+
+const generateMonitoringChecklist = (score: number): string[] => {
+  if (score >= 70) return [
+    'Daily network contamination checks',
+    'Hourly whale wallet monitoring',
+    'Immediate alerts on founder activity changes'
+  ];
+  if (score >= 50) return [
+    'Daily promoter cluster monitoring',
+    'Weekly engagement quality checks',
+    'Monthly GitHub activity review'
+  ];
+  return [
+    'Weekly network structure checks',
+    'Monthly metric reviews',
+    'Quarterly comprehensive analysis'
+  ];
+};
+
 // Helper function to create a metric data object WITH detailed evidence
 const createMetricData = (key: string, name: string, score: number): MetricData => {
   const normalizedScore = Math.min(Math.max(score, 0), 100);
@@ -101,6 +378,7 @@ interface IndividualDashboardProps {
   onViewReport?: (scanId: string) => void;
   projectMetrics?: MetricData[];
   currentProject?: ProjectData;
+  compact?: boolean;
 }
 
 export default function IndividualDashboard({ 
@@ -114,7 +392,6 @@ export default function IndividualDashboard({
   projectMetrics = [],
   currentProject
 }: IndividualDashboardProps) {
-  // ✅ HOOKS MOVED TO TOP LEVEL
   const [inputValue, setInputValue] = useState('');
   const [showBlitzSelector, setShowBlitzSelector] = useState(false);
   const [selectedBlitzMode, setSelectedBlitzMode] = useState<BlitzMode>('deep');
@@ -122,7 +399,6 @@ export default function IndividualDashboard({
   const [isCheckingContract, setIsCheckingContract] = useState(false);
   const [detectedChain, setDetectedChain] = useState<ChainType>('unknown');
   
-  // State
   const [internalWatchlist, setInternalWatchlist] = useState<LocalWatchlistItem[]>([
     { projectId: '1', projectName: 'DeFi Alpha', riskScore: 23, verdict: 'pass', addedAt: new Date(), alertsEnabled: true, lastChecked: new Date() },
     { projectId: '2', projectName: 'TokenSwap Pro', riskScore: 55, verdict: 'flag', addedAt: new Date(), alertsEnabled: true, lastChecked: new Date() },
@@ -289,13 +565,14 @@ export default function IndividualDashboard({
     twitterScan?: TwitterScanResult;
     snaData?: SNAData;
     detectedChain?: ChainType;
+    modeSpecificData?: any;
   } | null>(null);
   
   const [showExportMenu, setShowExportMenu] = useState(false);
   
   const [receivedMetrics, setReceivedMetrics] = useState<MetricData[]>(projectMetrics || []);
   const [receivedProject, setReceivedProject] = useState<ProjectData | undefined>(currentProject);
-  
+
   const exportMenuRef = useRef<HTMLDivElement>(null);
   const exportButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -350,7 +627,6 @@ export default function IndividualDashboard({
   };
 
   const handleSmartInputResolve = async (result: SmartInputResult) => {
-    // FIX: Check if selectedEntity exists
     if (!result.selectedEntity) {
       console.error('No selected entity found');
       alert('Unable to analyze. Please try a different input.');
@@ -362,44 +638,38 @@ export default function IndividualDashboard({
 
     setInputValue(input);
 
-    // Check if input is a contract address using imported function
     const isContractAddress = isMultiChainAddress(input.trim());
 
     if (isContractAddress) {
-      // Detect which chain using imported function
       const chain = detectChainFromAddress(input);
       setDetectedChain(chain);
       
-      // Show chain-specific loading
       setIsCheckingContract(true);
 
-      // Simulate blockchain query (faster for Solana)
       const delayTime = chain === 'solana' ? 800 : chain === 'base' ? 1000 : 1200;
       
       setTimeout(() => {
         setIsCheckingContract(false);
         
-        // Chain-specific detection logic
         const chainMemecoinProbabilities: Record<ChainType, number> = {
-          'solana': 0.75,    // 75% - Solana = memecoin central
-          'base': 0.65,      // 65% - Base = trending memecoin hub
-          'ethereum': 0.35,  // 35% - Ethereum has established projects
-          'polygon': 0.45,   // 45% - Polygon moderate activity
-          'avalanche': 0.5,  // 50% - Avalanche some memecoins
-          'arbitrum': 0.4,   // 40% - Arbitrum moderate
-          'unknown': 0.3     // 30% default
+          'solana': 0.75,
+          'base': 0.65,
+          'ethereum': 0.35,
+          'polygon': 0.45,
+          'avalanche': 0.5,
+          'arbitrum': 0.4,
+          'unknown': 0.3
         };
         
         const probability = chainMemecoinProbabilities[chain] || 0.3;
         const detectedAsMemecoin = Math.random() < probability;
 
         if (detectedAsMemecoin) {
-          // Auto-select optimal mode based on chain
           let autoMode: BlitzMode = 'deep';
           if (chain === 'solana') {
-            autoMode = 'hyper'; // Solana = ultra fast
+            autoMode = 'hyper';
           } else if (chain === 'base') {
-            autoMode = 'momentum'; // Base = active trading
+            autoMode = 'momentum';
           }
           
           setSelectedBlitzMode(autoMode);
@@ -410,10 +680,8 @@ export default function IndividualDashboard({
         }
       }, delayTime);
     } else {
-      // Name-based detection (improved logic)
       const tokenName = projectName.toLowerCase();
       
-      // Smart detection based on token name
       const memecoinKeywords = [
         'pepe', 'doge', 'shib', 'bonk', 'floki', 'wojak', 'wif',
         'moon', 'rocket', 'elon', '100x', '1000x', 'to the moon',
@@ -421,15 +689,12 @@ export default function IndividualDashboard({
         'degod', 'sats', 'ordi', 'rats', 'smole', 'toshi'
       ];
       
-      // Check if contains memecoin keyword
       const hasMemecoinKeyword = memecoinKeywords.some(keyword => 
         tokenName.includes(keyword)
       );
       
-      // Check if looks like memecoin ticker (all caps, short)
       const isTickerLike = /^[A-Z0-9]{2,6}$/.test(input);
       
-      // Combined detection (keyword OR ticker OR 25% random chance)
       const detectedAsMemecoin = hasMemecoinKeyword || isTickerLike || Math.random() > 0.75;
 
       setIsMemecoin(detectedAsMemecoin);
@@ -448,14 +713,12 @@ export default function IndividualDashboard({
     setIsAnalyzing(true);
     setShowBlitzSelector(false);
 
-    // Chain-specific timing
-    let scanTime = 2000; // Default 2 seconds
+    let scanTime = 2000;
     if (mode === 'hyper') scanTime = 800;
     if (mode === 'momentum') scanTime = 1500;
     
-    // Adjust for chain
-    if (detectedChain === 'solana') scanTime *= 0.7; // 30% faster for Solana
-    if (detectedChain === 'base') scanTime *= 0.8; // 20% faster for Base
+    if (detectedChain === 'solana') scanTime *= 0.7;
+    if (detectedChain === 'base') scanTime *= 0.8;
 
     setTimeout(() => {
       const allMetrics = generateMockMetricsWithEvidence();
@@ -467,7 +730,7 @@ export default function IndividualDashboard({
         );
       } else if (mode === 'momentum') {
         filteredMetrics = allMetrics.filter(m =>
-          ['communityHealth', 'engagementAuthenticity', 'mercenaryKeywords', 'tweetFocus', 'artificialHype', 'contaminatedNetwork'].includes(m.key)
+          ['engagementAuthenticity', 'mercenaryKeywords', 'tweetFocus', 'artificialHype', 'contaminatedNetwork'].includes(m.key)
         );
       }
 
@@ -499,6 +762,9 @@ export default function IndividualDashboard({
         ] : []
       };
 
+      // Generate comprehensive mode-specific data
+      const modeSpecificData = generateModeSpecificData(projectName, mode, compositeScore, detectedChain);
+
       const projectData: ProjectData = {
         id: `proj_${Date.now()}`,
         displayName: projectName,
@@ -515,7 +781,8 @@ export default function IndividualDashboard({
         processingTime: mode === 'hyper' ? 8000 : mode === 'momentum' ? 52000 : 227000,
         blitzMode: mode,
         twitterScan: mockTwitterScan,
-        snaData: mockSNA
+        snaData: mockSNA,
+        modeSpecificData: modeSpecificData
       };
 
       if (onAnalyze) {
@@ -531,11 +798,34 @@ export default function IndividualDashboard({
         blitzMode: mode,
         twitterScan: mockTwitterScan,
         snaData: mockSNA,
-        detectedChain
+        detectedChain,
+        modeSpecificData: modeSpecificData
       });
 
       setIsAnalyzing(false);
     }, scanTime);
+  };
+
+  const ScoreBadge = ({ score, verdict }: { score: number; verdict: VerdictType }) => {
+    const colors = {
+      reject: 'bg-red-500/20 text-red-400 border-red-500/30',
+      flag: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+      pass: 'bg-green-500/20 text-green-400 border-green-500/30'
+    };
+    
+    const icons = {
+      reject: '🔴',
+      flag: '🟡',
+      pass: '🟢'
+    };
+    
+    return (
+      <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-sm ${colors[verdict]}`}>
+        <span className="text-xs">{icons[verdict]}</span>
+        <span className="font-bold">{score}/100</span>
+        <span className="text-xs">{verdict.toUpperCase()}</span>
+      </div>
+    );
   };
 
   const renderAnalyzeTab = () => {
@@ -571,10 +861,17 @@ export default function IndividualDashboard({
             },
             metrics: analysisResults.metrics,
             processingTime: analysisResults.scanDuration * 1000,
-            blitzMode: analysisResults.blitzMode,
-            twitterScan: analysisResults.twitterScan,
-            snaData: analysisResults.snaData
+           
+            modeSpecificData: analysisResults.modeSpecificData
           }}
+
+                blitzMode={analysisResults.blitzMode}          // ✅ ADD THIS LINE
+            twitterScan={analysisResults.twitterScan}      // ✅ ADD THIS LINE
+            snaData={analysisResults.snaData}              // ✅ ADD THIS LINE
+            detectedChain={analysisResults.detectedChain}
+
+
+
           onAddToWatchlist={() => addToWatchlist(analysisResults.projectName, analysisResults.riskScore, analysisResults.verdict)}
           onShare={() => alert('Share coming soon')}
           onScanAnother={resetAnalysis}
@@ -585,6 +882,68 @@ export default function IndividualDashboard({
 
     return (
       <div className="space-y-6">
+        {/* Dashboard Overview Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-white text-lg">Recent Scans</h3>
+              <button
+                onClick={() => setActiveTab('scans')}
+                className="text-sm text-blue-400 hover:text-blue-300 transition-all"
+              >
+                View All →
+              </button>
+            </div>
+            <div className="space-y-3">
+              {recentScans.slice(0, 3).map((scan) => (
+                <div key={scan.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-900/50 hover:bg-gray-900 transition-all">
+                  <div className="flex items-center gap-3">
+                    <div className={`text-lg ${
+                      scan.verdict === 'reject' ? 'text-red-400' :
+                      scan.verdict === 'flag' ? 'text-yellow-400' : 'text-green-400'
+                    }`}>
+                      {scan.verdict === 'reject' ? '🔴' : 
+                       scan.verdict === 'flag' ? '🟡' : '🟢'}
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-white text-sm">{scan.projectName}</h4>
+                      <p className="text-xs text-gray-400">{scan.scannedAt.toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                  <ScoreBadge score={scan.riskScore} verdict={scan.verdict} />
+                </div>
+              ))}
+              {recentScans.length === 0 && (
+                <div className="text-center py-4">
+                  <p className="text-gray-400 text-sm">No scans yet</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
+            <h3 className="font-bold text-white text-lg mb-4">Quick Stats</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-gray-900/30 rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-white mb-1">{watchlist.length}</div>
+                <div className="text-xs text-gray-400">Watchlist Items</div>
+              </div>
+              <div className="bg-gray-900/30 rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-white mb-1">{recentScans.length}</div>
+                <div className="text-xs text-gray-400">Total Scans</div>
+              </div>
+              <div className="bg-gray-900/30 rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-white mb-1">{userProfile.availablePoints}</div>
+                <div className="text-xs text-gray-400">Points</div>
+              </div>
+              <div className="bg-gray-900/30 rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-white mb-1">{userProfile.currentTier}</div>
+                <div className="text-xs text-gray-400">Your Tier</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Contract Address Loading State */}
         {isCheckingContract && (
           <div className="bg-sifter-card border border-blue-500/30 rounded-xl p-6 mb-4 animate-fadeIn">
@@ -633,7 +992,32 @@ export default function IndividualDashboard({
           </div>
         )}
 
-        <SmartInputParser onResolve={handleSmartInputResolve} />
+        {/* Main Input Section */}
+        <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-white mb-2">Check a Project</h2>
+            <p className="text-gray-400">
+              Is this crypto project safe? Get your answer in 90 seconds.
+            </p>
+          </div>
+          
+          <SmartInputParser onResolve={handleSmartInputResolve} />
+
+          <div className="mt-6">
+            <p className="text-sm text-gray-400 mb-3">Try these examples:</p>
+            <div className="flex flex-wrap gap-2">
+              {['@moonrocket_6', 'discord.gg/crypte', 'github.com/project', 'project.com'].map((example, index) => (
+                <button
+                  key={index}
+                  onClick={() => setInputValue(example)}
+                  className="px-3 py-1.5 text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-all"
+                >
+                  {example}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
 
         {showBlitzSelector && (
           <div className="bg-sifter-card border border-blue-500/30 rounded-xl p-6 animate-fadeIn">
@@ -655,6 +1039,7 @@ export default function IndividualDashboard({
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* HYPER-BLITZ CARD - UPDATED WITH COMPREHENSIVE DESCRIPTION */}
               <button
                 onClick={() => performAnalysis(inputValue, 'hyper')}
                 className={`p-6 rounded-lg border-2 transition-all ${
@@ -665,17 +1050,36 @@ export default function IndividualDashboard({
               >
                 <div className="text-5xl mb-3">⚡</div>
                 <h4 className="font-bold text-white text-lg">Hyper-Blitz</h4>
-                <p className="text-sm text-gray-400 mt-2">
-                  {detectedChain === 'solana' ? '3–5 seconds • Solana speed' :
-                   detectedChain === 'base' ? '5–8 seconds • Base L2' :
-                   '5–10 seconds • New launches'}
+                <p className="text-sm text-gray-400 mt-2 mb-3">
+                  {detectedChain === 'solana' ? '3–5 seconds' :
+                   detectedChain === 'base' ? '5–8 seconds' :
+                   '5–10 seconds'} • Ultra-fast scan
                 </p>
+                <div className="text-xs text-white space-y-1.5 mb-3 text-left">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-blue-400">✓</span>
+                    <span>Contract Safety Check</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-blue-400">✓</span>
+                    <span>Network Contamination Snapshot</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-blue-400">✓</span>
+                    <span>Whale Activity Correlation</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-blue-400">✓</span>
+                    <span>Instant Pump/Dump Detection</span>
+                  </div>
+                </div>
                 <div className="mt-3 text-xs text-blue-400">
                   {detectedChain === 'solana' && '✓ Perfect for Solana memecoins'}
                   {detectedChain === 'base' && '✓ Optimized for Base chain'}
                 </div>
               </button>
 
+              {/* MOMENTUM-BLITZ CARD - UPDATED WITH COMPREHENSIVE DESCRIPTION */}
               <button
                 onClick={() => performAnalysis(inputValue, 'momentum')}
                 className={`p-6 rounded-lg border-2 transition-all ${
@@ -686,13 +1090,36 @@ export default function IndividualDashboard({
               >
                 <div className="text-5xl mb-3">📈</div>
                 <h4 className="font-bold text-white text-lg">Momentum-Blitz</h4>
-                <p className="text-sm text-gray-400 mt-2">
-                  {detectedChain === 'solana' ? '8–15 seconds • Active trading' :
-                   detectedChain === 'base' ? '15–30 seconds • Trending tokens' :
-                   '30–90 seconds • Active tokens'}
+                <p className="text-sm text-gray-400 mt-2 mb-3">
+                  {detectedChain === 'solana' ? '8–15 seconds' :
+                   detectedChain === 'base' ? '15–30 seconds' :
+                   '30–90 seconds'} • Active trading analysis
                 </p>
+                <div className="text-xs text-white space-y-1.5 mb-3 text-left">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-purple-400">✓</span>
+                    <span>6 Key Metrics: Engagement, Hype, Focus</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-purple-400">✓</span>
+                    <span>Network Evolution Tracking</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-purple-400">✓</span>
+                    <span>Community Health Assessment</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-purple-400">✓</span>
+                    <span>Promoter Infiltration Detection</span>
+                  </div>
+                </div>
+                <div className="mt-3 text-xs text-purple-400">
+                  {detectedChain === 'solana' && '✓ Active trading analysis'}
+                  {detectedChain === 'base' && '✓ Trending tokens focus'}
+                </div>
               </button>
 
+              {/* DEEP-BLITZ CARD - UPDATED WITH COMPREHENSIVE DESCRIPTION */}
               <button
                 onClick={() => performAnalysis(inputValue, 'deep')}
                 className={`p-6 rounded-lg border-2 transition-all ${
@@ -703,11 +1130,33 @@ export default function IndividualDashboard({
               >
                 <div className="text-5xl mb-3">🔍</div>
                 <h4 className="font-bold text-white text-lg">Deep-Blitz</h4>
-                <p className="text-sm text-gray-400 mt-2">
-                  {detectedChain === 'solana' ? '30–60 seconds • Full audit' :
-                   detectedChain === 'base' ? '45–90 seconds • Comprehensive' :
-                   '2–5 minutes • Full analysis'}
+                <p className="text-sm text-gray-400 mt-2 mb-3">
+                  {detectedChain === 'solana' ? '30–60 seconds' :
+                   detectedChain === 'base' ? '45–90 seconds' :
+                   '2–5 minutes'} • Comprehensive analysis
                 </p>
+                <div className="text-xs text-white space-y-1.5 mb-3 text-left">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-green-400">✓</span>
+                    <span>All 13 Metrics Analyzed</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-green-400">✓</span>
+                    <span>Weighted Risk Scoring</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-green-400">✓</span>
+                    <span>Investment Strategy Recommendations</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-green-400">✓</span>
+                    <span>Network Monitoring Checklist</span>
+                  </div>
+                </div>
+                <div className="mt-3 text-xs text-green-400">
+                  {detectedChain === 'solana' && '✓ Full audit quality'}
+                  {detectedChain === 'base' && '✓ Comprehensive assessment'}
+                </div>
               </button>
             </div>
             
@@ -822,7 +1271,8 @@ export default function IndividualDashboard({
         }
       ],
       scannedAt: new Date(),
-      processingTime: analysisResults.scanDuration * 1000
+      processingTime: analysisResults.scanDuration * 1000,
+      modeSpecificData: analysisResults.modeSpecificData
     };
     
     if (typeof ExportService !== 'undefined' && ExportService.exportToPDF) {
@@ -877,7 +1327,9 @@ export default function IndividualDashboard({
       'Verdict': analysisResults.verdict.toUpperCase(),
       'Scan Duration (s)': analysisResults.scanDuration,
       'Scan Date': new Date().toISOString().split('T')[0],
-      'Total Metrics': analysisResults.metrics.length
+      'Total Metrics': analysisResults.metrics.length,
+      'Blitz Mode': analysisResults.blitzMode || 'deep',
+      'Chain': analysisResults.detectedChain || 'unknown'
     }];
     
     const fileName = `sifter-analysis-${analysisResults.projectName}-${new Date().toISOString().split('T')[0]}`;
@@ -885,7 +1337,8 @@ export default function IndividualDashboard({
     if (format === 'json') {
       const data = {
         ...flatData[0],
-        metrics: analysisResults.metrics
+        metrics: analysisResults.metrics,
+        modeSpecificData: analysisResults.modeSpecificData
       };
       exportToJSON(data, fileName);
     } else if (format === 'csv') {
@@ -893,28 +1346,6 @@ export default function IndividualDashboard({
     } else if (format === 'pdf') {
       exportToPDF();
     }
-  };
-
-  const ScoreBadge = ({ score, verdict }: { score: number; verdict: VerdictType }) => {
-    const colors = {
-      reject: 'bg-red-500/20 text-red-400 border-red-500/30',
-      flag: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-      pass: 'bg-green-500/20 text-green-400 border-green-500/30'
-    };
-    
-    const icons = {
-      reject: '🔴',
-      flag: '🟡',
-      pass: '🟢'
-    };
-    
-    return (
-      <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-sm ${colors[verdict]}`}>
-        <span className="text-xs">{icons[verdict]}</span>
-        <span className="font-bold">{score}/100</span>
-        <span className="text-xs">{verdict.toUpperCase()}</span>
-      </div>
-    );
   };
 
   const MetricBar = ({ metric, index }: { metric: MetricData; index: number }) => {

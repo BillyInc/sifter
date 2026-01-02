@@ -5,10 +5,11 @@ import React, { useState, useEffect } from 'react';
 import { NotificationService, Notification } from '@/services/notifications';
 
 interface NotificationBellProps {
+  compact?: boolean;
   onNotificationClick?: (notification: Notification) => void;
 }
 
-export default function NotificationBell({ onNotificationClick }: NotificationBellProps) {
+export default function NotificationBell({ onNotificationClick, compact = false }: NotificationBellProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);

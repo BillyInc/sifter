@@ -4,6 +4,7 @@ import React from 'react';
 import { UserMode, SubmissionFormData } from '@/types';
 
 export interface TrackingDashboardProps {
+  compact?: boolean;
   submissions: SubmissionFormData[];
   userMode: UserMode;
   onViewDetails: (submissionId: string) => void;

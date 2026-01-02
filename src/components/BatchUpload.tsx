@@ -13,7 +13,7 @@ interface BatchUploadProps {
 export default function BatchUpload({ 
   onUploadComplete, 
   disabled,
-  compact = false // ADDED WITH DEFAULT
+  compact = false
 }: BatchUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);

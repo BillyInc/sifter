@@ -16,6 +16,7 @@ interface MetricBreakdownProps {
   riskScore?: number;
   projectData?: ProjectData;
   instanceId?: string; // ✅ ADD THIS
+   compact?: boolean; // Add this
 
 }
 

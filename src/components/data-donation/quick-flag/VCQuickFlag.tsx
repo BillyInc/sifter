@@ -23,7 +23,7 @@ export default function VCQuickFlag({
   onCancel,
   onEvidenceCountChange,
   onConfidentialToggle,
-  onPortfolioSelect
+   onPortfolioSelect
 }: VCQuickFlagProps) {
   const [severity, setSeverity] = useState<'critical' | 'high' | 'medium'>('high');
   const [portfolioContext, setPortfolioContext] = useState('');

@@ -7,11 +7,12 @@ import { EntityEntry } from '@/types/dataDonation';
 import { Dispute, DisputeCategory, DisputeResolution } from '@/types/dispute';
 
 interface DisputeFilingFormProps {
+  compact?: boolean;
   entity: EntityEntry;
   onClose?: () => void;
 }
 
-export default function DisputeFilingForm({ entity, onClose }: DisputeFilingFormProps) {
+export default function DisputeFilingForm({ entity, onClose, compact = false }: DisputeFilingFormProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
