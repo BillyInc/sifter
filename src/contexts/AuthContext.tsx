@@ -1,19 +1,37 @@
 // src/contexts/AuthContext.tsx
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode, useMemo } from 'react';
+import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
+import type { Session, AuthChangeEvent } from '@supabase/supabase-js';
 import {
   User,
   AuthState,
   AuthContextType,
   LoginCredentials,
   RegisterData,
-  AuthSession
 } from '@/types/auth';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'sifter_auth_session';
+// Helper to convert Supabase user to our User type
+function mapSupabaseUser(supabaseUser: Session['user'] | null): User | null {
+  if (!supabaseUser) return null;
+
+  const metadata = supabaseUser.user_metadata || {};
+
+  return {
+    id: supabaseUser.id,
+    email: supabaseUser.email || '',
+    name: metadata.name || metadata.full_name || supabaseUser.email?.split('@')[0] || '',
+    mode: metadata.mode || 'individual',
+    role: metadata.role || 'user',
+    createdAt: supabaseUser.created_at || new Date().toISOString(),
+    lastLoginAt: supabaseUser.last_sign_in_at || new Date().toISOString(),
+    isVerified: !!supabaseUser.email_confirmed_at,
+    avatar: metadata.avatar_url || supabaseUser.user_metadata?.avatar_url,
+  };
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({
@@ -23,58 +41,100 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     error: null
   });
 
-  // Load session from storage on mount
+  // Memoize the supabase client to avoid recreating on each render
+  const supabase = useMemo(() => createClient(), []);
+
+  // Initialize auth state and listen for changes
   useEffect(() => {
-    const loadSession = async () => {
+    // If Supabase is not configured, show error state
+    if (!supabase) {
+      setState({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: 'Authentication is not configured. Please set up Supabase environment variables.'
+      });
+      return;
+    }
+
+    // Get initial session
+    const initializeAuth = async () => {
       try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-          const session: AuthSession = JSON.parse(stored);
+        const { data: { session }, error } = await supabase.auth.getSession();
 
-          // Check if session is expired
-          if (session.expiresAt > Date.now()) {
-            setState({
-              user: session.user,
-              isAuthenticated: true,
-              isLoading: false,
-              error: null
-            });
-            return;
-          } else {
-            // Session expired, try to refresh
-            const refreshed = await refreshSession();
-            if (refreshed) return;
-          }
+        if (error) {
+          console.error('Error getting session:', error);
+          setState({
+            user: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: error.message
+          });
+          return;
         }
-      } catch (error) {
-        console.error('Failed to load auth session:', error);
-        localStorage.removeItem(STORAGE_KEY);
-      }
 
-      setState(prev => ({ ...prev, isLoading: false }));
+        setState({
+          user: mapSupabaseUser(session?.user ?? null),
+          isAuthenticated: !!session,
+          isLoading: false,
+          error: null
+        });
+      } catch (error) {
+        console.error('Failed to initialize auth:', error);
+        setState({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          error: 'Failed to initialize authentication'
+        });
+      }
     };
 
-    loadSession();
-  }, []);
+    initializeAuth();
 
-  const saveSession = (session: AuthSession) => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-  };
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event: AuthChangeEvent, session: Session | null) => {
+        setState(prev => ({
+          ...prev,
+          user: mapSupabaseUser(session?.user ?? null),
+          isAuthenticated: !!session,
+          isLoading: false,
+          error: null
+        }));
+      }
+    );
 
-  const clearSession = () => {
-    localStorage.removeItem(STORAGE_KEY);
-  };
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [supabase]);
 
   const login = useCallback(async (credentials: LoginCredentials): Promise<boolean> => {
+    if (!supabase) {
+      setState(prev => ({ ...prev, error: 'Authentication is not configured' }));
+      return false;
+    }
+
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      // TODO: Replace with actual API call
-      const response = await mockLogin(credentials);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: credentials.email,
+        password: credentials.password,
+      });
 
-      saveSession(response);
+      if (error) {
+        setState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: error.message
+        }));
+        return false;
+      }
+
       setState({
-        user: response.user,
+        user: mapSupabaseUser(data.user),
         isAuthenticated: true,
         isLoading: false,
         error: null
@@ -90,19 +150,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }));
       return false;
     }
-  }, []);
+  }, [supabase]);
 
   const register = useCallback(async (data: RegisterData): Promise<boolean> => {
+    if (!supabase) {
+      setState(prev => ({ ...prev, error: 'Authentication is not configured' }));
+      return false;
+    }
+
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      // TODO: Replace with actual API call
-      const response = await mockRegister(data);
+      const { data: authData, error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            name: data.name,
+            full_name: data.name,
+            mode: data.mode,
+            role: 'user',
+          },
+        },
+      });
 
-      saveSession(response);
+      if (error) {
+        setState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: error.message
+        }));
+        return false;
+      }
+
+      // Check if email confirmation is required
+      if (authData.user && !authData.session) {
+        setState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: null
+        }));
+        // User needs to confirm email - return true but they won't be authenticated yet
+        return true;
+      }
+
       setState({
-        user: response.user,
-        isAuthenticated: true,
+        user: mapSupabaseUser(authData.user),
+        isAuthenticated: !!authData.session,
         isLoading: false,
         error: null
       });
@@ -117,18 +211,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }));
       return false;
     }
-  }, []);
+  }, [supabase]);
 
   const logout = useCallback(async (): Promise<void> => {
+    if (!supabase) {
+      setState({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: null
+      });
+      return;
+    }
+
     setState(prev => ({ ...prev, isLoading: true }));
 
     try {
-      // TODO: Call logout API endpoint
-      await mockLogout();
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        console.error('Logout error:', error);
+      }
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      clearSession();
       setState({
         user: null,
         isAuthenticated: false,
@@ -136,21 +242,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         error: null
       });
     }
-  }, []);
+  }, [supabase]);
 
   const refreshSession = useCallback(async (): Promise<boolean> => {
+    if (!supabase) {
+      return false;
+    }
+
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (!stored) return false;
+      const { data, error } = await supabase.auth.refreshSession();
 
-      const session: AuthSession = JSON.parse(stored);
+      if (error || !data.session) {
+        setState({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          error: null
+        });
+        return false;
+      }
 
-      // TODO: Replace with actual API call
-      const response = await mockRefreshToken(session.refreshToken);
-
-      saveSession(response);
       setState({
-        user: response.user,
+        user: mapSupabaseUser(data.user),
         isAuthenticated: true,
         isLoading: false,
         error: null
@@ -159,7 +272,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return true;
     } catch (error) {
       console.error('Failed to refresh session:', error);
-      clearSession();
       setState({
         user: null,
         isAuthenticated: false,
@@ -168,25 +280,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       return false;
     }
-  }, []);
+  }, [supabase]);
 
-  const updateUser = useCallback((updates: Partial<User>) => {
-    setState(prev => {
-      if (!prev.user) return prev;
+  const updateUser = useCallback(async (updates: Partial<User>) => {
+    if (!supabase) {
+      return;
+    }
 
-      const updatedUser = { ...prev.user, ...updates };
+    try {
+      const { data, error } = await supabase.auth.updateUser({
+        data: {
+          name: updates.name,
+          full_name: updates.name,
+          mode: updates.mode,
+          role: updates.role,
+          avatar_url: updates.avatar,
+        },
+      });
 
-      // Update stored session
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const session: AuthSession = JSON.parse(stored);
-        session.user = updatedUser;
-        saveSession(session);
+      if (error) {
+        console.error('Failed to update user:', error);
+        return;
       }
 
-      return { ...prev, user: updatedUser };
-    });
-  }, []);
+      setState(prev => ({
+        ...prev,
+        user: mapSupabaseUser(data.user),
+      }));
+    } catch (error) {
+      console.error('Failed to update user:', error);
+    }
+  }, [supabase]);
 
   const clearError = useCallback(() => {
     setState(prev => ({ ...prev, error: null }));
@@ -215,98 +339,4 @@ export function useAuth() {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}
-
-// Mock API functions - Replace with real API calls
-async function mockLogin(credentials: LoginCredentials): Promise<AuthSession> {
-  await new Promise(resolve => setTimeout(resolve, 800));
-
-  // Simulate validation
-  if (!credentials.email || !credentials.password) {
-    throw new Error('Email and password are required');
-  }
-
-  if (credentials.password.length < 6) {
-    throw new Error('Invalid credentials');
-  }
-
-  const user: User = {
-    id: 'user-' + Math.random().toString(36).substr(2, 9),
-    email: credentials.email,
-    name: credentials.email.split('@')[0],
-    mode: 'individual',
-    role: 'user',
-    createdAt: new Date().toISOString(),
-    lastLoginAt: new Date().toISOString(),
-    isVerified: true
-  };
-
-  return {
-    user,
-    accessToken: 'mock-access-token-' + Date.now(),
-    refreshToken: 'mock-refresh-token-' + Date.now(),
-    expiresAt: Date.now() + 3600000 // 1 hour
-  };
-}
-
-async function mockRegister(data: RegisterData): Promise<AuthSession> {
-  await new Promise(resolve => setTimeout(resolve, 1000));
-
-  // Simulate validation
-  if (!data.email || !data.password || !data.name) {
-    throw new Error('All fields are required');
-  }
-
-  if (data.password.length < 8) {
-    throw new Error('Password must be at least 8 characters');
-  }
-
-  const user: User = {
-    id: 'user-' + Math.random().toString(36).substr(2, 9),
-    email: data.email,
-    name: data.name,
-    mode: data.mode,
-    role: 'user',
-    createdAt: new Date().toISOString(),
-    lastLoginAt: new Date().toISOString(),
-    isVerified: false
-  };
-
-  return {
-    user,
-    accessToken: 'mock-access-token-' + Date.now(),
-    refreshToken: 'mock-refresh-token-' + Date.now(),
-    expiresAt: Date.now() + 3600000
-  };
-}
-
-async function mockLogout(): Promise<void> {
-  await new Promise(resolve => setTimeout(resolve, 300));
-}
-
-async function mockRefreshToken(refreshToken: string): Promise<AuthSession> {
-  await new Promise(resolve => setTimeout(resolve, 500));
-
-  if (!refreshToken) {
-    throw new Error('Invalid refresh token');
-  }
-
-  // In real app, this would validate the refresh token and return new tokens
-  const user: User = {
-    id: 'user-123',
-    email: 'user@example.com',
-    name: 'User',
-    mode: 'individual',
-    role: 'user',
-    createdAt: new Date().toISOString(),
-    lastLoginAt: new Date().toISOString(),
-    isVerified: true
-  };
-
-  return {
-    user,
-    accessToken: 'mock-access-token-' + Date.now(),
-    refreshToken: 'mock-refresh-token-' + Date.now(),
-    expiresAt: Date.now() + 3600000
-  };
 }

@@ -98,6 +98,13 @@ export function UserMenu() {
 
           <div className="py-1">
             <Link
+              href="/profile"
+              onClick={() => setIsOpen(false)}
+              className="block px-4 py-2 text-gray-300 hover:bg-sifter-border/50 hover:text-white transition-colors"
+            >
+              Profile
+            </Link>
+            <Link
               href="/settings"
               onClick={() => setIsOpen(false)}
               className="block px-4 py-2 text-gray-300 hover:bg-sifter-border/50 hover:text-white transition-colors"

@@ -12,12 +12,15 @@
     "@heroicons/react": "^2.2.0",
     "@react-pdf/renderer": "^4.3.1",
     "axios": "^1.13.2",
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.89.0",
     "chart.js": "^4.5.1",
     "next": "14.2.3",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^18.3.1",
     "vis-network": "^10.0.2"
+    "zod": "^4.3.4"
   },
   "devDependencies": {
     "@types/node": "^20.12.12",

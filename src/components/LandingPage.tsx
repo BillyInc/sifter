@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import { UserMenu } from '@/components/auth/UserMenu';
 
 interface LandingPageProps {
   onGetStarted: () => void;
@@ -12,20 +12,9 @@ interface LandingPageProps {
 export default function LandingPage({ onGetStarted, compact = false }: LandingPageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-sifter-dark to-sifter-card">
-      {/* Top nav for sign in */}
-      <div className="absolute top-4 right-4 flex items-center gap-4">
-        <Link
-          href="/login"
-          className="text-gray-400 hover:text-white transition-colors"
-        >
-          Sign in
-        </Link>
-        <Link
-          href="/register"
-          className="px-4 py-2 bg-sifter-blue hover:bg-blue-600 text-white rounded-lg transition-colors"
-        >
-          Sign up
-        </Link>
+      {/* Top nav with user menu */}
+      <div className="absolute top-4 right-4">
+        <UserMenu />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-12">
