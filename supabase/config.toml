@@ -1,0 +1,56 @@
+# Supabase Local Development Configuration
+# This file configures how Supabase runs on your local machine for development.
+#
+# WHAT IS THIS?
+# When you run `supabase start`, it spins up a local Supabase instance (database,
+# auth, storage) in Docker containers. This file controls those settings.
+#
+# DO I NEED THIS?
+# - For PRODUCTION: No, your cloud Supabase dashboard manages these settings
+# - For LOCAL DEV: Yes, if you want to develop offline or test migrations locally
+#
+# HOW TO USE:
+# 1. Install Supabase CLI: npm install -g supabase
+# 2. Install Docker Desktop
+# 3. Run: supabase start (starts local Supabase)
+# 4. Run: supabase stop (stops local Supabase)
+
+[api]
+enabled = true
+port = 54321
+# Schemas exposed via the API - add your custom schemas here
+schemas = ["public", "sifter_dev"]
+extra_search_path = ["public", "sifter_dev", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 15
+
+[studio]
+# Supabase Studio - A web UI to manage your local database
+# Access at http://127.0.0.1:54323 after running `supabase start`
+enabled = true
+port = 54323
+
+[inbucket]
+# Inbucket - Catches all emails sent locally (for testing auth emails)
+# Access at http://127.0.0.1:54324 after running `supabase start`
+enabled = true
+port = 54324
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:3000"
+additional_redirect_urls = ["http://localhost:3000"]
+jwt_expiry = 3600
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = false

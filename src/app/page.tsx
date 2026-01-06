@@ -19,6 +19,7 @@ import DisputeForm from '@/components/data-donation/universal/DisputeForm';
 import StandardFlagForm from '@/components/data-donation/universal/StandardFlagForm';
 import { RewardsShop } from '@/components/data-donation/gamification';
 import type { Reward, RewardType, UserTier } from '@/types/dataDonation';
+import { FeedbackButton } from '@/components/feedback';
 
 import { 
   AnalysisState, 
@@ -2670,6 +2671,9 @@ export default function Home() {
           </div>
         </footer>
       )}
+
+      {/* Floating Feedback Button */}
+      <FeedbackButton variant="floating" />
     </main>
   );
 }
