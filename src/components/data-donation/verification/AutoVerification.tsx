@@ -216,7 +216,7 @@ export default function AutoVerification({ submission, onComplete }: AutoVerific
       case 'passed': return '';
       case 'failed': return '';
       case 'warning': return '';
-      case 'pending': return '⏳';
+      case 'pending': return '';
       default: return '';
     }
   };

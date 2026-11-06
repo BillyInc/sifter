@@ -122,6 +122,29 @@ pattern is used three or more times, promote it here.
 - Radio groups use `fieldset`/`legend`; icon-only controls carry `aria-label`.
 - Minimum touch target: 40 px (`Button size="md"` is 40 px, `lg` is 48 px).
 
+## 5a. Whole-app sweep (second pass)
+
+Every screen, tab, modal and route was moved onto the tokens:
+
+- 57 files had ad-hoc `gray-*` surfaces, borders and text; all now use the
+  `sifter` tokens (`text-gray-300/400/500/600` → text, muted, subtle).
+- 57 coloured gradients were flattened to one primary accent or a neutral
+  surface. The only gradients left are the logo mark and the landing hero.
+- Emoji used as icons were removed everywhere; verdicts use colour dots, file
+  types use text chips, severities use badges.
+- The pages router (`/disputes`, `/terms`, `/entities/[id]`) had no `_app.tsx`
+  and rendered unstyled. `src/pages/_app.tsx` now loads the stylesheet and
+  typeface.
+- Modals have a single close control and no duplicated titles.
+- Researcher charts use a single-hue categorical palette.
+
+Known content defects found while screenshotting (data, not design):
+- The contract-address report (`IndividualAnalysisView`) shows a green
+  "very low risk" header and a red "extreme danger" verdict for the same mock
+  result. The mock generators disagree; the layout renders what it is given.
+- Watchlist, recent scans, research stats and batch results are placeholder
+  data until the API is wired.
+
 ## 6. Verification
 - `npx tsc --noEmit` passes.
 - `npx next build` passes (see commit for the run).

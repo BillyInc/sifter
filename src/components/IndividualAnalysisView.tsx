@@ -63,12 +63,12 @@ const getChainInfo = (chain?: string) => {
   if (!chain) return { icon: '', name: '', color: '' };
   
   const chainMap: Record<string, { icon: string; name: string; color: string }> = {
-    'solana': { icon: '◎', name: 'Solana', color: 'bg-gradient-to-br from-[#00FFA3] to-[#DC1FFF]' },
+    'solana': { icon: '', name: 'Solana', color: 'bg-gradient-to-br from-[#00FFA3] to-[#DC1FFF]' },
     'ethereum': { icon: '⧫', name: 'Ethereum', color: 'bg-gradient-to-br from-[#627EEA] to-[#ECF0F1]' },
-    'base': { icon: '⎔', name: 'Base', color: 'bg-gradient-to-br from-[#0052FF] to-[#FFFFFF]' },
-    'polygon': { icon: '⬢', name: 'Polygon', color: 'bg-gradient-to-br from-[#8247E5] to-[#8B5CF6]' },
+    'base': { icon: '', name: 'Base', color: 'bg-gradient-to-br from-[#0052FF] to-[#FFFFFF]' },
+    'polygon': { icon: '', name: 'Polygon', color: 'bg-gradient-to-br from-[#8247E5] to-[#8B5CF6]' },
     'avalanche': { icon: '', name: 'Avalanche', color: 'bg-gradient-to-br from-[#E84142] to-[#FFFFFF]' },
-    'arbitrum': { icon: '⎔', name: 'Arbitrum', color: 'bg-gradient-to-br from-[#2D374B] to-[#96BEDC]' },
+    'arbitrum': { icon: '', name: 'Arbitrum', color: 'bg-gradient-to-br from-[#2D374B] to-[#96BEDC]' },
     'unknown': { icon: '', name: 'Unknown', color: 'bg-sifter-elevated' }
   };
   
@@ -209,7 +209,7 @@ const formatHyperBlitzReport = (reportData: any, detectedChain?: string) => {
 
         {/* Timing Analysis */}
         <div className="border border-blue-500/20 rounded-lg p-4 bg-blue-500/5">
-          <h3 className="font-bold text-white mb-3">⏰ TIMING ANALYSIS (METRIC #7 + #13 INPUT)</h3>
+          <h3 className="font-bold text-white mb-3"> TIMING ANALYSIS (METRIC #7 + #13 INPUT)</h3>
           <div className="space-y-1 text-sm">
             <div className="flex items-start gap-2">
               <span className="text-blue-400 mt-1">├─</span>
@@ -516,7 +516,7 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
         <div className="mb-4 flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
             <span className="text-sifter-text-muted">Chain:</span>
-            <span className="text-white font-medium">Base ⎔</span>
+            <span className="text-white font-medium">Base </span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sifter-text-muted">Price:</span>
@@ -1352,19 +1352,19 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
               <h5 className="text-sifter-text text-sm mb-2">Daily/Weekly:</h5>
               <ul className="space-y-1 text-sm text-sifter-text">
                 <li className="flex items-center gap-2">
-                  <span className="text-blue-400">□</span>
+                  <span className="text-blue-400"></span>
                   <span>Network contamination check (maintain 0 direct bad actor connections)</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-blue-400">□</span>
+                  <span className="text-blue-400"></span>
                   <span>Promoter cluster size (alert if &gt;30%)</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-blue-400">□</span>
+                  <span className="text-blue-400"></span>
                   <span>Founder centrality (ideal: 0.4-0.6 range)</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-blue-400">□</span>
+                  <span className="text-blue-400"></span>
                   <span>Engagement quality (sustain &gt;35% substantive)</span>
                 </li>
               </ul>
@@ -1373,19 +1373,19 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
               <h5 className="text-sifter-text text-sm mb-2">Monthly:</h5>
               <ul className="space-y-1 text-sm text-sifter-text">
                 <li className="flex items-center gap-2">
-                  <span className="text-blue-400">□</span>
+                  <span className="text-blue-400"></span>
                   <span>GitHub commit velocity (expect ≥15/month)</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-blue-400">□</span>
+                  <span className="text-blue-400"></span>
                   <span>Account age distribution (watch for bot farm spikes)</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-blue-400">□</span>
+                  <span className="text-blue-400"></span>
                   <span>Message timing patterns (detect new coordination)</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-blue-400">□</span>
+                  <span className="text-blue-400"></span>
                   <span>Network structure changes (new clusters, density changes)</span>
                 </li>
               </ul>

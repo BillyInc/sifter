@@ -6,7 +6,7 @@ export default function DisputeConfirmationPage() {
       <p>Case ID: DISP-2024-089</p>
       <div className="timeline">
         <div> Email confirmation sent</div>
-        <div>⏳ Under review (2-3 days)</div>
+        <div> Under review (2-3 days)</div>
         <div> Verification call scheduled</div>
         <div> Resolution within 10 days</div>
       </div>

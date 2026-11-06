@@ -23,7 +23,7 @@ export default function VerificationStatus({
   const getStatusConfig = (status: VerificationResult['status']) => {
     switch (status) {
       case 'pending':
-        return { color: 'bg-blue-500/20 text-blue-400', icon: '⏳', label: 'Pending' };
+        return { color: 'bg-blue-500/20 text-blue-400', icon: '', label: 'Pending' };
       case 'auto-verified':
         return { color: 'bg-green-500/20 text-green-400', icon: '', label: 'Auto-Verified' };
       case 'needs-review':

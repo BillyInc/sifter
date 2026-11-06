@@ -384,11 +384,11 @@ export default function DisputeStatusTrackerPage() {
                   <span className="text-sifter-text">Identity confirmed</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">⏳</div>
+                  <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400"></div>
                   <span className="text-sifter-text">Impartial review in progress</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-sifter-elevated flex items-center justify-center text-sifter-text-muted">○</div>
+                  <div className="w-6 h-6 rounded-full bg-sifter-elevated flex items-center justify-center text-sifter-text-muted"></div>
                   <span className="text-sifter-text">Resolution pending</span>
                 </div>
               </div>
