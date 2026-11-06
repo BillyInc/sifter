@@ -743,7 +743,7 @@ The SIFTER Team`
                         <button
                           onClick={() => handleResolveDispute(resolution)}
                           disabled={isProcessing}
-                          className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium flex items-center gap-2 disabled:opacity-50"
+                          className="px-6 py-2 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium flex items-center gap-2 disabled:opacity-50"
                         >
                           {isProcessing ? (
                             <>

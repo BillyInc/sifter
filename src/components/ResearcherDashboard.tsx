@@ -781,7 +781,7 @@ export default function ResearcherDashboard({
         <div>
           <div className="flex items-center gap-3">
             <div className={`${compactClasses.logo} bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg flex items-center justify-center`}>
-              <span className={compactClasses.logoIcon}>🔬</span>
+              
             </div>
             <div>
               <h1 className={`${compactClasses.title} font-bold text-white`}>Research Lab</h1>
@@ -795,7 +795,7 @@ export default function ResearcherDashboard({
             <div className={`${compact ? 'text-sm' : 'text-base'} font-medium text-white`}>{userName || userEmail || 'Researcher'}</div>
           </div>
           <div className={`${compact ? 'px-2 py-1 text-xs' : 'px-3 py-1.5 text-sm'} rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/30 font-medium`}>
-            🔬 Researcher Mode
+            Researcher mode
           </div>
         </div>
       </div>
@@ -844,11 +844,11 @@ export default function ResearcherDashboard({
                   : 'border-transparent text-gray-400 hover:text-gray-300'
                 }`}
             >
-              {tab === 'analyze' && <>🔬 <span className="hidden sm:inline">Analysis</span></>}
-              {tab === 'compare' && <>📊 <span className="hidden sm:inline">Compare</span></>}
-              {tab === 'patterns' && <>📚 <span className="hidden sm:inline">Patterns</span></>}
-              {tab === 'database' && <>🗄️ <span className="hidden sm:inline">Database</span></>}
-              {tab === 'exports' && <>📤 <span className="hidden sm:inline">Export</span></>}
+              {tab === 'analyze' && 'Analysis'}
+              {tab === 'compare' && 'Compare'}
+              {tab === 'patterns' && 'Patterns'}
+              {tab === 'database' && 'Database'}
+              {tab === 'exports' && 'Export'}
             </button>
           ))}
         </div>
@@ -1014,7 +1014,7 @@ export default function ResearcherDashboard({
                       className={`${compactClasses.button} bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white rounded-lg font-medium transition-all flex items-center gap-2`}
                      
                     >
-                      <span>🔬</span>
+                      
                       Run Deep Analysis
                     </button>
                     <button
@@ -1044,19 +1044,19 @@ export default function ResearcherDashboard({
                       onClick={() => setCurrentProject(null)}
                       className={`${compactClasses.buttonSmall} bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors`}
                     >
-                      ✕ Clear Results
+                      Clear results
                     </button>
                     <button
                       onClick={() => handleAddToComparison(currentProject.displayName)}
                       className={`${compactClasses.buttonSmall} bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border border-purple-500/30 rounded-lg font-medium transition-colors`}
                     >
-                      📈 Add to Comparison
+                      Add to comparison
                     </button>
                     <button
                       onClick={() => setShowResearchReport(true)}
                       className={`${compactClasses.buttonSmall} bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 border border-blue-500/30 rounded-lg font-medium transition-colors`}
                     >
-                      📊 View Full Report
+                      View full report
                     </button>
                   </div>
                 </div>
@@ -1152,8 +1152,8 @@ export default function ResearcherDashboard({
                             <div className={`text-xl ${scan.riskScore >= 60 ? 'text-red-400' :
                                 scan.riskScore >= 30 ? 'text-yellow-400' : 'text-green-400'
                               }`}>
-                              {scan.riskScore >= 60 ? '🔴' :
-                                scan.riskScore >= 30 ? '🟡' : '🟢'}
+                              {scan.riskScore >= 60 ? '●' :
+                                scan.riskScore >= 30 ? '●' : '●'}
                             </div>
                             <div>
                               <div className="font-bold text-white">{scan.projectName}</div>
@@ -1314,7 +1314,6 @@ export default function ResearcherDashboard({
 
               {comparisonProjects.length === 0 ? (
                 <div className="text-center py-8">
-                  <div className="text-4xl mb-3">📊</div>
                   <h4 className="text-base font-medium text-white mb-2">No projects to compare</h4>
                   <p className="text-gray-400 text-sm mb-4">Add projects from recent analyses to compare metrics</p>
                   <button
@@ -1585,7 +1584,6 @@ export default function ResearcherDashboard({
                   className="bg-gray-900/50 border border-sifter-border rounded-xl p-4 hover:border-purple-500/50 hover:bg-gray-900/70 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={!currentProject}
                 >
-                  <div className="text-3xl mb-2">📊</div>
                   <h4 className="font-semibold text-white mb-1">CSV Export</h4>
                   <p className="text-sm text-gray-400">Raw data tables for spreadsheet analysis</p>
                 </button>
@@ -1601,7 +1599,6 @@ export default function ResearcherDashboard({
                   className="bg-gray-900/50 border border-sifter-border rounded-xl p-4 hover:border-purple-500/50 hover:bg-gray-900/70 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={!currentProject}
                 >
-                  <div className="text-3xl mb-2">💾</div>
                   <h4 className="font-semibold text-white mb-1">JSON Export</h4>
                   <p className="text-sm text-gray-400">Structured data for programmatic analysis</p>
                 </button>
@@ -1617,7 +1614,6 @@ export default function ResearcherDashboard({
                   className="bg-gray-900/50 border border-sifter-border rounded-xl p-4 hover:border-purple-500/50 hover:bg-gray-900/70 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={!currentProject}
                 >
-                  <div className="text-3xl mb-2">📄</div>
                   <h4 className="font-semibold text-white mb-1">PDF Export</h4>
                   <p className="text-sm text-gray-400">Formatted research report</p>
                 </button>

@@ -528,7 +528,7 @@ export default function FlaggingInterface({
                 setGamificationResult(null);
                 onClose();
               }}
-              className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 
+              className="flex-1 px-4 py-3 bg-sifter-blue hover:bg-sifter-blue-hover 
                        text-white rounded-lg font-medium transition-all"
             >
               View Full Dashboard

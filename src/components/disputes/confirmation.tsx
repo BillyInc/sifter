@@ -209,7 +209,7 @@ export default function DisputeConfirmationPage() {
           </Link>
           <Link 
             href="/admin"
-            className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium text-center"
+            className="px-6 py-3 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium text-center"
           >
             Go to Admin Dashboard
           </Link>

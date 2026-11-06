@@ -20,6 +20,7 @@ import StandardFlagForm from '@/components/data-donation/universal/StandardFlagF
 import { RewardsShop } from '@/components/data-donation/gamification';
 import type { Reward, RewardType, UserTier } from '@/types/dataDonation';
 import { FeedbackButton } from '@/components/feedback';
+import { Button, LogoMark } from '@/components/ui';
 
 import { 
   AnalysisState, 
@@ -1435,7 +1436,7 @@ export default function Home() {
                       onClick={() => ExportService.shareAnalysis(projectData)}
                       className={`${compactMode ? 'px-3 py-1.5 text-xs' : 'px-4 py-2'} bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 rounded-lg flex items-center gap-1.5`}
                     >
-                      🔗 Share
+                      Share
                     </button>
                   </>
                 )}
@@ -1478,7 +1479,7 @@ export default function Home() {
               <p className="text-gray-400 mb-4">{error || 'An unexpected error occurred'}</p>
               <button
                 onClick={handleReset}
-                className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium text-sm"
+                className="px-5 py-2.5 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium text-sm"
               >
                 Try Again
               </button>
@@ -1582,7 +1583,7 @@ export default function Home() {
               </p>
               <button
                 onClick={() => setShowModeModal(true)}
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-2.5 rounded-lg font-medium text-sm transition-all"
+                className="w-full bg-sifter-blue hover:bg-sifter-blue-hover text-white py-2.5 rounded-lg font-medium text-sm transition-all"
               >
                 Get Started
               </button>
@@ -1707,7 +1708,7 @@ export default function Home() {
                       onClick={() => ExportService.shareAnalysis(projectData)}
                       className={`${compactMode ? 'px-3 py-1.5 text-xs' : 'px-4 py-2'} bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 rounded-lg flex items-center gap-1.5`}
                     >
-                      🔗 Share
+                      Share
                     </button>
                   </>
                 )}
@@ -1759,7 +1760,7 @@ export default function Home() {
                   setState('idle');
                   setError(null);
                 }}
-                className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium text-sm"
+                className="px-5 py-2.5 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium text-sm"
               >
                 Try Again
               </button>
@@ -1983,7 +1984,7 @@ export default function Home() {
                     <p className="text-gray-400 mb-4">No entity selected for flagging</p>
                     <button
                       onClick={() => setShowStandardForm(false)}
-                      className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-all"
+                      className="px-6 py-3 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium transition-all"
                     >
                       Close
                     </button>
@@ -2095,7 +2096,7 @@ export default function Home() {
                 disabled={!userMode}
                 className={`px-6 sm:px-8 py-3 rounded-lg font-medium transition-all order-1 sm:order-2 ${
                   userMode
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white'
+                    ? 'bg-sifter-blue hover:bg-sifter-blue-hover text-white'
                     : 'bg-gray-800 text-gray-500 cursor-not-allowed'
                 }`}
               >
@@ -2197,7 +2198,7 @@ export default function Home() {
                       </button>
                       <button
                         type="submit"
-                        className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-3 rounded-lg font-medium transition-all"
+                        className="flex-1 bg-sifter-blue hover:bg-sifter-blue-hover text-white py-3 rounded-lg font-medium transition-all"
                       >
                         Login
                       </button>
@@ -2260,7 +2261,7 @@ export default function Home() {
                       </button>
                       <button
                         type="submit"
-                        className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-3 rounded-lg font-medium transition-all"
+                        className="flex-1 bg-sifter-blue hover:bg-sifter-blue-hover text-white py-3 rounded-lg font-medium transition-all"
                       >
                         Create Account
                       </button>
@@ -2275,205 +2276,110 @@ export default function Home() {
 
       {/* Header - Only show when logged in */}
       {isLoggedIn && (
-        <header className={`border-b border-sifter-border bg-sifter-dark/50 backdrop-blur-sm ${compactMode ? 'py-2' : 'py-4'}`}>
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className={`${compactMode ? 'w-8 h-8' : 'w-10 h-10'} bg-gradient-to-br from-sifter-blue to-blue-600 rounded-lg flex items-center justify-center`}>
-                  <svg className={`${compactMode ? 'w-4 h-4' : 'w-6 h-6'} text-white`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                  </svg>
-                </div>
-                <div>
-                  <h1 className={`${compactMode ? 'text-base font-bold' : 'text-xl font-bold'} text-white`}>SIFTER</h1>
-                  {userMode && (
-                    <p className={`${compactMode ? 'text-[10px]' : 'text-xs'} text-gray-500`}>{getModeDisplayName(userMode)}</p>
+        <header className="sticky top-0 z-40 border-b border-sifter-border bg-sifter-dark/85 backdrop-blur">
+          <div className={`max-w-7xl mx-auto px-4 flex items-center justify-between gap-4 ${compactMode ? 'h-12' : 'h-16'}`}>
+            <div className="flex items-center gap-3 min-w-0">
+              <LogoMark size="sm" />
+              <div className="min-w-0 leading-tight">
+                <p className="font-bold tracking-tight text-sifter-text">SIFTER</p>
+                {userMode && !compactMode && (
+                  <p className="text-xs text-sifter-text-subtle truncate">{getModeDisplayName(userMode)}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1 sm:gap-2">
+              {/* Density toggle */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setCompactMode(!compactMode)}
+                aria-pressed={compactMode}
+                aria-label={compactMode ? 'Switch to comfortable layout' : 'Switch to compact layout'}
+                title={compactMode ? 'Comfortable layout' : 'Compact layout'}
+                className="hidden sm:inline-flex px-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  {compactMode ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5h16M4 9h16M4 13h16M4 17h16M4 21h16" />
+                  )}
+                </svg>
+              </Button>
+
+              {/* Contribute menu: evidence, disputes, tracking, points */}
+              {isLoggedIn && userMode && (
+                <div className="relative mobile-data-menu">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setShowMobileDataMenu(!showMobileDataMenu)}
+                    aria-haspopup="menu"
+                    aria-expanded={showMobileDataMenu}
+                    trailingIcon={
+                      <svg className={`w-3.5 h-3.5 transition-transform ${showMobileDataMenu ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    }
+                  >
+                    Contribute
+                    {userPoints > 0 && (
+                      <span className="ml-1 rounded-full bg-sifter-blue/20 px-1.5 py-0.5 text-[11px] font-semibold text-blue-300 tabular-nums">
+                        {userPoints} pts
+                      </span>
+                    )}
+                  </Button>
+
+                  {showMobileDataMenu && (
+                    <div role="menu" className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-sifter-border bg-sifter-card p-1.5 shadow-popover z-[100] animate-fade-up">
+                      {[
+                        { label: 'Submit evidence', hint: 'Flag a project with proof', run: handleNewSubmission },
+                        { label: 'File a dispute', hint: 'Challenge a verdict', run: () => setShowDisputeForm(true) },
+                        { label: 'Track submissions', hint: 'Status of what you sent', run: () => setShowTrackingDashboard(true) },
+                        { label: 'Points and rewards', hint: userPoints > 0 ? `${userPoints} points available` : 'Earn points for contributions', run: () => setShowPointsDisplay(true) },
+                      ].map((item) => (
+                        <button
+                          key={item.label}
+                          role="menuitem"
+                          onClick={() => {
+                            item.run();
+                            setShowMobileDataMenu(false);
+                          }}
+                          className="w-full rounded-lg px-3 py-2 text-left transition-colors hover:bg-sifter-hover focus-visible:bg-sifter-hover"
+                        >
+                          <span className="block text-sm font-medium text-sifter-text">{item.label}</span>
+                          <span className="block text-xs text-sifter-text-subtle">{item.hint}</span>
+                        </button>
+                      ))}
+                      <div className="my-1 border-t border-sifter-border sm:hidden" />
+                      <button
+                        role="menuitem"
+                        onClick={() => {
+                          setCompactMode(!compactMode);
+                          setShowMobileDataMenu(false);
+                        }}
+                        className="w-full rounded-lg px-3 py-2 text-left text-sm text-sifter-text-muted transition-colors hover:bg-sifter-hover sm:hidden"
+                      >
+                        {compactMode ? 'Comfortable layout' : 'Compact layout'}
+                      </button>
+                    </div>
                   )}
                 </div>
-              </div>
-              
-              <div className="flex items-center gap-4">
-                {/* Compact mode toggle button */}
-                <button
-                  onClick={() => setCompactMode(!compactMode)}
-                  className={`px-2 py-1 text-xs ${
-                    compactMode 
-                      ? 'bg-gray-800 text-gray-300 border border-gray-700' 
-                      : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                  } rounded-lg transition-colors hidden sm:block`}
-                  title={compactMode ? "Switch to normal view" : "Switch to compact view"}
-                >
-                  {compactMode ? "↔️" : "↕️"}
-                </button>
-                
-                {/* Data Donation Button */}
-                {isLoggedIn && userMode && (
-                  <div className="hidden md:flex items-center gap-2">
-                    {/* Points & Rewards Button */}
-                    <button
-                      onClick={() => setShowPointsDisplay(true)}
-                      className={`${compactMode ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-xs'} bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg font-medium transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap`}
-                    >
-                      <svg className={`${compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} flex-shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>Points & Rewards</span>
-                    </button>
-                    
-                    {/* Submit Evidence Button */}
-                    <button
-                      onClick={handleNewSubmission}
-                      className={`${compactMode ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-xs'} bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 rounded-lg font-medium transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap`}
-                    >
-                      <svg className={`${compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} flex-shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>Submit Evidence</span>
-                    </button>
-                    
-                    {/* Dispute Button */}
-                    <button
-                      onClick={() => setShowDisputeForm(true)}
-                      className={`${compactMode ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-xs'} bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 rounded-lg font-medium transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap`}
-                    >
-                      <svg className={`${compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} flex-shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>File Dispute</span>
-                    </button>
-                    
-                    <button
-                      onClick={() => setShowTrackingDashboard(true)}
-                      className={`${compactMode ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-xs'} bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 border border-amber-500/30 rounded-lg font-medium transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap`}
-                    >
-                      <svg className={`${compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} flex-shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                      </svg>
-                      <span>Data Donation</span>
-                      {userPoints > 0 && (
-                        <span className="bg-amber-500 text-white text-xs px-1 py-0.5 rounded-full font-bold">
-                          {userPoints}
-                        </span>
-                      )}
-                    </button>
-                  </div>
-                )}
+              )}
 
-                {/* Mobile: Show dropdown menu */}
-                {isLoggedIn && userMode && (
-                  <div className="md:hidden relative mobile-data-menu z-[60]">
-                    <button
-                      onClick={() => setShowMobileDataMenu(!showMobileDataMenu)}
-                      className={`p-1.5 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 border border-amber-500/30 rounded-lg transition-colors relative`}
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                      </svg>
-                      {userPoints > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs px-1 py-0.5 rounded-full font-bold">
-                          {userPoints}
-                        </span>
-                      )}
-                    </button>
-                    
-                    {showMobileDataMenu && (
-                      <div className="absolute right-0 top-full mt-1 w-48 bg-sifter-card border border-sifter-border rounded-lg shadow-xl z-[100]">
-                        <div className="p-1 space-y-1">
-                          {/* Data Donation Button */}
-                          <button
-                            onClick={() => {
-                              setShowTrackingDashboard(true);
-                              setShowMobileDataMenu(false);
-                            }}
-                            className="w-full text-left px-3 py-2 text-amber-400 hover:bg-amber-500/10 rounded text-sm transition-colors flex items-center gap-2"
-                          >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                            </svg>
-                            <span className="text-xs">Data Donation</span>
-                          </button>
-                          
-                          {/* Points & Rewards Button */}
-                          <button
-                            onClick={() => {
-                              setShowPointsDisplay(true);
-                              setShowMobileDataMenu(false);
-                            }}
-                            className="w-full text-left px-3 py-2 text-blue-400 hover:bg-blue-500/10 rounded text-sm transition-colors flex items-center gap-2"
-                          >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span className="text-xs">Points & Rewards</span>
-                          </button>
-
-                          {/* Submit Evidence Button */}
-                          <button
-                            onClick={() => {
-                              handleNewSubmission();
-                              setShowMobileDataMenu(false);
-                            }}
-                            className="w-full text-left px-3 py-2 text-green-400 hover:bg-green-500/10 rounded text-sm transition-colors flex items-center gap-2"
-                          >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span className="text-xs">Submit Evidence</span>
-                          </button>
-
-                          {/* Dispute Button */}
-                          <button
-                            onClick={() => {
-                              setShowDisputeForm(true);
-                              setShowMobileDataMenu(false);
-                            }}
-                            className="w-full text-left px-3 py-2 text-red-400 hover:bg-red-500/10 rounded text-sm transition-colors flex items-center gap-2"
-                          >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span className="text-xs">File Dispute</span>
-                          </button>
-                          
-                          {/* Compact mode toggle */}
-                          <button
-                            onClick={() => {
-                              setCompactMode(!compactMode);
-                              setShowMobileDataMenu(false);
-                            }}
-                            className="w-full text-left px-3 py-2 text-blue-400 hover:bg-blue-500/10 rounded text-sm transition-colors flex items-center gap-2"
-                          >
-                            <span>{compactMode ? "↔️" : "↕️"}</span>
-                            <span className="text-xs">{compactMode ? "Normal View" : "Compact View"}</span>
-                          </button>
-                        </div>
-                      </div>
-                    )}
+              {/* Account */}
+              {isLoggedIn && userMode && (
+                <div className="flex items-center gap-2 pl-2 ml-1 border-l border-sifter-border">
+                  <div className="hidden md:block text-right leading-tight">
+                    <p className="text-sm font-medium text-sifter-text truncate max-w-[140px]">{userName}</p>
+                    <p className="text-xs text-sifter-text-subtle truncate max-w-[140px]">{userEmail}</p>
                   </div>
-                )}
-                
-                {isLoggedIn && userMode && (
-                  <div className="flex items-center gap-2 ml-2 pl-2 border-l border-sifter-border">
-                    <div className={`${compactMode ? 'px-2 py-1 text-xs' : 'px-2.5 py-1.5 text-xs'} rounded-full font-medium whitespace-nowrap ${
-                      userMode === 'ea-vc' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
-                      userMode === 'researcher' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
-                      'bg-green-500/20 text-green-400 border border-green-500/30'
-                    }`}>
-                      {getModeDisplayName(userMode)}
-                    </div>
-                    <div className="text-right">
-                      <p className={`${compactMode ? 'text-xs' : 'text-sm'} font-medium text-white truncate max-w-[100px]`}>{userName}</p>
-                      <p className={`${compactMode ? 'text-[10px]' : 'text-xs'} text-gray-500 truncate max-w-[100px]`}>{userEmail}</p>
-                    </div>
-                    <button
-                      onClick={handleLogout}
-                      className={`${compactMode ? 'px-2 py-1 text-xs' : 'px-2.5 py-1.5 text-xs'} text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors font-medium flex items-center justify-center`}
-                    >
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
+                  <Button variant="ghost" size="sm" onClick={handleLogout}>
+                    Log out
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </header>
@@ -2652,22 +2558,10 @@ export default function Home() {
       </div>
 
       {isLoggedIn && (
-        <footer className={`fixed bottom-0 left-0 right-0 border-t border-sifter-border bg-sifter-dark/80 backdrop-blur-sm ${compactMode ? 'py-1.5' : 'py-3'}`}>
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex justify-between items-center">
-              <div className={`${compactMode ? 'text-[10px]' : 'text-xs'} text-gray-600`}>
-                <span className={`${compactMode ? 'text-xs' : 'text-sm'} font-medium text-gray-400`}>SIFTER 1.0</span> - Automated Project Due Diligence
-              </div>
-              {userMode && (
-                <div className={`${compactMode ? 'text-[10px]' : 'text-xs'} text-gray-500 flex items-center gap-1.5`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${compactMode ? 'animate-pulse' : 'animate-pulse'} bg-blue-500`}></span>
-                  Active: {getModeDisplayName(userMode)}
-                  {compactMode && (
-                    <span className="text-gray-600 ml-1">| Ctrl+K to toggle view</span>
-                  )}
-                </div>
-              )}
-            </div>
+        <footer className="border-t border-sifter-border mt-12">
+          <div className="max-w-7xl mx-auto px-4 py-6 flex items-center justify-between text-xs text-sifter-text-subtle">
+            <span>SIFTER 1.0</span>
+            {compactMode && <span>Ctrl+K toggles layout</span>}
           </div>
         </footer>
       )}

@@ -204,7 +204,7 @@ export default function StandardFlagForm({
                     onClick={() => setView('quick')}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                       view === 'quick'
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
+                        ? 'bg-sifter-blue text-white'
                         : 'bg-sifter-dark text-gray-400 hover:text-white'
                     }`}
                   >
@@ -214,7 +214,7 @@ export default function StandardFlagForm({
                     onClick={() => setView('detailed')}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                       view === 'detailed'
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
+                        ? 'bg-sifter-blue text-white'
                         : 'bg-sifter-dark text-gray-400 hover:text-white'
                     }`}
                   >
@@ -484,7 +484,7 @@ export default function StandardFlagForm({
                 <button
                   onClick={() => handleSubmit(false)}
                   disabled={isSubmitting || !customDescription.trim() || evidenceLinks.filter(l => l.trim()).length === 0}
-                  className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 
+                  className="px-6 py-3 bg-sifter-blue hover:bg-sifter-blue-hover 
                            text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (

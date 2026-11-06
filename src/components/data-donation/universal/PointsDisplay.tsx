@@ -161,7 +161,7 @@ export default function PointsDisplay({
           
           <div className="w-full bg-sifter-border rounded-full h-2 mb-2">
             <div 
-              className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500"
+              className="bg-sifter-blue h-2 rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
             ></div>
           </div>
@@ -210,7 +210,7 @@ export default function PointsDisplay({
           disabled={availablePoints < 1000}
           className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
             availablePoints >= 1000
-              ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white'
+              ? 'bg-sifter-blue hover:bg-sifter-blue-hover text-white'
               : 'bg-gray-800 text-gray-500 cursor-not-allowed'
           }`}
         >

@@ -246,7 +246,7 @@ export default function AutoVerification({ submission, onComplete }: AutoVerific
         </div>
         <div className="w-full bg-gray-800 rounded-full h-2">
           <div 
-            className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
+            className="bg-sifter-blue h-2 rounded-full transition-all duration-300"
             style={{ width: `${(currentStep / verificationSteps.length) * 100}%` }}
           />
         </div>

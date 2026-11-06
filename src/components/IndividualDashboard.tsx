@@ -979,15 +979,9 @@ export default function IndividualDashboard({
       pass: 'bg-green-500/20 text-green-400 border-green-500/30'
     };
     
-    const icons = {
-      reject: '🔴',
-      flag: '🟡',
-      pass: '🟢'
-    };
-    
     return (
       <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-sm ${colors[verdict]}`}>
-        <span className="text-xs">{icons[verdict]}</span>
+        <span className="w-1.5 h-1.5 rounded-full bg-current" aria-hidden="true" />
         <span className="font-bold">{score}/100</span>
         <span className="text-xs">{verdict.toUpperCase()}</span>
       </div>
@@ -1027,32 +1021,19 @@ export default function IndividualDashboard({
       if (analysisResults.isProjectName) {
         return (
           <div className="animate-fadeIn">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-white">{analysisResults.projectName}</h2>
-                <p className="text-gray-400 text-sm">Project Analysis Report</p>
-              </div>
-              <button
-                onClick={resetAnalysis}
-                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-all"
-              >
-                ← Back to Analyze
-              </button>
-            </div>
-            
-            {/* MetricBreakdown for project names */}
             <MetricBreakdown
-                    metrics={analysisResults.metrics}
-                    riskScore={analysisResults.riskScore} 
-                    projectName={analysisResults.projectName}
-                  />
-            
-            <div className="mt-6 pt-6 border-t border-sifter-border">
+              metrics={analysisResults.metrics}
+              riskScore={analysisResults.riskScore}
+              projectName={analysisResults.projectName}
+              onBack={resetAnalysis}
+            />
+
+            <div className="mt-6 flex justify-center">
               <button
                 onClick={resetAnalysis}
-                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-all w-full"
+                className="px-6 py-3 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium transition-colors"
               >
-                Analyze Another Project
+                Check another project
               </button>
             </div>
           </div>
@@ -1228,7 +1209,7 @@ export default function IndividualDashboard({
         {showBlitzSelector && (
           <div className="bg-sifter-card border border-blue-500/30 rounded-xl p-6 animate-fadeIn">
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-3xl">⚡</span>
+              
               <div>
                 <h3 className="text-xl font-bold text-white">
                   {detectedChain === 'solana' ? 'Solana Memecoin' : 
@@ -1254,7 +1235,6 @@ export default function IndividualDashboard({
                     : 'border-sifter-border hover:border-blue-500/50'
                 }`}
               >
-                <div className="text-5xl mb-3">⚡</div>
                 <h4 className="font-bold text-white text-lg">Hyper-Blitz</h4>
                 <p className="text-sm text-gray-400 mt-2 mb-3">
                   {detectedChain === 'solana' ? '3–5 seconds' :
@@ -1294,8 +1274,7 @@ export default function IndividualDashboard({
                     : 'border-sifter-border hover:border-purple-500/50'
                 }`}
               >
-                <div className="text-5xl mb-3">📈</div>
-                <h4 className="font-bold text-white text-lg">Momentum-Blitz</h4>
+                                <h4 className="font-bold text-white text-lg">Momentum-Blitz</h4>
                 <p className="text-sm text-gray-400 mt-2 mb-3">
                   {detectedChain === 'solana' ? '8–15 seconds' :
                    detectedChain === 'base' ? '15–30 seconds' :
@@ -1334,7 +1313,6 @@ export default function IndividualDashboard({
                     : 'border-sifter-border hover:border-green-500/50'
                 }`}
               >
-                <div className="text-5xl mb-3">🔍</div>
                 <h4 className="font-bold text-white text-lg">Deep-Blitz</h4>
                 <p className="text-sm text-gray-400 mt-2 mb-3">
                   {detectedChain === 'solana' ? '30–60 seconds' :
@@ -1407,13 +1385,10 @@ export default function IndividualDashboard({
               {recentScans.slice(0, 3).map((scan) => (
                 <div key={scan.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-900/50 hover:bg-gray-900 transition-all">
                   <div className="flex items-center gap-3">
-                    <div className={`text-lg ${
-                      scan.verdict === 'reject' ? 'text-red-400' :
-                      scan.verdict === 'flag' ? 'text-yellow-400' : 'text-green-400'
-                    }`}>
-                      {scan.verdict === 'reject' ? '🔴' : 
-                       scan.verdict === 'flag' ? '🟡' : '🟢'}
-                    </div>
+                    <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                      scan.verdict === 'reject' ? 'bg-red-400' :
+                      scan.verdict === 'flag' ? 'bg-yellow-400' : 'bg-green-400'
+                    }`} aria-hidden="true" />
                     <div>
                       <h4 className="font-medium text-white text-sm">{scan.projectName}</h4>
                       <p className="text-xs text-gray-400">{scan.scannedAt.toLocaleDateString()}</p>
@@ -1683,7 +1658,7 @@ export default function IndividualDashboard({
                   }}
                   className="px-2.5 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg text-xs transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1.5"
                 >
-                  🔄 Rescan
+                  Rescan
                 </button>
                 <button
                   onClick={() => {
@@ -1695,7 +1670,7 @@ export default function IndividualDashboard({
                   }}
                   className="px-2.5 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-xs transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1.5"
                 >
-                  📊 Details
+                  Details
                 </button>
               </div>
             </div>
@@ -1703,12 +1678,11 @@ export default function IndividualDashboard({
         </div>
       ) : (
         <div className="text-center py-8 bg-sifter-card border border-sifter-border rounded-xl">
-          <div className="text-4xl mb-3 animate-bounce">📋</div>
-          <h3 className="text-lg font-bold text-white mb-2">Watchlist Empty</h3>
+                    <h3 className="text-lg font-bold text-white mb-2">Watchlist Empty</h3>
           <p className="text-sm text-gray-400 mb-4">Add projects to track their risk scores over time.</p>
           <button
             onClick={() => setActiveTab('analyze')}
-            className="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95"
+            className="px-4 py-2.5 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95"
           >
             Analyze a Project
           </button>
@@ -1729,13 +1703,10 @@ export default function IndividualDashboard({
           <div key={scan.id} className="bg-sifter-card border border-sifter-border rounded-xl p-4 hover:border-blue-500/30 transition-all">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className={`text-2xl ${
-                  scan.verdict === 'reject' ? 'text-red-400' :
-                  scan.verdict === 'flag' ? 'text-yellow-400' : 'text-green-400'
-                }`}>
-                  {scan.verdict === 'reject' ? '🔴' : 
-                   scan.verdict === 'flag' ? '🟡' : '🟢'}
-                </div>
+                <div className={`w-3 h-3 rounded-full flex-shrink-0 ${
+                  scan.verdict === 'reject' ? 'bg-red-400' :
+                  scan.verdict === 'flag' ? 'bg-yellow-400' : 'bg-green-400'
+                }`} aria-hidden="true" />
                 <div className="min-w-0">
                   <h3 className="font-bold text-white text-sm truncate">{scan.projectName}</h3>
                   <div className="flex items-center gap-2 mt-1">
@@ -1761,7 +1732,7 @@ export default function IndividualDashboard({
                   }}
                   className="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg text-xs transition-all hover:scale-105 active:scale-95"
                 >
-                  🔄 Rescan
+                  Rescan
                 </button>
               </div>
             </div>
@@ -1803,7 +1774,7 @@ export default function IndividualDashboard({
                     flag.severity === 'critical' ? 'text-red-400' :
                     flag.severity === 'high' ? 'text-red-400' : 'text-yellow-400'
                   }`}>
-                    {flag.severity === 'critical' ? '🔥' : '⚠️'}
+                    {flag.severity === 'critical' ? 'Critical' : 'Warning'}
                   </span>
                   <div>
                     <h4 className="font-bold text-white text-sm">{flag.title}</h4>
@@ -1817,12 +1788,11 @@ export default function IndividualDashboard({
         
         <div className="space-y-4">
           <div className="bg-gradient-to-br from-blue-500/10 to-cyan-600/10 border border-blue-500/20 rounded-xl p-5">
-            <div className="text-3xl mb-3">🧪</div>
             <h3 className="font-bold text-white text-sm mb-2">Risk Assessment Quiz</h3>
             <p className="text-xs text-gray-400 mb-4">Test your scam detection skills</p>
             <button
               onClick={() => setShowQuiz(true)}
-              className="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95 w-full"
+              className="px-4 py-2.5 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95 w-full"
             >
               Start Quiz
             </button>
@@ -1877,7 +1847,7 @@ export default function IndividualDashboard({
                     alert('Quiz completed! You scored 3/5. Good job!');
                     setShowQuiz(false);
                   }}
-                  className="w-full px-4 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg"
+                  className="w-full px-4 py-2.5 bg-sifter-blue text-white rounded-lg"
                 >
                   Complete Quiz (Demo)
                 </button>
@@ -1953,7 +1923,7 @@ export default function IndividualDashboard({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-30">
         <div>
           <h1 className="text-xl font-bold text-white">
-            👋 Welcome, <span className="text-blue-400">{userName}</span>
+            Welcome, {userName}
           </h1>
           <p className="text-xs text-gray-400">13-metric risk analysis • Multi-chain support</p>
         </div>
@@ -1963,7 +1933,7 @@ export default function IndividualDashboard({
             onClick={() => alert('Share feature coming soon!')}
             className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
           >
-            <span className="text-sm">📤</span>
+            
             Share
           </button>
           
@@ -1973,7 +1943,7 @@ export default function IndividualDashboard({
               onClick={() => setShowExportMenu(!showExportMenu)}
               className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
             >
-              <span className="text-sm">📥</span>
+              
               Export
               <span className={`text-xs transition-transform ${showExportMenu ? 'rotate-180' : ''}`}>▼</span>
             </button>
@@ -1995,15 +1965,15 @@ export default function IndividualDashboard({
                       <div className="mb-1.5">
                         <div className="px-2 py-1 text-xs font-medium text-gray-500">CURRENT ANALYSIS</div>
                         <button onClick={() => exportAnalysisResults('json')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
-                          <span className="text-blue-400">📊</span>
+                          
                           <span className="text-white">Export as JSON</span>
                         </button>
                         <button onClick={() => exportAnalysisResults('csv')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
-                          <span className="text-green-400">📈</span>
+                          
                           <span className="text-white">Export as CSV/Excel</span>
                         </button>
                         <button onClick={() => exportAnalysisResults('pdf')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
-                          <span className="text-red-400">📄</span>
+                          
                           <span className="text-white">Export as PDF</span>
                         </button>
                       </div>
@@ -2012,15 +1982,15 @@ export default function IndividualDashboard({
                     <div className="mb-1.5">
                       <div className="px-2 py-1 text-xs font-medium text-gray-500">WATCHLIST</div>
                       <button onClick={() => exportWatchlist('json')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
-                        <span className="text-green-400">📋</span>
+                        
                         <span className="text-white">Export as JSON</span>
                       </button>
                       <button onClick={() => exportWatchlist('csv')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
-                        <span className="text-green-400">📈</span>
+                        
                         <span className="text-white">Export as CSV/Excel</span>
                       </button>
                       <button onClick={() => exportWatchlist('pdf')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
-                        <span className="text-green-400">📄</span>
+                        
                         <span className="text-white">Export as PDF</span>
                       </button>
                     </div>
@@ -2028,15 +1998,15 @@ export default function IndividualDashboard({
                     <div className="mb-1.5">
                       <div className="px-2 py-1 text-xs font-medium text-gray-500">RECENT SCANS</div>
                       <button onClick={() => exportRecentScans('json')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
-                        <span className="text-purple-400">📊</span>
+                        
                         <span className="text-white">Export as JSON</span>
                       </button>
                       <button onClick={() => exportRecentScans('csv')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
-                        <span className="text-purple-400">📈</span>
+                        
                         <span className="text-white">Export as CSV/Excel</span>
                       </button>
                       <button onClick={() => exportRecentScans('pdf')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
-                        <span className="text-purple-400">📄</span>
+                        
                         <span className="text-white">Export as PDF</span>
                       </button>
                     </div>
@@ -2058,10 +2028,10 @@ export default function IndividualDashboard({
       <div className="bg-sifter-card border border-sifter-border rounded-lg p-1">
         <div className="flex overflow-x-auto gap-1 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
           {[
-            { id: 'analyze', icon: '🔍', label: 'Analyze' },
-            { id: 'watchlist', icon: '📋', label: `Watchlist (${watchlist.length})` },
-            { id: 'scans', icon: '📊', label: `Scans (${recentScans.length})` },
-            { id: 'learn', icon: '📚', label: 'Learn' }
+            { id: 'analyze', label: 'Analyze' },
+            { id: 'watchlist', label: `Watchlist (${watchlist.length})` },
+            { id: 'scans', label: `Scans (${recentScans.length})` },
+            { id: 'learn', label: 'Learn' }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -2069,15 +2039,13 @@ export default function IndividualDashboard({
                 if (tab.id === 'analyze') resetAnalysis();
                 setActiveTab(tab.id as any);
               }}
-              className={`px-3 py-1.5 rounded text-sm font-medium transition-all flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
                 activeTab === tab.id
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                  ? 'bg-sifter-elevated text-sifter-text border border-sifter-border-strong'
+                  : 'text-sifter-text-muted hover:text-sifter-text hover:bg-sifter-hover'
               }`}
             >
-              <span>{tab.icon}</span>
-              <span className="hidden sm:inline">{tab.label}</span>
-              <span className="sm:hidden">{tab.icon}</span>
+              <span>{tab.label}</span>
             </button>
           ))}
         </div>

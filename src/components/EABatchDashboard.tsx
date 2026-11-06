@@ -234,7 +234,6 @@ const BatchUpload = ({
           handleFileUpload(files);
         }}
       >
-        <div className="text-4xl mb-4">📁</div>
         <h4 className="font-semibold text-white mb-2">Drop CSV file here</h4>
         <p className="text-gray-400 text-sm mb-4">or</p>
         <label className="inline-block cursor-pointer">
@@ -437,7 +436,7 @@ const ProjectCardWithFlagging = ({
           <div className="flex justify-between items-center">
             <div className="flex-1">
               <p className="text-sm text-amber-300 font-medium">
-                ⚠️ {flaggedEntity}
+                {flaggedEntity}
               </p>
               <p className="text-xs text-gray-400">
                 Detected during batch analysis
@@ -1059,7 +1058,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
             onClick={handleExportPartnerPacket}
             className="px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border border-purple-500/30 rounded-lg font-medium transition-colors flex items-center gap-2"
           >
-            📦 Export Partner Packet
+            Export partner packet
           </button>
         </div>
 
@@ -1131,7 +1130,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
             : 'text-gray-400 hover:text-gray-300'
             }`}
         >
-          📤 Batch Upload
+          Batch upload
         </button>
         <button
           onClick={() => setActiveTab('single')}
@@ -1140,7 +1139,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
             : 'text-gray-400 hover:text-gray-300'
             }`}
         >
-          🔍 Single Project
+          Single project
         </button>
       </div>
 
@@ -1244,7 +1243,6 @@ https://projectx.com`}
                   }}
                   className="p-4 border border-sifter-border rounded-xl hover:border-blue-500/50 hover:bg-sifter-card/50 transition-all text-center"
                 >
-                  <div className="text-2xl mb-2">🔍</div>
                   <div className="font-medium text-white">Single Analysis</div>
                   <div className="text-sm text-gray-400">Analyze one project</div>
                 </button>
@@ -1252,7 +1250,6 @@ https://projectx.com`}
                   onClick={handleAnalyzeClick}
                   className="p-4 border border-sifter-border rounded-xl hover:border-blue-500/50 hover:bg-sifter-card/50 transition-all text-center"
                 >
-                  <div className="text-2xl mb-2">⚡</div>
                   <div className="font-medium text-white">Quick Analyze</div>
                   <div className="text-sm text-gray-400">Manual input</div>
                 </button>
@@ -1296,7 +1293,7 @@ https://projectx.com`}
           {showBlitzSelector && (
             <div className="bg-sifter-card border border-blue-500/30 rounded-xl p-6 animate-fadeIn">
               <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
-                <span className="text-3xl">⚡</span>
+                
                 Memecoin Detected — Choose Your Scan Speed
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1307,7 +1304,6 @@ https://projectx.com`}
                       : 'border-sifter-border hover:border-blue-500/50'
                     }`}
                 >
-                  <div className="text-5xl mb-3">⚡</div>
                   <h4 className="font-bold text-white text-lg">Hyper-Blitz</h4>
                   <p className="text-sm text-gray-400 mt-2">5–10 seconds • New launches</p>
                 </button>
@@ -1319,7 +1315,6 @@ https://projectx.com`}
                       : 'border-sifter-border hover:border-purple-500/50'
                     }`}
                 >
-                  <div className="text-5xl mb-3">📈</div>
                   <h4 className="font-bold text-white text-lg">Momentum-Blitz</h4>
                   <p className="text-sm text-gray-400 mt-2">30–90 seconds • Active tokens</p>
                 </button>
@@ -1331,7 +1326,6 @@ https://projectx.com`}
                       : 'border-sifter-border hover:border-green-500/50'
                     }`}
                 >
-                  <div className="text-5xl mb-3">🔍</div>
                   <h4 className="font-bold text-white text-lg">Deep-Blitz</h4>
                   <p className="text-sm text-gray-400 mt-2">2–5 minutes • Full analysis</p>
                 </button>
@@ -1365,13 +1359,12 @@ https://projectx.com`}
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="bg-sifter-card border border-sifter-border rounded-2xl p-8 max-w-md w-full mx-4">
             <div className="text-center">
-              <div className="text-4xl mb-4 animate-pulse">⚡</div>
               <h3 className="text-xl font-semibold text-white mb-2">Processing Batch</h3>
               <p className="text-gray-400 mb-6">
                 Analyzing {batchJob?.summary?.total || 0} projects...
               </p>
               <div className="w-full bg-gray-800 rounded-full h-2 mb-4 overflow-hidden">
-                <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full animate-pulse"></div>
+                <div className="bg-sifter-blue h-2 rounded-full animate-pulse"></div>
               </div>
               <p className="text-sm text-gray-500">
                 This usually takes 1-3 minutes depending on batch size

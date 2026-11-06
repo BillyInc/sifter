@@ -209,7 +209,7 @@ export default function SmartInputParser({
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
           placeholder={placeholder || "Enter Contract address, Twitter handle, Discord invite, GitHub, project name..."}
           disabled={disabled || isProcessing}
-          className={`w-full bg-[#0A0A0F] border border-gray-700 rounded-xl text-white placeholder:text-gray-500 focus:border-blue-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+          className={`w-full bg-sifter-dark border border-sifter-border rounded-xl text-sifter-text placeholder:text-sifter-text-subtle hover:border-sifter-border-strong focus:border-sifter-blue focus:ring-2 focus:ring-sifter-blue/40 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
             compact 
               ? 'px-4 py-3 text-sm pr-28' 
               : 'px-6 py-4 text-lg pr-40'
@@ -234,7 +234,7 @@ export default function SmartInputParser({
             type="button"
             onClick={handleSubmit}
             disabled={!input.trim() || disabled || isProcessing}
-            className={`bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center ${
+            className={`bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center ${
               compact 
                 ? 'px-3 py-1.5 text-sm min-w-20' 
                 : 'px-4 py-2 text-base min-w-24'
@@ -247,7 +247,9 @@ export default function SmartInputParser({
               </>
             ) : (
               <>
-                <span className={compact ? 'text-sm' : ''}>🔍</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
                 {!compact && <span className="ml-1.5">Analyze</span>}
               </>
             )}

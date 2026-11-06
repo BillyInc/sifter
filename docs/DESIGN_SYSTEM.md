@@ -16,7 +16,9 @@ primitives, and the rules for using them.
 | Medium | `src/components/SearchInput.tsx` was unused and shipped fabricated example projects (`@moonrocket_fi`, `t.me/safeeloninu`). | Dead code with invented data. | Removed. `SmartInputParser` is the live input. |
 | Medium | Inter was loaded twice (Google Fonts `@import` in CSS and `next/font` in the layout). | Extra render-blocking request. | Removed the CSS import. |
 | Medium | Account-type options were duplicated between register page and landing page copy. | Drift risk. | Single source: `src/data/accountModes.ts`. |
-| Low | The logged-in header uses emoji (`↔️`/`↕️`) for the compact-mode toggle and five differently-coloured pill buttons. | Visual noise; not yet changed (lives in the 2.7k-line `src/app/page.tsx`). | Follow-up: migrate header to `Button variant="ghost"` + icons. |
+| High | The logged-in header had five differently-coloured pill buttons and emoji toggles; the footer was `position: fixed` and overlapped page content. | Four competing primary actions; content hidden behind the footer. | Header rebuilt on the primitives: one **Contribute** menu (evidence, dispute, tracking, points), an icon density toggle, account block. Footer is static. |
+| High | The analysis result (`MetricBreakdown`, shared by all modes) showed 13 identical emoji cards with the composite score as a small corner number and no verdict label. | No hierarchy: the one thing a user needs (the verdict) was the least visible. | Verdict-first layout: score, Pass/Flag/Reject badge, risk tier, a stacked contribution bar showing which metrics drove the score, then a ranked list with per-metric bars. Expand a row for evidence and flags. |
+| Medium | Emoji used as icons across dashboards (tabs, buttons, empty states, verdict dots) and blue-to-purple gradient buttons. | Inconsistent rendering across platforms; gradients compete with the primary action colour. | Replaced with text, SVG icons or colour dots; all gradient buttons use the primary token. Status strings inside mock data were left as-is. |
 
 ### Data defects recorded, not changed
 
@@ -81,6 +83,21 @@ pattern is used three or more times, promote it here.
 
 ## 4. Screen contracts
 
+### Analysis result — `src/components/MetricBreakdown.tsx` (all modes)
+- Data: metric rows (`value`/`score`, `flags`, `evidence`), composite `riskScore`.
+  Verdict and tier come from `getVerdict`/`getRiskTier` in `@/types`.
+- Hero: project name, Pass/Flag/Reject badge, tier label, composite score.
+  Contribution strip: each metric's share of the composite, coloured by its
+  own risk level; the caption names the top three drivers.
+- List: metrics sorted by contribution. Row = name, description, score bar,
+  weight, score. Click/Enter toggles details (`aria-expanded`).
+- Actions: Back (when provided), Share (copy summary or post on X), Export.
+
+### Logged-in shell — `src/app/page.tsx`
+- Sticky header: logo + mode, density toggle (`aria-pressed`), **Contribute**
+  menu (`role="menu"`, closes on outside click), account name/email, Log out.
+- Static footer; no duplicated mode label.
+
 ### Landing (`/`, unauthenticated) — `src/components/LandingPage.tsx`
 - Data: `METRIC_WEIGHTS` from `@/types`, `ACCOUNT_MODES`, input kinds from
   `SmartInputParser.detectInputType`. No invented content.
@@ -112,9 +129,10 @@ pattern is used three or more times, promote it here.
   `/register`.
 
 ## 7. Follow-ups (not done here)
-1. Migrate the logged-in header/footer in `src/app/page.tsx` to the primitives
-   and replace emoji toggles with icons.
-2. Resolve the duplicate scoring sources (`types` vs `data/scoring`).
-3. Sweep the dashboards (`IndividualDashboard`, `ResearcherDashboard`,
-   `EABatchDashboard`) for `text-gray-600`-on-dark contrast and white inputs.
+1. Resolve the duplicate scoring sources (`types` vs `data/scoring`).
+2. Unify the chart palette in `ResearchCharts` with the risk colour scale.
+3. Sweep the dashboards for `text-gray-600`-on-dark contrast and replace their
+   in-file header/tab markup with the shared primitives.
 4. Repair the ESLint configuration so `pnpm lint` runs.
+5. Mock watchlist/scan data in `page.tsx` and the dashboards is placeholder
+   content and should be replaced by API data before launch.

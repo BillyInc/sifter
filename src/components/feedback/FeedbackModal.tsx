@@ -272,7 +272,7 @@ export default function FeedbackModal({ isOpen, onClose, onSubmitSuccess }: Feed
                 <button
                   type="submit"
                   disabled={isSubmitting || !isFormValid()}
-                  className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700
+                  className="px-6 py-3 bg-sifter-blue hover:bg-sifter-blue-hover
                            text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed
                            flex items-center gap-2"
                 >

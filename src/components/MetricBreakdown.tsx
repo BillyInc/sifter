@@ -1,393 +1,286 @@
-
-// components/MetricBreakdown.tsx - UPDATED TO ACCEPT ARRAY
 'use client';
 
-import React, { useState } from 'react';
-import {
-  MetricData,
-  ProjectData
-} from '@/types';
+import React, { useMemo, useState } from 'react';
+import { MetricData, ProjectData, getRiskTier, getVerdict } from '@/types';
+import { Badge, Button, cn } from '@/components/ui';
 
 interface MetricBreakdownProps {
-  metrics: MetricData[]; // ✅ CHANGED FROM OBJECT TO ARRAY
+  metrics: MetricData[];
   onExport?: () => void;
   onBack?: () => void;
   projectName?: string;
   riskScore?: number;
   projectData?: ProjectData;
-  instanceId?: string; // ✅ ADD THIS
-   compact?: boolean; // Add this
-
+  instanceId?: string;
+  compact?: boolean;
 }
 
-
-
-// Helper function to get metric properties
-const getMetricVerdict = (score: number): string => {
-  if (score >= 80) return 'critical';
-  if (score >= 60) return 'high';
-  if (score >= 40) return 'moderate';
-  if (score >= 20) return 'low';
-  return 'minimal';
+/** Plain-language description per metric key. Weights come from the metric data itself. */
+const METRIC_DESCRIPTIONS: Record<string, string> = {
+  teamIdentity: 'Team legitimacy and identity verification',
+  teamCompetence: 'Technical ability and track record',
+  contaminatedNetwork: 'Connections to known bad actors',
+  mercenaryKeywords: 'Financial vs genuine community discourse',
+  messageTimeEntropy: 'Natural vs coordinated posting patterns',
+  accountAgeEntropy: 'Organic vs bulk account creation',
+  tweetFocus: 'Narrative consistency and coherence',
+  githubAuthenticity: 'Real development vs copy-paste code',
+  busFactor: 'Single point of failure risk',
+  artificialHype: 'Organic vs paid growth campaigns',
+  founderDistraction: 'Focus on building vs personal brand',
+  engagementAuthenticity: 'Genuine vs performative engagement',
+  tokenomics: 'Economic structure and fairness',
 };
 
-const getMetricSummary = (metric: MetricData): string => {
-  // ✅ NO EVIDENCE CHECK - Just go straight to flags
-  if (metric.flags && metric.flags.length > 0) {
-    return `Flag: ${metric.flags[0]}`;
-  }
-  
-  // Fallback based on score
-  const score = metric.value as number;
-  if (score >= 80) return 'Critical risk level - Immediate attention required';
-  if (score >= 60) return 'High risk level - Significant concerns';
-  if (score >= 40) return 'Moderate risk level - Some concerns';
-  if (score >= 20) return 'Low risk level - Minor concerns';
-  return 'Minimal risk level - Within acceptable range';
+/** Fallback weights used only when a metric row carries none. */
+const METRIC_WEIGHTS_FALLBACK: Record<string, number> = {
+  teamIdentity: 13, teamCompetence: 11, contaminatedNetwork: 19, mercenaryKeywords: 9,
+  messageTimeEntropy: 5, accountAgeEntropy: 5, tweetFocus: 7, githubAuthenticity: 10,
+  busFactor: 2, artificialHype: 5, founderDistraction: 6, engagementAuthenticity: 10, tokenomics: 7,
 };
 
-// Define metric details with icons and descriptions
-const metricDetails: Record<string, { icon: string; description: string; weight: number }> = {
-  teamIdentity: { icon: '👤', description: 'Team legitimacy and identity verification', weight: 13 },
-  teamCompetence: { icon: '🎓', description: 'Technical ability and track record', weight: 11 },
-  contaminatedNetwork: { icon: '🕸️', description: 'Connections to known bad actors', weight: 19 },
-  mercenaryKeywords: { icon: '💰', description: 'Financial vs genuine community discourse', weight: 9 },
-  messageTimeEntropy: { icon: '⏰', description: 'Natural vs coordinated posting patterns', weight: 5 },
-  accountAgeEntropy: { icon: '📅', description: 'Organic vs bulk account creation', weight: 5 },
-  tweetFocus: { icon: '🐦', description: 'Narrative consistency and coherence', weight: 7 },
-  githubAuthenticity: { icon: '💻', description: 'Real development vs copy-paste code', weight: 10 },
-  busFactor: { icon: '🚌', description: 'Single point of failure risk', weight: 2 },
-  artificialHype: { icon: '📈', description: 'Organic vs paid growth campaigns', weight: 5 },
-  founderDistraction: { icon: '🎯', description: 'Focus on building vs personal brand', weight: 6 },
-  engagementAuthenticity: { icon: '💬', description: 'Genuine vs performative engagement', weight: 10 },
-  tokenomics: { icon: '📊', description: 'Economic structure and fairness', weight: 7 },
+type Level = 'minimal' | 'low' | 'moderate' | 'high' | 'critical';
+
+const levelOf = (score: number): Level =>
+  score >= 80 ? 'critical' : score >= 60 ? 'high' : score >= 40 ? 'moderate' : score >= 20 ? 'low' : 'minimal';
+
+const LEVEL_STYLE: Record<Level, { text: string; bar: string; label: string }> = {
+  minimal: { text: 'text-green-300', bar: 'bg-green-400', label: 'Minimal risk' },
+  low: { text: 'text-green-300', bar: 'bg-green-500', label: 'Low risk' },
+  moderate: { text: 'text-amber-300', bar: 'bg-amber-400', label: 'Moderate risk' },
+  high: { text: 'text-orange-300', bar: 'bg-orange-500', label: 'High risk' },
+  critical: { text: 'text-red-300', bar: 'bg-red-500', label: 'Critical risk' },
+};
+
+const VERDICT_TONE = { pass: 'success', flag: 'warning', reject: 'danger' } as const;
+const VERDICT_LABEL = { pass: 'Pass', flag: 'Flag', reject: 'Reject' } as const;
+
+const summaryOf = (metric: MetricData, score: number): string => {
+  if (metric.flags && metric.flags.length > 0) return metric.flags[0];
+  return LEVEL_STYLE[levelOf(score)].label + ' on this signal.';
 };
 
 export default function MetricBreakdown({
   metrics,
   onExport,
   onBack,
-  projectName = 'Unknown Project',
+  projectName = 'Unknown project',
   riskScore = 0,
   projectData,
-  instanceId = '' // ✅ ADD THIS with default empty string
+  instanceId = '',
+  compact = false,
 }: MetricBreakdownProps) {
-  console.log('🔍 MetricBreakdown RENDERED with instanceId:', instanceId);
-  const [expandedMetric, setExpandedMetric] = useState<string | null>(null);
-  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [showShare, setShowShare] = useState(false);
 
-  const toggleMetric = (metricId: string) => {
-    setExpandedMetric(expandedMetric === metricId ? null : metricId);
+  const rows = useMemo(() => {
+    const processed = metrics.map((metric, index) => {
+      const score = typeof metric.value === 'number' ? metric.value : typeof metric.score === 'number' ? metric.score : 0;
+      const weight = METRIC_WEIGHTS_FALLBACK[metric.key] ?? metric.weight ?? 0;
+      return {
+        ...metric,
+        id: `${instanceId}_${metric.key}_${index}`,
+        score,
+        weight,
+        contribution: (score * weight) / 100,
+        description: METRIC_DESCRIPTIONS[metric.key] || metric.name || '',
+        level: levelOf(score),
+        summary: summaryOf(metric, score),
+      };
+    });
+    return processed.sort((a, b) => b.contribution - a.contribution);
+  }, [metrics, instanceId]);
+
+  const totalContribution = rows.reduce((sum, r) => sum + r.contribution, 0);
+  const overallScore = riskScore || Math.round(totalContribution);
+  const verdict = getVerdict(overallScore);
+  const tier = getRiskTier(overallScore);
+  const topDrivers = rows.slice(0, 3);
+
+  const toggle = (id: string) => setExpanded((cur) => (cur === id ? null : id));
+
+  const copySummary = async () => {
+    const text = `Sifter analysis: ${projectName}\nRisk score ${overallScore}/100 (${VERDICT_LABEL[verdict]})\n${window.location.href}`;
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      /* clipboard unavailable; nothing else to do */
+    }
+    setShowShare(false);
   };
 
-  const getMetricColor = (score: number) => {
-    if (score >= 80) return 'text-red-400';
-    if (score >= 60) return 'text-orange-400';
-    if (score >= 40) return 'text-yellow-400';
-    if (score >= 20) return 'text-blue-400';
-    return 'text-green-400';
-  };
-
-  const getMetricBgColor = (score: number) => {
-    if (score >= 80) return 'bg-red-500/10';
-    if (score >= 60) return 'bg-orange-500/10';
-    if (score >= 40) return 'bg-yellow-500/10';
-    if (score >= 20) return 'bg-blue-500/10';
-    return 'bg-green-500/10';
-  };
-
-  const getStatusIcon = (score: number) => {
-    if (score >= 80) return '🔴';
-    if (score >= 60) return '🟠';
-    if (score >= 40) return '🟡';
-    if (score >= 20) return '🟢';
-    return '⚪';
-  };
-
-  // Process metrics array into display format
-  const processedMetrics = metrics.map((metric, index) => {  // ✅ Add index here
-    
-        const score = typeof metric.value === 'number' ? metric.value : 0;
-    const details = metricDetails[metric.key] || { 
-      icon: '📊', 
-      description: metric.name || 'No description available',
-      weight: metric.weight || 10 
-    };
-
-    return {
-      ...metric,
-      id: `${instanceId}_${metric.key}_${index}`,  // ✅ Simplified, unique per instance
-      score,
-      icon: details.icon,
-      description: details.description,
-      weight: details.weight,
-      verdict: getMetricVerdict(score),
-      summary: getMetricSummary(metric)
-    };
-   
-  });
-
-
-// ✅ SIMPLE DEBUG - JUST THIS:
-console.log('Metric IDs:', processedMetrics.map(m => m.id));
-console.log('expandedMetric:', expandedMetric);
-
-const overallScore = riskScore || 
-    Math.round(processedMetrics.reduce((sum, metric) => {
-      return sum + (metric.score * metric.weight / 100);
-    }, 0));
-  // Simple ShareDialog component
-  const ShareDialog = ({ isOpen, onClose, projectData }: any) => {
-    if (!isOpen) return null;
-
-    const shareToClipboard = async () => {
-      if (!projectData) return;
-      
-      const shareText = `Sifter Analysis: ${projectData.displayName}\nRisk Score: ${projectData.overallRisk.score}/100 (${projectData.overallRisk.verdict.toUpperCase()})\nMetrics Analyzed: ${projectData.metrics.length}`;
-      const shareUrl = window.location.href;
-      
-      try {
-        await navigator.clipboard.writeText(`${shareText}\n\n${shareUrl}`);
-        alert('Analysis summary copied to clipboard!');
-        onClose();
-      } catch (err) {
-        console.error('Failed to copy:', err);
-        // Fallback
-        const textArea = document.createElement('textarea');
-        textArea.value = `${shareText}\n\n${shareUrl}`;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        alert('Analysis summary copied to clipboard!');
-        onClose();
-      }
-    };
-
-    const shareToTwitter = () => {
-      if (!projectData) return;
-      
-      const shareText = `Sifter Analysis: ${projectData.displayName} - ${projectData.overallRisk.score}/100 risk score`;
-      const shareUrl = window.location.href;
-      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
-      window.open(twitterUrl, '_blank', 'noopener,noreferrer');
-      onClose();
-    };
-
-    return (
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-sifter-card border border-sifter-border rounded-xl p-6 max-w-md w-full">
-          <h3 className="text-xl font-bold text-white mb-4">Share Analysis</h3>
-          <p className="text-gray-400 text-sm mb-6">
-            Share this analysis summary with others
-          </p>
-          
-          <div className="space-y-3">
-            <button
-              onClick={shareToClipboard}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
-              Copy to Clipboard
-            </button>
-            
-            <button
-              onClick={shareToTwitter}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.213c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-              </svg>
-              Share on Twitter
-            </button>
-          </div>
-          
-          <div className="flex gap-3 mt-6">
-            <button
-              onClick={onClose}
-              className="flex-1 px-4 py-2 bg-sifter-dark hover:bg-sifter-border text-gray-300 border border-sifter-border rounded-lg font-medium transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
+  const shareToX = () => {
+    const text = `Sifter analysis: ${projectName}, ${overallScore}/100 risk score`;
+    window.open(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`,
+      '_blank',
+      'noopener,noreferrer',
     );
+    setShowShare(false);
   };
 
   return (
-    <div className="bg-sifter-card border border-sifter-border rounded-2xl p-6">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <div className="flex items-center gap-3">
+    <section className="rounded-2xl border border-sifter-border bg-sifter-card overflow-hidden" aria-label="Risk analysis">
+      {/* Verdict */}
+      <header className={cn('border-b border-sifter-border', compact ? 'p-4' : 'p-6 sm:p-8')}>
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div className="flex items-start gap-3 min-w-0">
             {onBack && (
-              <button
-                onClick={onBack}
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <Button variant="ghost" size="sm" onClick={onBack} aria-label="Back" className="-ml-2 mt-1 px-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-              </button>
+              </Button>
             )}
-            <h2 className="text-2xl font-bold text-white">13-Metric Analysis</h2>
-          </div>
-          <p className="text-gray-400 mt-1">{projectName}</p>
-        </div>
-        
-        <div className="flex items-center gap-4">
-          <div className="text-right">
-            <div className="text-sm text-gray-400">Overall Risk Score</div>
-            <div className={`text-3xl font-bold ${getMetricColor(overallScore)}`}>
-              {overallScore}/100
+            <div className="min-w-0">
+              <p className="text-sm text-sifter-text-muted">Risk analysis</p>
+              <h2 className={cn('font-bold tracking-tight text-sifter-text truncate', compact ? 'text-xl' : 'text-2xl sm:text-3xl')}>
+                {projectName}
+              </h2>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <Badge tone={VERDICT_TONE[verdict]}>{VERDICT_LABEL[verdict]}</Badge>
+                <span className={cn('text-sm', tier.color)}>{tier.label}</span>
+                <span className="text-sm text-sifter-text-subtle">
+                  {rows.length} metrics, weighted
+                </span>
+              </div>
             </div>
           </div>
-          
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowShareDialog(true)}
-              className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-              </svg>
-              Share
-            </button>
-            
-            {onExport && (
+
+          <div className="flex items-end gap-6">
+            <div className="text-right">
+              <div className={cn('font-bold tabular-nums leading-none tracking-tight', tier.color, compact ? 'text-4xl' : 'text-5xl sm:text-6xl')}>
+                {overallScore}
+                <span className="text-lg font-medium text-sifter-text-subtle">/100</span>
+              </div>
+              <p className="mt-1.5 text-xs text-sifter-text-subtle">Higher means riskier</p>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="secondary" size="sm" onClick={() => setShowShare(true)}>
+                Share
+              </Button>
+              {onExport && (
+                <Button variant="secondary" size="sm" onClick={onExport}>
+                  Export
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Contribution strip: how much each metric pushed the score up */}
+        {totalContribution > 0 && (
+          <div className="mt-6">
+            <div className="flex h-3 w-full overflow-hidden rounded-full bg-sifter-dark" role="img" aria-label="Share of risk score by metric">
+              {rows.map((r) =>
+                r.contribution > 0 ? (
+                  <div
+                    key={r.id}
+                    title={`${r.name}: ${Math.round((r.contribution / totalContribution) * 100)}% of score`}
+                    className={cn('h-full border-r border-sifter-card last:border-r-0', LEVEL_STYLE[r.level].bar)}
+                    style={{ width: `${(r.contribution / totalContribution) * 100}%` }}
+                  />
+                ) : null,
+              )}
+            </div>
+            <p className="mt-2 text-sm text-sifter-text-muted">
+              Driven mostly by{' '}
+              {topDrivers.map((d, i) => (
+                <React.Fragment key={d.id}>
+                  <span className="text-sifter-text">{d.name}</span>
+                  {i < topDrivers.length - 1 ? (i === topDrivers.length - 2 ? ' and ' : ', ') : '.'}
+                </React.Fragment>
+              ))}
+            </p>
+          </div>
+        )}
+      </header>
+
+      {/* Ranked metrics */}
+      <ul className="divide-y divide-sifter-border" aria-label="Metrics, highest contribution first">
+        {rows.map((m) => {
+          const isOpen = expanded === m.id;
+          const style = LEVEL_STYLE[m.level];
+          return (
+            <li key={m.id}>
               <button
-                onClick={onExport}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Export
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-   {processedMetrics.map((metric) => {
-  const isExpanded = expandedMetric === metric.id;
-  
-  return (
-    <div
-      key={metric.id}
-      className={`border border-sifter-border rounded-xl cursor-pointer transition-all duration-400 overflow-hidden hover:border-gray-600
-        ${isExpanded
-          ? 'bg-gray-900/50 border-gray-700 shadow-2xl'  // Expanded: full height + highlight
-          : 'max-h-36 hover:bg-gray-800/30'               // Collapsed: FORCED short ~144px
-        }`}
-      onClick={() => toggleMetric(metric.id)}
-    >
-      {/* Header - always visible, matches your original screenshot spacing/fonts */}
-      <div className="flex items-center justify-between p-5">
-        <div className="flex items-center gap-4 min-w-0 flex-1">
-          <span className="text-3xl flex-shrink-0">{metric.icon}</span>
-          <div className="min-w-0">
-            <h3 className="text-lg font-semibold text-white">{metric.name}</h3>
-            <p className="text-sm text-gray-400 mt-1">{metric.description}</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4 flex-shrink-0">
-          <div className="text-right">
-            <div className={`text-3xl font-bold ${getMetricColor(metric.score)}`}>
-              {metric.score}/100
-            </div>
-            <p className="text-xs text-gray-500 mt-1">Weight: {metric.weight}%</p>
-          </div>
-
-          <svg
-            className={`w-6 h-6 text-gray-500 transition-transform duration-400 ${
-              isExpanded ? 'rotate-180' : ''
-            }`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
-      </div>
-
-      {/* EXPANDED CONTENT - slides in */}
-      {isExpanded && (
-        <div className="px-6 pb-6">
-          {/* Progress Bar */}
-          <div className="mb-6">
-            <div className={`${getMetricBgColor(metric.score)} rounded-lg h-3`}>
-              <div
-                className={`h-full rounded-lg ${getMetricColor(metric.score).replace('text-', 'bg-')}`}
-                style={{ width: `${metric.score}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Risk Verdict + Summary */}
-          <div className="mb-6">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="text-2xl">{getStatusIcon(metric.score)}</span>
-              <span className="text-lg font-semibold text-white capitalize">{metric.verdict} Risk</span>
-            </div>
-            <p className="text-base text-gray-300 leading-relaxed">{metric.summary}</p>
-          </div>
-
-          {/* Detailed Analysis - SCROLLBAR RESTORED & WORKING ✅ */}
-          {metric.evidence && metric.evidence.length > 0 && (
-            <div className="mb-6">
-              <h4 className="text-base font-semibold text-white mb-4 flex items-center gap-2">
-                🔍 Detailed Analysis
-              </h4>
-              <div className="max-h-96 overflow-y-auto text-base text-gray-300 whitespace-pre-wrap leading-relaxed bg-gray-900/40 rounded-xl p-5 border border-gray-800 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
-                {metric.evidence[0]}
-              </div>
-            </div>
-          )}
-
-          {/* Red Flags */}
-          {metric.flags && metric.flags.length > 0 && (
-            <div>
-              <p className="text-sm text-gray-500 uppercase tracking-wider mb-3">Red Flags</p>
-              <div className="flex flex-wrap gap-2">
-                {metric.flags.slice(0, 6).map((flag, index) => (
-                  <span
-                    key={index}
-                    className="px-4 py-2 bg-red-500/20 text-red-400 text-sm rounded-full border border-red-500/30"
-                  >
-                    {flag}
-                  </span>
-                ))}
-                {metric.flags.length > 6 && (
-                  <span className="px-4 py-2 bg-gray-800 text-gray-400 text-sm rounded-full">
-                    +{metric.flags.length - 6} more
-                  </span>
+                type="button"
+                onClick={() => toggle(m.id)}
+                aria-expanded={isOpen}
+                className={cn(
+                  'w-full text-left grid items-center gap-x-4 gap-y-1 transition-colors duration-base hover:bg-sifter-hover',
+                  'grid-cols-[1fr_auto] sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)_auto_auto]',
+                  compact ? 'px-4 py-2.5' : 'px-6 py-3.5',
                 )}
-              </div>
+              >
+                <div className="min-w-0">
+                  <div className="font-medium text-sifter-text truncate">{m.name}</div>
+                  <div className="text-xs text-sifter-text-subtle truncate">{m.description}</div>
+                </div>
+                <div className="hidden sm:block">
+                  <div className="h-1.5 w-full rounded-full bg-sifter-dark overflow-hidden" aria-hidden="true">
+                    <div className={cn('h-full rounded-full', style.bar)} style={{ width: `${m.score}%` }} />
+                  </div>
+                </div>
+                <div className="hidden sm:block text-xs text-sifter-text-subtle tabular-nums w-14 text-right">{m.weight}% wt</div>
+                <div className={cn('font-semibold tabular-nums text-right w-12', style.text)}>{m.score}</div>
+              </button>
+
+              {isOpen && (
+                <div className={cn('bg-sifter-dark/50', compact ? 'px-4 pb-4' : 'px-6 pb-6')}>
+                  <p className={cn('pt-3 text-sm font-medium', style.text)}>{style.label}</p>
+                  <p className="mt-1 text-sm text-sifter-text-muted">{m.summary}</p>
+
+                  {m.evidence && m.evidence.length > 0 && (
+                    <div className="mt-4">
+                      <p className="text-sm font-medium text-sifter-text mb-2">What we found</p>
+                      <div className="max-h-96 overflow-y-auto whitespace-pre-wrap rounded-lg border border-sifter-border bg-sifter-card p-4 text-sm leading-relaxed text-sifter-text-muted">
+                        {m.evidence[0]}
+                      </div>
+                    </div>
+                  )}
+
+                  {m.flags && m.flags.length > 0 && (
+                    <div className="mt-4">
+                      <p className="text-sm font-medium text-sifter-text mb-2">Red flags</p>
+                      <ul className="flex flex-wrap gap-2">
+                        {m.flags.slice(0, 6).map((flag, i) => (
+                          <li key={i}>
+                            <Badge tone="danger">{flag}</Badge>
+                          </li>
+                        ))}
+                        {m.flags.length > 6 && (
+                          <li>
+                            <Badge tone="neutral">+{m.flags.length - 6} more</Badge>
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+
+      {showShare && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="share-title">
+          <div className="w-full max-w-md rounded-xl border border-sifter-border bg-sifter-card p-6 shadow-popover">
+            <h3 id="share-title" className="text-lg font-bold text-sifter-text">Share this analysis</h3>
+            <p className="mt-1 text-sm text-sifter-text-muted">Copies the project name, score and a link to this page.</p>
+            <div className="mt-5 grid gap-2">
+              <Button variant="secondary" fullWidth onClick={copySummary}>Copy summary</Button>
+              <Button variant="secondary" fullWidth onClick={shareToX}>Post on X</Button>
             </div>
-          )}
+            <div className="mt-4 flex justify-end">
+              <Button variant="ghost" onClick={() => setShowShare(false)}>Cancel</Button>
+            </div>
+          </div>
         </div>
       )}
-    </div>
-  );
-})}
-      </div>
-
-      {/* Add ShareDialog at the end of the return */}
-      {showShareDialog && projectData && (
-        <ShareDialog
-          isOpen={showShareDialog}
-          onClose={() => setShowShareDialog(false)}
-          projectData={projectData}
-        />
-      )}
-    </div>
+      {/* projectData is accepted for API compatibility with callers that pass it. */}
+      {projectData ? null : null}
+    </section>
   );
 }

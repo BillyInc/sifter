@@ -996,7 +996,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
                   }
                 }}
                 disabled={isSubmitting || !validateStep()}
-                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {step < 7 ? 'Continue →' : isSubmitting ? 'Submitting...' : 'Submit Dispute'}
               </button>

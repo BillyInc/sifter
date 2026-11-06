@@ -167,7 +167,7 @@ export default function VerificationStatus({
         {onTakeAction && result.status === 'needs-review' && (
           <button
             onClick={() => onTakeAction('review')}
-            className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 
+            className="flex-1 px-4 py-2 bg-sifter-blue 
                      hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium"
           >
             Start Review

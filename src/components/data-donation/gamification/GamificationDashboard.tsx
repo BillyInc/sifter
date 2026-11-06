@@ -168,7 +168,7 @@ export default function GamificationDashboard({
                   <div className="text-gray-400 mb-1">Level {userProfile.currentLevel}</div>
                   <div className="w-full bg-gray-800 rounded-full h-2">
                     <div 
-                      className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full"
+                      className="bg-sifter-blue h-2 rounded-full"
                       style={{ width: `${levelProgress.percent}%` }}
                     />
                   </div>
@@ -501,7 +501,7 @@ export default function GamificationDashboard({
                     </div>
                     <button 
                       onClick={onViewLeaderboard}
-                      className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 
+                      className="px-4 py-2 bg-sifter-blue hover:bg-sifter-blue-hover 
                                text-white rounded-lg font-medium text-sm transition-all"
                     >
                       View Full Leaderboard
@@ -524,7 +524,7 @@ export default function GamificationDashboard({
                    border border-gray-700 rounded-lg font-medium text-sm">
             How Points Work
           </button>
-          <button className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 
+          <button className="px-4 py-2 bg-sifter-blue hover:bg-sifter-blue-hover 
                    text-white rounded-lg font-medium text-sm">
             Redeem Points
           </button>

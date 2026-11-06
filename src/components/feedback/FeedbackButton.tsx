@@ -20,7 +20,7 @@ export default function FeedbackButton({ variant = 'floating', className = '' }:
       <>
         <button
           onClick={openModal}
-          className={`fixed bottom-6 right-6 z-40 px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600
+          className={`fixed bottom-6 right-6 z-40 px-4 py-3 bg-sifter-blue
                      hover:from-blue-600 hover:to-purple-700 text-white rounded-full shadow-lg
                      hover:shadow-xl transition-all flex items-center gap-2 group ${className}`}
           aria-label="Share Feedback"
