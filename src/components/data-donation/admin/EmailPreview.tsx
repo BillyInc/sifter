@@ -102,30 +102,27 @@ The SIFTER Team`
               className={`px-3 py-1 rounded text-sm ${
                 previewType === 'confirmation' 
                   ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  : 'bg-sifter-elevated text-sifter-text-muted hover:bg-sifter-hover'
               }`}
-            >
-              Confirmation
+            > Confirmation
             </button>
             <button
               onClick={() => setPreviewType('verification')}
               className={`px-3 py-1 rounded text-sm ${
                 previewType === 'verification' 
                   ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  : 'bg-sifter-elevated text-sifter-text-muted hover:bg-sifter-hover'
               }`}
-            >
-              Verification
+            > Verification
             </button>
             <button
               onClick={() => setPreviewType('resolution')}
               className={`px-3 py-1 rounded text-sm ${
                 previewType === 'resolution' 
                   ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  : 'bg-sifter-elevated text-sifter-text-muted hover:bg-sifter-hover'
               }`}
-            >
-              Resolution
+            > Resolution
             </button>
           </div>
         </div>
@@ -135,8 +132,8 @@ The SIFTER Team`
       <div className="bg-white text-black">
         {/* Email Header */}
         <div className="border-b p-4">
-          <div className="text-sm text-gray-500">To: {dispute.disputerEmail}</div>
-          <div className="text-sm text-gray-500">From: disputes@sifter.com</div>
+          <div className="text-sm text-sifter-text-subtle">To: {dispute.disputerEmail}</div>
+          <div className="text-sm text-sifter-text-subtle">From: disputes@sifter.com</div>
           <div className="font-medium mt-2">{currentTemplate.subject}</div>
         </div>
 
@@ -163,8 +160,7 @@ The SIFTER Team`
                 }
               }}
               className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm"
-            >
-              Open in New Window
+            > Open in New Window
             </button>
             <button
               onClick={() => {
@@ -172,14 +168,12 @@ The SIFTER Team`
                 alert('Email content copied to clipboard!');
               }}
               className="px-4 py-2 border border-gray-300 rounded text-sm"
-            >
-              Copy Content
+            > Copy Content
             </button>
             <button
               onClick={() => alert(`In production, this would send the email to ${dispute.disputerEmail}`)}
               className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded text-sm"
-            >
-              Send Email
+            > Send Email
             </button>
           </div>
         </div>

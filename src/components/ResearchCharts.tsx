@@ -59,21 +59,21 @@ export default function ResearchCharts({
   
   // Default mock data if none provided
   const defaultRiskCategories = [
-    { category: 'Team Risk', count: 12, color: '#EF4444' },
-    { category: 'Tokenomics Risk', count: 8, color: '#F59E0B' },
-    { category: 'Community Risk', count: 15, color: '#10B981' },
-    { category: 'Technical Risk', count: 6, color: '#3B82F6' },
-    { category: 'Market Risk', count: 9, color: '#8B5CF6' },
+    { category: 'Team Risk', count: 12, color: '#3B82F6' },
+    { category: 'Tokenomics Risk', count: 8, color: '#60A5FA' },
+    { category: 'Community Risk', count: 15, color: '#1D4ED8' },
+    { category: 'Technical Risk', count: 6, color: '#93C5FD' },
+    { category: 'Market Risk', count: 9, color: '#2563EB' },
   ];
 
   const defaultMetricDistribution = [
-    { metric: 'Team Identity', weight: 15, color: '#EF4444' },
-    { metric: 'Team Competence', weight: 12, color: '#F59E0B' },
-    { metric: 'Contaminated Network', weight: 10, color: '#10B981' },
-    { metric: 'Mercenary Keywords', weight: 8, color: '#3B82F6' },
-    { metric: 'GitHub Authenticity', weight: 10, color: '#8B5CF6' },
-    { metric: 'Tokenomics', weight: 13, color: '#EC4899' },
-    { metric: 'Bus Factor', weight: 8, color: '#6366F1' },
+    { metric: 'Team Identity', weight: 15, color: '#3B82F6' },
+    { metric: 'Team Competence', weight: 12, color: '#60A5FA' },
+    { metric: 'Contaminated Network', weight: 10, color: '#1D4ED8' },
+    { metric: 'Mercenary Keywords', weight: 8, color: '#93C5FD' },
+    { metric: 'GitHub Authenticity', weight: 10, color: '#2563EB' },
+    { metric: 'Tokenomics', weight: 13, color: '#BFDBFE' },
+    { metric: 'Bus Factor', weight: 8, color: '#1E40AF' },
   ];
 
   // FIXED: Use array for borderColor
@@ -84,7 +84,7 @@ export default function ResearchCharts({
         label: 'Projects Count',
         data: (riskCategories.length > 0 ? riskCategories : defaultRiskCategories).map(item => item.count),
         backgroundColor: (riskCategories.length > 0 ? riskCategories : defaultRiskCategories).map(item => item.color),
-        borderColor: (riskCategories.length > 0 ? riskCategories : defaultRiskCategories).map(() => '#1F2937'), // FIXED: array
+        borderColor: (riskCategories.length > 0 ? riskCategories : defaultRiskCategories).map(() => '#141824'),
         borderWidth: 1,
       },
     ],
@@ -98,7 +98,7 @@ export default function ResearchCharts({
         label: 'Weight %',
         data: (metricDistribution.length > 0 ? metricDistribution : defaultMetricDistribution).map(item => item.weight),
         backgroundColor: (metricDistribution.length > 0 ? metricDistribution : defaultMetricDistribution).map(item => item.color),
-        borderColor: (metricDistribution.length > 0 ? metricDistribution : defaultMetricDistribution).map(() => '#1F2937'), // FIXED: array
+        borderColor: (metricDistribution.length > 0 ? metricDistribution : defaultMetricDistribution).map(() => '#141824'),
         borderWidth: 1,
       },
     ],
@@ -280,13 +280,12 @@ export default function ResearchCharts({
         <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-white">Risk Categories Distribution</h3>
-            <div className="text-xs text-gray-400">Across all projects</div>
+            <div className="text-xs text-sifter-text-muted">Across all projects</div>
           </div>
           <div className="h-72">
             <Bar data={riskData} options={options} />
           </div>
-          <div className="mt-4 text-sm text-gray-400">
-            Shows the distribution of different risk types across analyzed projects.
+          <div className="mt-4 text-sm text-sifter-text-muted"> Shows the distribution of different risk types across analyzed projects.
           </div>
         </div>
 
@@ -294,13 +293,12 @@ export default function ResearchCharts({
         <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-white">Metric Weight Distribution</h3>
-            <div className="text-xs text-gray-400">13-metric analysis</div>
+            <div className="text-xs text-sifter-text-muted">13-metric analysis</div>
           </div>
           <div className="h-72">
             <Pie data={metricData} options={pieOptions} />
           </div>
-          <div className="mt-4 text-sm text-gray-400">
-            Shows the weight distribution of the 13 risk metrics in the composite score.
+          <div className="mt-4 text-sm text-sifter-text-muted"> Shows the weight distribution of the 13 risk metrics in the composite score.
           </div>
         </div>
       </div>
@@ -311,13 +309,12 @@ export default function ResearchCharts({
         <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-white">Project Risk Timeline</h3>
-            <div className="text-xs text-gray-400">Top 5 projects</div>
+            <div className="text-xs text-sifter-text-muted">Top 5 projects</div>
           </div>
           <div className="h-64">
             <Line data={projectTimelineData} options={lineOptions} />
           </div>
-          <div className="mt-4 text-sm text-gray-400">
-            Compares risk scores vs composite scores across different projects.
+          <div className="mt-4 text-sm text-sifter-text-muted"> Compares risk scores vs composite scores across different projects.
           </div>
         </div>
 
@@ -325,13 +322,12 @@ export default function ResearchCharts({
         <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-white">Risk Profile Radar</h3>
-            <div className="text-xs text-gray-400">Portfolio analysis</div>
+            <div className="text-xs text-sifter-text-muted">Portfolio analysis</div>
           </div>
           <div className="h-64">
             <Radar data={radarData} options={radarOptions} />
           </div>
-          <div className="mt-4 text-sm text-gray-400">
-            Compares average portfolio scores against your selected projects.
+          <div className="mt-4 text-sm text-sifter-text-muted"> Compares average portfolio scores against your selected projects.
           </div>
         </div>
       </div>
@@ -340,19 +336,19 @@ export default function ResearchCharts({
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-sifter-card border border-sifter-border rounded-xl p-4 text-center">
           <div className="text-2xl font-bold text-white mb-1">13</div>
-          <div className="text-xs text-gray-400">Metrics Analyzed</div>
+          <div className="text-xs text-sifter-text-muted">Metrics Analyzed</div>
         </div>
         <div className="bg-sifter-card border border-sifter-border rounded-xl p-4 text-center">
           <div className="text-2xl font-bold text-white mb-1">87</div>
-          <div className="text-xs text-gray-400">Avg. Score</div>
+          <div className="text-xs text-sifter-text-muted">Avg. Score</div>
         </div>
         <div className="bg-sifter-card border border-sifter-border rounded-xl p-4 text-center">
           <div className="text-2xl font-bold text-white mb-1">42%</div>
-          <div className="text-xs text-gray-400">High Risk</div>
+          <div className="text-xs text-sifter-text-muted">High Risk</div>
         </div>
         <div className="bg-sifter-card border border-sifter-border rounded-xl p-4 text-center">
           <div className="text-2xl font-bold text-white mb-1">1.2s</div>
-          <div className="text-xs text-gray-400">Avg. Scan Time</div>
+          <div className="text-xs text-sifter-text-muted">Avg. Scan Time</div>
         </div>
       </div>
     </div>

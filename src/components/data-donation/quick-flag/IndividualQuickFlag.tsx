@@ -33,11 +33,11 @@ export default function IndividualQuickFlag({
 
   // Template options for individual users
   const templateOptions = [
-    { id: 'scam-experience', label: '🕵️ Scam Experience', description: 'Personal scam encounter' },
-    { id: 'community-warning', label: '📢 Community Warning', description: 'Warning others in community' },
-    { id: 'project-review', label: '📝 Project Review', description: 'Detailed project analysis' },
-    { id: 'social-media', label: '📱 Social Media', description: 'Suspicious social media activity' },
-    { id: 'other', label: '🔍 Other', description: 'Custom template' }
+    { id: 'scam-experience', label: 'Scam Experience', description: 'Personal scam encounter' },
+    { id: 'community-warning', label: 'Community Warning', description: 'Warning others in community' },
+    { id: 'project-review', label: 'Project Review', description: 'Detailed project analysis' },
+    { id: 'social-media', label: 'Social Media', description: 'Suspicious social media activity' },
+    { id: 'other', label: 'Other', description: 'Custom template' }
   ];
 
   // Update evidence count
@@ -97,9 +97,6 @@ export default function IndividualQuickFlag({
     <div className="bg-sifter-card border border-sifter-border rounded-xl p-6 max-w-md mx-auto">
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 bg-gradient-to-br from-green-500/20 to-green-600/20 rounded-lg flex items-center justify-center">
-          <span className="text-xl">👤</span>
-        </div>
         <div>
           <h3 className="font-bold text-white">Quick Flag</h3>
           <p className="text-sm text-green-300">Quickly report this entity</p>
@@ -110,15 +107,14 @@ export default function IndividualQuickFlag({
       <div className="space-y-4">
         {/* Entity Info */}
         <div className="p-3 bg-sifter-dark/50 border border-sifter-border rounded-lg">
-          <div className="text-xs text-gray-400">Entity</div>
+          <div className="text-xs text-sifter-text-muted">Entity</div>
           <div className="font-medium text-white truncate">{entityName}</div>
-          <div className="text-xs text-gray-400 mt-1">{context}</div>
+          <div className="text-xs text-sifter-text-muted mt-1">{context}</div>
         </div>
 
         {/* Template Selection */}
         <div>
-          <label className="block text-sm text-gray-400 mb-2">
-            Select Template Type
+          <label className="block text-sm text-sifter-text-muted mb-2"> Select Template Type
           </label>
           <div className="grid grid-cols-2 gap-2">
             {templateOptions.map((option) => (
@@ -129,7 +125,7 @@ export default function IndividualQuickFlag({
                 className={`p-3 border rounded-lg text-sm text-left transition-all ${
                   template === option.id
                     ? 'bg-green-500/20 border-green-500/30 text-green-300'
-                    : 'border-sifter-border text-gray-400 hover:border-green-500/50 hover:bg-green-500/10'
+                    : 'border-sifter-border text-sifter-text-muted hover:border-green-500/50 hover:bg-green-500/10'
                 }`}
               >
                 <div className="font-medium">{option.label}</div>
@@ -141,14 +137,13 @@ export default function IndividualQuickFlag({
 
         {/* Severity Selection */}
         <div>
-          <label className="block text-sm text-gray-400 mb-2">
-            Severity Assessment
+          <label className="block text-sm text-sifter-text-muted mb-2"> Severity Assessment
           </label>
           <div className="grid grid-cols-3 gap-2">
             {[
-              { id: 'critical', label: '🔥 Critical', color: 'bg-red-500/20 border-red-500/30' },
-              { id: 'high', label: '⚠️ High', color: 'bg-orange-500/20 border-orange-500/30' },
-              { id: 'medium', label: '🚩 Medium', color: 'bg-amber-500/20 border-amber-500/30' }
+              { id: 'critical', label: 'Critical', color: 'bg-red-500/20 border-red-500/30' },
+              { id: 'high', label: 'High', color: 'bg-orange-500/20 border-orange-500/30' },
+              { id: 'medium', label: 'Medium', color: 'bg-amber-500/20 border-amber-500/30' }
             ].map((option) => (
               <button
                 key={option.id}
@@ -157,7 +152,7 @@ export default function IndividualQuickFlag({
                 className={`p-3 border rounded-lg text-sm font-medium transition-all ${
                   severity === option.id
                     ? `${option.color} text-white`
-                    : 'border-sifter-border text-gray-400 hover:border-green-500/50'
+                    : 'border-sifter-border text-sifter-text-muted hover:border-green-500/50'
                 }`}
               >
                 {option.label}
@@ -169,8 +164,7 @@ export default function IndividualQuickFlag({
         {/* Evidence Links */}
         <div>
           <div className="flex justify-between items-center mb-2">
-            <label className="block text-sm text-gray-400">
-              Evidence Links (Optional)
+            <label className="block text-sm text-sifter-text-muted"> Evidence Links (Optional)
             </label>
             <button
               type="button"
@@ -200,15 +194,14 @@ export default function IndividualQuickFlag({
               )}
             </div>
           ))}
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-sifter-text-subtle mt-1">
             {validEvidenceLinks.length} evidence link(s) added
           </p>
         </div>
 
         {/* Personal Experience */}
         <div>
-          <label className="block text-sm text-gray-400 mb-2">
-            Your Experience (Optional)
+          <label className="block text-sm text-sifter-text-muted mb-2"> Your Experience (Optional)
           </label>
           <textarea
             value={personalExperience}
@@ -217,15 +210,13 @@ export default function IndividualQuickFlag({
             placeholder="Share your personal experience with this entity..."
             rows={3}
           />
-          <p className="text-xs text-gray-500 mt-1">
-            This helps the community understand real-world impacts
+          <p className="text-xs text-sifter-text-subtle mt-1"> This helps the community understand real-world impacts
           </p>
         </div>
 
         {/* Reason */}
         <div>
-          <label className="block text-sm text-gray-400 mb-2">
-            Brief Reason
+          <label className="block text-sm text-sifter-text-muted mb-2"> Brief Reason
           </label>
           <textarea
             value={reason}
@@ -237,17 +228,15 @@ export default function IndividualQuickFlag({
         </div>
 
         {/* Points Info */}
-        <div className="p-3 bg-gradient-to-r from-green-500/10 to-green-600/10 border border-green-500/30 rounded-lg">
+        <div className="p-3 bg-sifter-elevated border border-green-500/30 rounded-lg">
           <div className="flex justify-between items-center">
-            <div className="text-sm text-gray-400">Points Earned</div>
+            <div className="text-sm text-sifter-text-muted">Points Earned</div>
             <div className="text-lg font-bold text-amber-400">10</div>
           </div>
-          <div className="text-xs text-green-400 mt-1">
-            ⭐ Community Contribution: Share your experience to help others
+          <div className="text-xs text-green-400 mt-1"> Community Contribution: Share your experience to help others
           </div>
           {template && (
-            <div className="text-xs text-green-300 mt-1">
-              📝 Template: {templateOptions.find(t => t.id === template)?.label}
+            <div className="text-xs text-green-300 mt-1"> Template: {templateOptions.find(t => t.id === template)?.label}
             </div>
           )}
         </div>
@@ -259,9 +248,8 @@ export default function IndividualQuickFlag({
               type="button"
               onClick={onCancel}
               disabled={isSubmitting}
-              className="flex-1 px-4 py-3 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg font-medium transition-colors disabled:opacity-50"
-            >
-              Cancel
+              className="flex-1 px-4 py-3 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover rounded-lg font-medium transition-colors disabled:opacity-50"
+            > Cancel
             </button>
           )}
           
@@ -269,7 +257,7 @@ export default function IndividualQuickFlag({
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 
+            className="flex-1 px-4 py-3 bg-green-600 hover:bg-green-500 
                      text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed
                      flex items-center justify-center gap-2"
           >
@@ -278,12 +266,10 @@ export default function IndividualQuickFlag({
                 <svg className="animate-spin w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Submitting...
+                </svg> Submitting...
               </>
             ) : (
-              <>
-                🚩 Quick Flag
+              <> Quick Flag
                 <span className="text-xs bg-white/20 px-2 py-1 rounded">10 pts</span>
               </>
             )}

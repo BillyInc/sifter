@@ -118,8 +118,7 @@ function RegisterContent() {
           </div>
         </fieldset>
 
-        <Button type="submit" fullWidth size="lg" loading={isLoading}>
-          Create account
+        <Button type="submit" fullWidth size="lg" loading={isLoading}> Create account
         </Button>
       </form>
     </Card>
@@ -142,10 +141,8 @@ export default function RegisterPage() {
           <RegisterContent />
         </Suspense>
 
-        <p className="mt-6 text-center text-sm text-sifter-text-muted">
-          Already have an account?{' '}
-          <Link href="/login" className="text-sifter-blue hover:underline font-medium">
-            Sign in
+        <p className="mt-6 text-center text-sm text-sifter-text-muted"> Already have an account?{' '}
+          <Link href="/login" className="text-sifter-blue hover:underline font-medium"> Sign in
           </Link>
         </p>
       </div>

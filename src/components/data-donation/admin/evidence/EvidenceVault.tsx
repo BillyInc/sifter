@@ -55,30 +55,30 @@ export default function EvidenceVault({
       case 'disputed':
         return 'bg-red-500/20 text-red-400';
       case 'invalid':
-        return 'bg-gray-500/20 text-gray-400';
+        return 'bg-sifter-elevated text-sifter-text-muted';
       default:
-        return 'bg-gray-500/20 text-gray-400';
+        return 'bg-sifter-elevated text-sifter-text-muted';
     }
   };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'twitter_post':
-        return '🐦';
+        return '';
       case 'blockchain_transaction':
-        return '⛓️';
+        return '';
       case 'news_article':
-        return '📰';
+        return '';
       case 'archived_website':
-        return '📄';
+        return '';
       case 'legal_document':
-        return '⚖️';
+        return '';
       case 'discord_export':
-        return '💬';
+        return '';
       case 'telegram_export':
-        return '📱';
+        return '';
       default:
-        return '📎';
+        return '';
     }
   };
 
@@ -99,7 +99,7 @@ export default function EvidenceVault({
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         <div>
           <h2 className="text-xl font-bold text-white">Evidence Vault</h2>
-          <p className="text-gray-400 text-sm">
+          <p className="text-sifter-text-muted text-sm">
             {evidence.length} evidence items • {evidence.filter(e => e.verificationStatus === 'verified').length} verified
           </p>
         </div>
@@ -112,15 +112,13 @@ export default function EvidenceVault({
           >
             {isRefreshing ? (
               <>
-                <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-                Verifying...
+                <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div> Verifying...
               </>
             ) : (
               <>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                Verify All
+                </svg> Verify All
               </>
             )}
           </button>
@@ -130,7 +128,7 @@ export default function EvidenceVault({
       {/* Filters */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-400 mb-2">Filter by Entity</label>
+          <label className="block text-sm font-medium text-sifter-text-muted mb-2">Filter by Entity</label>
           <select
             value={filterEntity}
             onChange={(e) => setFilterEntity(e.target.value)}
@@ -144,7 +142,7 @@ export default function EvidenceVault({
         </div>
         
         <div>
-          <label className="block text-sm font-medium text-gray-400 mb-2">Filter by Status</label>
+          <label className="block text-sm font-medium text-sifter-text-muted mb-2">Filter by Status</label>
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
@@ -165,28 +163,28 @@ export default function EvidenceVault({
           <div className="text-2xl font-bold text-green-400">
             {evidence.filter(e => e.verificationResults?.originalAccessible).length}
           </div>
-          <div className="text-sm text-gray-400">Original Links Active</div>
+          <div className="text-sm text-sifter-text-muted">Original Links Active</div>
         </div>
         
         <div className="bg-sifter-card border border-blue-500/30 rounded-xl p-4">
           <div className="text-2xl font-bold text-blue-400">
             {evidence.filter(e => e.verificationResults?.archiveAccessible).length}
           </div>
-          <div className="text-sm text-gray-400">Archived Copies</div>
+          <div className="text-sm text-sifter-text-muted">Archived Copies</div>
         </div>
         
         <div className="bg-sifter-card border border-purple-500/30 rounded-xl p-4">
           <div className="text-2xl font-bold text-purple-400">
             {evidence.filter(e => e.verificationResults?.screenshotExists).length}
           </div>
-          <div className="text-sm text-gray-400">Screenshots</div>
+          <div className="text-sm text-sifter-text-muted">Screenshots</div>
         </div>
         
         <div className="bg-sifter-card border border-amber-500/30 rounded-xl p-4">
           <div className="text-2xl font-bold text-amber-400">
             {evidence.filter(e => e.verificationResults?.ipfsAccessible).length}
           </div>
-          <div className="text-sm text-gray-400">IPFS Backups</div>
+          <div className="text-sm text-sifter-text-muted">IPFS Backups</div>
         </div>
       </div>
 
@@ -199,7 +197,7 @@ export default function EvidenceVault({
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="font-medium text-white">{entityName}</h3>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-sifter-text-muted">
                     {entityEvidence.length} evidence items • Last verified: {
                       entityEvidence.length > 0 
                         ? new Date(Math.max(...entityEvidence.map(e => new Date(e.lastVerified || e.capturedDate).getTime()))).toLocaleDateString()
@@ -213,8 +211,7 @@ export default function EvidenceVault({
                     entityEvidence.forEach(ev => onVerifyEvidence(ev.id));
                   }}
                   className="px-3 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30 rounded text-sm"
-                >
-                  Verify All
+                > Verify All
                 </button>
               </div>
             </div>
@@ -229,7 +226,7 @@ export default function EvidenceVault({
                         <span className="text-xl">{getTypeIcon(item.type)}</span>
                         <div>
                           <div className="font-medium text-white">{item.title}</div>
-                          <div className="text-sm text-gray-400 flex items-center gap-2">
+                          <div className="text-sm text-sifter-text-muted flex items-center gap-2">
                             <span>{item.type.replace('_', ' ')}</span>
                             <span>•</span>
                             <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(item.verificationStatus)}`}>
@@ -240,7 +237,7 @@ export default function EvidenceVault({
                       </div>
                       
                       {item.description && (
-                        <p className="text-gray-300 text-sm mb-3">{item.description}</p>
+                        <p className="text-sifter-text text-sm mb-3">{item.description}</p>
                       )}
                       
                       {/* Backup Status */}
@@ -248,15 +245,15 @@ export default function EvidenceVault({
                         {getBackupStatus(item).map((backup, idx) => (
                           <div key={idx} className="flex items-center gap-2">
                             <backup.icon className={`w-4 h-4 ${
-                              backup.status ? 'text-green-400' : 'text-gray-500'
+                              backup.status ? 'text-green-400' : 'text-sifter-text-subtle'
                             }`} />
-                            <span className={`text-sm ${backup.status ? 'text-green-400' : 'text-gray-500'}`}>
+                            <span className={`text-sm ${backup.status ? 'text-green-400' : 'text-sifter-text-subtle'}`}>
                               {backup.name}
                             </span>
                             {backup.status ? (
                               <CheckCircleIcon className="w-4 h-4 text-green-400" />
                             ) : (
-                              <ExclamationCircleIcon className="w-4 h-4 text-gray-500" />
+                              <ExclamationCircleIcon className="w-4 h-4 text-sifter-text-subtle" />
                             )}
                           </div>
                         ))}
@@ -264,14 +261,13 @@ export default function EvidenceVault({
                     </div>
                     
                     <div className="text-right ml-4">
-                      <div className="text-sm text-gray-400 mb-2">
+                      <div className="text-sm text-sifter-text-muted mb-2">
                         {new Date(item.capturedDate).toLocaleDateString()}
                       </div>
                       <button
                         onClick={() => setSelectedEvidence(item)}
-                        className="px-3 py-1 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded text-sm"
-                      >
-                        Details
+                        className="px-3 py-1 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover rounded text-sm"
+                      > Details
                       </button>
                     </div>
                   </div>
@@ -286,10 +282,10 @@ export default function EvidenceVault({
       {filteredEvidence.length === 0 && (
         <div className="text-center py-12 border border-sifter-border rounded-xl">
           <div className="w-20 h-20 bg-sifter-dark/50 rounded-full flex items-center justify-center mx-auto mb-6">
-            <DocumentIcon className="w-10 h-10 text-gray-400" />
+            <DocumentIcon className="w-10 h-10 text-sifter-text-muted" />
           </div>
           <h3 className="text-xl font-semibold text-white mb-3">No evidence found</h3>
-          <p className="text-gray-400 max-w-md mx-auto">
+          <p className="text-sifter-text-muted max-w-md mx-auto">
             {filterEntity !== 'all' || filterStatus !== 'all'
               ? "No evidence matches your filters."
               : "No evidence has been archived yet."}
@@ -306,13 +302,13 @@ export default function EvidenceVault({
               <div className="sticky top-0 z-10 p-6 border-b border-sifter-border bg-sifter-card flex justify-between items-center">
                 <div>
                   <h2 className="text-xl font-bold text-white">Evidence Details</h2>
-                  <p className="text-gray-400">
+                  <p className="text-sifter-text-muted">
                     {selectedEvidence.entityName} • {selectedEvidence.type.replace('_', ' ')}
                   </p>
                 </div>
                 <button
                   onClick={() => setSelectedEvidence(null)}
-                  className="p-2 text-gray-400 hover:text-white"
+                  className="p-2 text-sifter-text-muted hover:text-white"
                 >
                   ✕
                 </button>
@@ -324,29 +320,29 @@ export default function EvidenceVault({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
-                      <div className="text-sm text-gray-400 mb-1">Title</div>
+                      <div className="text-sm text-sifter-text-muted mb-1">Title</div>
                       <div className="text-white font-medium">{selectedEvidence.title}</div>
                     </div>
                     
                     <div>
-                      <div className="text-sm text-gray-400 mb-1">Description</div>
-                      <div className="text-gray-300">{selectedEvidence.description}</div>
+                      <div className="text-sm text-sifter-text-muted mb-1">Description</div>
+                      <div className="text-sifter-text">{selectedEvidence.description}</div>
                     </div>
                     
                     <div>
-                      <div className="text-sm text-gray-400 mb-1">Submitted By</div>
+                      <div className="text-sm text-sifter-text-muted mb-1">Submitted By</div>
                       <div className="text-white">{selectedEvidence.submittedBy}</div>
                     </div>
                   </div>
                   
                   <div className="space-y-4">
                     <div>
-                      <div className="text-sm text-gray-400 mb-1">Capture Date</div>
+                      <div className="text-sm text-sifter-text-muted mb-1">Capture Date</div>
                       <div className="text-white">{new Date(selectedEvidence.capturedDate).toLocaleDateString()}</div>
                     </div>
                     
                     <div>
-                      <div className="text-sm text-gray-400 mb-1">Last Verified</div>
+                      <div className="text-sm text-sifter-text-muted mb-1">Last Verified</div>
                       <div className="text-white">
                         {selectedEvidence.lastVerified 
                           ? new Date(selectedEvidence.lastVerified).toLocaleDateString()
@@ -355,7 +351,7 @@ export default function EvidenceVault({
                     </div>
                     
                     <div>
-                      <div className="text-sm text-gray-400 mb-1">Severity</div>
+                      <div className="text-sm text-sifter-text-muted mb-1">Severity</div>
                       <div className={`px-3 py-1 inline-block rounded-full text-sm ${
                         selectedEvidence.severity === 'critical' ? 'bg-red-500/20 text-red-400' :
                         selectedEvidence.severity === 'high' ? 'bg-orange-500/20 text-orange-400' :
@@ -377,18 +373,18 @@ export default function EvidenceVault({
                       <div key={idx} className={`p-4 rounded-lg border ${
                         backup.status 
                           ? 'border-green-500/30 bg-green-500/10' 
-                          : 'border-gray-500/30 bg-gray-500/10'
+                          : 'border-sifter-border-strong bg-sifter-elevated'
                       }`}>
                         <div className="flex items-center gap-3 mb-2">
-                          <backup.icon className={`w-5 h-5 ${backup.status ? 'text-green-400' : 'text-gray-500'}`} />
+                          <backup.icon className={`w-5 h-5 ${backup.status ? 'text-green-400' : 'text-sifter-text-subtle'}`} />
                           <span className="font-medium text-white">{backup.name}</span>
                           {backup.status ? (
                             <CheckCircleIcon className="w-5 h-5 text-green-400 ml-auto" />
                           ) : (
-                            <ExclamationCircleIcon className="w-5 h-5 text-gray-500 ml-auto" />
+                            <ExclamationCircleIcon className="w-5 h-5 text-sifter-text-subtle ml-auto" />
                           )}
                         </div>
-                        <div className="text-sm text-gray-400">
+                        <div className="text-sm text-sifter-text-muted">
                           {backup.status ? 'Verified and accessible' : 'Not available'}
                         </div>
                       </div>
@@ -407,7 +403,7 @@ export default function EvidenceVault({
                           <LinkIcon className="w-5 h-5 text-blue-400" />
                           <div>
                             <div className="text-white">Original URL</div>
-                            <div className="text-sm text-gray-400 truncate max-w-[300px]">
+                            <div className="text-sm text-sifter-text-muted truncate max-w-[300px]">
                               {selectedEvidence.originalUrl}
                             </div>
                           </div>
@@ -417,8 +413,7 @@ export default function EvidenceVault({
                           target="_blank"
                           rel="noopener noreferrer"
                           className="px-3 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded text-sm"
-                        >
-                          Open
+                        > Open
                         </a>
                       </div>
                     )}
@@ -429,7 +424,7 @@ export default function EvidenceVault({
                           <ArchiveBoxIcon className="w-5 h-5 text-green-400" />
                           <div>
                             <div className="text-white">Archived URL</div>
-                            <div className="text-sm text-gray-400 truncate max-w-[300px]">
+                            <div className="text-sm text-sifter-text-muted truncate max-w-[300px]">
                               {selectedEvidence.archivedUrl}
                             </div>
                           </div>
@@ -439,8 +434,7 @@ export default function EvidenceVault({
                           target="_blank"
                           rel="noopener noreferrer"
                           className="px-3 py-1 bg-green-500/20 text-green-400 hover:bg-green-500/30 rounded text-sm"
-                        >
-                          Open
+                        > Open
                         </a>
                       </div>
                     )}
@@ -455,8 +449,7 @@ export default function EvidenceVault({
                     <button
                       onClick={() => onVerifyEvidence(selectedEvidence.id)}
                       className="px-4 py-2 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg"
-                    >
-                      Verify Now
+                    > Verify Now
                     </button>
                     
                     <button
@@ -465,8 +458,7 @@ export default function EvidenceVault({
                         console.log('Archive evidence:', selectedEvidence.id);
                       }}
                       className="px-4 py-2 bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border border-purple-500/30 rounded-lg"
-                    >
-                      Create Archive
+                    > Create Archive
                     </button>
                     
                     <button
@@ -475,8 +467,7 @@ export default function EvidenceVault({
                         console.log('Take screenshot of:', selectedEvidence.id);
                       }}
                       className="px-4 py-2 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 border border-amber-500/30 rounded-lg"
-                    >
-                      Take Screenshot
+                    > Take Screenshot
                     </button>
                   </div>
                 </div>

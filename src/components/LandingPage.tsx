@@ -41,11 +41,9 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             <Logo size="sm" />
           </Link>
           <nav aria-label="Primary" className="flex items-center gap-4">
-            <a href="#metrics" className="hidden sm:inline text-sm text-sifter-text-muted hover:text-sifter-text transition-colors">
-              Metrics
+            <a href="#metrics" className="hidden sm:inline text-sm text-sifter-text-muted hover:text-sifter-text transition-colors"> Metrics
             </a>
-            <a href="#how-it-works" className="hidden sm:inline text-sm text-sifter-text-muted hover:text-sifter-text transition-colors">
-              How it works
+            <a href="#how-it-works" className="hidden sm:inline text-sm text-sifter-text-muted hover:text-sifter-text transition-colors"> How it works
             </a>
             <UserMenu />
           </nav>
@@ -60,25 +58,20 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             className="pointer-events-none absolute inset-x-0 -top-40 h-[480px] bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.18),transparent_60%)]"
           />
           <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-20 pb-16 sm:pt-28 sm:pb-20 text-center animate-fade-up">
-            <Badge tone="info" className="mb-6">
-              Automated due diligence for Web3 projects
+            <Badge tone="info" className="mb-6"> Automated due diligence for Web3 projects
             </Badge>
-            <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-balance">
-              Know what you&apos;re backing{' '}
+            <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-balance"> Know what you&apos;re backing{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-sifter-blue to-purple-400">before you commit</span>
             </h1>
-            <p className="mt-6 text-lg sm:text-xl text-sifter-text-muted max-w-2xl mx-auto text-balance">
-              Sifter scores a project across {METRIC_WEIGHTS.length} weighted risk metrics spanning team, community, marketing and code,
+            <p className="mt-6 text-lg sm:text-xl text-sifter-text-muted max-w-2xl mx-auto text-balance"> Sifter scores a project across {METRIC_WEIGHTS.length} weighted risk metrics spanning team, community, marketing and code,
               then returns a clear Pass, Flag or Reject verdict.
             </p>
 
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Button size="lg" onClick={onGetStarted} trailingIcon={<span aria-hidden="true">→</span>}>
-                Get started
+              <Button size="lg" onClick={onGetStarted} trailingIcon={<span aria-hidden="true">→</span>}> Get started
               </Button>
               <Link href="/login" className="rounded-lg">
-                <Button size="lg" variant="secondary">
-                  Sign in
+                <Button size="lg" variant="secondary"> Sign in
                 </Button>
               </Link>
             </div>
@@ -100,8 +93,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
         <section id="metrics" className="max-w-6xl mx-auto px-4 sm:px-6 py-16 scroll-mt-20">
           <div className="max-w-2xl mb-10">
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">What Sifter measures</h2>
-            <p className="mt-3 text-sifter-text-muted">
-              Each metric is scored from 0 to 100 and weighted by how strongly it predicts scams or poor execution.
+            <p className="mt-3 text-sifter-text-muted"> Each metric is scored from 0 to 100 and weighted by how strongly it predicts scams or poor execution.
               Heavier bars carry more influence on the composite score.
             </p>
           </div>
@@ -127,8 +119,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
         <section className="border-y border-sifter-border bg-sifter-card/40">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">One of three verdicts</h2>
-            <p className="mt-3 text-sifter-text-muted max-w-2xl">
-              The weighted metric scores combine into a single composite. The verdict tells you what to do next; the breakdown tells you why.
+            <p className="mt-3 text-sifter-text-muted max-w-2xl"> The weighted metric scores combine into a single composite. The verdict tells you what to do next; the breakdown tells you why.
             </p>
             <ul className="mt-8 grid gap-4 md:grid-cols-3">
               {VERDICTS.map((v) => (
@@ -193,8 +184,7 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
       <footer className="border-t border-sifter-border">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-sifter-text-subtle">
           <span>SIFTER 1.0 · Automated project due diligence</span>
-          <Link href="/terms" className="hover:text-sifter-text transition-colors">
-            Terms
+          <Link href="/terms" className="hover:text-sifter-text transition-colors"> Terms
           </Link>
         </div>
       </footer>

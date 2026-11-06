@@ -178,11 +178,11 @@ export default function FlaggingInterface({
   const getModeConfig = (mode: UserMode) => {
     switch (mode) {
       case 'ea-vc':
-        return { icon: '🏢', color: 'blue', name: 'VC Mode' };
+        return { icon: '', color: 'blue', name: 'VC Mode' };
       case 'researcher':
-        return { icon: '🔬', color: 'purple', name: 'Researcher Mode' };
+        return { icon: '', color: 'purple', name: 'Researcher Mode' };
       case 'individual':
-        return { icon: '👤', color: 'green', name: 'Individual Mode' };
+        return { icon: '', color: 'green', name: 'Individual Mode' };
         
     }
   };
@@ -196,31 +196,31 @@ export default function FlaggingInterface({
   const tierOptions = [
     {
       id: 'quick' as const,
-      title: '🚩 Quick Flag',
+      title: 'Quick Flag',
       description: 'Mark for investigation',
       time: '30 seconds',
       evidence: 'Optional',
-      icon: '⚡',
+      icon: '',
       bestFor: userData.mode === 'ea-vc' ? 'Portfolio reviews' : 
                userData.mode === 'researcher' ? 'Initial analysis' : 
                'Quick reporting'
     },
     {
       id: 'standard' as const,
-      title: '📝 Standard Report',
+      title: 'Standard Report',
       description: 'Basic evidence submission',
       time: '2-5 minutes',
       evidence: '1-2 links required',
-      icon: '📋',
+      icon: '',
       bestFor: 'Most cases'
     },
     {
       id: 'full' as const,
-      title: '📊 Full Data Donation',
+      title: 'Full Data Donation',
       description: 'Complete case with all evidence',
       time: '5-10 minutes',
       evidence: '3+ links required',
-      icon: '🏆',
+      icon: '',
       bestFor: 'High-impact submissions'
     }
   ].map(tier => ({
@@ -400,22 +400,19 @@ export default function FlaggingInterface({
         <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-lg w-full p-6">
           {/* Header */}
           <div className="text-center mb-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-4xl">🎉</span>
-            </div>
             <h3 className="text-2xl font-bold text-white mb-2">Submission Successful!</h3>
-            <p className="text-gray-400">You've earned rewards for your contribution</p>
+            <p className="text-sifter-text-muted">You've earned rewards for your contribution</p>
           </div>
           
           {/* Points Awarded */}
-          <div className="bg-gradient-to-r from-amber-500/10 to-amber-600/10 border border-amber-500/30 rounded-xl p-6 mb-6">
+          <div className="bg-sifter-elevated border border-amber-500/30 rounded-xl p-6 mb-6">
             <div className="flex justify-between items-center">
               <div>
-                <div className="text-sm text-gray-400">Points Awarded</div>
+                <div className="text-sm text-sifter-text-muted">Points Awarded</div>
                 <div className="text-3xl font-bold text-amber-400">+{gamificationResult.pointsAwarded}</div>
               </div>
               <div className="text-right">
-                <div className="text-sm text-gray-400">Total Points</div>
+                <div className="text-sm text-sifter-text-muted">Total Points</div>
                 <div className="text-2xl font-bold text-white">
                   {(userProfile.totalPoints + gamificationResult.pointsAwarded).toLocaleString()}
                 </div>
@@ -425,7 +422,7 @@ export default function FlaggingInterface({
             {/* Streak Bonus */}
             {userProfile.streak.streakBonus > 1 && (
               <div className="mt-3 text-sm text-green-400">
-                🔥 {userProfile.streak.currentStreak + 1}-day streak bonus: {userProfile.streak.streakBonus.toFixed(1)}x
+                 {userProfile.streak.currentStreak + 1}-day streak bonus: {userProfile.streak.streakBonus.toFixed(1)}x
               </div>
             )}
           </div>
@@ -439,13 +436,13 @@ export default function FlaggingInterface({
                   <div key={badge.id} className="border border-sifter-border rounded-lg p-3 text-center">
                     <div className="text-3xl mb-2">{badge.icon}</div>
                     <div className="font-medium text-white text-sm mb-1">{badge.name}</div>
-                    <div className="text-xs text-gray-400">{badge.description}</div>
+                    <div className="text-xs text-sifter-text-muted">{badge.description}</div>
                     <div className={`text-xs px-2 py-1 rounded-full mt-2 inline-block ${
                       badge.rarity === 'legendary' ? 'bg-purple-500/20 text-purple-400' :
                       badge.rarity === 'epic' ? 'bg-red-500/20 text-red-400' :
                       badge.rarity === 'rare' ? 'bg-blue-500/20 text-blue-400' :
                       badge.rarity === 'uncommon' ? 'bg-green-500/20 text-green-400' :
-                      'bg-gray-500/20 text-gray-400'
+                      'bg-sifter-elevated text-sifter-text-muted'
                     }`}>
                       {badge.rarity.toUpperCase()}
                     </div>
@@ -457,9 +454,8 @@ export default function FlaggingInterface({
           
           {/* Level Up */}
           {gamificationResult.levelUp && gamificationResult.newLevel && (
-            <div className="mb-6 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/30 rounded-xl">
+            <div className="mb-6 p-4 bg-sifter-elevated border border-blue-500/30 rounded-xl">
               <div className="flex items-center gap-3 mb-2">
-                <span className="text-2xl">⭐</span>
                 <div>
                   <div className="font-bold text-white">Level Up!</div>
                   <div className="text-sm text-blue-300">Reached Level {gamificationResult.newLevel}</div>
@@ -470,18 +466,15 @@ export default function FlaggingInterface({
           
           {/* Tier Change */}
           {gamificationResult.tierChanged && gamificationResult.newTier && (
-            <div className="mb-6 p-4 bg-gradient-to-r from-purple-500/10 to-purple-600/10 border border-purple-500/30 rounded-xl">
+            <div className="mb-6 p-4 bg-sifter-elevated border border-purple-500/30 rounded-xl">
               <div className="flex items-center gap-3 mb-2">
-                <span className="text-2xl">💎</span>
                 <div>
                   <div className="font-bold text-white">Tier Promotion!</div>
-                  <div className="text-sm text-purple-300">
-                    Advanced to {gamificationResult.newTier.replace('-', ' ')} Tier
+                  <div className="text-sm text-purple-300"> Advanced to {gamificationResult.newTier.replace('-', ' ')} Tier
                   </div>
                 </div>
               </div>
-              <div className="text-sm text-gray-300 mt-2">
-                New benefits unlocked! Check your gamification dashboard.
+              <div className="text-sm text-sifter-text mt-2"> New benefits unlocked! Check your gamification dashboard.
               </div>
             </div>
           )}
@@ -495,7 +488,7 @@ export default function FlaggingInterface({
                   <div key={achievement.id} className="flex justify-between items-center p-2 border border-sifter-border rounded-lg">
                     <div>
                       <div className="text-sm text-white">{achievement.name}</div>
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-sifter-text-muted">
                         {Math.round(achievement.progress * achievement.target)}/{achievement.target}
                       </div>
                     </div>
@@ -516,9 +509,8 @@ export default function FlaggingInterface({
                 setGamificationResult(null);
                 onClose();
               }}
-              className="flex-1 px-4 py-3 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg font-medium transition-colors"
-            >
-              Continue
+              className="flex-1 px-4 py-3 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover rounded-lg font-medium transition-colors"
+            > Continue
             </button>
             <button
               onClick={() => {
@@ -530,8 +522,7 @@ export default function FlaggingInterface({
               }}
               className="flex-1 px-4 py-3 bg-sifter-blue hover:bg-sifter-blue-hover 
                        text-white rounded-lg font-medium transition-all"
-            >
-              View Full Dashboard
+            > View Full Dashboard
             </button>
           </div>
         </div>
@@ -554,8 +545,7 @@ export default function FlaggingInterface({
               <div className="flex justify-between items-start">
                 <div>
                   <h2 className="text-xl font-bold text-white">Flag Entity</h2>
-                  <p className="text-sm text-gray-400">
-                    Entity: <span className="text-red-400 font-medium">{entityData.entityName}</span>
+                  <p className="text-sm text-sifter-text-muted"> Entity: <span className="text-red-400 font-medium">{entityData.entityName}</span>
                     {entityData.projectName && ` • Project: ${entityData.projectName}`}
                     {entityData.riskScore && ` • Risk: ${entityData.riskScore}/100`}
                   </p>
@@ -568,16 +558,16 @@ export default function FlaggingInterface({
                       {modeConfig.icon} {modeConfig.name}
                     </span>
                     <span className="px-3 py-1 rounded-lg text-sm font-medium bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                      🎯 {currentPoints} points
+                       {currentPoints} points
                     </span>
                     {userProfile.totalPoints > 0 && (
-                      <span className="text-sm text-gray-400">
+                      <span className="text-sm text-sifter-text-muted">
                         (You have {userProfile.totalPoints.toLocaleString()} total points)
                       </span>
                     )}
                     {userProfile.streak.currentStreak > 0 && (
                       <span className="text-sm text-green-400 flex items-center gap-1">
-                        🔥 {userProfile.streak.currentStreak}-day streak
+                         {userProfile.streak.currentStreak}-day streak
                       </span>
                     )}
                   </div>
@@ -585,7 +575,7 @@ export default function FlaggingInterface({
                 <button
                   onClick={onClose}
                   disabled={isSubmitting}
-                  className="text-gray-400 hover:text-white text-2xl disabled:opacity-50"
+                  className="text-sifter-text-muted hover:text-white text-2xl disabled:opacity-50"
                 >
                   ✕
                 </button>
@@ -599,9 +589,9 @@ export default function FlaggingInterface({
                 {tierOptions.map((tier) => {
                   const isSelected = selectedTier === tier.id;
                   const colorClass = isSelected ? 
-                    (modeConfig.color === 'blue' ? 'border-blue-500 bg-gradient-to-br from-blue-500/20 to-blue-600/20' :
-                     modeConfig.color === 'purple' ? 'border-purple-500 bg-gradient-to-br from-purple-500/20 to-purple-600/20' :
-                     'border-green-500 bg-gradient-to-br from-green-500/20 to-green-600/20') :
+                    (modeConfig.color === 'blue' ? 'border-blue-500 bg-sifter-elevated' :
+                     modeConfig.color === 'purple' ? 'border-purple-500 bg-sifter-elevated' :
+                     'border-green-500 bg-sifter-elevated') :
                     'border-sifter-border hover:border-blue-500/50 hover:bg-sifter-dark/30';
                   
                   return (
@@ -618,19 +608,19 @@ export default function FlaggingInterface({
                           <div className="flex justify-between items-start">
                             <div>
                               <h4 className="font-medium text-white">{tier.title}</h4>
-                              <div className="text-xs text-gray-400 mt-1">{tier.time}</div>
+                              <div className="text-xs text-sifter-text-muted mt-1">{tier.time}</div>
                             </div>
                             <div className="text-right">
                               <div className="text-lg font-bold text-amber-400">{tier.points}</div>
-                              <div className="text-xs text-gray-400">points</div>
+                              <div className="text-xs text-sifter-text-muted">points</div>
                             </div>
                           </div>
-                          <p className="text-sm text-gray-400 mt-2">{tier.description}</p>
+                          <p className="text-sm text-sifter-text-muted mt-2">{tier.description}</p>
                         </div>
                       </div>
                       
                       <div className="flex justify-between items-center text-xs mt-3">
-                        <span className="text-gray-500">📎 {tier.evidence}</span>
+                        <span className="text-sifter-text-subtle"> {tier.evidence}</span>
                         {tier.bestFor && (
                           <span className={`px-2 py-1 rounded ${
                             modeConfig.color === 'blue' ? 'bg-blue-500/20 text-blue-400' :
@@ -647,16 +637,16 @@ export default function FlaggingInterface({
               </div>
 
               {/* Points Summary */}
-              <div className="mt-6 p-4 bg-gradient-to-r from-amber-500/10 to-amber-600/10 border border-amber-500/30 rounded-lg">
+              <div className="mt-6 p-4 bg-sifter-elevated border border-amber-500/30 rounded-lg">
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
-                    <div className="text-sm text-gray-400">Base Points</div>
+                    <div className="text-sm text-sifter-text-muted">Base Points</div>
                     <div className="text-white font-medium">
                       {MODE_CONFIGS[userData.mode].basePoints[selectedTier]}
                     </div>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-400">Mode Multiplier</div>
+                    <div className="text-sm text-sifter-text-muted">Mode Multiplier</div>
                     <div className={`font-bold ${
                       modeConfig.color === 'blue' ? 'text-blue-400' :
                       modeConfig.color === 'purple' ? 'text-purple-400' :
@@ -666,18 +656,17 @@ export default function FlaggingInterface({
                     </div>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-400">Total Points</div>
+                    <div className="text-sm text-sifter-text-muted">Total Points</div>
                     <div className="text-amber-400 font-bold text-lg">{currentPoints}</div>
                   </div>
                 </div>
-                <div className="text-xs text-gray-400 mt-3 text-center">
+                <div className="text-xs text-sifter-text-muted mt-3 text-center">
                   {userData.mode === 'ea-vc' ? 'VC submissions earn 5x points due to quality evidence' :
                    userData.mode === 'researcher' ? 'Researcher submissions earn 3x points for analytical work' :
                    'Individual submissions earn 1x points for community contributions'}
                 </div>
                 {userProfile.streak.streakBonus > 1 && (
-                  <div className="text-xs text-green-400 mt-2 text-center">
-                    🔥 Active streak bonus: {userProfile.streak.streakBonus.toFixed(1)}x points
+                  <div className="text-xs text-green-400 mt-2 text-center"> Active streak bonus: {userProfile.streak.streakBonus.toFixed(1)}x points
                   </div>
                 )}
               </div>
@@ -687,9 +676,8 @@ export default function FlaggingInterface({
             <div className="p-6">
               {isSubmitting ? (
                 <div className="text-center py-12">
-                  <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
                   <h3 className="text-lg font-semibold text-white mb-2">Submitting Your Flag...</h3>
-                  <p className="text-gray-400">Please wait while we process your submission</p>
+                  <p className="text-sifter-text-muted">Please wait while we process your submission</p>
                   <p className="text-sm text-amber-400 mt-2">Calculating your rewards...</p>
                 </div>
               ) : (
@@ -874,18 +862,18 @@ export default function FlaggingInterface({
             {/* Footer */}
             <div className="p-6 border-t border-sifter-border bg-sifter-dark/50">
               <div className="flex justify-between items-center">
-                <div className="text-sm text-gray-400">
+                <div className="text-sm text-sifter-text-muted">
                   <div className="flex items-center gap-2">
-                    <span>🏆 Points System:</span>
+                    <span> Points System:</span>
                     <span className="text-amber-400">Quick: {MODE_CONFIGS[userData.mode].basePoints.quick} ×</span>
                     <span className="text-amber-400">Standard: {MODE_CONFIGS[userData.mode].basePoints.standard} ×</span>
                     <span className="text-amber-400">Full: {MODE_CONFIGS[userData.mode].basePoints.full} ×</span>
                   </div>
                 </div>
-                <div className="text-sm text-gray-400">
-                  {selectedTier === 'quick' && '✅ Quick flags are reviewed within 24h'}
-                  {selectedTier === 'standard' && '✅ Standard reports are reviewed within 48h'}
-                  {selectedTier === 'full' && '✅ Full donations are reviewed within 72h'}
+                <div className="text-sm text-sifter-text-muted">
+                  {selectedTier === 'quick' && 'Quick flags are reviewed within 24h'}
+                  {selectedTier === 'standard' && 'Standard reports are reviewed within 48h'}
+                  {selectedTier === 'full' && 'Full donations are reviewed within 72h'}
                 </div>
               </div>
             </div>

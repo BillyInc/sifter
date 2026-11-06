@@ -93,8 +93,7 @@ const ExportDropdown = ({ projectData, compact = false }: { projectData: Project
             <span>Exporting...</span>
           </>
         ) : (
-          <>
-            📥 Export
+          <> Export
           </>
         )}
       </button>
@@ -104,21 +103,18 @@ const ExportDropdown = ({ projectData, compact = false }: { projectData: Project
           <div className="p-1">
             <button
               onClick={() => handleExport('pdf')}
-              className="w-full text-left px-3 py-2 text-gray-300 hover:bg-blue-500/10 hover:text-blue-400 rounded text-sm transition-colors"
-            >
-              📄 Export as PDF
+              className="w-full text-left px-3 py-2 text-sifter-text hover:bg-blue-500/10 hover:text-blue-400 rounded text-sm transition-colors"
+            > Export as PDF
             </button>
             <button
               onClick={() => handleExport('json')}
-              className="w-full text-left px-3 py-2 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded text-sm transition-colors"
-            >
-              📊 Export as JSON
+              className="w-full text-left px-3 py-2 text-sifter-text hover:bg-green-500/10 hover:text-green-400 rounded text-sm transition-colors"
+            > Export as JSON
             </button>
             <button
               onClick={() => handleExport('csv')}
-              className="w-full text-left px-3 py-2 text-gray-300 hover:bg-purple-500/10 hover:text-purple-400 rounded text-sm transition-colors"
-            >
-              📈 Export as CSV
+              className="w-full text-left px-3 py-2 text-sifter-text hover:bg-purple-500/10 hover:text-purple-400 rounded text-sm transition-colors"
+            > Export as CSV
             </button>
           </div>
         </div>
@@ -603,8 +599,7 @@ export default function Home() {
       if (!selectedSubmissionId || !userEmail) return;
       
       // Update the submission with new evidence
-      setDataDonationSubmissions(prev =>
-        prev.map(submission => {
+      setDataDonationSubmissions(prev => prev.map(submission => {
           if (submission.id === selectedSubmissionId) {
             const newEvidence = evidenceItems.map(item => {
               let type: 'twitter' | 'reddit' | 'news' | 'archive' | 'blockchain' | 'telegram' | 'other' = 'other';
@@ -664,8 +659,7 @@ export default function Home() {
     const headers = Object.keys(csvData[0]);
     const csvRows = [
       headers.join(','),
-      ...csvData.map(row => 
-        headers.map(header => 
+      ...csvData.map(row => headers.map(header => 
           `"${String(row[header as keyof typeof row]).replace(/"/g, '""')}"`
         ).join(',')
       )
@@ -981,8 +975,7 @@ export default function Home() {
         completedAt: new Date()
       };
       
-      setRecentBatches(prev => 
-        prev.map(job => job.id === newJob.id ? updatedJob : job)
+      setRecentBatches(prev => prev.map(job => job.id === newJob.id ? updatedJob : job)
       );
       
       setBatchStats(prev => ({
@@ -1351,8 +1344,7 @@ export default function Home() {
             <button
               onClick={() => setError(null)}
               className="mt-1 text-xs text-red-300 hover:text-red-200"
-            >
-              Dismiss
+            > Dismiss
             </button>
           </div>
         )}
@@ -1362,7 +1354,7 @@ export default function Home() {
             <h2 className={`${compactMode ? 'text-2xl sm:text-3xl' : 'text-3xl sm:text-4xl'} font-bold text-white mb-3`}>
               {isLoggedIn && userName ? `Welcome back, ${userName}!` : getModeGreeting}
             </h2>
-            <p className={`${compactMode ? 'text-sm' : 'text-base'} text-gray-400 max-w-2xl mx-auto`}>
+            <p className={`${compactMode ? 'text-sm' : 'text-base'} text-sifter-text-muted max-w-2xl mx-auto`}>
               {getModeDescription}
             </p>
           </div>
@@ -1435,8 +1427,7 @@ export default function Home() {
                     <button
                       onClick={() => ExportService.shareAnalysis(projectData)}
                       className={`${compactMode ? 'px-3 py-1.5 text-xs' : 'px-4 py-2'} bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 rounded-lg flex items-center gap-1.5`}
-                    >
-                      Share
+                    > Share
                     </button>
                   </>
                 )}
@@ -1476,12 +1467,11 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">Analysis Failed</h3>
-              <p className="text-gray-400 mb-4">{error || 'An unexpected error occurred'}</p>
+              <p className="text-sifter-text-muted mb-4">{error || 'An unexpected error occurred'}</p>
               <button
                 onClick={handleReset}
                 className="px-5 py-2.5 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium text-sm"
-              >
-                Try Again
+              > Try Again
               </button>
             </div>
           )}
@@ -1489,7 +1479,7 @@ export default function Home() {
 
         {state === 'idle' && isLoggedIn && userMode !== 'ea-vc' && userMode !== 'individual' && userMode !== 'researcher' && (
           <div className={`text-center ${compactMode ? 'mt-6' : 'mt-12'}`}>
-            <p className="text-gray-600 text-xs mb-2">Quick demo:</p>
+            <p className="text-sifter-text-subtle text-xs mb-2">Quick demo:</p>
             <div className="flex justify-center gap-2">
               <button
                 onClick={() => {
@@ -1525,8 +1515,7 @@ export default function Home() {
                   handleSmartInputResolve(mockResult);
                 }}
                 className="text-xs text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 rounded transition-colors"
-              >
-                View REJECT example
+              > View REJECT example
               </button>
               <button
                 onClick={() => {
@@ -1562,8 +1551,7 @@ export default function Home() {
                   handleSmartInputResolve(mockResult);
                 }}
                 className="text-xs text-green-400 hover:text-green-300 bg-green-500/10 hover:bg-green-500/20 px-3 py-1.5 rounded transition-colors"
-              >
-                View PROCEED example
+              > View PROCEED example
               </button>
             </div>
           </div>
@@ -1572,20 +1560,18 @@ export default function Home() {
         {state === 'idle' && !isLoggedIn && (
           <div className={`text-center ${compactMode ? 'mt-6' : 'mt-12'}`}>
             <div className={`inline-block bg-sifter-card border border-sifter-border rounded-xl ${compactMode ? 'p-4' : 'p-6'} max-w-md mx-auto`}>
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
+              <div className="w-12 h-12 bg-sifter-blue hover:bg-sifter-blue-hover rounded-2xl flex items-center justify-center mx-auto mb-3">
                 <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">Sign in to Start Analyzing</h3>
-              <p className="text-gray-400 text-xs mb-4">
-                Login or create an account to access Sifter 1.0 and choose your workflow mode.
+              <p className="text-sifter-text-muted text-xs mb-4"> Login or create an account to access Sifter 1.0 and choose your workflow mode.
               </p>
               <button
                 onClick={() => setShowModeModal(true)}
                 className="w-full bg-sifter-blue hover:bg-sifter-blue-hover text-white py-2.5 rounded-lg font-medium text-sm transition-all"
-              >
-                Get Started
+              > Get Started
               </button>
             </div>
           </div>
@@ -1606,15 +1592,13 @@ export default function Home() {
         <div className={`flex items-center justify-between ${compactMode ? 'mb-4' : 'mb-6'}`}>
           <button
             onClick={() => setShowBatchView(true)}
-            className="flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors text-sm"
+            className="flex items-center gap-1.5 text-sifter-text-muted hover:text-white transition-colors text-sm"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to Batch Dashboard
+            </svg> Back to Batch Dashboard
           </button>
-          <div className="text-xs text-gray-500">
-            Single Project Analysis (EA/VC Mode)
+          <div className="text-xs text-sifter-text-subtle"> Single Project Analysis (EA/VC Mode)
           </div>
         </div>
         
@@ -1632,11 +1616,9 @@ export default function Home() {
 
           {state === 'idle' && (
             <div className={`text-center ${compactMode ? 'mb-6' : 'mb-8'}`}>
-              <h2 className={`${compactMode ? 'text-xl' : 'text-2xl'} font-bold text-white mb-3`}>
-                Single Project Analysis
+              <h2 className={`${compactMode ? 'text-xl' : 'text-2xl'} font-bold text-white mb-3`}> Single Project Analysis
               </h2>
-              <p className={`${compactMode ? 'text-sm' : 'text-base'} text-gray-400 max-w-2xl mx-auto`}>
-                Analyze a single project with detailed metrics for EA/VC review
+              <p className={`${compactMode ? 'text-sm' : 'text-base'} text-sifter-text-muted max-w-2xl mx-auto`}> Analyze a single project with detailed metrics for EA/VC review
               </p>
             </div>
           )}
@@ -1707,8 +1689,7 @@ export default function Home() {
                     <button
                       onClick={() => ExportService.shareAnalysis(projectData)}
                       className={`${compactMode ? 'px-3 py-1.5 text-xs' : 'px-4 py-2'} bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 rounded-lg flex items-center gap-1.5`}
-                    >
-                      Share
+                    > Share
                     </button>
                   </>
                 )}
@@ -1754,15 +1735,14 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">Analysis Failed</h3>
-              <p className="text-gray-400 mb-4">{error || 'An unexpected error occurred'}</p>
+              <p className="text-sifter-text-muted mb-4">{error || 'An unexpected error occurred'}</p>
               <button
                 onClick={() => {
                   setState('idle');
                   setError(null);
                 }}
                 className="px-5 py-2.5 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium text-sm"
-              >
-                Try Again
+              > Try Again
               </button>
             </div>
           )}
@@ -1816,13 +1796,13 @@ export default function Home() {
           <div className="min-h-screen flex items-start justify-center p-4 pt-20">
             <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-6xl w-full max-h-[80vh] overflow-y-auto">
               <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-white">Data Donation Tracking</h2>
+                <div className="flex justify-end -mt-2 -mr-2 mb-2">
                   <button
                     onClick={() => setShowTrackingDashboard(false)}
-                    className="text-gray-400 hover:text-white text-2xl"
+                    aria-label="Close"
+                    className="rounded-lg p-2 text-sifter-text-muted transition-colors hover:bg-sifter-hover hover:text-sifter-text"
                   >
-                    ✕
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
                 </div>
                 
@@ -1847,13 +1827,13 @@ export default function Home() {
           <div className="min-h-screen flex items-start justify-center p-4 pt-20">
             <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-6xl w-full max-h-[80vh] overflow-y-auto">
               <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-white">Points & Rewards</h2>
+                <div className="flex justify-end -mt-2 -mr-2 mb-2">
                   <button
                     onClick={() => setShowPointsDisplay(false)}
-                    className="text-gray-400 hover:text-white text-2xl"
+                    aria-label="Close"
+                    className="rounded-lg p-2 text-sifter-text-muted transition-colors hover:bg-sifter-hover hover:text-sifter-text"
                   >
-                    ✕
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
                 </div>
                 
@@ -1927,7 +1907,7 @@ export default function Home() {
                       setShowDisputeForm(false);
                       setSelectedEntityForDispute([]);
                     }}
-                    className="text-gray-400 hover:text-white text-2xl hover:bg-gray-800/50 rounded-lg p-2 transition-colors"
+                    className="text-sifter-text-muted hover:text-white text-2xl hover:bg-sifter-hover rounded-lg p-2 transition-colors"
                   >
                     ✕
                   </button>
@@ -1961,7 +1941,7 @@ export default function Home() {
                       setShowStandardForm(false);
                       setSelectedEntityForFlagging([]);
                     }}
-                    className="text-gray-400 hover:text-white text-2xl hover:bg-gray-800/50 rounded-lg p-2 transition-colors"
+                    className="text-sifter-text-muted hover:text-white text-2xl hover:bg-sifter-hover rounded-lg p-2 transition-colors"
                   >
                     ✕
                   </button>
@@ -1980,13 +1960,11 @@ export default function Home() {
                   />
                 ) : (
                   <div className="text-center py-12">
-                    <div className="text-4xl mb-4">🚩</div>
-                    <p className="text-gray-400 mb-4">No entity selected for flagging</p>
+                    <p className="text-sifter-text-muted mb-4">No entity selected for flagging</p>
                     <button
                       onClick={() => setShowStandardForm(false)}
                       className="px-6 py-3 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium transition-all"
-                    >
-                      Close
+                    > Close
                     </button>
                   </div>
                 )}
@@ -2010,7 +1988,7 @@ export default function Home() {
                 <h1 className="text-xl sm:text-2xl font-bold text-white">SIFTER 1.0</h1>
               </div>
               <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">Choose Your Workflow</h2>
-              <p className="text-sm sm:text-base text-gray-400">Select your primary mode to customize your experience</p>
+              <p className="text-sm sm:text-base text-sifter-text-muted">Select your primary mode to customize your experience</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
@@ -2021,13 +1999,12 @@ export default function Home() {
                   : 'border-sifter-border hover:border-blue-500/50 hover:bg-sifter-card/50'
               }`}
               onClick={() => handleModeSelect('ea-vc')}>
-                <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">🏢</div>
                 <h3 className="font-bold text-white mb-2 text-base sm:text-lg">VC/EA Mode</h3>
-                <div className="text-xs sm:text-sm text-gray-400 space-y-2">
+                <div className="text-xs sm:text-sm text-sifter-text-muted space-y-2">
                   <p>Batch processing, Pass/Flag/Reject</p>
                   <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-sifter-border/50">
-                    <p className="text-xs text-gray-500">Features:</p>
-                    <ul className="text-xs text-gray-400 mt-1 space-y-1">
+                    <p className="text-xs text-sifter-text-subtle">Features:</p>
+                    <ul className="text-xs text-sifter-text-muted mt-1 space-y-1">
                       <li>• Batch upload (100 projects)</li>
                       <li>• Quick Pass/Flag/Reject</li>
                       <li>• Export for partner handoff</li>
@@ -2044,13 +2021,12 @@ export default function Home() {
                   : 'border-sifter-border hover:border-purple-500/50 hover:bg-sifter-card/50'
               }`}
               onClick={() => handleModeSelect('researcher')}>
-                <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">🔬</div>
                 <h3 className="font-bold text-white mb-2 text-base sm:text-lg">Researcher Mode</h3>
-                <div className="text-xs sm:text-sm text-gray-400 space-y-2">
+                <div className="text-xs sm:text-sm text-sifter-text-muted space-y-2">
                   <p>Deep analysis, export data, comparisons</p>
                   <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-sifter-border/50">
-                    <p className="text-xs text-gray-500">Features:</p>
-                    <ul className="text-xs text-gray-400 mt-1 space-y-1">
+                    <p className="text-xs text-sifter-text-subtle">Features:</p>
+                    <ul className="text-xs text-sifter-text-muted mt-1 space-y-1">
                       <li>• Single deep dives</li>
                       <li>• Data export (CSV/JSON)</li>
                       <li>• Historical comparisons</li>
@@ -2067,13 +2043,12 @@ export default function Home() {
                   : 'border-sifter-border hover:border-green-500/50 hover:bg-sifter-card/50'
               }`}
               onClick={() => handleModeSelect('individual')}>
-                <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">👤</div>
                 <h3 className="font-bold text-white mb-2 text-base sm:text-lg">Individual Investor Mode</h3>
-                <div className="text-xs sm:text-sm text-gray-400 space-y-2">
+                <div className="text-xs sm:text-sm text-sifter-text-muted space-y-2">
                   <p>Simple yes/no, mobile-friendly</p>
                   <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-sifter-border/50">
-                    <p className="text-xs text-gray-500">Features:</p>
-                    <ul className="text-xs text-gray-400 mt-1 space-y-1">
+                    <p className="text-xs text-sifter-text-subtle">Features:</p>
+                    <ul className="text-xs text-sifter-text-muted mt-1 space-y-1">
                       <li>• Mobile-first interface</li>
                       <li>• Simple yes/no/maybe</li>
                       <li>• Push notifications</li>
@@ -2087,9 +2062,8 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <button
                 onClick={handleModeCancel}
-                className="px-6 sm:px-8 py-3 rounded-lg font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 transition-all order-2 sm:order-1"
-              >
-                Cancel
+                className="px-6 sm:px-8 py-3 rounded-lg font-medium bg-sifter-elevated text-sifter-text hover:bg-sifter-hover transition-all order-2 sm:order-1"
+              > Cancel
               </button>
               <button
                 onClick={handleModeConfirm}
@@ -2097,13 +2071,12 @@ export default function Home() {
                 className={`px-6 sm:px-8 py-3 rounded-lg font-medium transition-all order-1 sm:order-2 ${
                   userMode
                     ? 'bg-sifter-blue hover:bg-sifter-blue-hover text-white'
-                    : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                    : 'bg-sifter-elevated text-sifter-text-subtle cursor-not-allowed'
                 }`}
-              >
-                Continue to Login
+              > Continue to Login
               </button>
             </div>
-            <p className="text-gray-500 text-xs sm:text-sm text-center mt-4">
+            <p className="text-sifter-text-subtle text-xs sm:text-sm text-center mt-4">
               (You can change this later in Settings)
             </p>
           </div>
@@ -2122,7 +2095,7 @@ export default function Home() {
                     setShowAuthModal(false);
                     setShowModeModal(true);
                   }}
-                  className="text-gray-400 hover:text-white text-2xl"
+                  className="text-sifter-text-muted hover:text-white text-2xl"
                 >
                   ✕
                 </button>
@@ -2134,20 +2107,18 @@ export default function Home() {
                   className={`flex-1 py-3 font-medium ${
                     authTab === 'login'
                       ? 'text-blue-500 border-b-2 border-blue-500'
-                      : 'text-gray-400'
+                      : 'text-sifter-text-muted'
                   }`}
-                >
-                  Login
+                > Login
                 </button>
                 <button
                   onClick={() => setAuthTab('signup')}
                   className={`flex-1 py-3 font-medium ${
                     authTab === 'signup'
                       ? 'text-blue-500 border-b-2 border-blue-500'
-                      : 'text-gray-400'
+                      : 'text-sifter-text-muted'
                   }`}
-                >
-                  Sign Up
+                > Sign Up
                 </button>
               </div>
 
@@ -2166,7 +2137,7 @@ export default function Home() {
                 <form onSubmit={handleLogin}>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm text-gray-400 mb-2">Email</label>
+                      <label className="block text-sm text-sifter-text-muted mb-2">Email</label>
                       <input
                         id="loginEmail"
                         type="email"
@@ -2176,7 +2147,7 @@ export default function Home() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-400 mb-2">Password</label>
+                      <label className="block text-sm text-sifter-text-muted mb-2">Password</label>
                       <input
                         id="loginPassword"
                         type="password"
@@ -2192,15 +2163,13 @@ export default function Home() {
                           setShowAuthModal(false);
                           setShowModeModal(true);
                         }}
-                        className="flex-1 bg-gray-800 text-gray-300 hover:bg-gray-700 py-3 rounded-lg font-medium transition-all"
-                      >
-                        Back to Modes
+                        className="flex-1 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover py-3 rounded-lg font-medium transition-all"
+                      > Back to Modes
                       </button>
                       <button
                         type="submit"
                         className="flex-1 bg-sifter-blue hover:bg-sifter-blue-hover text-white py-3 rounded-lg font-medium transition-all"
-                      >
-                        Login
+                      > Login
                       </button>
                     </div>
                   </div>
@@ -2209,7 +2178,7 @@ export default function Home() {
                 <form onSubmit={handleSignup}>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm text-gray-400 mb-2">Full Name</label>
+                      <label className="block text-sm text-sifter-text-muted mb-2">Full Name</label>
                       <input
                         id="signupName"
                         type="text"
@@ -2219,7 +2188,7 @@ export default function Home() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-400 mb-2">Email</label>
+                      <label className="block text-sm text-sifter-text-muted mb-2">Email</label>
                       <input
                         id="signupEmail"
                         type="email"
@@ -2229,7 +2198,7 @@ export default function Home() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-400 mb-2">Password</label>
+                      <label className="block text-sm text-sifter-text-muted mb-2">Password</label>
                       <input
                         id="signupPassword"
                         type="password"
@@ -2239,7 +2208,7 @@ export default function Home() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-400 mb-2">Confirm Password</label>
+                      <label className="block text-sm text-sifter-text-muted mb-2">Confirm Password</label>
                       <input
                         id="signupConfirm"
                         type="password"
@@ -2255,15 +2224,13 @@ export default function Home() {
                           setShowAuthModal(false);
                           setShowModeModal(true);
                         }}
-                        className="flex-1 bg-gray-800 text-gray-300 hover:bg-gray-700 py-3 rounded-lg font-medium transition-all"
-                      >
-                        Back to Modes
+                        className="flex-1 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover py-3 rounded-lg font-medium transition-all"
+                      > Back to Modes
                       </button>
                       <button
                         type="submit"
                         className="flex-1 bg-sifter-blue hover:bg-sifter-blue-hover text-white py-3 rounded-lg font-medium transition-all"
-                      >
-                        Create Account
+                      > Create Account
                       </button>
                     </div>
                   </div>
@@ -2322,8 +2289,7 @@ export default function Home() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     }
-                  >
-                    Contribute
+                  > Contribute
                     {userPoints > 0 && (
                       <span className="ml-1 rounded-full bg-sifter-blue/20 px-1.5 py-0.5 text-[11px] font-semibold text-blue-300 tabular-nums">
                         {userPoints} pts
@@ -2375,8 +2341,7 @@ export default function Home() {
                     <p className="text-sm font-medium text-sifter-text truncate max-w-[140px]">{userName}</p>
                     <p className="text-xs text-sifter-text-subtle truncate max-w-[140px]">{userEmail}</p>
                   </div>
-                  <Button variant="ghost" size="sm" onClick={handleLogout}>
-                    Log out
+                  <Button variant="ghost" size="sm" onClick={handleLogout}> Log out
                   </Button>
                 </div>
               )}

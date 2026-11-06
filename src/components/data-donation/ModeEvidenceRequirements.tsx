@@ -48,13 +48,13 @@ export default function ModeEvidenceRequirements({
   const requirements = getTierRequirements();
 
   return (
-    <div className="p-4 border rounded-xl mb-4 bg-gradient-to-r from-gray-900/50 to-gray-800/50">
+    <div className="p-4 border rounded-xl mb-4 bg-sifter-dark/50">
       <div className="flex justify-between items-start mb-3">
         <div>
           <h4 className={`font-medium ${requirements.color}`}>
             {requirements.title}
           </h4>
-          <p className="text-sm text-gray-400">{requirements.description}</p>
+          <p className="text-sm text-sifter-text-muted">{requirements.description}</p>
         </div>
         <div className={`text-right ${requirements.color}`}>
           <div className="text-lg font-bold">
@@ -66,11 +66,11 @@ export default function ModeEvidenceRequirements({
       
       {/* Evidence Progress */}
       <div className="mb-3">
-        <div className="flex justify-between text-xs text-gray-400 mb-1">
+        <div className="flex justify-between text-xs text-sifter-text-muted mb-1">
           <span>Progress</span>
           <span>{currentEvidenceCount} of {minRequired}</span>
         </div>
-        <div className="w-full bg-gray-800 rounded-full h-2">
+        <div className="w-full bg-sifter-elevated rounded-full h-2">
           <div 
             className={`h-2 rounded-full transition-all ${
               hasEnoughEvidence ? 'bg-green-500' : 'bg-amber-500'
@@ -82,18 +82,18 @@ export default function ModeEvidenceRequirements({
       
       {/* Allowed Evidence Types */}
       <div className="mt-4">
-        <div className="text-sm text-gray-400 mb-2">Allowed Evidence Types:</div>
+        <div className="text-sm text-sifter-text-muted mb-2">Allowed Evidence Types:</div>
         <div className="flex flex-wrap gap-2">
           {config.allowedEvidenceTypes.slice(0, 5).map((type) => (
             <span 
               key={type}
-              className="px-2 py-1 bg-gray-800/50 text-gray-300 text-xs rounded border border-gray-700"
+              className="px-2 py-1 bg-sifter-elevated/50 text-sifter-text text-xs rounded border border-sifter-border"
             >
               {type.replace('_', ' ')}
             </span>
           ))}
           {config.allowedEvidenceTypes.length > 5 && (
-            <span className="px-2 py-1 text-gray-500 text-xs">
+            <span className="px-2 py-1 text-sifter-text-subtle text-xs">
               +{config.allowedEvidenceTypes.length - 5} more
             </span>
           )}
@@ -101,11 +101,11 @@ export default function ModeEvidenceRequirements({
       </div>
       
       {/* Mode-Specific Notes */}
-      <div className="mt-4 text-xs text-gray-400">
+      <div className="mt-4 text-xs text-sifter-text-muted">
         {mode === 'ea-vc' && (
           <>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-blue-400">🏢 VC Mode:</span>
+              <span className="text-blue-400"> VC Mode:</span>
               <span>Requires financial/legal documentation</span>
             </div>
             <div className="pl-6">
@@ -121,7 +121,7 @@ export default function ModeEvidenceRequirements({
         {mode === 'researcher' && (
           <>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-purple-400">🔬 Researcher Mode:</span>
+              <span className="text-purple-400"> Researcher Mode:</span>
               <span>Requires analytical methodology</span>
             </div>
             <div className="pl-6">
@@ -137,7 +137,7 @@ export default function ModeEvidenceRequirements({
         {mode === 'individual' && (
           <>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-green-400">👤 Individual Mode:</span>
+              <span className="text-green-400"> Individual Mode:</span>
               <span>Public evidence only</span>
             </div>
             <div className="pl-6">
@@ -153,8 +153,7 @@ export default function ModeEvidenceRequirements({
       
       {/* Warning if insufficient */}
       {!hasEnoughEvidence && currentTier !== 'quick' && (
-        <div className="mt-3 p-2 bg-amber-500/10 border border-amber-500/30 rounded text-amber-400 text-xs">
-          ⚠️ Need {minRequired - currentEvidenceCount} more evidence pieces for submission
+        <div className="mt-3 p-2 bg-amber-500/10 border border-amber-500/30 rounded text-amber-400 text-xs"> Need {minRequired - currentEvidenceCount} more evidence pieces for submission
         </div>
       )}
     </div>

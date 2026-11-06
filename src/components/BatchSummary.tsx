@@ -22,21 +22,20 @@ export default function BatchSummary({ job, onOpenBulkFlagging }: BatchSummaryPr
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="text-2xl font-bold text-white">Batch Results Summary</h2>
-          <p className="text-gray-400">
+          <p className="text-sifter-text-muted">
             {job.name} • Completed: {job.completedAt?.toLocaleDateString()}
           </p>
         </div>
         <div className="text-right">
-          <div className="text-sm text-gray-400">Processing Time</div>
+          <div className="text-sm text-sifter-text-muted">Processing Time</div>
           <div className="text-2xl font-bold text-white">{summary.processingTime} min</div>
         </div>
       </div>
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-gray-900/50 p-6 rounded-xl">
-          <div className="text-4xl mb-2">📊</div>
-          <div className="text-sm text-gray-400 mb-1">Total Scanned</div>
+        <div className="bg-sifter-dark/50 p-6 rounded-xl">
+          <div className="text-sm text-sifter-text-muted mb-1">Total Scanned</div>
           <div className="text-3xl font-bold text-white">{summary.total} projects</div>
         </div>
 
@@ -47,11 +46,9 @@ export default function BatchSummary({ job, onOpenBulkFlagging }: BatchSummaryPr
               <div className="font-semibold text-amber-400 flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-1.998-1.333-2.732 0L3.732 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                Suspicious entities detected
+                </svg> Suspicious entities detected
               </div>
-              <div className="text-sm text-gray-400 mt-1">
-                Review entities appearing in multiple rejected projects
+              <div className="text-sm text-sifter-text-muted mt-1"> Review entities appearing in multiple rejected projects
               </div>
             </div>
             <button
@@ -60,8 +57,7 @@ export default function BatchSummary({ job, onOpenBulkFlagging }: BatchSummaryPr
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
-              </svg>
-              Review Entities
+              </svg> Review Entities
             </button>
           </div>
         </div>
@@ -69,24 +65,21 @@ export default function BatchSummary({ job, onOpenBulkFlagging }: BatchSummaryPr
 
         
         <div className="bg-red-500/10 border border-red-500/30 p-6 rounded-xl">
-          <div className="text-4xl mb-2">🚫</div>
-          <div className="text-sm text-gray-400 mb-1">Reject (Don't forward)</div>
+          <div className="text-sm text-sifter-text-muted mb-1">Reject (Don't forward)</div>
           <div className="text-3xl font-bold text-red-400">
             {summary.rejected} ({getPercentage(summary.rejected)}%)
           </div>
         </div>
         
         <div className="bg-yellow-500/10 border border-yellow-500/30 p-6 rounded-xl">
-          <div className="text-4xl mb-2">⚠️</div>
-          <div className="text-sm text-gray-400 mb-1">Flag (Needs review)</div>
+          <div className="text-sm text-sifter-text-muted mb-1">Flag (Needs review)</div>
           <div className="text-3xl font-bold text-yellow-400">
             {summary.flagged} ({getPercentage(summary.flagged)}%)
           </div>
         </div>
         
         <div className="bg-green-500/10 border border-green-500/30 p-6 rounded-xl">
-          <div className="text-4xl mb-2">✅</div>
-          <div className="text-sm text-gray-400 mb-1">Pass (Forward to partner)</div>
+          <div className="text-sm text-sifter-text-muted mb-1">Pass (Forward to partner)</div>
           <div className="text-3xl font-bold text-green-400">
             {summary.passed} ({getPercentage(summary.passed)}%)
           </div>
@@ -96,67 +89,65 @@ export default function BatchSummary({ job, onOpenBulkFlagging }: BatchSummaryPr
       {/* Distribution Chart */}
       <div className="mb-8">
         <h3 className="font-medium text-white mb-4">Risk Score Distribution</h3>
-        <div className="h-8 bg-gray-900 rounded-lg overflow-hidden flex">
+        <div className="h-8 bg-sifter-dark rounded-lg overflow-hidden flex">
           <div
-            className="h-full bg-gradient-to-r from-red-600 to-red-500 flex items-center justify-center text-white text-xs font-medium"
+            className="h-full bg-red-600 flex items-center justify-center text-white text-xs font-medium"
             style={{ width: `${getPercentage(summary.rejected)}%` }}
           >
             {getPercentage(summary.rejected)}%
           </div>
           <div
-            className="h-full bg-gradient-to-r from-yellow-600 to-yellow-500 flex items-center justify-center text-black text-xs font-medium"
+            className="h-full bg-amber-600 flex items-center justify-center text-black text-xs font-medium"
             style={{ width: `${getPercentage(summary.flagged)}%` }}
           >
             {getPercentage(summary.flagged)}%
           </div>
           <div
-            className="h-full bg-gradient-to-r from-green-600 to-green-500 flex items-center justify-center text-white text-xs font-medium"
+            className="h-full bg-green-600 flex items-center justify-center text-white text-xs font-medium"
             style={{ width: `${getPercentage(summary.passed)}%` }}
           >
             {getPercentage(summary.passed)}%
           </div>
         </div>
-        <div className="flex justify-between text-xs text-gray-500 mt-2">
-          <span>🚫 Reject ({summary.rejected})</span>
-          <span>⚠️ Flag ({summary.flagged})</span>
-          <span>✅ Pass ({summary.passed})</span>
+        <div className="flex justify-between text-xs text-sifter-text-subtle mt-2">
+          <span> Reject ({summary.rejected})</span>
+          <span> Flag ({summary.flagged})</span>
+          <span> Pass ({summary.passed})</span>
         </div>
       </div>
 
       {/* Additional Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gray-900/50 p-5 rounded-xl">
-          <div className="text-sm text-gray-400 mb-2">Average Risk Score</div>
+        <div className="bg-sifter-dark/50 p-5 rounded-xl">
+          <div className="text-sm text-sifter-text-muted mb-2">Average Risk Score</div>
           <div className={`text-3xl font-bold ${
             summary.averageRiskScore >= 60 ? 'text-red-400' :
             summary.averageRiskScore >= 40 ? 'text-yellow-400' : 'text-green-400'
           }`}>
             {summary.averageRiskScore}/100
           </div>
-          <div className="text-xs text-gray-500 mt-2">
+          <div className="text-xs text-sifter-text-subtle mt-2">
             {summary.averageRiskScore >= 60 ? 'High overall risk' :
              summary.averageRiskScore >= 40 ? 'Moderate overall risk' : 'Low overall risk'}
           </div>
         </div>
         
-        <div className="bg-gray-900/50 p-5 rounded-xl">
-          <div className="text-sm text-gray-400 mb-2">Top Red Flag</div>
+        <div className="bg-sifter-dark/50 p-5 rounded-xl">
+          <div className="text-sm text-sifter-text-muted mb-2">Top Red Flag</div>
           <div className="text-2xl font-bold text-white">
             {Object.entries(summary.redFlagDistribution)
               .sort((a, b) => b[1] - a[1])[0]?.[0] || 'Unknown'}
           </div>
-          <div className="text-xs text-gray-500 mt-2">
-            Most common issue across rejected projects
+          <div className="text-xs text-sifter-text-subtle mt-2"> Most common issue across rejected projects
           </div>
         </div>
         
-        <div className="bg-gray-900/50 p-5 rounded-xl">
-          <div className="text-sm text-gray-400 mb-2">Success Rate</div>
+        <div className="bg-sifter-dark/50 p-5 rounded-xl">
+          <div className="text-sm text-sifter-text-muted mb-2">Success Rate</div>
           <div className="text-3xl font-bold text-green-400">
             {getPercentage(summary.passed)}%
           </div>
-          <div className="text-xs text-gray-500 mt-2">
-            Projects passing initial screening
+          <div className="text-xs text-sifter-text-subtle mt-2"> Projects passing initial screening
           </div>
         </div>
       </div>
@@ -172,10 +163,10 @@ export default function BatchSummary({ job, onOpenBulkFlagging }: BatchSummaryPr
                 <div key={index} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <span className="text-gray-300">{flag}</span>
+                    <span className="text-sifter-text">{flag}</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <div className="w-32 bg-gray-800 rounded-full h-2">
+                    <div className="w-32 bg-sifter-elevated rounded-full h-2">
                       <div
                         className="bg-red-500 h-2 rounded-full"
                         style={{ width: `${(count / summary.rejected) * 100}%` }}

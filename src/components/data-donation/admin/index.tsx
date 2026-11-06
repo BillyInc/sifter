@@ -137,8 +137,7 @@ export default function AdminDashboardPage() {
       setStats((prev: AdminStats) => ({ ...prev, totalPending: prev.totalPending - 1 }));
     } else if (action.type === 'assign') {
       // Mark as under review
-      setSubmissions(prev => prev.map(s => 
-        s.id === action.submissionId 
+      setSubmissions(prev => prev.map(s => s.id === action.submissionId 
           ? { ...s, status: 'under-review', assignedTo: 'Current Admin' }
           : s
       ));
@@ -177,7 +176,6 @@ export default function AdminDashboardPage() {
         {isLoading && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="bg-sifter-card border border-sifter-border rounded-xl p-8">
-              <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
               <p className="text-white text-center">Processing action...</p>
             </div>
           </div>

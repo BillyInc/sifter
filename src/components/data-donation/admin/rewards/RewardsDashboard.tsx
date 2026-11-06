@@ -9,10 +9,10 @@ export default function RewardsDashboard() {
   const demoData = {
     totalPoints: 1250,
     badges: [
-      { name: 'First Flag', icon: '🚩', earned: true },
-      { name: 'Evidence Collector', icon: '📚', earned: true },
-      { name: 'Dispute Resolver', icon: '⚖️', earned: false },
-      { name: 'Top Contributor', icon: '🏆', earned: false },
+      { name: 'First Flag', icon: '', earned: true },
+      { name: 'Evidence Collector', icon: '', earned: true },
+      { name: 'Dispute Resolver', icon: '', earned: false },
+      { name: 'Top Contributor', icon: '', earned: false },
     ],
     leaderboard: [
       { rank: 1, name: 'CryptoVigilante', points: 4500 },
@@ -32,14 +32,14 @@ export default function RewardsDashboard() {
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold text-white">Rewards & Gamification</h2>
-        <p className="text-gray-400">Incentivize participation through points and badges</p>
+        <p className="text-sifter-text-muted">Incentivize participation through points and badges</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
           <div className="text-3xl font-bold text-yellow-400">{demoData.totalPoints}</div>
-          <div className="text-gray-400">Your Points</div>
+          <div className="text-sifter-text-muted">Your Points</div>
           <div className="text-sm text-yellow-400 mt-2">Top 15% of contributors</div>
         </div>
         
@@ -47,13 +47,13 @@ export default function RewardsDashboard() {
           <div className="text-3xl font-bold text-blue-400">
             {demoData.badges.filter(b => b.earned).length}
           </div>
-          <div className="text-gray-400">Badges Earned</div>
+          <div className="text-sifter-text-muted">Badges Earned</div>
           <div className="text-sm text-blue-400 mt-2">{4 - demoData.badges.filter(b => b.earned).length} more to unlock</div>
         </div>
         
         <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
           <div className="text-3xl font-bold text-purple-400">4th</div>
-          <div className="text-gray-400">Leaderboard Rank</div>
+          <div className="text-sifter-text-muted">Leaderboard Rank</div>
           <div className="text-sm text-purple-400 mt-2">1750 points to next rank</div>
         </div>
       </div>
@@ -67,7 +67,7 @@ export default function RewardsDashboard() {
             className={`px-4 py-3 -mb-px font-medium ${
               activeTab === tab
                 ? 'border-b-2 border-blue-500 text-blue-400'
-                : 'text-gray-400 hover:text-gray-300'
+                : 'text-sifter-text-muted hover:text-sifter-text'
             }`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -85,11 +85,11 @@ export default function RewardsDashboard() {
                 <div key={idx} className="flex justify-between items-center p-3 border border-sifter-border rounded-lg">
                   <div>
                     <div className="text-white">{reward.description}</div>
-                    <div className="text-sm text-gray-400">{reward.type}</div>
+                    <div className="text-sm text-sifter-text-muted">{reward.type}</div>
                   </div>
                   <div className="text-right">
                     <div className="text-yellow-400 font-medium">+{reward.points} points</div>
-                    <div className="text-xs text-gray-500">2 hours ago</div>
+                    <div className="text-xs text-sifter-text-subtle">2 hours ago</div>
                   </div>
                 </div>
               ))}
@@ -100,19 +100,19 @@ export default function RewardsDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="border border-sifter-border rounded-lg p-4">
                   <div className="text-green-400 font-medium mb-1">Submit Evidence</div>
-                  <div className="text-sm text-gray-400">50-200 points per verified submission</div>
+                  <div className="text-sm text-sifter-text-muted">50-200 points per verified submission</div>
                 </div>
                 <div className="border border-sifter-border rounded-lg p-4">
                   <div className="text-blue-400 font-medium mb-1">Verify Links</div>
-                  <div className="text-sm text-gray-400">10-50 points per link verification</div>
+                  <div className="text-sm text-sifter-text-muted">10-50 points per link verification</div>
                 </div>
                 <div className="border border-sifter-border rounded-lg p-4">
                   <div className="text-purple-400 font-medium mb-1">Review Submissions</div>
-                  <div className="text-sm text-gray-400">100-300 points per review</div>
+                  <div className="text-sm text-sifter-text-muted">100-300 points per review</div>
                 </div>
                 <div className="border border-sifter-border rounded-lg p-4">
                   <div className="text-yellow-400 font-medium mb-1">Gitcoin Grants</div>
-                  <div className="text-sm text-gray-400">Convert points to grants quarterly</div>
+                  <div className="text-sm text-sifter-text-muted">Convert points to grants quarterly</div>
                 </div>
               </div>
             </div>
@@ -131,8 +131,8 @@ export default function RewardsDashboard() {
                 }`}>
                   <div className="text-3xl mb-2">{badge.icon}</div>
                   <div className="font-medium text-white mb-1">{badge.name}</div>
-                  <div className={`text-xs ${badge.earned ? 'text-green-400' : 'text-gray-500'}`}>
-                    {badge.earned ? 'Earned ✓' : 'Locked 🔒'}
+                  <div className={`text-xs ${badge.earned ? 'text-green-400' : 'text-sifter-text-subtle'}`}>
+                    {badge.earned ? 'Earned ✓' : 'Locked '}
                   </div>
                 </div>
               ))}
@@ -153,22 +153,22 @@ export default function RewardsDashboard() {
                   <div className="flex items-center gap-4">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                       user.rank === 1 ? 'bg-yellow-500/20 text-yellow-400' :
-                      user.rank === 2 ? 'bg-gray-500/20 text-gray-400' :
+                      user.rank === 2 ? 'bg-sifter-elevated text-sifter-text-muted' :
                       user.rank === 3 ? 'bg-amber-500/20 text-amber-400' :
-                      'bg-sifter-dark text-gray-400'
+                      'bg-sifter-dark text-sifter-text-muted'
                     }`}>
                       {user.rank}
                     </div>
                     <div>
                       <div className="font-medium text-white">{user.name}</div>
-                      <div className="text-sm text-gray-400">
+                      <div className="text-sm text-sifter-text-muted">
                         {user.points.toLocaleString()} points
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
                     <div className="text-yellow-400 font-medium">Top {user.rank === 1 ? '1%' : user.rank === 2 ? '3%' : '5%'}</div>
-                    <div className="text-xs text-gray-500">Active contributor</div>
+                    <div className="text-xs text-sifter-text-subtle">Active contributor</div>
                   </div>
                 </div>
               ))}
@@ -181,14 +181,11 @@ export default function RewardsDashboard() {
       <div className="border border-sifter-border rounded-xl p-6">
         <h3 className="font-medium text-white mb-4">Quick Actions</h3>
         <div className="flex gap-4">
-          <button className="px-4 py-2 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg">
-            Claim Gitcoin Grant
+          <button className="px-4 py-2 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg"> Claim Gitcoin Grant
           </button>
-          <button className="px-4 py-2 bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 rounded-lg">
-            Invite Friends (+100 pts)
+          <button className="px-4 py-2 bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 rounded-lg"> Invite Friends (+100 pts)
           </button>
-          <button className="px-4 py-2 bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border border-purple-500/30 rounded-lg">
-            View Reward History
+          <button className="px-4 py-2 bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border border-purple-500/30 rounded-lg"> View Reward History
           </button>
         </div>
       </div>

@@ -203,12 +203,12 @@ const generateModeSpecificData = (projectName: string, mode: BlitzMode, riskScor
         age: `${Math.floor(Math.random() * 10)} min ${Math.floor(Math.random() * 60)} sec`,
         chain: detectedChain,
         volumeSpike: `${Math.floor(Math.random() * 800) + 100}% in 2min`,
-        contractSafety: riskScore >= 70 ? 'CRITICAL ⚠️' : 'MODERATE',
-        mintAuthority: 'REVOKED ✅',
-        freezeAuthority: 'REVOKED ✅',
-        lpLocked: riskScore >= 80 ? 'NO (0 minutes) 🚨 DANGER' : riskScore >= 50 ? 'PARTIAL (30 days) ⚠️' : 'YES (6 months) ✅',
-        taxSettings: riskScore >= 75 ? 'HIGH TAX (15%+) ⚠️' : 'REASONABLE (<10%) ✅',
-        proxyContract: riskScore >= 65 ? 'YES (UPGRADEABLE) ⚠️' : 'NO (IMMUTABLE) ✅',
+        contractSafety: riskScore >= 70 ? 'CRITICAL ' : 'MODERATE',
+        mintAuthority: 'REVOKED ',
+        freezeAuthority: 'REVOKED ',
+        lpLocked: riskScore >= 80 ? 'NO (0 minutes)  DANGER' : riskScore >= 50 ? 'PARTIAL (30 days) ' : 'YES (6 months) ',
+        taxSettings: riskScore >= 75 ? 'HIGH TAX (15%+) ' : 'REASONABLE (<10%) ',
+        proxyContract: riskScore >= 65 ? 'YES (UPGRADEABLE) ' : 'NO (IMMUTABLE) ',
         networkStructure: {
           totalAccounts: Math.floor(Math.random() * 20) + 10,
           clustersDetected: Math.floor(Math.random() * 3) + 1,
@@ -239,7 +239,7 @@ const generateModeSpecificData = (projectName: string, mode: BlitzMode, riskScor
                  riskScore >= 60 ? 'HIGH RISK - SUSPECTED PUMP' : 
                  riskScore >= 40 ? 'MODERATE RISK - MONITOR CLOSELY' : 'LOW RISK - NATURAL GROWTH',
         criticalIssues: riskScore >= 70 ? [
-          'No LP lock = Instant dump capability 🚨',
+          'No LP lock = Instant dump capability ',
           'Insider whale coordination detected',
           'Professional gang operation pattern',
           'Exit liquidity insufficient'
@@ -259,7 +259,7 @@ const generateModeSpecificData = (projectName: string, mode: BlitzMode, riskScor
         currentPrice: `$${(Math.random() * 0.001).toFixed(5)}`,
         ath: `$${(Math.random() * 0.002).toFixed(5)}`,
         volume: `$${(Math.random() * 5).toFixed(1)}M`,
-        volumeTrend: riskScore >= 60 ? 'Declining ⚠️' : 'Stable or Growing',
+        volumeTrend: riskScore >= 60 ? 'Declining ' : 'Stable or Growing',
         
         communityHealth: {
           messageTimingEntropy: (0.5 + Math.random() * 0.4).toFixed(2),
@@ -279,7 +279,7 @@ const generateModeSpecificData = (projectName: string, mode: BlitzMode, riskScor
             founderCentrality: (0.3 + Math.random() * 0.2).toFixed(2),
             promoterCentrality: (0.2 + Math.random() * 0.2).toFixed(2)
           },
-          trend: riskScore >= 60 ? '⚠️ Deteriorating' : '✅ Stable or Improving',
+          trend: riskScore >= 60 ? 'Deteriorating' : 'Stable or Improving',
           promoterInfiltration: `${Math.floor(Math.random() * 20)}% increase`,
           communitySegmentation: riskScore >= 65 ? 'Beginning' : 'Not detected'
         },
@@ -302,7 +302,7 @@ const generateModeSpecificData = (projectName: string, mode: BlitzMode, riskScor
             priceQuestions: `${Math.floor(Math.random() * 40) + 20}% answered`,
             responseRate: `${Math.floor(Math.random() * 40) + 40}%`
           },
-          activityTrend: 'Stable ✅',
+          activityTrend: 'Stable ',
           githubCommits: riskScore >= 70 ? 'Stopped' : 'Continuing'
         },
         
@@ -379,7 +379,7 @@ const generateModeSpecificData = (projectName: string, mode: BlitzMode, riskScor
         metrics: metrics.map(m => ({
           ...m,
           points: (m.score * m.weight / 100).toFixed(2),
-          status: m.score >= 70 ? '🚨' : m.score >= 50 ? '⚠️' : '✅',
+          status: m.score >= 70 ? '' : m.score >= 50 ? '' : '',
           breakdown: generateMetricBreakdown(m.key, m.score, detectedChain)
         })),
         
@@ -576,7 +576,7 @@ export default function IndividualDashboard({
         id: '1',
         name: 'First Scan',
         description: 'Completed first project scan',
-        icon: '🔍',
+        icon: '',
         earnedAt: new Date('2024-01-16').toISOString(),
         rarity: 'common',
         category: 'submission',
@@ -586,7 +586,7 @@ export default function IndividualDashboard({
         id: '2',
         name: 'Week Streak',
         description: '7-day scanning streak',
-        icon: '🔥',
+        icon: '',
         earnedAt: new Date('2024-01-22').toISOString(),
         rarity: 'uncommon',
         category: 'consistency',
@@ -980,7 +980,7 @@ export default function IndividualDashboard({
     };
     
     return (
-      <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-sm ${colors[verdict]}`}>
+      <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-sm ${colors[verdict]}`}>
         <span className="w-1.5 h-1.5 rounded-full bg-current" aria-hidden="true" />
         <span className="font-bold">{score}/100</span>
         <span className="text-xs">{verdict.toUpperCase()}</span>
@@ -1000,15 +1000,13 @@ export default function IndividualDashboard({
       return (
         <div className="text-center py-12">
           <div className="inline-block">
-            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
             <p className="text-white">
                {isProjectName ? 'Analyzing Project...' : 
    `Running ${selectedBlitzMode === 'hyper' ? 'Hyper' : 
              selectedBlitzMode === 'momentum' ? 'Momentum' : 'Deep'}-Blitz Analysis...`}
             </p>
             {detectedChain !== 'unknown' && (
-              <p className="text-sm text-gray-400 mt-2">
-                Scanning on {CHAIN_INFO[detectedChain]?.name || detectedChain} network
+              <p className="text-sm text-sifter-text-muted mt-2"> Scanning on {CHAIN_INFO[detectedChain]?.name || detectedChain} network
               </p>
             )}
           </div>
@@ -1032,8 +1030,7 @@ export default function IndividualDashboard({
               <button
                 onClick={resetAnalysis}
                 className="px-6 py-3 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium transition-colors"
-              >
-                Check another project
+              > Check another project
               </button>
             </div>
           </div>
@@ -1073,15 +1070,14 @@ export default function IndividualDashboard({
         <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-white mb-2">Check a Project</h2>
-            <p className="text-gray-400">
-              Is this crypto project safe? Get your answer in 90 seconds.
+            <p className="text-sifter-text-muted"> Is this crypto project safe? Get your answer in 90 seconds.
             </p>
           </div>
           
           <SmartInputParser onResolve={handleSmartInputResolve} />
 
           <div className="mt-6">
-            <p className="text-sm text-gray-400 mb-3">Try these examples:</p>
+            <p className="text-sm text-sifter-text-muted mb-3">Try these examples:</p>
             <div className="flex flex-wrap gap-2">
               {['@moonrocket_6', 'discord.gg/crypte', 'github.com/project', 'project.com'].map((example, index) => (
                 <button
@@ -1148,7 +1144,7 @@ export default function IndividualDashboard({
                     
                     handleSmartInputResolve(result);
                   }}
-                  className="px-3 py-1.5 text-sm bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg transition-all"
+                  className="px-3 py-1.5 text-sm bg-sifter-elevated hover:bg-sifter-hover text-sifter-text rounded-lg transition-all"
                 >
                   {example}
                 </button>
@@ -1186,13 +1182,12 @@ export default function IndividualDashboard({
                     {detectedChain}
                   </span>
                 </div>
-                <p className="text-sm text-gray-400">
-                  Analyzing token data on {CHAIN_INFO[detectedChain]?.name || detectedChain} network...
+                <p className="text-sm text-sifter-text-muted"> Analyzing token data on {CHAIN_INFO[detectedChain]?.name || detectedChain} network...
                   {detectedChain === 'solana' && ' (Ultra-fast chain)'}
                   {detectedChain === 'base' && ' (Memecoin ecosystem)'}
                   {detectedChain === 'ethereum' && ' (Mainnet)'}
                 </p>
-                <div className="w-full bg-gray-800 rounded-full h-1.5 mt-2 overflow-hidden">
+                <div className="w-full bg-sifter-elevated rounded-full h-1.5 mt-2 overflow-hidden">
                   <div className="h-1.5 rounded-full animate-pulse"
                        style={{ 
                          width: '80%',
@@ -1217,8 +1212,7 @@ export default function IndividualDashboard({
                    detectedChain !== 'unknown' ? `${CHAIN_INFO[detectedChain]?.name} Token` : 'New Token'} Detected
                 </h3>
                 {detectedChain !== 'unknown' && (
-                  <p className="text-sm text-gray-400 mt-1">
-                    Scanning on {CHAIN_INFO[detectedChain]?.name} network
+                  <p className="text-sm text-sifter-text-muted mt-1"> Scanning on {CHAIN_INFO[detectedChain]?.name} network
                     {detectedChain === 'solana' && ' • Ultra-fast'}
                     {detectedChain === 'base' && ' • Memecoin hub'}
                   </p>
@@ -1236,7 +1230,7 @@ export default function IndividualDashboard({
                 }`}
               >
                 <h4 className="font-bold text-white text-lg">Hyper-Blitz</h4>
-                <p className="text-sm text-gray-400 mt-2 mb-3">
+                <p className="text-sm text-sifter-text-muted mt-2 mb-3">
                   {detectedChain === 'solana' ? '3–5 seconds' :
                    detectedChain === 'base' ? '5–8 seconds' :
                    '5–10 seconds'} • Ultra-fast scan
@@ -1270,35 +1264,35 @@ export default function IndividualDashboard({
                 onClick={() => performAnalysis(inputValue, 'momentum')}
                 className={`p-6 rounded-lg border-2 transition-all ${
                   selectedBlitzMode === 'momentum'
-                    ? 'border-purple-500 bg-purple-500/10'
-                    : 'border-sifter-border hover:border-purple-500/50'
+                    ? 'border-sifter-blue bg-sifter-blue/10'
+                    : 'border-sifter-border hover:border-sifter-border-strong'
                 }`}
               >
                                 <h4 className="font-bold text-white text-lg">Momentum-Blitz</h4>
-                <p className="text-sm text-gray-400 mt-2 mb-3">
+                <p className="text-sm text-sifter-text-muted mt-2 mb-3">
                   {detectedChain === 'solana' ? '8–15 seconds' :
                    detectedChain === 'base' ? '15–30 seconds' :
                    '30–90 seconds'} • Active trading analysis
                 </p>
                 <div className="text-xs text-white space-y-1.5 mb-3 text-left">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-purple-400">✓</span>
+                    <span className="text-blue-300">✓</span>
                     <span>6 Key Metrics: Engagement, Hype, Focus</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-purple-400">✓</span>
+                    <span className="text-blue-300">✓</span>
                     <span>Network Evolution Tracking</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-purple-400">✓</span>
+                    <span className="text-blue-300">✓</span>
                     <span>Community Health Assessment</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-purple-400">✓</span>
+                    <span className="text-blue-300">✓</span>
                     <span>Promoter Infiltration Detection</span>
                   </div>
                 </div>
-                <div className="mt-3 text-xs text-purple-400">
+                <div className="mt-3 text-xs text-blue-300">
                   {detectedChain === 'solana' && '✓ Active trading analysis'}
                   {detectedChain === 'base' && '✓ Trending tokens focus'}
                 </div>
@@ -1314,7 +1308,7 @@ export default function IndividualDashboard({
                 }`}
               >
                 <h4 className="font-bold text-white text-lg">Deep-Blitz</h4>
-                <p className="text-sm text-gray-400 mt-2 mb-3">
+                <p className="text-sm text-sifter-text-muted mt-2 mb-3">
                   {detectedChain === 'solana' ? '30–60 seconds' :
                    detectedChain === 'base' ? '45–90 seconds' :
                    '2–5 minutes'} • Comprehensive analysis
@@ -1355,7 +1349,7 @@ export default function IndividualDashboard({
                         }}>
                     {getChainIcon(detectedChain)} {CHAIN_INFO[detectedChain]?.name}
                   </span>
-                  <span className="text-gray-400">
+                  <span className="text-sifter-text-muted">
                     {detectedChain === 'solana' && 'Solana tokens are typically fast-moving with rapid price action.'}
                     {detectedChain === 'base' && 'Base is becoming a hub for memecoins with lower fees.'}
                     {detectedChain === 'ethereum' && 'Ethereum tokens often have more established projects.'}
@@ -1377,13 +1371,12 @@ export default function IndividualDashboard({
               <button
                 onClick={() => setActiveTab('scans')}
                 className="text-sm text-blue-400 hover:text-blue-300 transition-all"
-              >
-                View All →
+              > View All →
               </button>
             </div>
             <div className="space-y-3">
               {recentScans.slice(0, 3).map((scan) => (
-                <div key={scan.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-900/50 hover:bg-gray-900 transition-all">
+                <div key={scan.id} className="flex items-center justify-between p-3 rounded-lg bg-sifter-dark/50 hover:bg-sifter-dark transition-all">
                   <div className="flex items-center gap-3">
                     <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
                       scan.verdict === 'reject' ? 'bg-red-400' :
@@ -1391,7 +1384,7 @@ export default function IndividualDashboard({
                     }`} aria-hidden="true" />
                     <div>
                       <h4 className="font-medium text-white text-sm">{scan.projectName}</h4>
-                      <p className="text-xs text-gray-400">{scan.scannedAt.toLocaleDateString()}</p>
+                      <p className="text-xs text-sifter-text-muted">{scan.scannedAt.toLocaleDateString()}</p>
                     </div>
                   </div>
                   <ScoreBadge score={scan.riskScore} verdict={scan.verdict} />
@@ -1399,7 +1392,7 @@ export default function IndividualDashboard({
               ))}
               {recentScans.length === 0 && (
                 <div className="text-center py-4">
-                  <p className="text-gray-400 text-sm">No scans yet</p>
+                  <p className="text-sifter-text-muted text-sm">No scans yet</p>
                 </div>
               )}
             </div>
@@ -1408,21 +1401,21 @@ export default function IndividualDashboard({
           <div className="bg-sifter-card border border-sifter-border rounded-xl p-5">
             <h3 className="font-bold text-white text-lg mb-4">Quick Stats</h3>
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-900/30 rounded-lg p-4 text-center">
+              <div className="bg-sifter-dark/30 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-white mb-1">{watchlist.length}</div>
-                <div className="text-xs text-gray-400">Watchlist Items</div>
+                <div className="text-xs text-sifter-text-muted">Watchlist Items</div>
               </div>
-              <div className="bg-gray-900/30 rounded-lg p-4 text-center">
+              <div className="bg-sifter-dark/30 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-white mb-1">{recentScans.length}</div>
-                <div className="text-xs text-gray-400">Total Scans</div>
+                <div className="text-xs text-sifter-text-muted">Total Scans</div>
               </div>
-              <div className="bg-gray-900/30 rounded-lg p-4 text-center">
+              <div className="bg-sifter-dark/30 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-white mb-1">{userProfile.availablePoints}</div>
-                <div className="text-xs text-gray-400">Points</div>
+                <div className="text-xs text-sifter-text-muted">Points</div>
               </div>
-              <div className="bg-gray-900/30 rounded-lg p-4 text-center">
+              <div className="bg-sifter-dark/30 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-white mb-1">{userProfile.currentTier}</div>
-                <div className="text-xs text-gray-400">Your Tier</div>
+                <div className="text-xs text-sifter-text-muted">Your Tier</div>
               </div>
             </div>
           </div>
@@ -1599,16 +1592,16 @@ export default function IndividualDashboard({
     return (
       <div className="animate-fadeIn" style={{ animationDelay: `${index * 50}ms` }}>
         <div className="flex items-center justify-between mb-1">
-          <span className="text-xs text-gray-300">{metric.name}</span>
+          <span className="text-xs text-sifter-text">{metric.name}</span>
           <span className="text-xs font-semibold">{value}/100</span>
         </div>
-        <div className="w-full bg-gray-800 rounded-full h-1.5 overflow-hidden">
+        <div className="w-full bg-sifter-elevated rounded-full h-1.5 overflow-hidden">
           <div 
             className={`h-full rounded-full transition-all duration-500 ${color}`}
             style={{ width }}
           />
         </div>
-        <div className="flex justify-between text-xs text-gray-500 mt-1">
+        <div className="flex justify-between text-xs text-sifter-text-subtle mt-1">
           <span>Low</span>
           <span>Medium</span>
           <span>High</span>
@@ -1621,7 +1614,7 @@ export default function IndividualDashboard({
     <div className="animate-fadeIn">
       <div className="mb-4">
         <h2 className="text-lg font-bold text-white mb-1">Your Watchlist</h2>
-        <p className="text-xs text-gray-400">Projects you're actively monitoring</p>
+        <p className="text-xs text-sifter-text-muted">Projects you're actively monitoring</p>
       </div>
       
       {watchlist.length > 0 ? (
@@ -1641,7 +1634,7 @@ export default function IndividualDashboard({
                       setInternalWatchlist(prev => prev.filter(w => w.projectId !== item.projectId));
                     }
                   }}
-                  className="text-gray-500 hover:text-red-400 transition-all hover:scale-110 p-1 ml-2"
+                  className="text-sifter-text-subtle hover:text-red-400 transition-all p-1 ml-2"
                 >
                   ✕
                 </button>
@@ -1656,9 +1649,8 @@ export default function IndividualDashboard({
                     performAnalysis(item.projectName, 'deep', false, true); // Mark as project name
                     setActiveTab('analyze');
                   }}
-                  className="px-2.5 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg text-xs transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1.5"
-                >
-                  Rescan
+                  className="px-2.5 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg text-xs transition-all hover:scale-[1.02] flex items-center justify-center gap-1.5"
+                > Rescan
                 </button>
                 <button
                   onClick={() => {
@@ -1668,9 +1660,8 @@ export default function IndividualDashboard({
                     setDetectedChain('unknown');
                     performAnalysis(item.projectName, 'deep', false, true); // Mark as project name
                   }}
-                  className="px-2.5 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-xs transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1.5"
-                >
-                  Details
+                  className="px-2.5 py-1.5 bg-sifter-elevated hover:bg-sifter-hover text-sifter-text rounded-lg text-xs transition-all hover:scale-[1.02] flex items-center justify-center gap-1.5"
+                > Details
                 </button>
               </div>
             </div>
@@ -1679,12 +1670,11 @@ export default function IndividualDashboard({
       ) : (
         <div className="text-center py-8 bg-sifter-card border border-sifter-border rounded-xl">
                     <h3 className="text-lg font-bold text-white mb-2">Watchlist Empty</h3>
-          <p className="text-sm text-gray-400 mb-4">Add projects to track their risk scores over time.</p>
+          <p className="text-sm text-sifter-text-muted mb-4">Add projects to track their risk scores over time.</p>
           <button
             onClick={() => setActiveTab('analyze')}
-            className="px-4 py-2.5 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95"
-          >
-            Analyze a Project
+            className="px-4 py-2.5 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg text-sm font-medium transition-all"
+          > Analyze a Project
           </button>
         </div>
       )}
@@ -1695,7 +1685,7 @@ export default function IndividualDashboard({
     <div className="animate-fadeIn">
       <div className="mb-4">
         <h2 className="text-lg font-bold text-white mb-1">Recent Scans</h2>
-        <p className="text-xs text-gray-400">History of all analyzed projects</p>
+        <p className="text-xs text-sifter-text-muted">History of all analyzed projects</p>
       </div>
       
       <div className="space-y-3">
@@ -1710,10 +1700,10 @@ export default function IndividualDashboard({
                 <div className="min-w-0">
                   <h3 className="font-bold text-white text-sm truncate">{scan.projectName}</h3>
                   <div className="flex items-center gap-2 mt-1">
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-sifter-text-muted">
                       {scan.scannedAt.toLocaleDateString()}
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-sifter-text-subtle">
                       • {Math.round(scan.processingTime / 1000)}s
                     </div>
                   </div>
@@ -1730,9 +1720,8 @@ export default function IndividualDashboard({
                     setDetectedChain('unknown');
                     performAnalysis(scan.projectName, 'deep', false, true); // Mark as project name
                   }}
-                  className="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg text-xs transition-all hover:scale-105 active:scale-95"
-                >
-                  Rescan
+                  className="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg text-xs transition-all"
+                > Rescan
                 </button>
               </div>
             </div>
@@ -1746,7 +1735,7 @@ export default function IndividualDashboard({
     <div className="animate-fadeIn">
       <div className="mb-4">
         <h2 className="text-lg font-bold text-white mb-1">Learn & Educate</h2>
-        <p className="text-xs text-gray-400">Knowledge to protect your investments</p>
+        <p className="text-xs text-sifter-text-muted">Knowledge to protect your investments</p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1770,15 +1759,16 @@ export default function IndividualDashboard({
                 }`}
               >
                 <div className="flex items-start gap-2">
-                  <span className={`text-lg ${
-                    flag.severity === 'critical' ? 'text-red-400' :
-                    flag.severity === 'high' ? 'text-red-400' : 'text-yellow-400'
+                  <span className={`mt-0.5 inline-flex flex-shrink-0 items-center rounded-full border px-2 py-0.5 text-xs font-medium ${
+                    flag.severity === 'critical' || flag.severity === 'high'
+                      ? 'bg-red-500/15 text-red-300 border-red-500/30'
+                      : 'bg-amber-500/15 text-amber-300 border-amber-500/30'
                   }`}>
                     {flag.severity === 'critical' ? 'Critical' : 'Warning'}
                   </span>
                   <div>
                     <h4 className="font-bold text-white text-sm">{flag.title}</h4>
-                    <p className="text-xs text-gray-300 mt-0.5">{flag.desc}</p>
+                    <p className="text-xs text-sifter-text mt-0.5">{flag.desc}</p>
                   </div>
                 </div>
               </div>
@@ -1787,14 +1777,13 @@ export default function IndividualDashboard({
         </div>
         
         <div className="space-y-4">
-          <div className="bg-gradient-to-br from-blue-500/10 to-cyan-600/10 border border-blue-500/20 rounded-xl p-5">
+          <div className="bg-sifter-elevated border border-blue-500/20 rounded-xl p-5">
             <h3 className="font-bold text-white text-sm mb-2">Risk Assessment Quiz</h3>
-            <p className="text-xs text-gray-400 mb-4">Test your scam detection skills</p>
+            <p className="text-xs text-sifter-text-muted mb-4">Test your scam detection skills</p>
             <button
               onClick={() => setShowQuiz(true)}
-              className="px-4 py-2.5 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg text-sm font-medium transition-all hover:scale-105 active:scale-95 w-full"
-            >
-              Start Quiz
+              className="px-4 py-2.5 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg text-sm font-medium transition-all w-full"
+            > Start Quiz
             </button>
           </div>
           
@@ -1802,13 +1791,13 @@ export default function IndividualDashboard({
             <h3 className="font-bold text-white mb-3 text-sm">Quick Tips</h3>
             <ul className="space-y-2">
               {[
-                '✅ Always verify team identities',
-                '✅ Check GitHub for original code',
-                '✅ Review token lockup schedules',
-                '✅ Analyze community engagement',
-                '✅ Watch for unrealistic promises'
+                'Always verify team identities',
+                'Check GitHub for original code',
+                'Review token lockup schedules',
+                'Analyze community engagement',
+                'Watch for unrealistic promises'
               ].map((tip, i) => (
-                <li key={i} className="flex items-center gap-2 text-sm text-gray-300">
+                <li key={i} className="flex items-center gap-2 text-sm text-sifter-text">
                   <span className="text-green-400">✓</span>
                   {tip}
                 </li>
@@ -1821,20 +1810,20 @@ export default function IndividualDashboard({
       {/* Quiz Modal */}
       {showQuiz && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-900 backdrop-blur-sm border border-sifter-border rounded-xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+          <div className="bg-sifter-dark backdrop-blur-sm border border-sifter-border rounded-xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
             <h3 className="text-xl font-bold text-white mb-4">Risk Assessment Quiz</h3>
             
             {!quizCompleted ? (
               <div className="space-y-4">
-                <p className="text-gray-300">Test your scam detection knowledge!</p>
+                <p className="text-sifter-text">Test your scam detection knowledge!</p>
                 <div className="space-y-3">
-                  <div className="p-3 bg-gray-800 rounded-lg">
+                  <div className="p-3 bg-sifter-elevated rounded-lg">
                     <p className="text-white mb-2">1. A project promises guaranteed 10x returns in 30 days. This is:</p>
                     <div className="space-y-1.5">
                       {['A safe investment', 'A moderate risk', 'A major red flag'].map((option, i) => (
                         <label key={i} className="flex items-center gap-2 cursor-pointer">
                           <input type="radio" name="q1" className="accent-blue-500" />
-                          <span className="text-gray-300">{option}</span>
+                          <span className="text-sifter-text">{option}</span>
                         </label>
                       ))}
                     </div>
@@ -1848,17 +1837,15 @@ export default function IndividualDashboard({
                     setShowQuiz(false);
                   }}
                   className="w-full px-4 py-2.5 bg-sifter-blue text-white rounded-lg"
-                >
-                  Complete Quiz (Demo)
+                > Complete Quiz (Demo)
                 </button>
               </div>
             ) : null}
             
             <button
               onClick={() => setShowQuiz(false)}
-              className="mt-4 w-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg"
-            >
-              Close
+              className="mt-4 w-full px-4 py-2 bg-sifter-elevated hover:bg-sifter-hover text-sifter-text rounded-lg"
+            > Close
             </button>
           </div>
         </div>
@@ -1900,8 +1887,7 @@ export default function IndividualDashboard({
       }));
       
       if (reward.quantityRemaining !== undefined) {
-        setRewards((prev: Reward[]) => prev.map(r => 
-          r.id === rewardId 
+        setRewards((prev: Reward[]) => prev.map(r => r.id === rewardId 
             ? { ...r, quantityRemaining: (r.quantityRemaining || 1) - 1 }
             : r
         ));
@@ -1922,29 +1908,24 @@ export default function IndividualDashboard({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-30">
         <div>
-          <h1 className="text-xl font-bold text-white">
-            Welcome, {userName}
+          <h1 className="text-xl font-bold text-white"> Welcome, {userName}
           </h1>
-          <p className="text-xs text-gray-400">13-metric risk analysis • Multi-chain support</p>
+          <p className="text-xs text-sifter-text-muted">13-metric risk analysis • Multi-chain support</p>
         </div>
         
         <div className="flex gap-2">
           <button
             onClick={() => alert('Share feature coming soon!')}
-            className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
-          >
-            
-            Share
+            className="px-3 py-1.5 bg-sifter-elevated hover:bg-sifter-hover text-white rounded-lg text-sm transition-all flex items-center gap-1.5"
+          > Share
           </button>
           
           <div className="relative">
             <button
               ref={exportButtonRef}
               onClick={() => setShowExportMenu(!showExportMenu)}
-              className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
-            >
-              
-              Export
+              className="px-3 py-1.5 bg-sifter-elevated hover:bg-sifter-hover text-white rounded-lg text-sm transition-all flex items-center gap-1.5"
+            > Export
               <span className={`text-xs transition-transform ${showExportMenu ? 'rotate-180' : ''}`}>▼</span>
             </button>
             
@@ -1954,25 +1935,25 @@ export default function IndividualDashboard({
                 className="absolute top-full right-0 mt-1.5 z-50 animate-fadeIn shadow-2xl"
               >
                 {/* FIXED: Added bg-opacity-100 to make dropdown opaque */}
-                <div className="bg-gray-900 border border-sifter-border rounded-lg w-56 overflow-hidden bg-opacity-100">
-                 <div className="bg-gray-900 backdrop-blur-sm border border-sifter-border rounded-lg w-56 overflow-hidden">
+                <div className="bg-sifter-dark border border-sifter-border rounded-lg w-56 overflow-hidden bg-opacity-100">
+                 <div className="bg-sifter-dark backdrop-blur-sm border border-sifter-border rounded-lg w-56 overflow-hidden">
                     <h3 className="font-bold text-white text-sm">Export Data</h3>
-                    <p className="text-xs text-gray-400">Choose format and data</p>
+                    <p className="text-xs text-sifter-text-muted">Choose format and data</p>
                   </div>
                   
-                  <div className="bg-gray-900 backdrop-blur-sm border border-sifter-border rounded-lg w-56 overflow-hidden">
+                  <div className="bg-sifter-dark backdrop-blur-sm border border-sifter-border rounded-lg w-56 overflow-hidden">
                     {analysisResults && (
                       <div className="mb-1.5">
-                        <div className="px-2 py-1 text-xs font-medium text-gray-500">CURRENT ANALYSIS</div>
-                        <button onClick={() => exportAnalysisResults('json')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                        <div className="px-2 py-1 text-xs font-medium text-sifter-text-subtle">CURRENT ANALYSIS</div>
+                        <button onClick={() => exportAnalysisResults('json')} className="w-full text-left px-3 py-2 hover:bg-sifter-hover rounded text-sm flex items-center gap-2">
                           
                           <span className="text-white">Export as JSON</span>
                         </button>
-                        <button onClick={() => exportAnalysisResults('csv')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                        <button onClick={() => exportAnalysisResults('csv')} className="w-full text-left px-3 py-2 hover:bg-sifter-hover rounded text-sm flex items-center gap-2">
                           
                           <span className="text-white">Export as CSV/Excel</span>
                         </button>
-                        <button onClick={() => exportAnalysisResults('pdf')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                        <button onClick={() => exportAnalysisResults('pdf')} className="w-full text-left px-3 py-2 hover:bg-sifter-hover rounded text-sm flex items-center gap-2">
                           
                           <span className="text-white">Export as PDF</span>
                         </button>
@@ -1980,41 +1961,40 @@ export default function IndividualDashboard({
                     )}
                     
                     <div className="mb-1.5">
-                      <div className="px-2 py-1 text-xs font-medium text-gray-500">WATCHLIST</div>
-                      <button onClick={() => exportWatchlist('json')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                      <div className="px-2 py-1 text-xs font-medium text-sifter-text-subtle">WATCHLIST</div>
+                      <button onClick={() => exportWatchlist('json')} className="w-full text-left px-3 py-2 hover:bg-sifter-hover rounded text-sm flex items-center gap-2">
                         
                         <span className="text-white">Export as JSON</span>
                       </button>
-                      <button onClick={() => exportWatchlist('csv')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                      <button onClick={() => exportWatchlist('csv')} className="w-full text-left px-3 py-2 hover:bg-sifter-hover rounded text-sm flex items-center gap-2">
                         
                         <span className="text-white">Export as CSV/Excel</span>
                       </button>
-                      <button onClick={() => exportWatchlist('pdf')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                      <button onClick={() => exportWatchlist('pdf')} className="w-full text-left px-3 py-2 hover:bg-sifter-hover rounded text-sm flex items-center gap-2">
                         
                         <span className="text-white">Export as PDF</span>
                       </button>
                     </div>
                     
                     <div className="mb-1.5">
-                      <div className="px-2 py-1 text-xs font-medium text-gray-500">RECENT SCANS</div>
-                      <button onClick={() => exportRecentScans('json')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                      <div className="px-2 py-1 text-xs font-medium text-sifter-text-subtle">RECENT SCANS</div>
+                      <button onClick={() => exportRecentScans('json')} className="w-full text-left px-3 py-2 hover:bg-sifter-hover rounded text-sm flex items-center gap-2">
                         
                         <span className="text-white">Export as JSON</span>
                       </button>
-                      <button onClick={() => exportRecentScans('csv')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                      <button onClick={() => exportRecentScans('csv')} className="w-full text-left px-3 py-2 hover:bg-sifter-hover rounded text-sm flex items-center gap-2">
                         
                         <span className="text-white">Export as CSV/Excel</span>
                       </button>
-                      <button onClick={() => exportRecentScans('pdf')} className="w-full text-left px-3 py-2 hover:bg-gray-800 rounded text-sm flex items-center gap-2">
+                      <button onClick={() => exportRecentScans('pdf')} className="w-full text-left px-3 py-2 hover:bg-sifter-hover rounded text-sm flex items-center gap-2">
                         
                         <span className="text-white">Export as PDF</span>
                       </button>
                     </div>
                   </div>
                   
-                  <div className="bg-gray-900 backdrop-blur-sm border border-sifter-border rounded-lg w-56 overflow-hidden">
-                    <button onClick={() => setShowExportMenu(false)} className="w-full px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded text-sm">
-                      Cancel
+                  <div className="bg-sifter-dark backdrop-blur-sm border border-sifter-border rounded-lg w-56 overflow-hidden">
+                    <button onClick={() => setShowExportMenu(false)} className="w-full px-3 py-2 bg-sifter-elevated hover:bg-sifter-hover text-sifter-text rounded text-sm"> Cancel
                     </button>
                   </div>
                 </div>

@@ -40,8 +40,7 @@ export default function BulkFlaggingModal({
   };
   
   const handleToggleEntity = (id: string) => {
-    setSelectedIds(prev => 
-      prev.includes(id) 
+    setSelectedIds(prev => prev.includes(id) 
         ? prev.filter(item => item !== id)
         : [...prev, id]
     );
@@ -85,16 +84,14 @@ export default function BulkFlaggingModal({
             <h2 className="text-xl font-bold text-white flex items-center gap-2">
               <svg className="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Bulk Entity Flagging
+              </svg> Bulk Entity Flagging
             </h2>
-            <p className="text-sm text-gray-400 mt-1">
-              Found {entities.length} suspicious entities across your batch
+            <p className="text-sm text-sifter-text-muted mt-1"> Found {entities.length} suspicious entities across your batch
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-2 text-sifter-text-muted hover:text-white hover:bg-sifter-hover rounded-lg transition-colors"
           >
             <XMarkIcon className="w-5 h-5" />
           </button>
@@ -107,26 +104,26 @@ export default function BulkFlaggingModal({
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-amber-400">{entities.length}</div>
-                <div className="text-xs text-gray-400">Suspicious Entities</div>
+                <div className="text-xs text-sifter-text-muted">Suspicious Entities</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-amber-400">
                   {entities.reduce((sum, e) => sum + e.projectCount, 0)}
                 </div>
-                <div className="text-xs text-gray-400">Total Projects Affected</div>
+                <div className="text-xs text-sifter-text-muted">Total Projects Affected</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-amber-400">
                   {Math.round(entities.reduce((sum, e) => sum + e.confidence, 0) / entities.length)}%
                 </div>
-                <div className="text-xs text-gray-400">Avg Confidence</div>
+                <div className="text-xs text-sifter-text-muted">Avg Confidence</div>
               </div>
             </div>
           </div>
           
           {/* Entity List */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between text-sm text-gray-400 px-2">
+            <div className="flex items-center justify-between text-sm text-sifter-text-muted px-2">
               <div className="flex items-center gap-3">
                 <input
                   type="checkbox"
@@ -162,8 +159,7 @@ export default function BulkFlaggingModal({
                     />
                     <div>
                       <h4 className="font-medium text-white">{entity.name}</h4>
-                      <p className="text-sm text-gray-400">
-                        Appears in {entity.projectCount} project{entity.projectCount !== 1 ? 's' : ''}
+                      <p className="text-sm text-sifter-text-muted"> Appears in {entity.projectCount} project{entity.projectCount !== 1 ? 's' : ''}
                       </p>
                     </div>
                   </div>
@@ -171,7 +167,7 @@ export default function BulkFlaggingModal({
                     <span className={`px-2 py-1 rounded text-xs ${
                       entity.confidence > 80 ? 'bg-green-500/20 text-green-400' :
                       entity.confidence > 60 ? 'bg-yellow-500/20 text-yellow-400' :
-                      'bg-gray-500/20 text-gray-400'
+                      'bg-sifter-elevated text-sifter-text-muted'
                     }`}>
                       {entity.confidence}% confidence
                     </span>
@@ -184,18 +180,18 @@ export default function BulkFlaggingModal({
                 {/* Project List */}
                 {entity.projects.length > 0 && (
                   <div className="mt-3 ml-7 pl-4 border-l border-sifter-border/50">
-                    <p className="text-xs text-gray-500 mb-1">Projects:</p>
+                    <p className="text-xs text-sifter-text-subtle mb-1">Projects:</p>
                     <div className="flex flex-wrap gap-2">
                       {entity.projects.slice(0, 3).map((project, idx) => (
                         <span
                           key={idx}
-                          className="px-2 py-1 text-xs bg-gray-800/50 rounded border border-gray-700"
+                          className="px-2 py-1 text-xs bg-sifter-elevated/50 rounded border border-sifter-border"
                         >
                           {project}
                         </span>
                       ))}
                       {entity.projects.length > 3 && (
-                        <span className="px-2 py-1 text-xs text-gray-500">
+                        <span className="px-2 py-1 text-xs text-sifter-text-subtle">
                           +{entity.projects.length - 3} more
                         </span>
                       )}
@@ -210,10 +206,9 @@ export default function BulkFlaggingModal({
         {/* Footer */}
         <div className="p-6 border-t border-sifter-border bg-sifter-dark/50">
           <div className="flex justify-between items-center">
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-sifter-text-muted">
               {selectedIds.length > 0 ? (
-                <>
-                  Selected {selectedIds.length} entities affecting {totalProjects} projects
+                <> Selected {selectedIds.length} entities affecting {totalProjects} projects
                 </>
               ) : (
                 'Select entities to flag'
@@ -224,9 +219,8 @@ export default function BulkFlaggingModal({
               <button
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="px-4 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg font-medium disabled:opacity-50"
-              >
-                Cancel
+                className="px-4 py-2 text-sifter-text hover:text-white hover:bg-sifter-hover rounded-lg font-medium disabled:opacity-50"
+              > Cancel
               </button>
               
               {selectedIds.length > 0 ? (
@@ -246,13 +240,11 @@ export default function BulkFlaggingModal({
                       <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Processing...
+                      </svg> Processing...
                     </>
                   ) : (
                     <>
-                      <CheckIcon className="w-4 h-4" />
-                      Flag Selected ({selectedIds.length})
+                      <CheckIcon className="w-4 h-4" /> Flag Selected ({selectedIds.length})
                     </>
                   )}
                 </button>

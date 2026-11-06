@@ -24,9 +24,8 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen bg-sifter-dark flex items-center justify-center p-4">
         <div className="text-center">
-          <p className="text-gray-400 mb-4">Please sign in to view your profile</p>
-          <Link href="/login" className="text-sifter-blue hover:underline">
-            Sign in
+          <p className="text-sifter-text-muted mb-4">Please sign in to view your profile</p>
+          <Link href="/login" className="text-sifter-blue hover:underline"> Sign in
           </Link>
         </div>
       </div>
@@ -61,8 +60,7 @@ export default function ProfilePage() {
       {/* Header */}
       <header className="border-b border-sifter-border">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-white">
-            Sifter
+          <Link href="/" className="text-xl font-bold text-white"> Sifter
           </Link>
           <UserMenu />
         </div>
@@ -100,7 +98,7 @@ export default function ProfilePage() {
             )}
             <div>
               <h2 className="text-xl font-bold text-white">{user.name}</h2>
-              <p className="text-gray-400">{user.email}</p>
+              <p className="text-sifter-text-muted">{user.email}</p>
               <span className="inline-block mt-2 text-xs px-2 py-1 rounded bg-sifter-blue/20 text-sifter-blue capitalize">
                 {user.mode}
               </span>
@@ -111,36 +109,34 @@ export default function ProfilePage() {
           {isEditing ? (
             <form onSubmit={handleSave} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
-                  Name
+                <label htmlFor="name" className="block text-sm font-medium text-sifter-text mb-2"> Name
                 </label>
                 <input
                   id="name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-sifter-dark border border-sifter-border rounded-lg py-3 px-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sifter-blue focus:border-transparent transition-all"
+                  className="w-full bg-sifter-dark border border-sifter-border rounded-lg py-3 px-4 text-white placeholder:text-sifter-text-subtle focus:outline-none focus:ring-2 focus:ring-sifter-blue focus:border-transparent transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Email
+                <label className="block text-sm font-medium text-sifter-text mb-2"> Email
                 </label>
                 <input
                   type="email"
                   value={user.email}
                   disabled
-                  className="w-full bg-sifter-dark/50 border border-sifter-border rounded-lg py-3 px-4 text-gray-500 cursor-not-allowed"
+                  className="w-full bg-sifter-dark/50 border border-sifter-border rounded-lg py-3 px-4 text-sifter-text-subtle cursor-not-allowed"
                 />
-                <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                <p className="text-xs text-sifter-text-subtle mt-1">Email cannot be changed</p>
               </div>
 
               <div className="flex gap-3">
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="bg-sifter-blue hover:bg-blue-600 disabled:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                  className="bg-sifter-blue hover:bg-blue-600 disabled:bg-sifter-hover text-white font-medium py-2 px-4 rounded-lg transition-colors"
                 >
                   {isSaving ? 'Saving...' : 'Save changes'}
                 </button>
@@ -150,31 +146,30 @@ export default function ProfilePage() {
                     setIsEditing(false);
                     setName(user.name);
                   }}
-                  className="bg-sifter-border hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                >
-                  Cancel
+                  className="bg-sifter-border hover:bg-sifter-hover text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                > Cancel
                 </button>
               </div>
             </form>
           ) : (
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1">Name</label>
+                <label className="block text-sm font-medium text-sifter-text-muted mb-1">Name</label>
                 <p className="text-white">{user.name}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1">Email</label>
+                <label className="block text-sm font-medium text-sifter-text-muted mb-1">Email</label>
                 <p className="text-white">{user.email}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1">Account Type</label>
+                <label className="block text-sm font-medium text-sifter-text-muted mb-1">Account Type</label>
                 <p className="text-white capitalize">{user.mode}</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1">Member Since</label>
+                <label className="block text-sm font-medium text-sifter-text-muted mb-1">Member Since</label>
                 <p className="text-white">
                   {new Date(user.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
@@ -185,7 +180,7 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1">Email Verified</label>
+                <label className="block text-sm font-medium text-sifter-text-muted mb-1">Email Verified</label>
                 <p className={user.isVerified ? 'text-green-400' : 'text-yellow-400'}>
                   {user.isVerified ? 'Verified' : 'Not verified'}
                 </p>
@@ -194,8 +189,7 @@ export default function ProfilePage() {
               <button
                 onClick={() => setIsEditing(true)}
                 className="bg-sifter-blue hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-              >
-                Edit profile
+              > Edit profile
               </button>
             </div>
           )}

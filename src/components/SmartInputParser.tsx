@@ -172,13 +172,13 @@ export default function SmartInputParser({
 
   const getTypeIcon = (type: InputType) => {
     switch (type) {
-      case 'twitter': return '🐦';
-      case 'discord': return '💬';
-      case 'telegram': return '📱';
-      case 'github': return '💻';
-      case 'website': return '🌐';
-      case 'name': return '🏷️';
-      default: return '❓';
+      case 'twitter': return '';
+      case 'discord': return '';
+      case 'telegram': return '';
+      case 'github': return '';
+      case 'website': return '';
+      case 'name': return '';
+      default: return '';
     }
   };
 
@@ -187,10 +187,10 @@ export default function SmartInputParser({
       case 'twitter': return 'text-blue-400';
       case 'discord': return 'text-indigo-400';
       case 'telegram': return 'text-blue-300';
-      case 'github': return 'text-gray-300';
+      case 'github': return 'text-sifter-text';
       case 'website': return 'text-green-400';
       case 'name': return 'text-purple-400';
-      default: return 'text-gray-400';
+      default: return 'text-sifter-text-muted';
     }
   };
 
@@ -207,12 +207,12 @@ export default function SmartInputParser({
             }
           }}
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-          placeholder={placeholder || "Enter Contract address, Twitter handle, Discord invite, GitHub, project name..."}
+          placeholder={placeholder || "Contract, Twitter handle, Discord, GitHub, or project name"}
           disabled={disabled || isProcessing}
           className={`w-full bg-sifter-dark border border-sifter-border rounded-xl text-sifter-text placeholder:text-sifter-text-subtle hover:border-sifter-border-strong focus:border-sifter-blue focus:ring-2 focus:ring-sifter-blue/40 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-            compact 
-              ? 'px-4 py-3 text-sm pr-28' 
-              : 'px-6 py-4 text-lg pr-40'
+            compact
+              ? 'px-4 py-3 text-sm pr-28'
+              : 'px-4 py-3.5 text-base pr-32 sm:px-6 sm:py-4 sm:text-lg sm:pr-40'
           }`}
         />
         
@@ -223,7 +223,7 @@ export default function SmartInputParser({
                 {getTypeIcon(detectedType)}
               </span>
               {!compact && (
-                <span className="text-xs text-gray-400 bg-gray-800/50 px-1.5 py-0.5 rounded">
+                <span className="text-xs text-sifter-text-muted bg-sifter-elevated/50 px-1.5 py-0.5 rounded">
                   {detectedType}
                 </span>
               )}
@@ -262,13 +262,12 @@ export default function SmartInputParser({
       {showDisambiguation && candidates.length > 0 && (
         <div className={`mt-4 border border-sifter-border rounded-xl bg-sifter-card overflow-hidden ${compact ? 'p-3' : 'p-4'}`}>
           <div className="flex justify-between items-center mb-3">
-            <h3 className={`font-medium text-white ${compact ? 'text-sm' : 'text-base'}`}>
-              Multiple matches found
+            <h3 className={`font-medium text-white ${compact ? 'text-sm' : 'text-base'}`}> Multiple matches found
             </h3>
             <button
               type="button"
               onClick={() => setShowDisambiguation(false)}
-              className="text-gray-400 hover:text-white text-lg"
+              className="text-sifter-text-muted hover:text-white text-lg"
             >
               ✕
             </button>
@@ -283,7 +282,7 @@ export default function SmartInputParser({
                 className={`w-full text-left rounded-lg border transition-all group hover:border-blue-500/50 hover:bg-sifter-card/50 ${
                   candidate.confidence > 70 
                     ? 'border-blue-500/30 bg-blue-500/5' 
-                    : 'border-sifter-border bg-gray-900/30'
+                    : 'border-sifter-border bg-sifter-dark/30'
                 } ${compact ? 'p-3' : 'p-4'}`}
               >
                 <div className="flex items-center justify-between">
@@ -296,7 +295,7 @@ export default function SmartInputParser({
                         {candidate.displayName}
                       </div>
                       {!compact && candidate.metadata.description && (
-                        <p className="text-xs text-gray-400 mt-0.5">{candidate.metadata.description}</p>
+                        <p className="text-xs text-sifter-text-muted mt-0.5">{candidate.metadata.description}</p>
                       )}
                     </div>
                   </div>
@@ -310,21 +309,21 @@ export default function SmartInputParser({
                       {candidate.confidence}%
                     </div>
                     {!compact && (
-                      <div className="text-xs text-gray-400">confidence</div>
+                      <div className="text-xs text-sifter-text-muted">confidence</div>
                     )}
                   </div>
                 </div>
                 
                 {!compact && candidate.metadata && (
-                  <div className="mt-2 flex gap-4 text-xs text-gray-500">
+                  <div className="mt-2 flex gap-4 text-xs text-sifter-text-subtle">
                     {candidate.metadata.followers !== undefined && (
-                      <span>👥 {candidate.metadata.followers.toLocaleString()}</span>
+                      <span> {candidate.metadata.followers.toLocaleString()}</span>
                     )}
                     {candidate.metadata.members !== undefined && (
-                      <span>💬 {candidate.metadata.members.toLocaleString()}</span>
+                      <span> {candidate.metadata.members.toLocaleString()}</span>
                     )}
                     {candidate.metadata.stars !== undefined && (
-                      <span>⭐ {candidate.metadata.stars.toLocaleString()}</span>
+                      <span> {candidate.metadata.stars.toLocaleString()}</span>
                     )}
                   </div>
                 )}
@@ -336,9 +335,8 @@ export default function SmartInputParser({
             <button
               type="button"
               onClick={() => setShowDisambiguation(false)}
-              className="mt-3 w-full text-center text-gray-400 hover:text-white text-sm py-2 border-t border-sifter-border/50"
-            >
-              Cancel
+              className="mt-3 w-full text-center text-sifter-text-muted hover:text-white text-sm py-2 border-t border-sifter-border/50"
+            > Cancel
             </button>
           )}
         </div>

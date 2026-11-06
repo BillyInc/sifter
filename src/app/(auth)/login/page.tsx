@@ -56,16 +56,13 @@ export default function LoginPage() {
               placeholder="Enter your password"
             />
 
-            <Button type="submit" fullWidth size="lg" loading={isLoading}>
-              Sign in
+            <Button type="submit" fullWidth size="lg" loading={isLoading}> Sign in
             </Button>
           </form>
         </Card>
 
-        <p className="mt-6 text-center text-sm text-sifter-text-muted">
-          Don&apos;t have an account?{' '}
-          <Link href="/register" className="text-sifter-blue hover:underline font-medium">
-            Create one
+        <p className="mt-6 text-center text-sm text-sifter-text-muted"> Don&apos;t have an account?{' '}
+          <Link href="/register" className="text-sifter-blue hover:underline font-medium"> Create one
           </Link>
         </p>
       </div>

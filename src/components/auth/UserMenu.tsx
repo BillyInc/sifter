@@ -31,15 +31,13 @@ export function UserMenu() {
       <div className="flex items-center gap-3">
         <Link
           href="/login"
-          className="text-gray-400 hover:text-white transition-colors text-sm"
-        >
-          Sign in
+          className="text-sifter-text-muted hover:text-white transition-colors text-sm"
+        > Sign in
         </Link>
         <Link
           href="/register"
           className="bg-sifter-blue hover:bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-        >
-          Sign up
+        > Sign up
         </Link>
       </div>
     );
@@ -75,7 +73,7 @@ export function UserMenu() {
           </div>
         )}
         <svg
-          className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 text-sifter-text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -88,7 +86,7 @@ export function UserMenu() {
         <div className="absolute right-0 mt-2 w-56 bg-sifter-card border border-sifter-border rounded-lg shadow-lg py-1 z-50">
           <div className="px-4 py-3 border-b border-sifter-border">
             <div className="text-white font-medium truncate">{user.name}</div>
-            <div className="text-gray-400 text-sm truncate">{user.email}</div>
+            <div className="text-sifter-text-muted text-sm truncate">{user.email}</div>
             <div className="mt-1">
               <span className="inline-block text-xs px-2 py-0.5 rounded bg-sifter-blue/20 text-sifter-blue capitalize">
                 {user.mode}
@@ -100,23 +98,20 @@ export function UserMenu() {
             <Link
               href="/profile"
               onClick={() => setIsOpen(false)}
-              className="block px-4 py-2 text-gray-300 hover:bg-sifter-border/50 hover:text-white transition-colors"
-            >
-              Profile
+              className="block px-4 py-2 text-sifter-text hover:bg-sifter-border/50 hover:text-white transition-colors"
+            > Profile
             </Link>
             <Link
               href="/settings"
               onClick={() => setIsOpen(false)}
-              className="block px-4 py-2 text-gray-300 hover:bg-sifter-border/50 hover:text-white transition-colors"
-            >
-              Settings
+              className="block px-4 py-2 text-sifter-text hover:bg-sifter-border/50 hover:text-white transition-colors"
+            > Settings
             </Link>
             <Link
               href="/history"
               onClick={() => setIsOpen(false)}
-              className="block px-4 py-2 text-gray-300 hover:bg-sifter-border/50 hover:text-white transition-colors"
-            >
-              History
+              className="block px-4 py-2 text-sifter-text hover:bg-sifter-border/50 hover:text-white transition-colors"
+            > History
             </Link>
           </div>
 
@@ -124,8 +119,7 @@ export function UserMenu() {
             <button
               onClick={handleLogout}
               className="w-full text-left px-4 py-2 text-red-400 hover:bg-sifter-border/50 transition-colors"
-            >
-              Sign out
+            > Sign out
             </button>
           </div>
         </div>

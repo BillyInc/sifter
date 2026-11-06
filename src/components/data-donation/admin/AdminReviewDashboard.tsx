@@ -55,9 +55,9 @@ interface EvidenceVaultItem {
 interface AdminReviewDashboardProps {
   stats: AdminStats;
   submissions: AdminSubmission[];
-  adminName: string;  // ✅ ADD THIS
+  adminName: string;  //  ADD THIS
   onAction: (action: AdminActionType) => Promise<void>;
-  onRefresh: () => Promise<void>;  // ✅ ADD THIS
+  onRefresh: () => Promise<void>;  //  ADD THIS
 }
 
 // Define action types for better type safety
@@ -75,8 +75,8 @@ type AdminActionType =
 const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({ 
   stats,
   submissions, 
-    adminName,    // ✅ ADD THIS
-    onRefresh,     // ✅ ADD THIS
+    adminName,    //  ADD THIS
+    onRefresh,     //  ADD THIS
   onAction
 }) => {
   // State definitions with proper types
@@ -253,7 +253,7 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
       case 'under-review':
         return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
       default:
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+        return 'bg-sifter-elevated text-sifter-text-muted border-sifter-border-strong';
     }
   };
 
@@ -268,20 +268,20 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
       case 'low':
         return 'bg-blue-500/20 text-blue-400';
       default:
-        return 'bg-gray-500/20 text-gray-400';
+        return 'bg-sifter-elevated text-sifter-text-muted';
     }
   };
 
   const getModeIcon = (mode: string): string => {
     switch (mode) {
       case 'ea-vc':
-        return '🏢';
+        return '';
       case 'researcher':
-        return '🔬';
+        return '';
       case 'individual':
-        return '👤';
+        return '';
       default:
-        return '👤';
+        return '';
     }
   };
 
@@ -299,36 +299,24 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
       case 'disputes':
         return (
           <div className="text-center py-12">
-            <div className="w-20 h-20 bg-sifter-dark/50 rounded-full flex items-center justify-center mx-auto mb-6">
-              🛡️
-            </div>
             <h3 className="text-xl font-semibold text-white mb-3">Disputes Queue</h3>
-            <p className="text-gray-400 max-w-md mx-auto">
-              Disputes management panel would be displayed here
+            <p className="text-sifter-text-muted max-w-md mx-auto"> Disputes management panel would be displayed here
             </p>
           </div>
         );
       case 'evidence':
         return (
           <div className="text-center py-12">
-            <div className="w-20 h-20 bg-sifter-dark/50 rounded-full flex items-center justify-center mx-auto mb-6">
-              🔒
-            </div>
             <h3 className="text-xl font-semibold text-white mb-3">Evidence Vault</h3>
-            <p className="text-gray-400 max-w-md mx-auto">
-              Evidence vault would be displayed here
+            <p className="text-sifter-text-muted max-w-md mx-auto"> Evidence vault would be displayed here
             </p>
           </div>
         );
       case 'rewards':
         return (
           <div className="text-center py-12">
-            <div className="w-20 h-20 bg-sifter-dark/50 rounded-full flex items-center justify-center mx-auto mb-6">
-              🏆
-            </div>
             <h3 className="text-xl font-semibold text-white mb-3">Rewards Dashboard</h3>
-            <p className="text-gray-400 max-w-md mx-auto">
-              Rewards and gamification would be displayed here
+            <p className="text-sifter-text-muted max-w-md mx-auto"> Rewards and gamification would be displayed here
             </p>
           </div>
         );
@@ -345,24 +333,24 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <div className="bg-sifter-dark/50 border border-sifter-border rounded-xl p-4">
             <div className="text-2xl font-bold text-white">{stats.totalPending}</div>
-            <div className="text-sm text-gray-400">Pending Review</div>
+            <div className="text-sm text-sifter-text-muted">Pending Review</div>
           </div>
           <div className="bg-sifter-dark/50 border border-sifter-border rounded-xl p-4">
             <div className="text-2xl font-bold text-green-400">{stats.autoVerified}</div>
-            <div className="text-sm text-gray-400">Auto-verified</div>
+            <div className="text-sm text-sifter-text-muted">Auto-verified</div>
             <div className="text-xs text-green-400 mt-1">Review These First →</div>
           </div>
           <div className="bg-sifter-dark/50 border border-sifter-border rounded-xl p-4">
             <div className="text-2xl font-bold text-amber-400">{stats.needsVerification}</div>
-            <div className="text-sm text-gray-400">Needs Verification</div>
+            <div className="text-sm text-sifter-text-muted">Needs Verification</div>
           </div>
           <div className="bg-sifter-dark/50 border border-sifter-border rounded-xl p-4">
             <div className="text-2xl font-bold text-red-400">{stats.flagged}</div>
-            <div className="text-sm text-gray-400">Flagged</div>
+            <div className="text-sm text-sifter-text-muted">Flagged</div>
           </div>
           <div className="bg-sifter-dark/50 border border-sifter-border rounded-xl p-4">
             <div className="text-2xl font-bold text-white">{stats.avgResponseTime}h</div>
-            <div className="text-sm text-gray-400">Avg Response Time</div>
+            <div className="text-sm text-sifter-text-muted">Avg Response Time</div>
             <div className="text-xs text-amber-400 mt-1">Target: &lt;48 hours ▼</div>
           </div>
         </div>
@@ -384,14 +372,14 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-sifter-text-muted" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by entity name, case ID, or email..."
                 className="w-full pl-10 pr-4 py-2 bg-sifter-dark border border-sifter-border 
-                         rounded-lg text-white placeholder-gray-500 focus:outline-none 
+                         rounded-lg text-white placeholder:text-sifter-text-subtle focus:outline-none 
                          focus:border-blue-500"
               />
             </div>
@@ -431,8 +419,7 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
                 <CheckCircleIcon className="w-10 h-10 text-green-400" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3">Queue Empty!</h3>
-              <p className="text-gray-400 max-w-md mx-auto">
-                All submissions have been reviewed. Great work! 🎉
+              <p className="text-sifter-text-muted max-w-md mx-auto"> All submissions have been reviewed. Great work! 
               </p>
             </div>
           ) : (
@@ -449,16 +436,16 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
                         <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(submission.status)}`}>
                           {submission.status.replace('-', ' ').toUpperCase()}
                         </span>
-                        <span className="font-mono text-sm text-gray-400">{submission.caseId}</span>
+                        <span className="font-mono text-sm text-sifter-text-muted">{submission.caseId}</span>
                         <span className={`px-2 py-1 rounded text-xs ${getPriorityColor(submission.priority)}`}>
                           {submission.priority.toUpperCase()}
                         </span>
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-sifter-text-subtle">
                           {getModeIcon(submission.submittedBy.mode)} {submission.submittedBy.mode}
                         </span>
                       </div>
                       <h3 className="text-lg font-semibold text-white">{submission.entityName}</h3>
-                      <p className="text-sm text-gray-400">
+                      <p className="text-sm text-sifter-text-muted">
                         {submission.entityType} • {submission.projectName || 'No project specified'}
                       </p>
                     </div>
@@ -467,8 +454,8 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
                       <div className={`text-2xl font-bold mb-1 ${getConfidenceColor(submission.autoVerification.confidence)}`}>
                         {submission.autoVerification.confidence}%
                       </div>
-                      <div className="text-xs text-gray-500">Confidence</div>
-                      <div className="text-sm text-gray-400 mt-2">
+                      <div className="text-xs text-sifter-text-subtle">Confidence</div>
+                      <div className="text-sm text-sifter-text-muted mt-2">
                         <ClockIcon className="w-4 h-4 inline mr-1" />
                         {submission.estimatedReviewTime}
                       </div>
@@ -481,17 +468,17 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     {/* Submitted Info */}
                     <div className="bg-sifter-dark/50 p-3 rounded-lg">
-                      <div className="text-sm text-gray-400 mb-1">Submitted By</div>
+                      <div className="text-sm text-sifter-text-muted mb-1">Submitted By</div>
                       <div className="text-white font-medium">{submission.submittedBy.name || 'Anonymous'}</div>
-                      <div className="text-xs text-gray-400 truncate">{submission.submittedBy.email}</div>
-                      <div className="text-xs text-gray-500 mt-1">
+                      <div className="text-xs text-sifter-text-muted truncate">{submission.submittedBy.email}</div>
+                      <div className="text-xs text-sifter-text-subtle mt-1">
                         {new Date(submission.submittedAt).toLocaleDateString()} • {new Date(submission.submittedAt).toLocaleTimeString()}
                       </div>
                     </div>
 
                     {/* Auto-Verification Results */}
                     <div className="bg-sifter-dark/50 p-3 rounded-lg">
-                      <div className="text-sm text-gray-400 mb-1">Auto-Verification Results</div>
+                      <div className="text-sm text-sifter-text-muted mb-1">Auto-Verification Results</div>
                       <div className="space-y-1">
                         {submission.autoVerification.checks.slice(0, 3).map((check, idx) => (
                           <div key={idx} className="flex items-center gap-2 text-sm">
@@ -500,11 +487,11 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
                             ) : (
                               <span className="text-red-400">✗</span>
                             )}
-                            <span className="text-gray-300">{check.check}</span>
+                            <span className="text-sifter-text">{check.check}</span>
                           </div>
                         ))}
                         {submission.autoVerification.checks.length > 3 && (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-sifter-text-subtle">
                             +{submission.autoVerification.checks.length - 3} more checks
                           </div>
                         )}
@@ -513,20 +500,20 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
 
                     {/* Evidence Summary */}
                     <div className="bg-sifter-dark/50 p-3 rounded-lg">
-                      <div className="text-sm text-gray-400 mb-1">Evidence Summary</div>
+                      <div className="text-sm text-sifter-text-muted mb-1">Evidence Summary</div>
                       <div className="space-y-1">
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-300">Total Links:</span>
+                          <span className="text-sifter-text">Total Links:</span>
                           <span className="text-white">{submission.evidence.length}</span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-300">Accessible:</span>
+                          <span className="text-sifter-text">Accessible:</span>
                           <span className="text-green-400">
                             {submission.evidence.filter(e => e.accessible).length}/{submission.evidence.length}
                           </span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-300">Verified:</span>
+                          <span className="text-sifter-text">Verified:</span>
                           <span className="text-blue-400">
                             {submission.evidence.filter(e => e.verified).length}/{submission.evidence.length}
                           </span>
@@ -549,15 +536,13 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
                                    border border-green-500/30 rounded-lg font-medium transition-colors 
                                    flex items-center justify-center gap-2"
                         >
-                          <CheckCircleIcon className="w-4 h-4" />
-                          Quick Approve
+                          <CheckCircleIcon className="w-4 h-4" /> Quick Approve
                         </button>
                         <button
                           onClick={() => handleReviewSubmission(submission)}
                           className="flex-1 px-4 py-2 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 
                                    border border-blue-500/30 rounded-lg font-medium transition-colors"
-                        >
-                          Review Details
+                        > Review Details
                         </button>
                       </>
                     )}
@@ -568,8 +553,7 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
                         className="flex-1 px-4 py-2 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 
                                  border border-amber-500/30 rounded-lg font-medium transition-colors 
                                  flex items-center justify-center gap-2"
-                      >
-                        Start Verification
+                      > Start Verification
                       </button>
                     )}
                     
@@ -584,8 +568,7 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
                                  border border-red-500/30 rounded-lg font-medium transition-colors 
                                  flex items-center justify-center gap-2"
                       >
-                        <FlagIcon className="w-4 h-4" />
-                        Reject & Email Submitter
+                        <FlagIcon className="w-4 h-4" /> Reject & Email Submitter
                       </button>
                     )}
 
@@ -597,8 +580,7 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
                       })}
                       className="px-4 py-2 bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 
                                border border-purple-500/30 rounded-lg font-medium transition-colors"
-                    >
-                      Request More Info
+                    > Request More Info
                     </button>
 
                     <button
@@ -609,8 +591,7 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
                       })}
                       className="px-4 py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 
                                border border-red-500/30 rounded-lg font-medium transition-colors"
-                    >
-                      Reject
+                    > Reject
                     </button>
                   </div>
                 </div>
@@ -623,8 +604,7 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
         {filteredSubmissions.length > 0 && filteredSubmissions.length < submissions.length && (
           <div className="mt-8 text-center">
             <button className="px-6 py-3 bg-sifter-dark border border-sifter-border rounded-lg 
-                     text-gray-400 hover:text-white hover:border-blue-500/50 transition-colors">
-              Load More... ({submissions.length - filteredSubmissions.length} more pending)
+                     text-sifter-text-muted hover:text-white hover:border-blue-500/50 transition-colors"> Load More... ({submissions.length - filteredSubmissions.length} more pending)
             </button>
           </div>
         )}
@@ -640,13 +620,12 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
           <div className="flex justify-between items-start">
             <div>
               <h1 className="text-2xl font-bold text-white">SIFTER ADMIN DASHBOARD</h1>
-              <p className="text-gray-400 mt-1">
-                Logged in as: <span className="text-white font-medium">{adminName}</span> {/* ✅ USE IT HERE */}
+              <p className="text-sifter-text-muted mt-1"> Logged in as: <span className="text-white font-medium">{adminName}</span> {/*  USE IT HERE */}
 
-                {activeTab === 'submissions' && ' Reviewing Submissions'}
-                {activeTab === 'disputes' && ' Managing Disputes'}
-                {activeTab === 'evidence' && ' Evidence Vault'}
-                {activeTab === 'rewards' && ' Rewards & Gamification'}
+                {activeTab === 'submissions' && 'Reviewing Submissions'}
+                {activeTab === 'disputes' && 'Managing Disputes'}
+                {activeTab === 'evidence' && 'Evidence Vault'}
+                {activeTab === 'rewards' && 'Rewards & Gamification'}
               </p>
             </div>
             <div className="text-right">
@@ -659,15 +638,13 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
               >
                 {isRefreshing ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-                    Refreshing...
+                    <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div> Refreshing...
                   </>
                 ) : (
                   <>
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    Refresh Queue
+                    </svg> Refresh Queue
                   </>
                 )}
               </button>
@@ -678,10 +655,10 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
           <div className="mt-6">
             <div className="flex gap-2 border-b border-sifter-border">
               {[
-                { id: 'submissions', label: 'Submissions', icon: '📝', count: submissions.length },
-                { id: 'disputes', label: 'Disputes', icon: '🛡️', count: disputes.length },
-                { id: 'evidence', label: 'Evidence Vault', icon: '🔒', count: evidenceVault.length },
-                { id: 'rewards', label: 'Rewards', icon: '🏆', count: stats.totalPending }
+                { id: 'submissions', label: 'Submissions', icon: '', count: submissions.length },
+                { id: 'disputes', label: 'Disputes', icon: '', count: disputes.length },
+                { id: 'evidence', label: 'Evidence Vault', icon: '', count: evidenceVault.length },
+                { id: 'rewards', label: 'Rewards', icon: '', count: stats.totalPending }
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -689,7 +666,7 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
                   className={`flex items-center gap-2 px-4 py-3 -mb-px border-b-2 font-medium text-sm transition-colors ${
                     activeTab === tab.id
                       ? 'border-blue-500 text-blue-400 bg-blue-500/10'
-                      : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
+                      : 'border-transparent text-sifter-text-muted hover:text-sifter-text hover:border-sifter-border-strong'
                   }`}
                 >
                   <span>{tab.icon}</span>
@@ -698,7 +675,7 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
                     <span className={`px-2 py-1 rounded-full text-xs ${
                       activeTab === tab.id 
                         ? 'bg-blue-500/30 text-blue-300' 
-                        : 'bg-gray-700 text-gray-300'
+                        : 'bg-sifter-hover text-sifter-text'
                     }`}>
                       {tab.count}
                     </span>
@@ -717,9 +694,8 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
         {/* Footer Stats - Only show for submissions tab */}
         {activeTab === 'submissions' && (
           <div className="p-6 border-t border-sifter-border bg-sifter-dark/50">
-            <div className="flex justify-between items-center text-sm text-gray-400">
-              <div>
-                Showing {filteredSubmissions.length} of {submissions.length} submissions
+            <div className="flex justify-between items-center text-sm text-sifter-text-muted">
+              <div> Showing {filteredSubmissions.length} of {submissions.length} submissions
               </div>
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2">
@@ -747,11 +723,11 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
             <div className="sticky top-0 z-10 p-4 border-b border-sifter-border bg-sifter-dark/95 flex justify-between items-center">
               <div>
                 <h2 className="text-xl font-bold text-white">Manual Verification</h2>
-                <p className="text-sm text-gray-400">Case ID: {selectedSubmission.caseId}</p>
+                <p className="text-sm text-sifter-text-muted">Case ID: {selectedSubmission.caseId}</p>
               </div>
               <button 
                 onClick={handleCloseModal}
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-sifter-text-muted hover:text-white transition-colors"
                 aria-label="Close modal"
               >
                 <XMarkIcon className="w-6 h-6" />
@@ -761,9 +737,8 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
             <div className="p-6">
               <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-6">
-                  <h3 className="text-xl font-bold text-white">🔍 Manual Verification</h3>
-                  <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm">
-                    Stage 2: Admin Review
+                  <h3 className="text-xl font-bold text-white"> Manual Verification</h3>
+                  <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm"> Stage 2: Admin Review
                   </span>
                 </div>
                 
@@ -778,20 +753,17 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
                   <button
                     onClick={() => handleManualVerificationDecision('approved', 'Manually verified')}
                     className="flex-1 px-6 py-3 bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 rounded-lg"
-                  >
-                    ✅ Approve
+                  > Approve
                   </button>
                   <button
                     onClick={() => handleManualVerificationDecision('needs_more_evidence', 'Needs more evidence')}
                     className="flex-1 px-6 py-3 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 border border-amber-500/30 rounded-lg"
-                  >
-                    📝 Request More Info
+                  > Request More Info
                   </button>
                   <button
                     onClick={() => handleManualVerificationDecision('rejected', 'Rejected due to insufficient evidence')}
                     className="flex-1 px-6 py-3 bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 rounded-lg"
-                  >
-                    ❌ Reject
+                  > Reject
                   </button>
                 </div>
               </div>
@@ -799,20 +771,19 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
               {showEmailTemplate && (
                 <div className="mt-8 pt-6 border-t border-sifter-border">
                   <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
-                    <h3 className="text-lg font-bold text-white mb-4">📧 Email Preview</h3>
+                    <h3 className="text-lg font-bold text-white mb-4"> Email Preview</h3>
                     
                     <div className="space-y-4">
                       <div>
-                        <div className="text-sm text-gray-400 mb-1">To:</div>
+                        <div className="text-sm text-sifter-text-muted mb-1">To:</div>
                         <div className="text-white p-2 bg-sifter-dark rounded border border-sifter-border">
                           {selectedSubmission.submittedBy.email}
                         </div>
                       </div>
                       
                       <div>
-                        <div className="text-sm text-gray-400 mb-1">Subject:</div>
-                        <div className="text-white font-medium p-2 bg-sifter-dark rounded border border-sifter-border">
-                          Submission Decision: {selectedSubmission.entityName}
+                        <div className="text-sm text-sifter-text-muted mb-1">Subject:</div>
+                        <div className="text-white font-medium p-2 bg-sifter-dark rounded border border-sifter-border"> Submission Decision: {selectedSubmission.entityName}
                         </div>
                       </div>
                       
@@ -823,17 +794,15 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
                             handleCloseModal();
                           }}
                           className="flex-1 px-4 py-2 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg"
-                        >
-                          Send Email
+                        > Send Email
                         </button>
                         <button 
                           onClick={() => {
                             setShowEmailTemplate(false);
                             setShowVerificationModal(false);
                           }}
-                          className="px-4 py-2 bg-sifter-dark border border-sifter-border text-gray-300 hover:text-white rounded-lg"
-                        >
-                          Cancel
+                          className="px-4 py-2 bg-sifter-dark border border-sifter-border text-sifter-text hover:text-white rounded-lg"
+                        > Cancel
                         </button>
                       </div>
                     </div>
@@ -847,14 +816,13 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
                   <div className="flex justify-between items-center">
                     <div>
                       <h3 className="text-lg font-medium text-white">Entity Response Options</h3>
-                      <p className="text-sm text-gray-400">Allow the reported entity to respond or file a dispute</p>
+                      <p className="text-sm text-sifter-text-muted">Allow the reported entity to respond or file a dispute</p>
                     </div>
                     <button 
                       onClick={() => setShowDisputeForm(true)}
                       className="px-4 py-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 
                                border border-red-500/30 rounded-lg flex items-center gap-2 transition-colors"
-                    >
-                      🛡️ File Dispute (Entity Response)
+                    > File Dispute (Entity Response)
                     </button>
                   </div>
                   
@@ -862,7 +830,7 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
                     <div className="mt-4 p-4 border border-red-500/30 rounded-lg bg-sifter-dark/50">
                       <div className="space-y-4">
                         <h4 className="font-medium text-white">Dispute Form</h4>
-                        <p className="text-gray-400">Dispute form would be displayed here</p>
+                        <p className="text-sifter-text-muted">Dispute form would be displayed here</p>
                         <div className="flex gap-3">
                           <button 
                             onClick={() => {
@@ -875,14 +843,12 @@ const AdminReviewDashboard: React.FC<AdminReviewDashboardProps> = ({
                               setShowDisputeForm(false);
                             }}
                             className="px-4 py-2 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg"
-                          >
-                            Submit Dispute
+                          > Submit Dispute
                           </button>
                           <button 
                             onClick={() => setShowDisputeForm(false)}
-                            className="px-4 py-2 bg-sifter-dark border border-sifter-border text-gray-300 hover:text-white rounded-lg"
-                          >
-                            Cancel
+                            className="px-4 py-2 bg-sifter-dark border border-sifter-border text-sifter-text hover:text-white rounded-lg"
+                          > Cancel
                           </button>
                         </div>
                       </div>

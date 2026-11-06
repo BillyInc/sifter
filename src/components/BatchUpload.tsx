@@ -139,13 +139,13 @@ export default function BatchUpload({
     <div className={`${compact ? 'bg-sifter-card border border-sifter-border rounded-xl p-4' : 'bg-sifter-card border border-sifter-border rounded-2xl p-8'}`}>
       {!compact && (
         <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-20 h-20 bg-sifter-blue rounded-2xl flex items-center justify-center mx-auto mb-4">
             <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
           <h2 className="text-2xl font-bold text-white mb-2">Batch Upload</h2>
-          <p className="text-gray-400">Upload a CSV with up to 100 projects for bulk analysis</p>
+          <p className="text-sifter-text-muted">Upload a CSV with up to 100 projects for bulk analysis</p>
         </div>
       )}
 
@@ -166,25 +166,24 @@ export default function BatchUpload({
           <div className={`space-y-${compact ? '2' : '4'}`}>
             <div className={`${compact ? 'w-10 h-10' : 'w-16 h-16'} border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mx-auto`}></div>
             <div>
-              <p className={`${compact ? 'text-sm' : 'text-base'} text-white font-medium`}>
-                Processing {fileName}
+              <p className={`${compact ? 'text-sm' : 'text-base'} text-white font-medium`}> Processing {fileName}
               </p>
-              <p className={`${compact ? 'text-xs' : 'text-sm'} text-gray-400 ${compact ? 'mt-0.5' : 'mt-1'}`}>
+              <p className={`${compact ? 'text-xs' : 'text-sm'} text-sifter-text-muted ${compact ? 'mt-0.5' : 'mt-1'}`}>
                 {compact ? 'Analyzing projects...' : 'Analyzing 100 projects...'}
               </p>
             </div>
           </div>
         ) : (
           <>
-            <div className={`${compact ? 'text-3xl mb-3' : 'text-5xl mb-4'}`}>📦</div>
+            <div className={`${compact ? 'text-3xl mb-3' : 'text-5xl mb-4'}`}></div>
             <p className={`${compact ? 'text-sm' : 'text-base'} text-white font-medium ${compact ? 'mb-1' : 'mb-2'}`}>
               {fileName ? `Selected: ${fileName}` : 'Drop CSV file here'}
             </p>
-            <p className={`${compact ? 'text-xs' : 'text-sm'} text-gray-400 ${compact ? 'mb-4' : 'mb-6'}`}>
+            <p className={`${compact ? 'text-xs' : 'text-sm'} text-sifter-text-muted ${compact ? 'mb-4' : 'mb-6'}`}>
               {compact ? 'or click to browse' : 'or click to browse files (CSV format, max 100 projects)'}
             </p>
             
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-sifter-elevated hover:bg-sifter-hover rounded-lg transition-colors">
               <svg className={`${compact ? 'w-4 h-4' : 'w-5 h-5'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
               </svg>
@@ -205,16 +204,16 @@ export default function BatchUpload({
 
       {/* Requirements - hide in compact mode */}
       {!compact && (
-        <div className="mt-8 p-6 bg-gray-900/50 rounded-xl">
+        <div className="mt-8 p-6 bg-sifter-dark/50 rounded-xl">
           <h4 className="font-medium text-white mb-3">CSV Requirements</h4>
-          <ul className="space-y-2 text-sm text-gray-400">
+          <ul className="space-y-2 text-sm text-sifter-text-muted">
             <li className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
               <span>Maximum 100 projects per batch</span>
             </li>
             <li className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-              <span>Include columns: <code className="bg-gray-800 px-1.5 py-0.5 rounded">name</code>, <code className="bg-gray-800 px-1.5 py-0.5 rounded">twitter</code>, <code className="bg-gray-800 px-1.5 py-0.5 rounded">website</code> (optional)</span>
+              <span>Include columns: <code className="bg-sifter-elevated px-1.5 py-0.5 rounded">name</code>, <code className="bg-sifter-elevated px-1.5 py-0.5 rounded">twitter</code>, <code className="bg-sifter-elevated px-1.5 py-0.5 rounded">website</code> (optional)</span>
             </li>
             <li className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
@@ -226,7 +225,7 @@ export default function BatchUpload({
             </li>
           </ul>
           
-          <div className="mt-4 pt-4 border-t border-gray-800">
+          <div className="mt-4 pt-4 border-t border-sifter-border">
             <a
               href="#"
               className="text-blue-400 hover:text-blue-300 text-sm flex items-center gap-2"
@@ -251,8 +250,7 @@ export default function BatchUpload({
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Download CSV Template
+              </svg> Download CSV Template
             </a>
           </div>
         </div>
@@ -269,9 +267,9 @@ export default function BatchUpload({
               onUploadComplete(mockJob);
             }}
           >
-            <div className="text-lg mb-1">🚀</div>
+            <div className="text-lg mb-1"></div>
             <div className="text-xs text-white">Quick Test</div>
-            <div className="text-xs text-gray-400">10 projects</div>
+            <div className="text-xs text-sifter-text-muted">10 projects</div>
           </button>
           
           <button
@@ -282,9 +280,9 @@ export default function BatchUpload({
               onUploadComplete(mockJob);
             }}
           >
-            <div className="text-lg mb-1">⚡</div>
+            <div className="text-lg mb-1"></div>
             <div className="text-xs text-white">Sample</div>
-            <div className="text-xs text-gray-400">25 projects</div>
+            <div className="text-xs text-sifter-text-muted">25 projects</div>
           </button>
         </div>
       ) : (
@@ -297,9 +295,8 @@ export default function BatchUpload({
               onUploadComplete(mockJob);
             }}
           >
-            <div className="text-2xl mb-2">🚀</div>
             <div className="font-medium text-white">Quick Test</div>
-            <div className="text-sm text-gray-400">10 projects (30s)</div>
+            <div className="text-sm text-sifter-text-muted">10 projects (30s)</div>
           </button>
           
           <button
@@ -310,9 +307,8 @@ export default function BatchUpload({
               onUploadComplete(mockJob);
             }}
           >
-            <div className="text-2xl mb-2">⚡</div>
             <div className="font-medium text-white">Medium Batch</div>
-            <div className="text-sm text-gray-400">50 projects (1.2h)</div>
+            <div className="text-sm text-sifter-text-muted">50 projects (1.2h)</div>
           </button>
           
           <button
@@ -323,9 +319,8 @@ export default function BatchUpload({
               onUploadComplete(mockJob);
             }}
           >
-            <div className="text-2xl mb-2">🏢</div>
             <div className="font-medium text-white">Full Batch</div>
-            <div className="text-sm text-gray-400">100 projects (2.5h)</div>
+            <div className="text-sm text-sifter-text-muted">100 projects (2.5h)</div>
           </button>
         </div>
       )}

@@ -44,9 +44,8 @@ export default function ManualVerification({ submission, verification, onDecisio
   return (
     <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
       <div className="flex items-center gap-3 mb-6">
-        <h3 className="text-xl font-bold text-white">🔍 Manual Verification</h3>
-        <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm">
-          Stage 2: Admin Review
+        <h3 className="text-xl font-bold text-white"> Manual Verification</h3>
+        <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm"> Stage 2: Admin Review
         </span>
       </div>
 
@@ -57,12 +56,12 @@ export default function ManualVerification({ submission, verification, onDecisio
             <button
               key={tab}
               onClick={() => setActiveTab(tab as any)}
-              className={`pb-3 px-1 font-medium ${activeTab === tab ? 'text-blue-400 border-b-2 border-blue-500' : 'text-gray-400'}`}
+              className={`pb-3 px-1 font-medium ${activeTab === tab ? 'text-blue-400 border-b-2 border-blue-500' : 'text-sifter-text-muted'}`}
             >
-              {tab === 'google' && '🔍 Google Search'}
-              {tab === 'social' && '👥 Social Media'}
-              {tab === 'evidence' && '📎 Evidence Check'}
-              {tab === 'notes' && '📝 Admin Notes'}
+              {tab === 'google' && 'Google Search'}
+              {tab === 'social' && 'Social Media'}
+              {tab === 'evidence' && 'Evidence Check'}
+              {tab === 'notes' && 'Admin Notes'}
             </button>
           ))}
         </div>
@@ -71,13 +70,12 @@ export default function ManualVerification({ submission, verification, onDecisio
       {/* Google Search Tab */}
       {activeTab === 'google' && (
         <div className="space-y-4">
-          <button onClick={handleGoogleSearch} className="px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg">
-            Search Google for "{submission.entityName} scam"
+          <button onClick={handleGoogleSearch} className="px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg"> Search Google for "{submission.entityName} scam"
           </button>
           {googleResults.map((result, idx) => (
             <div key={idx} className="p-3 border border-sifter-border rounded-lg">
               <div className="font-medium text-white">{result.title}</div>
-              <div className="text-sm text-gray-400">{result.snippet}</div>
+              <div className="text-sm text-sifter-text-muted">{result.snippet}</div>
               <a href={result.url} className="text-blue-400 text-sm">View</a>
             </div>
           ))}
@@ -87,13 +85,12 @@ export default function ManualVerification({ submission, verification, onDecisio
       {/* Social Media Tab */}
       {activeTab === 'social' && (
         <div className="space-y-4">
-          <button onClick={handleSocialSearch} className="px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg">
-            Find social profiles for "{submission.entityName}"
+          <button onClick={handleSocialSearch} className="px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg"> Find social profiles for "{submission.entityName}"
           </button>
           {socialProfiles.map((profile, idx) => (
             <div key={idx} className="p-3 border border-sifter-border rounded-lg">
               <div className="font-medium text-white">{profile.platform}</div>
-              <div className="text-sm text-gray-400">{profile.handle || profile.company}</div>
+              <div className="text-sm text-sifter-text-muted">{profile.handle || profile.company}</div>
             </div>
           ))}
         </div>
@@ -107,13 +104,12 @@ export default function ManualVerification({ submission, verification, onDecisio
               <div className="flex justify-between items-start mb-3">
                 <div>
                   <div className="font-medium text-white">Evidence #{idx + 1}</div>
-                  <div className="text-sm text-gray-400 truncate">{evidence.url}</div>
+                  <div className="text-sm text-sifter-text-muted truncate">{evidence.url}</div>
                 </div>
                 <button
                   onClick={() => handleEvidenceCheck(idx)}
                   className="px-3 py-1 bg-green-500/20 text-green-400 rounded text-sm"
-                >
-                  Verify
+                > Verify
                 </button>
               </div>
               {evidenceVerification[idx] && (
@@ -142,22 +138,19 @@ export default function ManualVerification({ submission, verification, onDecisio
               onClick={() => onDecision('approve', adminNotes)}
               disabled={isSubmitting}
               className="flex-1 px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg disabled:opacity-50"
-            >
-              ✅ Approve
+            > Approve
             </button>
             <button
               onClick={() => onDecision('request_more_info', adminNotes)}
               disabled={isSubmitting}
               className="flex-1 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-lg disabled:opacity-50"
-            >
-              📝 Request More Info
+            > Request More Info
             </button>
             <button
               onClick={() => onDecision('reject', adminNotes)}
               disabled={isSubmitting}
               className="flex-1 px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg disabled:opacity-50"
-            >
-              ❌ Reject
+            > Reject
             </button>
           </div>
         </div>

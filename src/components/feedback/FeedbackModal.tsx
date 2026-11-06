@@ -103,13 +103,12 @@ export default function FeedbackModal({ isOpen, onClose, onSubmitSuccess }: Feed
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-xl font-bold text-white">Share Your Feedback</h2>
-                <p className="text-sm text-gray-400 mt-1">
-                  Help us improve Sifter by sharing your thoughts
+                <p className="text-sm text-sifter-text-muted mt-1"> Help us improve Sifter by sharing your thoughts
                 </p>
               </div>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-white text-2xl transition-colors"
+                className="text-sifter-text-muted hover:text-white text-2xl transition-colors"
                 aria-label="Close modal"
               >
                 &times;
@@ -126,7 +125,7 @@ export default function FeedbackModal({ isOpen, onClose, onSubmitSuccess }: Feed
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">Thank You!</h3>
-              <p className="text-gray-400">Your feedback has been submitted successfully.</p>
+              <p className="text-sifter-text-muted">Your feedback has been submitted successfully.</p>
             </div>
           )}
 
@@ -142,8 +141,7 @@ export default function FeedbackModal({ isOpen, onClose, onSubmitSuccess }: Feed
 
               {/* Dashboard Opinion */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  What do you think about the dashboard? <span className="text-red-400">*</span>
+                <label className="block text-sm font-medium text-sifter-text mb-2"> What do you think about the dashboard? <span className="text-red-400">*</span>
                 </label>
                 <textarea
                   name="dashboardOpinion"
@@ -157,8 +155,7 @@ export default function FeedbackModal({ isOpen, onClose, onSubmitSuccess }: Feed
 
               {/* Improvements */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  What would you want improved? <span className="text-red-400">*</span>
+                <label className="block text-sm font-medium text-sifter-text mb-2"> What would you want improved? <span className="text-red-400">*</span>
                 </label>
                 <textarea
                   name="improvements"
@@ -172,14 +169,13 @@ export default function FeedbackModal({ isOpen, onClose, onSubmitSuccess }: Feed
 
               {/* Would Use */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Is this something you would use when it goes live? <span className="text-red-400">*</span>
+                <label className="block text-sm font-medium text-sifter-text mb-2"> Is this something you would use when it goes live? <span className="text-red-400">*</span>
                 </label>
                 <div className="grid grid-cols-3 gap-3">
                   {[
-                    { value: 'yes', label: 'Yes', icon: '👍', color: 'green' },
-                    { value: 'maybe', label: 'Maybe', icon: '🤔', color: 'amber' },
-                    { value: 'no', label: 'No', icon: '👎', color: 'red' },
+                    { value: 'yes', label: 'Yes', icon: '', color: 'green' },
+                    { value: 'maybe', label: 'Maybe', icon: '', color: 'amber' },
+                    { value: 'no', label: 'No', icon: '', color: 'red' },
                   ].map((option) => (
                     <button
                       key={option.value}
@@ -188,7 +184,7 @@ export default function FeedbackModal({ isOpen, onClose, onSubmitSuccess }: Feed
                       className={`p-4 border rounded-xl flex flex-col items-center justify-center transition-all ${
                         formData.wouldUse === option.value
                           ? `bg-${option.color}-500/20 text-${option.color}-400 border-${option.color}-500/50`
-                          : 'border-sifter-border hover:border-blue-500/50 text-gray-400 hover:text-white'
+                          : 'border-sifter-border hover:border-blue-500/50 text-sifter-text-muted hover:text-white'
                       }`}
                     >
                       <span className="text-2xl mb-2">{option.icon}</span>
@@ -200,8 +196,7 @@ export default function FeedbackModal({ isOpen, onClose, onSubmitSuccess }: Feed
 
               {/* Solves Problem */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Does it solve an existing problem for you? <span className="text-red-400">*</span>
+                <label className="block text-sm font-medium text-sifter-text mb-2"> Does it solve an existing problem for you? <span className="text-red-400">*</span>
                 </label>
                 <textarea
                   name="solvesProblem"
@@ -214,11 +209,11 @@ export default function FeedbackModal({ isOpen, onClose, onSubmitSuccess }: Feed
               </div>
 
               {/* Referral Section */}
-              <div className="p-4 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl">
+              <div className="p-4 bg-sifter-elevated border border-purple-500/30 rounded-xl">
                 <h4 className="font-medium text-white mb-3">Know someone who would benefit?</h4>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">Their name</label>
+                    <label className="block text-sm text-sifter-text-muted mb-2">Their name</label>
                     <input
                       type="text"
                       name="referralName"
@@ -229,9 +224,9 @@ export default function FeedbackModal({ isOpen, onClose, onSubmitSuccess }: Feed
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">Their Twitter handle</label>
+                    <label className="block text-sm text-sifter-text-muted mb-2">Their Twitter handle</label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">@</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sifter-text-subtle">@</span>
                       <input
                         type="text"
                         name="referralTwitter"
@@ -247,8 +242,7 @@ export default function FeedbackModal({ isOpen, onClose, onSubmitSuccess }: Feed
 
               {/* Email (Optional) */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Your email <span className="text-gray-500">(optional, for follow-up)</span>
+                <label className="block text-sm font-medium text-sifter-text mb-2"> Your email <span className="text-sifter-text-subtle">(optional, for follow-up)</span>
                 </label>
                 <input
                   type="email"
@@ -265,9 +259,8 @@ export default function FeedbackModal({ isOpen, onClose, onSubmitSuccess }: Feed
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-6 py-3 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg font-medium transition-colors"
-                >
-                  Cancel
+                  className="px-6 py-3 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover rounded-lg font-medium transition-colors"
+                > Cancel
                 </button>
                 <button
                   type="submit"
@@ -281,15 +274,13 @@ export default function FeedbackModal({ isOpen, onClose, onSubmitSuccess }: Feed
                       <svg className="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Submitting...
+                      </svg> Submitting...
                     </>
                   ) : (
                     <>
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                      </svg>
-                      Submit Feedback
+                      </svg> Submit Feedback
                     </>
                   )}
                 </button>

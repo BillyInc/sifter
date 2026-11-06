@@ -41,12 +41,12 @@ export default function GamificationDashboard({
   }, {} as Record<string, Badge[]>);
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 to-black border border-sifter-border rounded-2xl p-6">
+    <div className="bg-sifter-card border border-sifter-border rounded-2xl p-6">
       {/* Header */}
       <div className="flex justify-between items-start mb-8">
         <div>
           <h2 className="text-2xl font-bold text-white mb-2">Your Gamification Profile</h2>
-          <p className="text-gray-400">Earn points, unlock badges, and climb the leaderboard</p>
+          <p className="text-sifter-text-muted">Earn points, unlock badges, and climb the leaderboard</p>
         </div>
         
         {/* Mode indicator */}
@@ -61,8 +61,8 @@ export default function GamificationDashboard({
         }`}>
           <div className="flex items-center gap-2">
             <span className="text-xl">
-              {userProfile.mode === 'ea-vc' ? '🏢' :
-               userProfile.mode === 'researcher' ? '🔬' : '👤'}
+              {userProfile.mode === 'ea-vc' ? '' :
+               userProfile.mode === 'researcher' ? '' : ''}
             </span>
             <div>
               <div className="font-medium">{userProfile.mode === 'ea-vc' ? 'VC Mode' :
@@ -77,10 +77,10 @@ export default function GamificationDashboard({
       <div className="border-b border-sifter-border mb-6">
         <div className="flex gap-4">
           {[
-            { id: 'overview', label: 'Overview', icon: '📊' },
-            { id: 'badges', label: 'Badges', icon: '🏆' },
-            { id: 'achievements', label: 'Achievements', icon: '🎯' },
-            { id: 'leaderboard', label: 'Leaderboard', icon: '🏅' }
+            { id: 'overview', label: 'Overview', icon: '' },
+            { id: 'badges', label: 'Badges', icon: '' },
+            { id: 'achievements', label: 'Achievements', icon: '' },
+            { id: 'leaderboard', label: 'Leaderboard', icon: '' }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -88,7 +88,7 @@ export default function GamificationDashboard({
               className={`pb-3 font-medium flex items-center gap-2 transition-all ${
                 activeTab === tab.id
                   ? 'text-white border-b-2 border-blue-500'
-                  : 'text-gray-400 hover:text-white'
+                  : 'text-sifter-text-muted hover:text-white'
               }`}
             >
               <span>{tab.icon}</span>
@@ -106,17 +106,14 @@ export default function GamificationDashboard({
             {/* Points & Tier Display */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Points Card */}
-              <div className="bg-gradient-to-br from-amber-500/10 to-amber-600/10 border border-amber-500/30 rounded-xl p-6">
+              <div className="bg-sifter-elevated border border-amber-500/30 rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-amber-500/20 rounded-lg flex items-center justify-center">
-                    <span className="text-2xl">💎</span>
-                  </div>
                   <div>
-                    <div className="text-sm text-gray-400">Total Points</div>
+                    <div className="text-sm text-sifter-text-muted">Total Points</div>
                     <div className="text-3xl font-bold text-white">{userProfile.totalPoints.toLocaleString()}</div>
                   </div>
                 </div>
-                <div className="text-sm text-gray-400">
+                <div className="text-sm text-sifter-text-muted">
                   <div className="flex justify-between mb-1">
                     <span>Available to redeem</span>
                     <span className="text-amber-400">{userProfile.availablePoints.toLocaleString()}</span>
@@ -131,65 +128,62 @@ export default function GamificationDashboard({
               {/* Tier Card */}
               <div className={`border rounded-xl p-6 ${
                 userProfile.currentTier === 'diamond' || userProfile.currentTier === 'vc-elite' || userProfile.currentTier === 'research-fellow'
-                  ? 'bg-gradient-to-br from-purple-500/10 to-purple-600/10 border-purple-500/30' :
+                  ? 'bg-sifter-elevated border-purple-500/30' :
                 userProfile.currentTier === 'platinum'
-                  ? 'bg-gradient-to-br from-gray-500/10 to-gray-600/10 border-gray-500/30' :
+                  ? 'bg-sifter-elevated border-sifter-border-strong' :
                 userProfile.currentTier === 'gold'
-                  ? 'bg-gradient-to-br from-amber-500/10 to-amber-600/10 border-amber-500/30' :
+                  ? 'bg-sifter-elevated border-amber-500/30' :
                 userProfile.currentTier === 'silver'
-                  ? 'bg-gradient-to-br from-gray-400/10 to-gray-500/10 border-gray-400/30' :
-                  'bg-gradient-to-br from-amber-900/10 to-amber-950/10 border-amber-900/30'
+                  ? 'bg-sifter-elevated border-sifter-border-strong' :
+                  'bg-sifter-card border-amber-900/30'
               }`}>
                 <div className="flex items-center gap-3 mb-4">
                   <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
                     userProfile.currentTier === 'diamond' || userProfile.currentTier === 'vc-elite' || userProfile.currentTier === 'research-fellow'
                       ? 'bg-purple-500/20' :
                     userProfile.currentTier === 'platinum'
-                      ? 'bg-gray-500/20' :
+                      ? 'bg-sifter-elevated' :
                     userProfile.currentTier === 'gold'
                       ? 'bg-amber-500/20' :
                     userProfile.currentTier === 'silver'
-                      ? 'bg-gray-400/20' :
+                      ? 'bg-sifter-elevated' :
                       'bg-amber-900/20'
                   }`}>
                     <span className="text-2xl">
-                      {userProfile.currentTier === 'diamond' ? '💎' :
-                       userProfile.currentTier === 'platinum' ? '🥇' :
-                       userProfile.currentTier === 'gold' ? '🥈' :
-                       userProfile.currentTier === 'silver' ? '🥉' : '🔶'}
+                      {userProfile.currentTier === 'diamond' ? '' :
+                       userProfile.currentTier === 'platinum' ? '' :
+                       userProfile.currentTier === 'gold' ? '' :
+                       userProfile.currentTier === 'silver' ? '' : ''}
                     </span>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-400">Current Tier</div>
+                    <div className="text-sm text-sifter-text-muted">Current Tier</div>
                     <div className="text-2xl font-bold text-white capitalize">{userProfile.currentTier.replace('-', ' ')}</div>
                   </div>
                 </div>
                 <div className="text-sm">
-                  <div className="text-gray-400 mb-1">Level {userProfile.currentLevel}</div>
-                  <div className="w-full bg-gray-800 rounded-full h-2">
+                  <div className="text-sifter-text-muted mb-1">Level {userProfile.currentLevel}</div>
+                  <div className="w-full bg-sifter-elevated rounded-full h-2">
                     <div 
                       className="bg-sifter-blue h-2 rounded-full"
                       style={{ width: `${levelProgress.percent}%` }}
                     />
                   </div>
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="text-xs text-sifter-text-subtle mt-1">
                     {levelProgress.current}/{levelProgress.total} to next level
                   </div>
                 </div>
               </div>
 
               {/* Streak Card */}
-              <div className="bg-gradient-to-br from-red-500/10 to-orange-500/10 border border-red-500/30 rounded-xl p-6">
+              <div className="bg-sifter-elevated border border-red-500/30 rounded-xl p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center">
-                    <span className="text-2xl">🔥</span>
-                  </div>
                   <div>
-                    <div className="text-sm text-gray-400">Current Streak</div>
+                    <div className="text-sm text-sifter-text-muted">Current Streak</div>
                     <div className="text-3xl font-bold text-white">{userProfile.streak.currentStreak} days</div>
                   </div>
                 </div>
-                <div className="text-sm text-gray-400">
+                <div className="text-sm text-sifter-text-muted">
                   <div className="flex justify-between mb-1">
                     <span>Longest streak</span>
                     <span className="text-orange-400">{userProfile.streak.longestStreak} days</span>
@@ -209,22 +203,22 @@ export default function GamificationDashboard({
                 {tierBenefits.map((benefit, index) => (
                   <div key={index} className="flex items-start gap-3 p-3 bg-sifter-dark/50 rounded-lg">
                     <span className="text-green-400 text-lg">✓</span>
-                    <span className="text-gray-300">{benefit}</span>
+                    <span className="text-sifter-text">{benefit}</span>
                   </div>
                 ))}
               </div>
               
               {/* Next Tier Info */}
               {userProfile.nextMilestone && (
-                <div className="mt-6 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/30 rounded-lg">
+                <div className="mt-6 p-4 bg-sifter-elevated border border-blue-500/30 rounded-lg">
                   <div className="flex justify-between items-center">
                     <div>
                       <div className="font-medium text-white">Next Milestone</div>
-                      <div className="text-sm text-gray-400">{userProfile.nextMilestone.pointsNeeded.toLocaleString()} points needed</div>
+                      <div className="text-sm text-sifter-text-muted">{userProfile.nextMilestone.pointsNeeded.toLocaleString()} points needed</div>
                     </div>
                     <div>
                       <div className="text-blue-400 font-medium">{userProfile.nextMilestone.reward}</div>
-                      <div className="text-xs text-gray-400">Reward</div>
+                      <div className="text-xs text-sifter-text-muted">Reward</div>
                     </div>
                   </div>
                 </div>
@@ -235,25 +229,25 @@ export default function GamificationDashboard({
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-sifter-dark/50 border border-sifter-border rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-white mb-1">{userProfile.badges.length}</div>
-                <div className="text-sm text-gray-400">Badges Earned</div>
+                <div className="text-sm text-sifter-text-muted">Badges Earned</div>
               </div>
               <div className="bg-sifter-dark/50 border border-sifter-border rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-white mb-1">
                   {userProfile.achievements.filter(a => a.completed).length}
                 </div>
-                <div className="text-sm text-gray-400">Achievements</div>
+                <div className="text-sm text-sifter-text-muted">Achievements</div>
               </div>
               <div className="bg-sifter-dark/50 border border-sifter-border rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-white mb-1">
                   {userProfile.leaderboardPosition || '--'}
                 </div>
-                <div className="text-sm text-gray-400">Leaderboard Rank</div>
+                <div className="text-sm text-sifter-text-muted">Leaderboard Rank</div>
               </div>
               <div className="bg-sifter-dark/50 border border-sifter-border rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-white mb-1">
                   {userProfile.pointsMultiplier}x
                 </div>
-                <div className="text-sm text-gray-400">Points Multiplier</div>
+                <div className="text-sm text-sifter-text-muted">Points Multiplier</div>
               </div>
             </div>
           </div>
@@ -264,8 +258,7 @@ export default function GamificationDashboard({
           <div>
             <div className="mb-6">
               <h3 className="text-lg font-semibold text-white mb-4">Your Badges</h3>
-              <div className="text-sm text-gray-400">
-                Earned {userProfile.badges.length} of {Object.keys(badgesByCategory).length} total badges
+              <div className="text-sm text-sifter-text-muted"> Earned {userProfile.badges.length} of {Object.keys(badgesByCategory).length} total badges
               </div>
             </div>
 
@@ -277,19 +270,18 @@ export default function GamificationDashboard({
                     <div key={badge.id} className="border border-sifter-border rounded-xl p-4 text-center">
                       <div className="text-4xl mb-3">{badge.icon}</div>
                       <div className="font-medium text-white mb-1">{badge.name}</div>
-                      <div className="text-xs text-gray-400 mb-2">{badge.description}</div>
+                      <div className="text-xs text-sifter-text-muted mb-2">{badge.description}</div>
                       <div className={`text-xs px-2 py-1 rounded-full inline-block ${
                         badge.rarity === 'legendary' ? 'bg-purple-500/20 text-purple-400' :
                         badge.rarity === 'epic' ? 'bg-red-500/20 text-red-400' :
                         badge.rarity === 'rare' ? 'bg-blue-500/20 text-blue-400' :
                         badge.rarity === 'uncommon' ? 'bg-green-500/20 text-green-400' :
-                        'bg-gray-500/20 text-gray-400'
+                        'bg-sifter-elevated text-sifter-text-muted'
                       }`}>
                         {badge.rarity.toUpperCase()}
                       </div>
                       <div className="text-xs text-amber-400 mt-2">+{badge.pointsReward} points</div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        Earned {new Date(badge.earnedAt).toLocaleDateString()}
+                      <div className="text-xs text-sifter-text-subtle mt-1"> Earned {new Date(badge.earnedAt).toLocaleDateString()}
                       </div>
                     </div>
                   ))}
@@ -304,7 +296,7 @@ export default function GamificationDashboard({
           <div>
             <div className="mb-6">
               <h3 className="text-lg font-semibold text-white mb-4">Your Achievements</h3>
-              <div className="text-sm text-gray-400">
+              <div className="text-sm text-sifter-text-muted">
                 {userProfile.achievements.filter(a => a.completed).length} of {userProfile.achievements.length} completed
               </div>
             </div>
@@ -315,15 +307,15 @@ export default function GamificationDashboard({
                   <div className="flex justify-between items-start">
                     <div>
                       <div className="font-medium text-white mb-1">{achievement.name}</div>
-                      <div className="text-sm text-gray-400 mb-3">{achievement.description}</div>
+                      <div className="text-sm text-sifter-text-muted mb-3">{achievement.description}</div>
                       
                       {/* Progress */}
                       <div className="mb-2">
-                        <div className="flex justify-between text-xs text-gray-400 mb-1">
+                        <div className="flex justify-between text-xs text-sifter-text-muted mb-1">
                           <span>Progress</span>
                           <span>{Math.round(achievement.progress * achievement.target)}/{achievement.target}</span>
                         </div>
-                        <div className="w-full bg-gray-800 rounded-full h-2">
+                        <div className="w-full bg-sifter-elevated rounded-full h-2">
                           <div 
                             className={`h-2 rounded-full ${
                               achievement.completed ? 'bg-green-500' : 'bg-blue-500'
@@ -338,18 +330,17 @@ export default function GamificationDashboard({
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                         achievement.completed 
                           ? 'bg-green-500/20 text-green-400' 
-                          : 'bg-gray-800/50 text-gray-400'
+                          : 'bg-sifter-elevated/50 text-sifter-text-muted'
                       }`}>
-                        {achievement.completed ? '✓' : '🎯'}
+                        {achievement.completed ? '✓' : ''}
                       </div>
                       <div className="text-amber-400 font-medium mt-2">+{achievement.pointsReward}</div>
-                      <div className="text-xs text-gray-400">points</div>
+                      <div className="text-xs text-sifter-text-muted">points</div>
                     </div>
                   </div>
                   
                   {achievement.completed && achievement.completedAt && (
-                    <div className="text-xs text-gray-500 mt-3">
-                      Completed on {new Date(achievement.completedAt).toLocaleDateString()}
+                    <div className="text-xs text-sifter-text-subtle mt-3"> Completed on {new Date(achievement.completedAt).toLocaleDateString()}
                     </div>
                   )}
                 </div>
@@ -364,7 +355,7 @@ export default function GamificationDashboard({
             <div className="flex justify-between items-center mb-6">
               <div>
                 <h3 className="text-lg font-semibold text-white">Leaderboard</h3>
-                <p className="text-sm text-gray-400">Top contributors this month</p>
+                <p className="text-sm text-sifter-text-muted">Top contributors this month</p>
               </div>
               
               {/* Mode Filter */}
@@ -378,14 +369,14 @@ export default function GamificationDashboard({
                         ? mode === 'ea-vc' ? 'bg-blue-500/30 text-blue-400 border border-blue-500/50' :
                           mode === 'researcher' ? 'bg-purple-500/30 text-purple-400 border border-purple-500/50' :
                           mode === 'individual' ? 'bg-green-500/30 text-green-400 border border-green-500/50' :
-                          'bg-gray-700 text-white border border-gray-600'
-                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700 border border-gray-700'
+                          'bg-sifter-hover text-white border border-sifter-border'
+                        : 'bg-sifter-elevated text-sifter-text-muted hover:bg-sifter-hover border border-sifter-border'
                     }`}
                   >
                     {mode === 'all' ? 'All Modes' :
-                     mode === 'ea-vc' ? '🏢 VCs' :
-                     mode === 'researcher' ? '🔬 Researchers' :
-                     '👤 Individuals'}
+                     mode === 'ea-vc' ? 'VCs' :
+                     mode === 'researcher' ? 'Researchers' :
+                     'Individuals'}
                   </button>
                 ))}
               </div>
@@ -397,13 +388,13 @@ export default function GamificationDashboard({
                 <table className="w-full">
                   <thead className="bg-sifter-dark/50">
                     <tr>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Rank</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Contributor</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Mode</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Points</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Level</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Approved</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-400">Change</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-sifter-text-muted">Rank</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-sifter-text-muted">Contributor</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-sifter-text-muted">Mode</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-sifter-text-muted">Points</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-sifter-text-muted">Level</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-sifter-text-muted">Approved</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-sifter-text-muted">Change</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-sifter-border">
@@ -412,13 +403,13 @@ export default function GamificationDashboard({
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-2">
                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                              entry.rank <= 3 ? 'bg-amber-500/20 text-amber-400' : 'bg-gray-800/50 text-gray-400'
+                              entry.rank <= 3 ? 'bg-amber-500/20 text-amber-400' : 'bg-sifter-elevated/50 text-sifter-text-muted'
                             }`}>
                               {entry.rank}
                             </div>
                             {entry.rank <= 3 && (
                               <span className="text-lg">
-                                {entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : '🥉'}
+                                {entry.rank === 1 ? '' : entry.rank === 2 ? '' : ''}
                               </span>
                             )}
                           </div>
@@ -430,12 +421,12 @@ export default function GamificationDashboard({
                               entry.mode === 'researcher' ? 'bg-purple-500/20 text-purple-400' :
                               'bg-green-500/20 text-green-400'
                             }`}>
-                              {entry.mode === 'ea-vc' ? '🏢' :
-                               entry.mode === 'researcher' ? '🔬' : '👤'}
+                              {entry.mode === 'ea-vc' ? '' :
+                               entry.mode === 'researcher' ? '' : ''}
                             </div>
                             <div>
                               <div className="font-medium text-white">{entry.userName}</div>
-                              <div className="text-xs text-gray-400">{entry.badgesCount} badges</div>
+                              <div className="text-xs text-sifter-text-muted">{entry.badgesCount} badges</div>
                             </div>
                           </div>
                         </td>
@@ -454,16 +445,16 @@ export default function GamificationDashboard({
                         </td>
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-2">
-                            <span className="text-gray-300">Lvl {entry.level}</span>
+                            <span className="text-sifter-text">Lvl {entry.level}</span>
                             <span className={`text-xs px-2 py-1 rounded capitalize ${
                               entry.tier === 'diamond' || entry.tier === 'vc-elite' || entry.tier === 'research-fellow'
                                 ? 'bg-purple-500/20 text-purple-400' :
                               entry.tier === 'platinum'
-                                ? 'bg-gray-500/20 text-gray-400' :
+                                ? 'bg-sifter-elevated text-sifter-text-muted' :
                               entry.tier === 'gold'
                                 ? 'bg-amber-500/20 text-amber-400' :
                               entry.tier === 'silver'
-                                ? 'bg-gray-400/20 text-gray-300' :
+                                ? 'bg-sifter-elevated text-sifter-text' :
                                 'bg-amber-900/20 text-amber-700'
                             }`}>
                               {entry.tier}
@@ -471,14 +462,14 @@ export default function GamificationDashboard({
                           </div>
                         </td>
                         <td className="py-3 px-4">
-                          <div className="text-gray-300">{entry.approved} approved</div>
-                          <div className="text-xs text-gray-500">{entry.submissions} total</div>
+                          <div className="text-sifter-text">{entry.approved} approved</div>
+                          <div className="text-xs text-sifter-text-subtle">{entry.submissions} total</div>
                         </td>
                         <td className="py-3 px-4">
                           {entry.change && entry.changeAmount && (
                             <div className={`flex items-center gap-1 ${
                               entry.change === 'up' ? 'text-green-400' :
-                              entry.change === 'down' ? 'text-red-400' : 'text-gray-400'
+                              entry.change === 'down' ? 'text-red-400' : 'text-sifter-text-muted'
                             }`}>
                               {entry.change === 'up' ? '↑' : entry.change === 'down' ? '↓' : '→'}
                               <span className="text-sm">{entry.changeAmount}</span>
@@ -496,15 +487,14 @@ export default function GamificationDashboard({
                 <div className="p-4 border-t border-sifter-border bg-sifter-dark/50">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3">
-                      <div className="text-gray-400">Your position:</div>
+                      <div className="text-sifter-text-muted">Your position:</div>
                       <div className="font-bold text-white">#{userProfile.leaderboardPosition}</div>
                     </div>
                     <button 
                       onClick={onViewLeaderboard}
                       className="px-4 py-2 bg-sifter-blue hover:bg-sifter-blue-hover 
                                text-white rounded-lg font-medium text-sm transition-all"
-                    >
-                      View Full Leaderboard
+                    > View Full Leaderboard
                     </button>
                   </div>
                 </div>
@@ -516,17 +506,14 @@ export default function GamificationDashboard({
 
       {/* Action Buttons */}
       <div className="mt-8 pt-6 border-t border-sifter-border flex justify-between">
-        <div className="text-sm text-gray-400">
-          Points refresh daily • Leaderboards update hourly
+        <div className="text-sm text-sifter-text-muted"> Points refresh daily • Leaderboards update hourly
         </div>
         <div className="flex gap-3">
-          <button className="px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 
-                   border border-gray-700 rounded-lg font-medium text-sm">
-            How Points Work
+          <button className="px-4 py-2 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover 
+                   border border-sifter-border rounded-lg font-medium text-sm"> How Points Work
           </button>
           <button className="px-4 py-2 bg-sifter-blue hover:bg-sifter-blue-hover 
-                   text-white rounded-lg font-medium text-sm">
-            Redeem Points
+                   text-white rounded-lg font-medium text-sm"> Redeem Points
           </button>
         </div>
       </div>

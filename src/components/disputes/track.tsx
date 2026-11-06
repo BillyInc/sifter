@@ -107,9 +107,9 @@ export default function DisputeStatusTrackerPage() {
       case 'current':
         return 'text-blue-400 bg-blue-500/20 border-blue-500/30 animate-pulse';
       case 'pending':
-        return 'text-gray-400 bg-gray-500/20 border-gray-500/30';
+        return 'text-sifter-text-muted bg-sifter-elevated border-sifter-border-strong';
       default:
-        return 'text-gray-400 bg-gray-500/20 border-gray-500/30';
+        return 'text-sifter-text-muted bg-sifter-elevated border-sifter-border-strong';
     }
   };
 
@@ -136,8 +136,7 @@ export default function DisputeStatusTrackerPage() {
               <h1 className="text-3xl font-bold mb-2">Dispute Status Tracker</h1>
               <div className="flex items-center gap-4">
                 <span className="font-mono text-2xl text-blue-400">{caseId}</span>
-                <span className={`px-3 py-1 rounded-full text-sm border ${getStatusColor('current')}`}>
-                  Under Review
+                <span className={`px-3 py-1 rounded-full text-sm border ${getStatusColor('current')}`}> Under Review
                 </span>
               </div>
             </div>
@@ -149,21 +148,18 @@ export default function DisputeStatusTrackerPage() {
               >
                 {checkingStatus ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-                    Checking...
+                    <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div> Checking...
                   </>
                 ) : (
                   <>
-                    <span>⟳</span>
-                    Refresh Status
+                    <span>⟳</span> Refresh Status
                   </>
                 )}
               </button>
               <Link
                 href="/disputes"
-                className="px-4 py-2 border border-sifter-border text-gray-400 hover:text-white hover:border-blue-500/50 rounded-lg"
-              >
-                View All Disputes
+                className="px-4 py-2 border border-sifter-border text-sifter-text-muted hover:text-white hover:border-blue-500/50 rounded-lg"
+              > View All Disputes
               </Link>
             </div>
           </div>
@@ -172,20 +168,19 @@ export default function DisputeStatusTrackerPage() {
           <div className="bg-sifter-card border border-sifter-border rounded-xl p-6 mb-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <div className="text-sm text-gray-400 mb-1">Entity</div>
+                <div className="text-sm text-sifter-text-muted mb-1">Entity</div>
                 <div className="text-xl font-medium text-white">{dispute.entityName}</div>
               </div>
               <div>
-                <div className="text-sm text-gray-400 mb-1">Assigned Admin</div>
+                <div className="text-sm text-sifter-text-muted mb-1">Assigned Admin</div>
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
-                    AC
+                  <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400"> AC
                   </div>
                   <span className="text-white">{dispute.assignedAdmin}</span>
                 </div>
               </div>
               <div>
-                <div className="text-sm text-gray-400 mb-1">Resolution Due</div>
+                <div className="text-sm text-sifter-text-muted mb-1">Resolution Due</div>
                 <div className="text-xl text-white">
                   {new Date(dispute.resolutionDueDate).toLocaleDateString('en-US', {
                     month: 'short',
@@ -209,10 +204,9 @@ export default function DisputeStatusTrackerPage() {
           {/* Professional Note Instead */}
           <div className="mb-6 p-4 bg-sifter-card border border-sifter-border rounded-xl">
             <div className="flex items-center gap-3">
-              <div className="text-2xl">⚖️</div>
               <div>
                 <div className="font-medium text-white">Serious Dispute Resolution</div>
-                <p className="text-gray-300 text-sm">This is a formal process. All cases are reviewed impartially and confidentially.</p>
+                <p className="text-sifter-text text-sm">This is a formal process. All cases are reviewed impartially and confidentially.</p>
               </div>
             </div>
           </div>
@@ -234,7 +228,7 @@ export default function DisputeStatusTrackerPage() {
                             ? 'bg-green-500/20 border-green-500 text-green-400'
                             : step.status === 'current'
                             ? 'bg-blue-500/20 border-blue-500 text-blue-400 animate-pulse'
-                            : 'bg-gray-800 border-gray-700 text-gray-500'
+                            : 'bg-sifter-elevated border-sifter-border text-sifter-text-subtle'
                         }`}
                       >
                         {step.status === 'complete' ? '✓' : index + 1}
@@ -243,15 +237,15 @@ export default function DisputeStatusTrackerPage() {
                         <div className="flex justify-between items-start mb-1">
                           <div>
                             <h3 className="font-medium text-white">{step.label}</h3>
-                            <p className="text-gray-400 text-sm">{step.description}</p>
+                            <p className="text-sifter-text-muted text-sm">{step.description}</p>
                           </div>
-                          <span className="text-sm text-gray-500 whitespace-nowrap">{step.date}</span>
+                          <span className="text-sm text-sifter-text-subtle whitespace-nowrap">{step.date}</span>
                         </div>
-                        <p className="text-gray-300 text-sm mt-2">{step.details}</p>
+                        <p className="text-sifter-text text-sm mt-2">{step.details}</p>
                       </div>
                     </div>
                     {index < timeline.length - 1 && (
-                      <div className="absolute left-5 top-10 w-0.5 h-8 bg-gray-800 ml-0.5"></div>
+                      <div className="absolute left-5 top-10 w-0.5 h-8 bg-sifter-elevated ml-0.5"></div>
                     )}
                   </div>
                 ))}
@@ -262,16 +256,16 @@ export default function DisputeStatusTrackerPage() {
             <div className="bg-sifter-card border border-sifter-border rounded-xl p-6 mt-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold">Admin Notes</h2>
-                <span className="text-sm text-gray-500">Last updated: {timeSinceUpdate}</span>
+                <span className="text-sm text-sifter-text-subtle">Last updated: {timeSinceUpdate}</span>
               </div>
               <div className="bg-sifter-dark border border-sifter-border rounded-lg p-4">
-                <p className="text-gray-300">{dispute.adminNotes}</p>
+                <p className="text-sifter-text">{dispute.adminNotes}</p>
               </div>
               <div className="mt-4">
                 <h3 className="font-medium text-white mb-2">Next Steps:</h3>
                 <ul className="space-y-2">
                   {dispute.nextSteps.map((step, idx) => (
-                    <li key={idx} className="flex items-center gap-3 text-gray-300">
+                    <li key={idx} className="flex items-center gap-3 text-sifter-text">
                       <div className="w-2 h-2 rounded-full bg-blue-500"></div>
                       {step}
                     </li>
@@ -288,7 +282,7 @@ export default function DisputeStatusTrackerPage() {
               <h2 className="font-medium text-white mb-4">Case Summary</h2>
               <div className="space-y-4">
                 <div>
-                  <div className="text-sm text-gray-400">Filed On</div>
+                  <div className="text-sm text-sifter-text-muted">Filed On</div>
                   <div className="text-white">
                     {new Date(dispute.filedAt).toLocaleDateString('en-US', {
                       weekday: 'long',
@@ -299,22 +293,22 @@ export default function DisputeStatusTrackerPage() {
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-400">Evidence Submitted</div>
+                  <div className="text-sm text-sifter-text-muted">Evidence Submitted</div>
                   <div className="text-white">{dispute.evidenceSubmitted} items</div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-400">Verification Method</div>
+                  <div className="text-sm text-sifter-text-muted">Verification Method</div>
                   <div className="flex items-center gap-2 text-white">
                     {dispute.verificationMethod === 'call'
-                      ? '📞 Phone Call'
+                      ? 'Phone Call'
                       : dispute.verificationMethod === 'email'
-                      ? '✉️ Email'
-                      : '📄 Document'}
+                      ? 'Email'
+                      : 'Document'}
                     <span className="text-green-400 text-sm">✓ Verified</span>
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-400">Time in Review</div>
+                  <div className="text-sm text-sifter-text-muted">Time in Review</div>
                   <div className="text-white">
                     {Math.floor(
                       (new Date().getTime() - new Date(dispute.filedAt).getTime()) /
@@ -348,28 +342,28 @@ export default function DisputeStatusTrackerPage() {
                   }}
                   className="w-full px-4 py-3 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg text-left flex items-center gap-3"
                 >
-                  <span>📧</span>
+                  <span></span>
                   <span>View Latest Email</span>
                 </button>
                 <button
                   onClick={() => alert('Evidence upload modal would open here')}
                   className="w-full px-4 py-3 bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 rounded-lg text-left flex items-center gap-3"
                 >
-                  <span>📎</span>
+                  <span></span>
                   <span>Add More Evidence</span>
                 </button>
                 <button
                   onClick={() => alert('Contact form would open here')}
                   className="w-full px-4 py-3 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 border border-amber-500/30 rounded-lg text-left flex items-center gap-3"
                 >
-                  <span>💬</span>
+                  <span></span>
                   <span>Contact Admin</span>
                 </button>
                 <Link
                   href={`/entities/entity-123`}
                   className="block w-full px-4 py-3 bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border border-purple-500/30 rounded-lg text-left flex items-center gap-3"
                 >
-                  <span>🏢</span>
+                  <span></span>
                   <span>View Entity Page</span>
                 </Link>
               </div>
@@ -383,19 +377,19 @@ export default function DisputeStatusTrackerPage() {
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">✓</div>
-                  <span className="text-gray-300">All evidence verified</span>
+                  <span className="text-sifter-text">All evidence verified</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">✓</div>
-                  <span className="text-gray-300">Identity confirmed</span>
+                  <span className="text-sifter-text">Identity confirmed</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">⏳</div>
-                  <span className="text-gray-300">Impartial review in progress</span>
+                  <span className="text-sifter-text">Impartial review in progress</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-gray-500/20 flex items-center justify-center text-gray-400">○</div>
-                  <span className="text-gray-300">Resolution pending</span>
+                  <div className="w-6 h-6 rounded-full bg-sifter-elevated flex items-center justify-center text-sifter-text-muted">○</div>
+                  <span className="text-sifter-text">Resolution pending</span>
                 </div>
               </div>
             </div>
@@ -403,14 +397,13 @@ export default function DisputeStatusTrackerPage() {
             {/* Contact Info */}
             <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
               <h2 className="font-medium text-white mb-4">Need Help?</h2>
-              <div className="space-y-3 text-sm text-gray-400">
+              <div className="space-y-3 text-sm text-sifter-text-muted">
                 <p>Email: disputes@sifter.com</p>
                 <p>Hours: Mon-Fri, 9AM-5PM EST</p>
                 <p>Response time: 24 hours</p>
               </div>
               <div className="mt-4 pt-4 border-t border-sifter-border">
-                <p className="text-xs text-gray-500">
-                  This is a public transparency page. Anyone with the Case ID can view this status.
+                <p className="text-xs text-sifter-text-subtle"> This is a public transparency page. Anyone with the Case ID can view this status.
                 </p>
               </div>
             </div>

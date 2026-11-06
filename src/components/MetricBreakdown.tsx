@@ -41,8 +41,7 @@ const METRIC_WEIGHTS_FALLBACK: Record<string, number> = {
 
 type Level = 'minimal' | 'low' | 'moderate' | 'high' | 'critical';
 
-const levelOf = (score: number): Level =>
-  score >= 80 ? 'critical' : score >= 60 ? 'high' : score >= 40 ? 'moderate' : score >= 20 ? 'low' : 'minimal';
+const levelOf = (score: number): Level => score >= 80 ? 'critical' : score >= 60 ? 'high' : score >= 40 ? 'moderate' : score >= 20 ? 'low' : 'minimal';
 
 const LEVEL_STYLE: Record<Level, { text: string; bar: string; label: string }> = {
   minimal: { text: 'text-green-300', bar: 'bg-green-400', label: 'Minimal risk' },
@@ -156,12 +155,10 @@ export default function MetricBreakdown({
               <p className="mt-1.5 text-xs text-sifter-text-subtle">Higher means riskier</p>
             </div>
             <div className="flex gap-2">
-              <Button variant="secondary" size="sm" onClick={() => setShowShare(true)}>
-                Share
+              <Button variant="secondary" size="sm" onClick={() => setShowShare(true)}> Share
               </Button>
               {onExport && (
-                <Button variant="secondary" size="sm" onClick={onExport}>
-                  Export
+                <Button variant="secondary" size="sm" onClick={onExport}> Export
                 </Button>
               )}
             </div>
@@ -172,8 +169,7 @@ export default function MetricBreakdown({
         {totalContribution > 0 && (
           <div className="mt-6">
             <div className="flex h-3 w-full overflow-hidden rounded-full bg-sifter-dark" role="img" aria-label="Share of risk score by metric">
-              {rows.map((r) =>
-                r.contribution > 0 ? (
+              {rows.map((r) => r.contribution > 0 ? (
                   <div
                     key={r.id}
                     title={`${r.name}: ${Math.round((r.contribution / totalContribution) * 100)}% of score`}
@@ -183,8 +179,7 @@ export default function MetricBreakdown({
                 ) : null,
               )}
             </div>
-            <p className="mt-2 text-sm text-sifter-text-muted">
-              Driven mostly by{' '}
+            <p className="mt-2 text-sm text-sifter-text-muted"> Driven mostly by{' '}
               {topDrivers.map((d, i) => (
                 <React.Fragment key={d.id}>
                   <span className="text-sifter-text">{d.name}</span>

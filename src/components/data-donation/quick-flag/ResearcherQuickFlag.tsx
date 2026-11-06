@@ -54,8 +54,7 @@ export default function ResearcherQuickFlag({
   }, [patternAnalysis, onPatternAnalysisChange]);
 
   const toggleDataSource = (source: string) => {
-    setDataSources(prev => 
-      prev.includes(source) 
+    setDataSources(prev => prev.includes(source) 
         ? prev.filter(s => s !== source)
         : [...prev, source]
     );
@@ -101,9 +100,6 @@ export default function ResearcherQuickFlag({
     <div className="bg-sifter-card border border-sifter-border rounded-xl p-6 max-w-md mx-auto">
       {/* Header */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-lg flex items-center justify-center">
-          <span className="text-xl">🔬</span>
-        </div>
         <div>
           <h3 className="font-bold text-white">Researcher Quick Flag</h3>
           <p className="text-sm text-purple-300">Analytical flagging with methodology</p>
@@ -114,21 +110,20 @@ export default function ResearcherQuickFlag({
       <div className="space-y-4">
         {/* Entity Info */}
         <div className="p-3 bg-sifter-dark/50 border border-sifter-border rounded-lg">
-          <div className="text-xs text-gray-400">Entity</div>
+          <div className="text-xs text-sifter-text-muted">Entity</div>
           <div className="font-medium text-white truncate">{entityName}</div>
-          <div className="text-xs text-gray-400 mt-1">{context}</div>
+          <div className="text-xs text-sifter-text-muted mt-1">{context}</div>
         </div>
 
         {/* Analysis Depth */}
         <div>
-          <label className="block text-sm text-gray-400 mb-2">
-            Analysis Depth
+          <label className="block text-sm text-sifter-text-muted mb-2"> Analysis Depth
           </label>
           <div className="grid grid-cols-3 gap-2">
             {[
-              { id: 'quick', label: '🚀 Quick Scan', description: '5-10 min review' },
-              { id: 'standard', label: '📊 Standard', description: '15-30 min analysis' },
-              { id: 'deep', label: '🔍 Deep Dive', description: '1+ hour research' }
+              { id: 'quick', label: 'Quick Scan', description: '5-10 min review' },
+              { id: 'standard', label: 'Standard', description: '15-30 min analysis' },
+              { id: 'deep', label: 'Deep Dive', description: '1+ hour research' }
             ].map((option) => (
               <button
                 key={option.id}
@@ -137,7 +132,7 @@ export default function ResearcherQuickFlag({
                 className={`p-3 border rounded-lg text-sm text-left transition-all ${
                   analysisDepth === option.id
                     ? 'bg-purple-500/20 border-purple-500/30 text-purple-300'
-                    : 'border-sifter-border text-gray-400 hover:border-purple-500/50 hover:bg-purple-500/10'
+                    : 'border-sifter-border text-sifter-text-muted hover:border-purple-500/50 hover:bg-purple-500/10'
                 }`}
               >
                 <div className="font-medium">{option.label}</div>
@@ -149,14 +144,13 @@ export default function ResearcherQuickFlag({
 
         {/* Severity Selection */}
         <div>
-          <label className="block text-sm text-gray-400 mb-2">
-            Severity Assessment
+          <label className="block text-sm text-sifter-text-muted mb-2"> Severity Assessment
           </label>
           <div className="grid grid-cols-3 gap-2">
             {[
-              { id: 'critical', label: '🔥 Critical', color: 'bg-red-500/20 border-red-500/30' },
-              { id: 'high', label: '⚠️ High', color: 'bg-orange-500/20 border-orange-500/30' },
-              { id: 'medium', label: '🚩 Medium', color: 'bg-amber-500/20 border-amber-500/30' }
+              { id: 'critical', label: 'Critical', color: 'bg-red-500/20 border-red-500/30' },
+              { id: 'high', label: 'High', color: 'bg-orange-500/20 border-orange-500/30' },
+              { id: 'medium', label: 'Medium', color: 'bg-amber-500/20 border-amber-500/30' }
             ].map((option) => (
               <button
                 key={option.id}
@@ -165,7 +159,7 @@ export default function ResearcherQuickFlag({
                 className={`p-3 border rounded-lg text-sm font-medium transition-all ${
                   severity === option.id
                     ? `${option.color} text-white`
-                    : 'border-sifter-border text-gray-400 hover:border-purple-500/50'
+                    : 'border-sifter-border text-sifter-text-muted hover:border-purple-500/50'
                 }`}
               >
                 {option.label}
@@ -176,8 +170,7 @@ export default function ResearcherQuickFlag({
 
         {/* Data Sources */}
         <div>
-          <label className="block text-sm text-gray-400 mb-2">
-            Data Sources Used
+          <label className="block text-sm text-sifter-text-muted mb-2"> Data Sources Used
           </label>
           <div className="flex flex-wrap gap-2">
             {availableDataSources.map((source) => (
@@ -188,23 +181,21 @@ export default function ResearcherQuickFlag({
                 className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
                   dataSources.includes(source)
                     ? 'bg-purple-500/30 text-purple-300 border border-purple-500/50'
-                    : 'bg-gray-800/50 text-gray-400 border border-sifter-border hover:border-purple-500/50'
+                    : 'bg-sifter-elevated/50 text-sifter-text-muted border border-sifter-border hover:border-purple-500/50'
                 }`}
               >
                 {source}
               </button>
             ))}
           </div>
-          <p className="text-xs text-gray-500 mt-2">
-            Selected: {dataSources.join(', ')}
+          <p className="text-xs text-sifter-text-subtle mt-2"> Selected: {dataSources.join(', ')}
           </p>
         </div>
 
         {/* Evidence Links */}
         <div>
           <div className="flex justify-between items-center mb-2">
-            <label className="block text-sm text-gray-400">
-              Evidence Links
+            <label className="block text-sm text-sifter-text-muted"> Evidence Links
             </label>
             <button
               type="button"
@@ -234,15 +225,14 @@ export default function ResearcherQuickFlag({
               )}
             </div>
           ))}
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-sifter-text-subtle mt-1">
             {validEvidenceLinks.length} evidence link(s) added
           </p>
         </div>
 
         {/* Methodology */}
         <div>
-          <label className="block text-sm text-gray-400 mb-2">
-            Methodology & Approach
+          <label className="block text-sm text-sifter-text-muted mb-2"> Methodology & Approach
           </label>
           <textarea
             value={methodology}
@@ -251,15 +241,13 @@ export default function ResearcherQuickFlag({
             placeholder="Describe your research methodology. e.g., 'Used on-chain analysis tools to track fund flows...'"
             rows={3}
           />
-          <p className="text-xs text-gray-500 mt-1">
-            Helps other researchers understand and verify your findings
+          <p className="text-xs text-sifter-text-subtle mt-1"> Helps other researchers understand and verify your findings
           </p>
         </div>
 
         {/* Pattern Analysis */}
         <div>
-          <label className="block text-sm text-gray-400 mb-2">
-            Pattern Analysis
+          <label className="block text-sm text-sifter-text-muted mb-2"> Pattern Analysis
           </label>
           <textarea
             value={patternAnalysis}
@@ -268,23 +256,20 @@ export default function ResearcherQuickFlag({
             placeholder="Patterns identified. e.g., 'Similar to rug pull pattern #3, shows same token distribution method...'"
             rows={3}
           />
-          <p className="text-xs text-gray-500 mt-1">
-            Compare with known patterns in the database
+          <p className="text-xs text-sifter-text-subtle mt-1"> Compare with known patterns in the database
           </p>
         </div>
 
         {/* Points Info */}
-        <div className="p-3 bg-gradient-to-r from-purple-500/10 to-purple-600/10 border border-purple-500/30 rounded-lg">
+        <div className="p-3 bg-sifter-elevated border border-purple-500/30 rounded-lg">
           <div className="flex justify-between items-center">
-            <div className="text-sm text-gray-400">Points Earned</div>
+            <div className="text-sm text-sifter-text-muted">Points Earned</div>
             <div className="text-lg font-bold text-amber-400">30</div>
           </div>
-          <div className="text-xs text-purple-400 mt-1">
-            🔬 Researcher Mode: {analysisDepth === 'deep' ? 'Deep Dive (Bonus)' : 
+          <div className="text-xs text-purple-400 mt-1"> Researcher Mode: {analysisDepth === 'deep' ? 'Deep Dive (Bonus)' : 
                                analysisDepth === 'standard' ? 'Standard Analysis' : 'Quick Scan'}
           </div>
-          <div className="text-xs text-purple-300 mt-1">
-            📊 Sources: {dataSources.length} data sources
+          <div className="text-xs text-purple-300 mt-1"> Sources: {dataSources.length} data sources
           </div>
         </div>
 
@@ -295,9 +280,8 @@ export default function ResearcherQuickFlag({
               type="button"
               onClick={onCancel}
               disabled={isSubmitting}
-              className="flex-1 px-4 py-3 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg font-medium transition-colors disabled:opacity-50"
-            >
-              Cancel
+              className="flex-1 px-4 py-3 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover rounded-lg font-medium transition-colors disabled:opacity-50"
+            > Cancel
             </button>
           )}
           
@@ -305,7 +289,7 @@ export default function ResearcherQuickFlag({
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 
+            className="flex-1 px-4 py-3 bg-sifter-blue hover:bg-sifter-blue-hover 
                      text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed
                      flex items-center justify-center gap-2"
           >
@@ -314,12 +298,10 @@ export default function ResearcherQuickFlag({
                 <svg className="animate-spin w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Submitting...
+                </svg> Submitting...
               </>
             ) : (
-              <>
-                🔬 Quick Flag
+              <> Quick Flag
                 <span className="text-xs bg-white/20 px-2 py-1 rounded">30 pts</span>
               </>
             )}
