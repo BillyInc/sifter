@@ -1,127 +1,129 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Sifter design foundation.
+ * Colour values mirror `tailwind.config.ts` (theme.extend.colors.sifter).
+ * Inter is loaded by next/font in `src/app/layout.tsx`; do not @import it here.
+ */
 :root {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 10, 10, 15;
-  --background-end-rgb: 10, 10, 15;
-  
-  /* Nansen-style: Smaller base font */
+  --sifter-dark: #0A0E1A;
+  --sifter-card: #141824;
+  --sifter-elevated: #1A1F2E;
+  --sifter-hover: #1F2433;
+  --sifter-border: #1F2937;
+  --sifter-border-strong: #374151;
+  --sifter-text: #F9FAFB;
+  --sifter-text-muted: #9CA3AF;
+  --sifter-text-subtle: #6B7280;
+  --sifter-blue: #3B82F6;
+  --sifter-blue-hover: #2563EB;
+  --sifter-success: #10B981;
+  --sifter-warning: #F59E0B;
+  --sifter-danger: #EF4444;
+
   --base-font-size: 14px;
+  color-scheme: dark;
+}
+
+html {
+  background: var(--sifter-dark);
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  color: var(--sifter-text);
+  background: var(--sifter-dark);
   min-height: 100vh;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: var(--base-font-size); /* 14px like Nansen */
+  font-size: var(--base-font-size);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Keyboard focus is always visible; mouse focus is not. */
+:focus-visible {
+  outline: 2px solid var(--sifter-blue);
+  outline-offset: 2px;
+  border-radius: 0.375rem;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+::selection {
+  background: rgb(59 130 246 / 0.35);
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
-  
-  /* Nansen-style compact utilities */
+
+  /* Compact-mode utilities used by data views */
   .compact-text {
-    font-size: 0.875rem; /* 14px */
+    font-size: 0.875rem;
   }
-  
   .compact-spacing {
-    padding: 0.75rem; /* 12px */
+    padding: 0.75rem;
   }
-  
   .compact-gap {
-    gap: 0.5rem; /* 8px */
+    gap: 0.5rem;
   }
 }
 
-/* Custom scrollbar - Nansen style */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
-
 ::-webkit-scrollbar-track {
-  background: #0A0E1A; /* Darker like Nansen */
+  background: var(--sifter-dark);
 }
-
 ::-webkit-scrollbar-thumb {
-  background: #1F2937;
+  background: var(--sifter-border);
   border-radius: 4px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: #374151;
+  background: var(--sifter-border-strong);
 }
 
-/* Loading animation */
+/* Loading shimmer */
 @keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
-
 .shimmer {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
 
-/* Fade in animation */
+/* Fade in */
 @keyframes fadeIn {
-  from { 
-    opacity: 0; 
-    transform: translateY(10px); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-out forwards;
 }
 
-/* Hide scrollbar but keep functionality */
+/* Hide horizontal scrollbar but keep scrolling */
 .overflow-x-auto::-webkit-scrollbar {
   display: none;
 }
-
 .overflow-x-auto {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
-/* Nansen-style card */
+/* Legacy Nansen-style helpers (still referenced by compact data views) */
 .nansen-card {
-  background: #141824;
-  border: 1px solid #1F2937;
+  background: var(--sifter-card);
+  border: 1px solid var(--sifter-border);
   border-radius: 0.75rem;
   padding: 1rem;
 }
-
-/* Nansen-style button */
 .nansen-btn {
   font-size: 0.875rem;
   font-weight: 500;
@@ -129,12 +131,22 @@ body {
   border-radius: 0.5rem;
   transition: all 0.2s;
 }
-
 .nansen-btn-primary {
   background: #00D4AA;
   color: white;
 }
-
 .nansen-btn-primary:hover {
   background: #00C199;
+}
+
+/* Honour the user's reduced-motion preference everywhere. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
