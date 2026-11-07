@@ -566,6 +566,10 @@ const EABatchDashboard: React.FC<EABatchDashboardProps> =({
   const [selectedProject, setSelectedProject] = useState<ExtendedBatchProject | null>(null);
   const [projectData, setProjectData] = useState<ProjectData | null>(null);
   const [detailedMetrics, setDetailedMetrics] = useState<MetricData[]>([]);
+  // Where the headline score on the detail view came from. `false` = a batch row or an
+  // average of raw scores, so the contribution strip is only a comparison. `undefined` =
+  // summed from the displayed contributions, so MetricBreakdown verifies the match itself.
+  const [headlineFromMetrics, setHeadlineFromMetrics] = useState<boolean | undefined>(false);
   const [batchTextInput, setBatchTextInput] = useState<string>('');
   const [processing, setProcessing] = useState(false);
   // NEW: Bulk flagging state
@@ -734,6 +738,7 @@ const EABatchDashboard: React.FC<EABatchDashboardProps> =({
       const mockMetrics = createMetricsArray();
       const metricsWithScore = ensureMetricsHaveScore(mockMetrics);
       setDetailedMetrics(metricsWithScore);
+      setHeadlineFromMetrics(false);
 
       const compositeScore = Math.round(
         metricsWithScore.reduce((sum, m) => sum + (m.score || 0), 0) / metricsWithScore.length
@@ -935,6 +940,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
 
       setProjectData(mockProjectData);
       setDetailedMetrics(filteredMetrics);
+      setHeadlineFromMetrics(undefined);
       setSelectedProject({
         id: `project_${Date.now()}`,
         name: projectName,
@@ -1005,7 +1011,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
           metrics={detailedMetrics}
           projectName={selectedProject.name}
           riskScore={riskScore}
-          headlineFromMetrics={false}
+          headlineFromMetrics={headlineFromMetrics}
           onExport={() => {
             handleExportAnalysis(projectData);
           }}
@@ -1063,6 +1069,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
               setSelectedProject(enrichedProject);
               setProjectData(fullProjectData);
               setDetailedMetrics(fullProjectData.metrics);
+              setHeadlineFromMetrics(false);
               setShowSingleAnalysis(true);
 
               if (onViewProjectDetails) {
