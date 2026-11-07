@@ -214,20 +214,6 @@ export default function MetricBreakdown({
                 ) : null,
               )}
             </div>
-            {/* The bar is visual only; this list gives screen-reader and keyboard users the same shares. */}
-            <ul
-              className="sr-only"
-              aria-label={stripMatchesHeadline ? 'Share of risk score by metric' : 'Weighted metric scores compared'}
-            >
-              {rows.map((r) =>
-                r.contribution > 0 ? (
-                  <li key={r.id}>
-                    {r.name}: {Math.round((r.contribution / totalContribution) * 100)}% of{' '}
-                    {stripMatchesHeadline ? 'the score' : 'the weighted total'}
-                  </li>
-                ) : null,
-              )}
-            </ul>
             <p className="mt-2 text-sm text-sifter-text-muted">
               {stripMatchesHeadline ? 'Driven mostly by' : 'Highest weighted signals:'}{' '}
               {topDrivers.map((d, i) => (
@@ -237,6 +223,23 @@ export default function MetricBreakdown({
                 </React.Fragment>
               ))}
             </p>
+            {/* The bar is visual only. This disclosure shows every metric's share as text, and a
+                native <details> is reachable and operable by keyboard as well as announced by screen readers. */}
+            <details className="mt-2 text-sm">
+              <summary className="cursor-pointer text-sifter-text-muted hover:text-sifter-text">
+                {stripMatchesHeadline ? 'Share of score by metric' : 'Weighted comparison by metric'}
+              </summary>
+              <ul className="mt-2 grid gap-x-6 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
+                {rows.map((r) =>
+                  r.contribution > 0 ? (
+                    <li key={r.id} className="flex justify-between gap-3 text-sifter-text-muted">
+                      <span className="truncate text-sifter-text">{r.name}</span>
+                      <span className="tabular-nums">{Math.round((r.contribution / totalContribution) * 100)}%</span>
+                    </li>
+                  ) : null,
+                )}
+              </ul>
+            </details>
           </div>
         )}
       </header>
