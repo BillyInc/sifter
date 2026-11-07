@@ -13,6 +13,12 @@ interface MetricBreakdownProps {
   projectData?: ProjectData;
   instanceId?: string;
   compact?: boolean;
+  /**
+   * Whether `riskScore` was computed from these same metric rows. When false the
+   * contribution strip is presented as a weighted comparison, never as a share
+   * of the headline. Defaults to a numeric check for callers that do not say.
+   */
+  headlineFromMetrics?: boolean;
 }
 
 /** Plain-language description per metric key. Weights come from the metric data itself. */
@@ -68,6 +74,7 @@ export default function MetricBreakdown({
   projectData,
   instanceId = '',
   compact = false,
+  headlineFromMetrics,
 }: MetricBreakdownProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [showShare, setShowShare] = useState(false);
@@ -109,9 +116,10 @@ export default function MetricBreakdown({
   const totalContribution = rows.reduce((sum, r) => sum + r.contribution, 0);
   const overallScore = riskScore || Math.round(totalContribution);
   // The strip is only a "share of the score" when these rows actually produced it.
-  // Some callers pass a headline computed elsewhere (e.g. a batch row) with freshly
-  // generated metrics; in that case present the strip as a comparison instead.
-  const stripMatchesHeadline = !riskScore || Math.abs(riskScore - Math.round(totalContribution)) <= 1;
+  // Callers that pass a headline computed elsewhere say so via headlineFromMetrics;
+  // otherwise fall back to a numeric check against the rows' own total.
+  const stripMatchesHeadline =
+    headlineFromMetrics ?? (!riskScore || Math.abs(riskScore - Math.round(totalContribution)) <= 1);
   const verdict = getVerdict(overallScore);
   const tier = getRiskTier(overallScore);
   const topDrivers = rows.slice(0, 3);

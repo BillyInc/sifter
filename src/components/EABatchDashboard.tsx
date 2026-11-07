@@ -1005,6 +1005,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
           metrics={detailedMetrics}
           projectName={selectedProject.name}
           riskScore={riskScore}
+          headlineFromMetrics={false}
           onExport={() => {
             handleExportAnalysis(projectData);
           }}
