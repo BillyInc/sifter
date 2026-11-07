@@ -630,7 +630,7 @@ export default function SubmissionForm({
             <label htmlFor="anonymous" className="text-sm text-sifter-text"> Submit anonymously
             </label>
           </div>
-          <p className="text-xs text-sifter-text-subtle"> Your name won't appear publicly, but you'll receive fewer points (no credibility bonus)
+          <p className="text-xs text-sifter-text-subtle"> Your name won&apos;t appear publicly, but you&apos;ll receive fewer points (no credibility bonus)
           </p>
         </div>
 

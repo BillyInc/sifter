@@ -70,7 +70,7 @@ export default function ManualVerification({ submission, verification, onDecisio
       {/* Google Search Tab */}
       {activeTab === 'google' && (
         <div className="space-y-4">
-          <button onClick={handleGoogleSearch} className="px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg"> Search Google for "{submission.entityName} scam"
+          <button onClick={handleGoogleSearch} className="px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg"> Search Google for &quot;{submission.entityName} scam&quot;
           </button>
           {googleResults.map((result, idx) => (
             <div key={idx} className="p-3 border border-sifter-border rounded-lg">
@@ -85,7 +85,7 @@ export default function ManualVerification({ submission, verification, onDecisio
       {/* Social Media Tab */}
       {activeTab === 'social' && (
         <div className="space-y-4">
-          <button onClick={handleSocialSearch} className="px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg"> Find social profiles for "{submission.entityName}"
+          <button onClick={handleSocialSearch} className="px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg"> Find social profiles for &quot;{submission.entityName}&quot;
           </button>
           {socialProfiles.map((profile, idx) => (
             <div key={idx} className="p-3 border border-sifter-border rounded-lg">

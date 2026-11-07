@@ -202,7 +202,7 @@ export default function BatchResultsTable({ projects, onViewDetails, onExport }:
                 {title} ({count})
               </h3>
               {verdict === 'reject' && (
-                <p className="text-sm text-sifter-text-muted">Don't forward to partner</p>
+                <p className="text-sm text-sifter-text-muted">Don&apos;t forward to partner</p>
               )}
               {verdict === 'flag' && (
                 <p className="text-sm text-sifter-text-muted">Needs your review</p>

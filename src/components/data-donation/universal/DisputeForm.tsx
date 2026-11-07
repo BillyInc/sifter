@@ -169,7 +169,7 @@ export default function DisputeForm({
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold text-white mb-2">Step 1: Your Relationship to the Entity</h3>
-        <p className="text-sm text-sifter-text-muted"> Please specify how you're connected to "{entityName || 'this entity'}"
+        <p className="text-sm text-sifter-text-muted"> Please specify how you&apos;re connected to &quot;{entityName || 'this entity'}&quot;
         </p>
       </div>
       

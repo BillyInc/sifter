@@ -220,7 +220,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
       </div>
       
       <div className="mt-6">
-        <label className="block text-sm text-sifter-text-muted mb-2"> Quick summary of what you're disputing:
+        <label className="block text-sm text-sifter-text-muted mb-2"> Quick summary of what you&apos;re disputing:
         </label>
         <div className="flex flex-wrap gap-2">
           {formData.categories.map(category => (
@@ -280,16 +280,16 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
         <div className="bg-sifter-dark/50 border border-sifter-border rounded-lg p-4 text-sm text-sifter-text">
           <div className="space-y-2">
             <p><strong>1. What specific information is incorrect?</strong></p>
-            <p className="ml-4 text-sifter-text-muted">"The entry states that we [incorrect statement], but in reality..."</p>
+            <p className="ml-4 text-sifter-text-muted">&quot;The entry states that we [incorrect statement], but in reality...&quot;</p>
             
             <p><strong>2. Why is it incorrect?</strong></p>
-            <p className="ml-4 text-sifter-text-muted">"This is incorrect because [evidence/reason]..."</p>
+            <p className="ml-4 text-sifter-text-muted">&quot;This is incorrect because [evidence/reason]...&quot;</p>
             
             <p><strong>3. What is the correct information?</strong></p>
-            <p className="ml-4 text-sifter-text-muted">"The accurate information should be [correct details]..."</p>
+            <p className="ml-4 text-sifter-text-muted">&quot;The accurate information should be [correct details]...&quot;</p>
             
             <p><strong>4. Supporting evidence (briefly mention):</strong></p>
-            <p className="ml-4 text-sifter-text-muted">"This is supported by [evidence you'll upload]..."</p>
+            <p className="ml-4 text-sifter-text-muted">&quot;This is supported by [evidence you&apos;ll upload]...&quot;</p>
           </div>
         </div>
       </div>
@@ -304,7 +304,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
       <div className="bg-sifter-dark/50 border border-sifter-border rounded-lg p-4 mb-4">
         <h3 className="font-medium text-white mb-2"> How This Works:</h3>
         <ul className="text-sm text-sifter-text-muted space-y-1">
-          <li>• We've listed each allegation from the database entry</li>
+          <li>• We&apos;ve listed each allegation from the database entry</li>
           <li>• For each one, provide your response</li>
           <li>• Link to counter-evidence where relevant</li>
         </ul>

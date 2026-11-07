@@ -650,8 +650,8 @@ export default function ResearchReport({
             <h4 className="font-semibold text-white mb-2">Thematic Analysis Findings</h4>
             <p className="text-sifter-text mb-2">Primary themes identified:</p>
             <ul className="text-sm text-sifter-text space-y-1">
-              <li>• <span className="text-red-400">Urgency/FOMO:</span> "Last chance", "Don't miss out" (32% of messages)</li>
-              <li>• <span className="text-orange-400">Vague promises:</span> "Big news coming", "Partnerships" (28% of messages)</li>
+              <li>• <span className="text-red-400">Urgency/FOMO:</span> &quot;Last chance&quot;, &quot;Don&apos;t miss out&quot; (32% of messages)</li>
+              <li>• <span className="text-orange-400">Vague promises:</span> &quot;Big news coming&quot;, &quot;Partnerships&quot; (28% of messages)</li>
               <li>• <span className="text-yellow-400">Artificial community:</span> Generic praise, low information replies (40% of messages)</li>
               <li>• <span className="text-purple-400">Engagement patterns:</span> Low authentic interaction, copy-paste replies</li>
             </ul>
@@ -694,8 +694,8 @@ export default function ResearchReport({
             <h4 className="font-semibold text-white mb-2">Narrative Analysis Findings</h4>
             <p className="text-sifter-text mb-2">Story structure detected:</p>
             <ul className="text-sm text-sifter-text space-y-1">
-              <li>• "Underdog to hero" narrative without substance</li>
-              <li>• Frequent narrative resetting (3 major "pivot" announcements)</li>
+              <li>• &quot;Underdog to hero&quot; narrative without substance</li>
+              <li>• Frequent narrative resetting (3 major &quot;pivot&quot; announcements)</li>
               <li>• Contradictions between early promises and current reality</li>
               <li>• Blame externalization pattern present</li>
               <li>• Founder attention split across multiple narratives</li>

@@ -322,7 +322,7 @@ export default function RewardsShop({ userProfile, rewards, onRedeem,  onPurchas
               <div className="flex items-start gap-3">
                 <div className="text-amber-400 mt-1">ℹ</div>
                 <div className="text-sm text-amber-300"> After redemption, our team will process your request within 24-48 hours. 
-                  You'll receive a notification when your reward is ready.
+                  You&apos;ll receive a notification when your reward is ready.
                 </div>
               </div>
             </div>

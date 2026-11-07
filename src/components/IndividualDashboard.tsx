@@ -1614,7 +1614,7 @@ export default function IndividualDashboard({
     <div className="animate-fadeIn">
       <div className="mb-4">
         <h2 className="text-lg font-bold text-white mb-1">Your Watchlist</h2>
-        <p className="text-xs text-sifter-text-muted">Projects you're actively monitoring</p>
+        <p className="text-xs text-sifter-text-muted">Projects you&apos;re actively monitoring</p>
       </div>
       
       {watchlist.length > 0 ? (

@@ -65,7 +65,7 @@ export default function BatchSummary({ job, onOpenBulkFlagging }: BatchSummaryPr
 
         
         <div className="bg-red-500/10 border border-red-500/30 p-6 rounded-xl">
-          <div className="text-sm text-sifter-text-muted mb-1">Reject (Don't forward)</div>
+          <div className="text-sm text-sifter-text-muted mb-1">Reject (Don&apos;t forward)</div>
           <div className="text-3xl font-bold text-red-400">
             {summary.rejected} ({getPercentage(summary.rejected)}%)
           </div>

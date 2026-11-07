@@ -57,7 +57,7 @@ export default function DisputeConfirmationPage() {
             <span className="font-mono text-blue-400 text-xl">{caseId}</span>
             <span className="text-sifter-text-muted">Save this Case ID</span>
           </div>
-          <p className="text-sifter-text-muted max-w-2xl mx-auto"> Your dispute has been submitted to our review team. We'll contact you within 24 hours to verify your identity.
+          <p className="text-sifter-text-muted max-w-2xl mx-auto"> Your dispute has been submitted to our review team. We&apos;ll contact you within 24 hours to verify your identity.
           </p>
         </div>
 
@@ -170,11 +170,11 @@ export default function DisputeConfirmationPage() {
           <ul className="space-y-2 text-sifter-text">
             <li className="flex items-start gap-2">
               <span className="text-amber-400">•</span>
-              <span>Keep your Case ID safe - you'll need it for all communications</span>
+              <span>Keep your Case ID safe - you&apos;ll need it for all communications</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-amber-400">•</span>
-              <span>We'll contact you within 24 hours for identity verification</span>
+              <span>We&apos;ll contact you within 24 hours for identity verification</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-amber-400">•</span>

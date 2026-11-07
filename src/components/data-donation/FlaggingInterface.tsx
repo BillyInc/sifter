@@ -401,7 +401,7 @@ export default function FlaggingInterface({
           {/* Header */}
           <div className="text-center mb-6">
             <h3 className="text-2xl font-bold text-white mb-2">Submission Successful!</h3>
-            <p className="text-sifter-text-muted">You've earned rewards for your contribution</p>
+            <p className="text-sifter-text-muted">You&apos;ve earned rewards for your contribution</p>
           </div>
           
           {/* Points Awarded */}

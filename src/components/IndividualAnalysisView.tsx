@@ -256,7 +256,7 @@ const formatHyperBlitzReport = (reportData: any, detectedChain?: string) => {
             <div className="ml-4 space-y-1">
               <div className="flex items-start gap-2">
                 <span className="text-blue-400 mt-1">├─</span>
-                <span className="text-white">Same talking points: "100x", "Elon tweet incoming"</span>
+                <span className="text-white">Same talking points: &quot;100x&quot;, &quot;Elon tweet incoming&quot;</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-blue-400 mt-1">├─</span>
@@ -693,7 +693,7 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
             </div>
             <div className="flex items-start gap-2">
               <span className="text-purple-400 mt-1">└─</span>
-              <span className="text-white">Keywords: "moon" (47), "100x" (8), "gem" (31)</span>
+              <span className="text-white">Keywords: &quot;moon&quot; (47), &quot;100x&quot; (8), &quot;gem&quot; (31)</span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-purple-400 mt-1">└─</span>
@@ -1223,7 +1223,7 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
 
       {/* SNA's Role in Metric Assessment */}
       <div className="bg-sifter-card border border-green-500/20 rounded-xl p-6">
-        <h3 className="font-bold text-white text-xl mb-4"> SNA'S ROLE IN METRIC ASSESSMENT</h3>
+        <h3 className="font-bold text-white text-xl mb-4"> SNA&apos;S ROLE IN METRIC ASSESSMENT</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="border border-blue-500/20 rounded-lg p-4 bg-blue-500/5">
             <h4 className="text-blue-400 font-medium mb-2">SNA PROVIDES MAPS FOR THESE METRICS:</h4>
@@ -1239,8 +1239,8 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
           
           <div className="border border-green-500/20 rounded-lg p-4 bg-green-500/5">
             <h4 className="text-green-400 font-medium mb-2">EXAMPLE WITH SNA CONTEXT:</h4>
-            <p className="text-sm text-sifter-text"> Without SNA, Metric #3 would just be "no direct bad actor connections"With SNA: "No direct connections, AND network structure is healthy (decentralized, 
-              natural clusters, founder appropriately central)"
+            <p className="text-sm text-sifter-text"> Without SNA, Metric #3 would just be &quot;no direct bad actor connections&quot;With SNA: &quot;No direct connections, AND network structure is healthy (decentralized, 
+              natural clusters, founder appropriately central)&quot;
             </p>
           </div>
         </div>
