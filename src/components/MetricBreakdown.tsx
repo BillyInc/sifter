@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { MetricData, ProjectData, getRiskTier, getVerdict } from '@/types';
+import { MetricData, ProjectData, VerdictType, getRiskTier, getVerdict } from '@/types';
 import { Badge, Button, cn } from '@/components/ui';
 
 interface MetricBreakdownProps {
@@ -19,6 +19,11 @@ interface MetricBreakdownProps {
    * of the headline. Defaults to a numeric check for callers that do not say.
    */
   headlineFromMetrics?: boolean;
+  /**
+   * The verdict the analysis already assigned. Pass it so this view matches the
+   * verdict card shown alongside it; the fallback only derives one from the score.
+   */
+  verdict?: VerdictType;
 }
 
 /** Plain-language description per metric key. Weights come from the metric data itself. */
@@ -75,6 +80,7 @@ export default function MetricBreakdown({
   instanceId = '',
   compact = false,
   headlineFromMetrics,
+  verdict: verdictProp,
 }: MetricBreakdownProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [showShare, setShowShare] = useState(false);
@@ -120,7 +126,7 @@ export default function MetricBreakdown({
   // otherwise fall back to a numeric check against the rows' own total.
   const stripMatchesHeadline =
     headlineFromMetrics ?? (!riskScore || Math.abs(riskScore - Math.round(totalContribution)) <= 1);
-  const verdict = getVerdict(overallScore);
+  const verdict = verdictProp ?? getVerdict(overallScore);
   const tier = getRiskTier(overallScore);
   const topDrivers = rows.slice(0, 3);
 
@@ -197,11 +203,7 @@ export default function MetricBreakdown({
         {/* Contribution strip: how much each metric pushed the score up */}
         {totalContribution > 0 && (
           <div className="mt-6">
-            <div
-              className="flex h-3 w-full overflow-hidden rounded-full bg-sifter-dark"
-              role="img"
-              aria-label={stripMatchesHeadline ? 'Share of risk score by metric' : 'Weighted metric scores compared'}
-            >
+            <div className="flex h-3 w-full overflow-hidden rounded-full bg-sifter-dark" aria-hidden="true">
               {rows.map((r) => r.contribution > 0 ? (
                   <div
                     key={r.id}
@@ -212,6 +214,20 @@ export default function MetricBreakdown({
                 ) : null,
               )}
             </div>
+            {/* The bar is visual only; this list gives screen-reader and keyboard users the same shares. */}
+            <ul
+              className="sr-only"
+              aria-label={stripMatchesHeadline ? 'Share of risk score by metric' : 'Weighted metric scores compared'}
+            >
+              {rows.map((r) =>
+                r.contribution > 0 ? (
+                  <li key={r.id}>
+                    {r.name}: {Math.round((r.contribution / totalContribution) * 100)}% of{' '}
+                    {stripMatchesHeadline ? 'the score' : 'the weighted total'}
+                  </li>
+                ) : null,
+              )}
+            </ul>
             <p className="mt-2 text-sm text-sifter-text-muted">
               {stripMatchesHeadline ? 'Driven mostly by' : 'Highest weighted signals:'}{' '}
               {topDrivers.map((d, i) => (

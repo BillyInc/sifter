@@ -1022,6 +1022,7 @@ export default function IndividualDashboard({
             <MetricBreakdown
               metrics={analysisResults.metrics}
               riskScore={analysisResults.riskScore}
+              verdict={analysisResults.verdict}
               projectName={analysisResults.projectName}
               onBack={resetAnalysis}
             />

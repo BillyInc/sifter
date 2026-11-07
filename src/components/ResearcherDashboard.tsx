@@ -1072,6 +1072,7 @@ export default function ResearcherDashboard({
                   metrics={currentProject.metrics}
                   projectName={currentProject.displayName}
                   riskScore={currentProject.overallRisk.score}
+                  verdict={currentProject.overallRisk.verdict}
                   onExport={() => handleExportAnalysis('pdf', currentProject)}
                   projectData={currentProject}
                   compact={compact}

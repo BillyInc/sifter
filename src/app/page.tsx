@@ -1446,6 +1446,7 @@ export default function Home() {
                 metrics={detailedMetrics}
                 projectName={verdictData.projectName}
                 riskScore={verdictData.riskScore}
+                verdict={verdictData.verdict}
                 projectData={projectData || undefined}
                 onExport={() => {
                   if (projectData) {
@@ -1714,6 +1715,7 @@ export default function Home() {
                 metrics={detailedMetrics}
                 projectName={verdictData.projectName}
                 riskScore={verdictData.riskScore}
+                verdict={verdictData.verdict}
                 projectData={projectData || undefined}
                 onExport={() => {
                   if (projectData) {
