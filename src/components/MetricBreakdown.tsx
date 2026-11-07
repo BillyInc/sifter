@@ -108,6 +108,10 @@ export default function MetricBreakdown({
 
   const totalContribution = rows.reduce((sum, r) => sum + r.contribution, 0);
   const overallScore = riskScore || Math.round(totalContribution);
+  // The strip is only a "share of the score" when these rows actually produced it.
+  // Some callers pass a headline computed elsewhere (e.g. a batch row) with freshly
+  // generated metrics; in that case present the strip as a comparison instead.
+  const stripMatchesHeadline = !riskScore || Math.abs(riskScore - Math.round(totalContribution)) <= 1;
   const verdict = getVerdict(overallScore);
   const tier = getRiskTier(overallScore);
   const topDrivers = rows.slice(0, 3);
@@ -185,18 +189,23 @@ export default function MetricBreakdown({
         {/* Contribution strip: how much each metric pushed the score up */}
         {totalContribution > 0 && (
           <div className="mt-6">
-            <div className="flex h-3 w-full overflow-hidden rounded-full bg-sifter-dark" role="img" aria-label="Share of risk score by metric">
+            <div
+              className="flex h-3 w-full overflow-hidden rounded-full bg-sifter-dark"
+              role="img"
+              aria-label={stripMatchesHeadline ? 'Share of risk score by metric' : 'Weighted metric scores compared'}
+            >
               {rows.map((r) => r.contribution > 0 ? (
                   <div
                     key={r.id}
-                    title={`${r.name}: ${Math.round((r.contribution / totalContribution) * 100)}% of score`}
+                    title={`${r.name}: ${Math.round((r.contribution / totalContribution) * 100)}% of ${stripMatchesHeadline ? 'score' : 'weighted total'}`}
                     className={cn('h-full border-r border-sifter-card last:border-r-0', LEVEL_STYLE[r.level].bar)}
                     style={{ width: `${(r.contribution / totalContribution) * 100}%` }}
                   />
                 ) : null,
               )}
             </div>
-            <p className="mt-2 text-sm text-sifter-text-muted"> Driven mostly by{' '}
+            <p className="mt-2 text-sm text-sifter-text-muted">
+              {stripMatchesHeadline ? 'Driven mostly by' : 'Highest weighted signals:'}{' '}
               {topDrivers.map((d, i) => (
                 <React.Fragment key={d.id}>
                   <span className="text-sifter-text">{d.name}</span>
