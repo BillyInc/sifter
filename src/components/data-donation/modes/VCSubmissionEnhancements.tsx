@@ -47,8 +47,9 @@ export default function VCSubmissionEnhancements({
               checked={isConfidential}
               onChange={(e) => handleConfidentialToggle(e.target.checked)}
               className="sr-only peer"
+              aria-label="Mark submission as confidential"
             />
-            <div className="w-11 h-6 bg-sifter-hover peer-focus:outline-none rounded-full peer 
+            <div className="w-11 h-6 bg-sifter-hover peer-focus-visible:ring-2 peer-focus-visible:ring-sifter-blue peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-sifter-card rounded-full peer 
                          peer-checked:after:translate-x-full peer-checked:after:border-white 
                          after:content-[''] after:absolute after:top-[2px] after:left-[2px] 
                          after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all 

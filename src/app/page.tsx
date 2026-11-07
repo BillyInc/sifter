@@ -981,7 +981,7 @@ export default function Home() {
       setBatchStats(prev => ({
         ...prev,
         averageProcessingTime: Math.floor(Math.random() * 60000) + 30000,
-        rejectionRate: Math.floor(Math.random() * 40) + 10,
+        rejectionRate: (Math.floor(Math.random() * 40) + 10) / 100,
       }));
       
       handleBatchUploadComplete(updatedJob);
@@ -2141,7 +2141,7 @@ export default function Home() {
                       <input
                         id="loginEmail"
                         type="email"
-                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-black focus:border-blue-500 focus:outline-none transition-colors"
+                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-sifter-text focus:border-blue-500 focus:outline-none transition-colors"
                         placeholder="you@example.com"
                         required
                       />
@@ -2151,7 +2151,7 @@ export default function Home() {
                       <input
                         id="loginPassword"
                         type="password"
-                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-black focus:border-blue-500 focus:outline-none transition-colors"
+                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-sifter-text focus:border-blue-500 focus:outline-none transition-colors"
                         placeholder="Enter your password"
                         required
                       />
@@ -2182,7 +2182,7 @@ export default function Home() {
                       <input
                         id="signupName"
                         type="text"
-                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-black focus:border-blue-500 focus:outline-none transition-colors"
+                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-sifter-text focus:border-blue-500 focus:outline-none transition-colors"
                         placeholder="John Doe"
                         required
                       />
@@ -2192,7 +2192,7 @@ export default function Home() {
                       <input
                         id="signupEmail"
                         type="email"
-                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-black focus:border-blue-500 focus:outline-none transition-colors"
+                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-sifter-text focus:border-blue-500 focus:outline-none transition-colors"
                         placeholder="you@example.com"
                         required
                       />
@@ -2202,7 +2202,7 @@ export default function Home() {
                       <input
                         id="signupPassword"
                         type="password"
-                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-black focus:border-blue-500 focus:outline-none transition-colors"
+                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-sifter-text focus:border-blue-500 focus:outline-none transition-colors"
                         placeholder="Create a strong password"
                         required
                       />
@@ -2212,7 +2212,7 @@ export default function Home() {
                       <input
                         id="signupConfirm"
                         type="password"
-                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-black focus:border-blue-500 focus:outline-none transition-colors"
+                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-sifter-text focus:border-blue-500 focus:outline-none transition-colors"
                         placeholder="Confirm your password"
                         required
                       />
@@ -2276,14 +2276,14 @@ export default function Home() {
               </Button>
 
               {/* Contribute menu: evidence, disputes, tracking, points */}
-              {isLoggedIn && userMode && (
+              {isLoggedIn && (
                 <div className="relative mobile-data-menu">
                   <Button
                     variant="secondary"
                     size="sm"
                     onClick={() => setShowMobileDataMenu(!showMobileDataMenu)}
-                    aria-haspopup="menu"
                     aria-expanded={showMobileDataMenu}
+                    aria-controls="contribute-menu"
                     trailingIcon={
                       <svg className={`w-3.5 h-3.5 transition-transform ${showMobileDataMenu ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -2298,7 +2298,7 @@ export default function Home() {
                   </Button>
 
                   {showMobileDataMenu && (
-                    <div role="menu" className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-sifter-border bg-sifter-card p-1.5 shadow-popover z-[100] animate-fade-up">
+                    <div id="contribute-menu" className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-sifter-border bg-sifter-card p-1.5 shadow-popover z-[100] animate-fade-up">
                       {[
                         { label: 'Submit evidence', hint: 'Flag a project with proof', run: handleNewSubmission },
                         { label: 'File a dispute', hint: 'Challenge a verdict', run: () => setShowDisputeForm(true) },
@@ -2307,7 +2307,6 @@ export default function Home() {
                       ].map((item) => (
                         <button
                           key={item.label}
-                          role="menuitem"
                           onClick={() => {
                             item.run();
                             setShowMobileDataMenu(false);
@@ -2320,7 +2319,6 @@ export default function Home() {
                       ))}
                       <div className="my-1 border-t border-sifter-border sm:hidden" />
                       <button
-                        role="menuitem"
                         onClick={() => {
                           setCompactMode(!compactMode);
                           setShowMobileDataMenu(false);
@@ -2335,7 +2333,7 @@ export default function Home() {
               )}
 
               {/* Account */}
-              {isLoggedIn && userMode && (
+              {isLoggedIn && (
                 <div className="flex items-center gap-2 pl-2 ml-1 border-l border-sifter-border">
                   <div className="hidden md:block text-right leading-tight">
                     <p className="text-sm font-medium text-sifter-text truncate max-w-[140px]">{userName}</p>

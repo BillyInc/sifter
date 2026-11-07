@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { MetricData, ProjectData, getRiskTier, getVerdict } from '@/types';
 import { Badge, Button, cn } from '@/components/ui';
 
@@ -32,7 +32,7 @@ const METRIC_DESCRIPTIONS: Record<string, string> = {
   tokenomics: 'Economic structure and fairness',
 };
 
-/** Fallback weights used only when a metric row carries none. */
+/** Display weights used only when a metric row carries no weight of its own. */
 const METRIC_WEIGHTS_FALLBACK: Record<string, number> = {
   teamIdentity: 13, teamCompetence: 11, contaminatedNetwork: 19, mercenaryKeywords: 9,
   messageTimeEntropy: 5, accountAgeEntropy: 5, tweetFocus: 7, githubAuthenticity: 10,
@@ -71,11 +71,27 @@ export default function MetricBreakdown({
 }: MetricBreakdownProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [showShare, setShowShare] = useState(false);
+  const shareDialogRef = useRef<HTMLDialogElement>(null);
+  const shareTriggerRef = useRef<HTMLButtonElement>(null);
+
+  // Native <dialog> gives focus containment and Escape for free.
+  useEffect(() => {
+    const dialog = shareDialogRef.current;
+    if (!dialog) return;
+    if (showShare && !dialog.open) dialog.showModal();
+    if (!showShare && dialog.open) dialog.close();
+  }, [showShare]);
+
+  // Runs for Escape, Cancel and the action buttons alike; returns focus to the opener.
+  const handleShareClose = () => {
+    setShowShare(false);
+    shareTriggerRef.current?.focus();
+  };
 
   const rows = useMemo(() => {
     const processed = metrics.map((metric, index) => {
       const score = typeof metric.value === 'number' ? metric.value : typeof metric.score === 'number' ? metric.score : 0;
-      const weight = METRIC_WEIGHTS_FALLBACK[metric.key] ?? metric.weight ?? 0;
+      const weight = metric.weight ?? METRIC_WEIGHTS_FALLBACK[metric.key] ?? 0;
       return {
         ...metric,
         id: `${instanceId}_${metric.key}_${index}`,
@@ -155,7 +171,8 @@ export default function MetricBreakdown({
               <p className="mt-1.5 text-xs text-sifter-text-subtle">Higher means riskier</p>
             </div>
             <div className="flex gap-2">
-              <Button variant="secondary" size="sm" onClick={() => setShowShare(true)}> Share
+              <Button ref={shareTriggerRef} variant="secondary" size="sm" onClick={() => setShowShare(true)}>
+                Share
               </Button>
               {onExport && (
                 <Button variant="secondary" size="sm" onClick={onExport}> Export
@@ -259,21 +276,22 @@ export default function MetricBreakdown({
         })}
       </ul>
 
-      {showShare && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="share-title">
-          <div className="w-full max-w-md rounded-xl border border-sifter-border bg-sifter-card p-6 shadow-popover">
-            <h3 id="share-title" className="text-lg font-bold text-sifter-text">Share this analysis</h3>
-            <p className="mt-1 text-sm text-sifter-text-muted">Copies the project name, score and a link to this page.</p>
-            <div className="mt-5 grid gap-2">
-              <Button variant="secondary" fullWidth onClick={copySummary}>Copy summary</Button>
-              <Button variant="secondary" fullWidth onClick={shareToX}>Post on X</Button>
-            </div>
-            <div className="mt-4 flex justify-end">
-              <Button variant="ghost" onClick={() => setShowShare(false)}>Cancel</Button>
-            </div>
-          </div>
+      <dialog
+        ref={shareDialogRef}
+        aria-labelledby="share-title"
+        onClose={handleShareClose}
+        className="w-full max-w-md rounded-xl border border-sifter-border bg-sifter-card p-6 text-sifter-text shadow-popover backdrop:bg-black/70 backdrop:backdrop-blur-sm"
+      >
+        <h3 id="share-title" className="text-lg font-bold text-sifter-text">Share this analysis</h3>
+        <p className="mt-1 text-sm text-sifter-text-muted">Copies the project name, score and a link to this page.</p>
+        <div className="mt-5 grid gap-2">
+          <Button variant="secondary" fullWidth onClick={copySummary}>Copy summary</Button>
+          <Button variant="secondary" fullWidth onClick={shareToX}>Post on X</Button>
         </div>
-      )}
+        <div className="mt-4 flex justify-end">
+          <Button variant="ghost" onClick={() => setShowShare(false)}>Cancel</Button>
+        </div>
+      </dialog>
       {/* projectData is accepted for API compatibility with callers that pass it. */}
       {projectData ? null : null}
     </section>

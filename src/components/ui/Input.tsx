@@ -15,12 +15,13 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
  * Error text is linked with aria-describedby so screen readers announce it.
  */
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input(
-  { label, hint, error, leadingIcon, className, id: idProp, ...rest },
+  { label, hint, error, leadingIcon, className, id: idProp, 'aria-describedby': describedByProp, ...rest },
   ref,
 ) {
   const autoId = useId();
   const id = idProp ?? autoId;
-  const describedBy = error ? `${id}-error` : hint ? `${id}-hint` : undefined;
+  const ownDescribedBy = error ? `${id}-error` : hint ? `${id}-hint` : undefined;
+  const describedBy = [describedByProp, ownDescribedBy].filter(Boolean).join(' ') || undefined;
 
   return (
     <div className="w-full">

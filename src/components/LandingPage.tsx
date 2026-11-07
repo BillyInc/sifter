@@ -70,9 +70,11 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Button size="lg" onClick={onGetStarted} trailingIcon={<span aria-hidden="true">→</span>}> Get started
               </Button>
-              <Link href="/login" className="rounded-lg">
-                <Button size="lg" variant="secondary"> Sign in
-                </Button>
+              <Link
+                href="/login"
+                className="inline-flex h-12 items-center justify-center rounded-lg border border-sifter-border bg-sifter-card px-6 text-base font-medium text-sifter-text transition-colors duration-base hover:border-sifter-border-strong hover:bg-sifter-hover"
+              >
+                Sign in
               </Link>
             </div>
 

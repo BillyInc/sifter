@@ -53,7 +53,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
           ? 'bg-green-600 hover:bg-green-700 text-white'
           : variant === 'csv'
           ? 'bg-purple-600 hover:bg-purple-700 text-white'
-          : 'bg-sifter-hover hover:bg-sifter-hover text-white'
+          : 'bg-sifter-elevated hover:bg-sifter-hover text-white'
       }`}
     >
       {getLabel()}
