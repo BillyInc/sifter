@@ -104,8 +104,7 @@ export default function ResearchReport({
       defaultMetrics.forEach(metricKey => {
         if (!metricsObject[metricKey]) {
           // Find by partial name match
-          const foundMetric = projectMetrics.find(m => 
-            m.name.toLowerCase().includes(metricKey.toLowerCase().replace(/[A-Z]/g, ' $&').trim())
+          const foundMetric = projectMetrics.find(m => m.name.toLowerCase().includes(metricKey.toLowerCase().replace(/[A-Z]/g, ' $&').trim())
           );
           if (foundMetric) {
             const { name, score, value, weight, ...rest } = foundMetric;
@@ -325,13 +324,13 @@ export default function ResearchReport({
     const colors = chartType === 'metrics' ? metricColors : riskColors;
     
     return (
-      <div className="bg-gray-900/30 p-4 rounded-lg border border-sifter-border">
-        <div className="text-sm font-medium text-gray-300 mb-3">{title}</div>
+      <div className="bg-sifter-dark/30 p-4 rounded-lg border border-sifter-border">
+        <div className="text-sm font-medium text-sifter-text mb-3">{title}</div>
         <div className="flex items-end h-40 gap-2">
           {scaledHeights.map((height, idx) => (
             <div key={idx} className="flex flex-col items-center flex-1 group relative">
               <div 
-                className={`w-full rounded-t transition-all hover:opacity-80 border border-white/10 shadow-lg relative ${colors[idx] || 'bg-gray-500'}`}
+                className={`w-full rounded-t transition-all hover:opacity-80 border border-white/10 shadow-lg relative ${colors[idx] || 'bg-sifter-border-strong'}`}
                 style={{ 
                   height: `${height}%`,
                   minHeight: '4px',
@@ -342,26 +341,26 @@ export default function ResearchReport({
                   {data[idx].toFixed(0)}
                 </div>
               </div>
-              <div className="text-xs text-gray-400 mt-2 truncate w-full text-center">
+              <div className="text-xs text-sifter-text-muted mt-2 truncate w-full text-center">
                 {labels[idx]}
               </div>
             </div>
           ))}
         </div>
-        <div className="flex justify-between text-xs text-gray-500 mt-4">
+        <div className="flex justify-between text-xs text-sifter-text-subtle mt-4">
           <span>Min: {minScore.toFixed(0)}</span>
           <span>Avg: {(data.reduce((a, b) => a + b, 0) / data.length).toFixed(0)}</span>
           <span>Max: {maxScore.toFixed(0)}</span>
         </div>
         
         {/* Color legend for the chart */}
-        <div className="mt-4 pt-3 border-t border-gray-700/50">
-          <div className="text-xs text-gray-400 mb-2">Color Legend:</div>
+        <div className="mt-4 pt-3 border-t border-sifter-border">
+          <div className="text-xs text-sifter-text-muted mb-2">Color Legend:</div>
           <div className="flex flex-wrap gap-2">
             {labels.map((label, idx) => (
               <div key={idx} className="flex items-center gap-1">
-                <div className={`w-3 h-3 rounded ${colors[idx] || 'bg-gray-500'}`}></div>
-                <span className="text-xs text-gray-300">{label}</span>
+                <div className={`w-3 h-3 rounded ${colors[idx] || 'bg-sifter-border-strong'}`}></div>
+                <span className="text-xs text-sifter-text">{label}</span>
               </div>
             ))}
           </div>
@@ -430,8 +429,7 @@ export default function ResearchReport({
     const metrics = generateMetricsAnalysis();
     if (metrics.length === 0) return 'N/A';
     
-    const highest = metrics.reduce((max, metric) => 
-      metric.score > max.score ? metric : max, 
+    const highest = metrics.reduce((max, metric) => metric.score > max.score ? metric : max, 
       metrics[0]
     );
     return highest.name;
@@ -441,8 +439,7 @@ export default function ResearchReport({
     const metrics = generateMetricsAnalysis();
     if (metrics.length === 0) return 'N/A';
     
-    const lowest = metrics.reduce((min, metric) => 
-      metric.score < min.score ? metric : min, 
+    const lowest = metrics.reduce((min, metric) => metric.score < min.score ? metric : min, 
       metrics[0]
     );
     return lowest.name;
@@ -470,7 +467,7 @@ export default function ResearchReport({
           <h4 className="font-semibold text-white">{pattern.patternName}</h4>
           <div className="flex items-center gap-3 mt-1">
             <div className="flex items-center gap-1">
-              <div className="text-sm text-gray-400">Similarity:</div>
+              <div className="text-sm text-sifter-text-muted">Similarity:</div>
               <div className={`text-sm font-medium ${
                 pattern.similarity > 90 ? 'text-red-400' :
                 pattern.similarity > 80 ? 'text-orange-400' : 'text-yellow-400'
@@ -479,7 +476,7 @@ export default function ResearchReport({
               </div>
             </div>
             <div className="flex items-center gap-1">
-              <div className="text-sm text-gray-400">Confidence:</div>
+              <div className="text-sm text-sifter-text-muted">Confidence:</div>
               <div className="text-sm font-medium text-blue-400">{pattern.confidence}%</div>
             </div>
           </div>
@@ -493,22 +490,22 @@ export default function ResearchReport({
       </div>
       
       <div className="mb-3">
-        <div className="text-xs text-gray-400 mb-2">Matched Rules</div>
+        <div className="text-xs text-sifter-text-muted mb-2">Matched Rules</div>
         <div className="space-y-1">
           {pattern.matchedRules.map((rule, idx) => (
             <div key={idx} className="flex items-center gap-2 text-sm">
               <div className="w-1.5 h-1.5 rounded-full bg-red-400"></div>
-              <span className="text-gray-300">{rule}</span>
+              <span className="text-sifter-text">{rule}</span>
             </div>
           ))}
         </div>
       </div>
       
       <div className="pt-3 border-t border-sifter-border">
-        <div className="text-xs text-gray-400 mb-2">Historical Examples</div>
+        <div className="text-xs text-sifter-text-muted mb-2">Historical Examples</div>
         <div className="flex flex-wrap gap-2">
           {pattern.examples.map((example, idx) => (
-            <span key={idx} className="px-2 py-1 bg-gray-800 text-gray-300 text-xs rounded">
+            <span key={idx} className="px-2 py-1 bg-sifter-elevated text-sifter-text text-xs rounded">
               {example}
             </span>
           ))}
@@ -524,7 +521,7 @@ export default function ResearchReport({
           <h4 className="font-semibold text-white">{metric.name}</h4>
           <div className="flex items-center gap-3 mt-1">
             <div className="flex items-center gap-1">
-              <div className="text-sm text-gray-400">Score:</div>
+              <div className="text-sm text-sifter-text-muted">Score:</div>
               <div className={`text-sm font-bold ${
                 metric.score >= 70 ? 'text-red-400' :
                 metric.score >= 40 ? 'text-orange-400' : 'text-green-400'
@@ -533,8 +530,8 @@ export default function ResearchReport({
               </div>
             </div>
             <div className="flex items-center gap-1">
-              <div className="text-sm text-gray-400">Weight:</div>
-              <div className="text-sm font-medium text-gray-300">{metric.weight}%</div>
+              <div className="text-sm text-sifter-text-muted">Weight:</div>
+              <div className="text-sm font-medium text-sifter-text">{metric.weight}%</div>
             </div>
           </div>
         </div>
@@ -548,32 +545,31 @@ export default function ResearchReport({
       </div>
       
       <div className="grid grid-cols-3 gap-4 mb-3">
-        <div className="bg-gray-900/50 p-3 rounded">
-          <div className="text-xs text-gray-400">Correlation</div>
+        <div className="bg-sifter-dark/50 p-3 rounded">
+          <div className="text-xs text-sifter-text-muted">Correlation</div>
           <div className={`text-lg font-bold ${
             metric.correlation > 0.7 ? 'text-red-400' :
             metric.correlation > 0.5 ? 'text-orange-400' : 'text-blue-400'
-          }`}>
-            r = {metric.correlation.toFixed(2)}
+          }`}> r = {metric.correlation.toFixed(2)}
           </div>
         </div>
-        <div className="bg-gray-900/50 p-3 rounded">
-          <div className="text-xs text-gray-400">Benchmark</div>
-          <div className="text-lg font-bold text-gray-300">{metric.benchmark}</div>
+        <div className="bg-sifter-dark/50 p-3 rounded">
+          <div className="text-xs text-sifter-text-muted">Benchmark</div>
+          <div className="text-lg font-bold text-sifter-text">{metric.benchmark}</div>
         </div>
-        <div className="bg-gray-900/50 p-3 rounded">
-          <div className="text-xs text-gray-400">Industry Avg</div>
-          <div className="text-lg font-bold text-gray-300">{metric.industryAvg.toFixed(0)}</div>
+        <div className="bg-sifter-dark/50 p-3 rounded">
+          <div className="text-xs text-sifter-text-muted">Industry Avg</div>
+          <div className="text-lg font-bold text-sifter-text">{metric.industryAvg.toFixed(0)}</div>
         </div>
       </div>
       
       {/* Score vs Benchmark comparison */}
       <div className="mt-3">
-        <div className="flex justify-between text-xs text-gray-400 mb-1">
+        <div className="flex justify-between text-xs text-sifter-text-muted mb-1">
           <span>Project Score: {metric.score}</span>
           <span>Benchmark: {metric.benchmark}</span>
         </div>
-        <div className="w-full bg-gray-800 rounded-full h-2">
+        <div className="w-full bg-sifter-elevated rounded-full h-2">
           <div 
             className={`h-2 rounded-full ${
               metric.score >= 70 ? 'bg-red-500' :
@@ -582,15 +578,15 @@ export default function ResearchReport({
             style={{ width: `${metric.score}%` }}
           />
         </div>
-        <div className="mt-1 flex justify-between text-xs text-gray-500">
+        <div className="mt-1 flex justify-between text-xs text-sifter-text-subtle">
           <span>Lower is better</span>
           <span>{metric.score > metric.benchmark ? 'Above benchmark' : 'Below benchmark'}</span>
         </div>
       </div>
       
       <div className="mt-3 pt-3 border-t border-sifter-border">
-        <div className="text-xs text-gray-400">Statistical Interpretation</div>
-        <div className="text-sm text-gray-300">
+        <div className="text-xs text-sifter-text-muted">Statistical Interpretation</div>
+        <div className="text-sm text-sifter-text">
           {metric.correlation > 0.7 
             ? `High correlation (r=${metric.correlation.toFixed(2)}) with project failure in historical data.`
             : metric.correlation > 0.5
@@ -607,18 +603,18 @@ export default function ResearchReport({
     switch (statisticalMethod) {
       case 'regression':
         return (
-          <div className="p-4 bg-gray-900/30 rounded-lg mb-4">
+          <div className="p-4 bg-sifter-dark/30 rounded-lg mb-4">
             <h4 className="font-semibold text-white mb-2">Regression Analysis Results</h4>
-            <p className="text-gray-300 mb-2">Risk Score = 0.32(Team Identity) + 0.28(Network) + 0.18(Hype) + ...</p>
-            <p className="text-sm text-gray-400">R² = 0.87, p &lt; 0.001</p>
+            <p className="text-sifter-text mb-2">Risk Score = 0.32(Team Identity) + 0.28(Network) + 0.18(Hype) + ...</p>
+            <p className="text-sm text-sifter-text-muted">R² = 0.87, p &lt; 0.001</p>
           </div>
         );
       case 'factor':
         return (
-          <div className="p-4 bg-gray-900/30 rounded-lg mb-4">
+          <div className="p-4 bg-sifter-dark/30 rounded-lg mb-4">
             <h4 className="font-semibold text-white mb-2">Factor Analysis Results</h4>
-            <p className="text-gray-300 mb-2">3 factors explain 92% of variance:</p>
-            <ul className="text-sm text-gray-300 space-y-1">
+            <p className="text-sifter-text mb-2">3 factors explain 92% of variance:</p>
+            <ul className="text-sm text-sifter-text space-y-1">
               <li>• Factor 1 (Team Risk): Team Identity, Competence, Bus Factor</li>
               <li>• Factor 2 (Community Risk): Contamination, Mercenary, Hype, Tweet Focus, Engagement</li>
               <li>• Factor 3 (Technical Risk): GitHub, Tokenomics, Founder Distraction</li>
@@ -627,18 +623,18 @@ export default function ResearchReport({
         );
       case 'cluster':
         return (
-          <div className="p-4 bg-gray-900/30 rounded-lg mb-4">
+          <div className="p-4 bg-sifter-dark/30 rounded-lg mb-4">
             <h4 className="font-semibold text-white mb-2">Cluster Analysis Results</h4>
-            <p className="text-gray-300 mb-2">Project belongs to Cluster #3 (High-Risk Group):</p>
-            <p className="text-sm text-gray-400">Similarity to failed projects: 89%, to successful: 12%</p>
+            <p className="text-sifter-text mb-2">Project belongs to Cluster #3 (High-Risk Group):</p>
+            <p className="text-sm text-sifter-text-muted">Similarity to failed projects: 89%, to successful: 12%</p>
           </div>
         );
       case 'timeseries':
         return (
-          <div className="p-4 bg-gray-900/30 rounded-lg mb-4">
+          <div className="p-4 bg-sifter-dark/30 rounded-lg mb-4">
             <h4 className="font-semibold text-white mb-2">Time Series Analysis</h4>
-            <p className="text-gray-300 mb-2">Risk metrics showing accelerating deterioration:</p>
-            <p className="text-sm text-gray-400">30-day trend: +28% risk increase, slope = 0.94</p>
+            <p className="text-sifter-text mb-2">Risk metrics showing accelerating deterioration:</p>
+            <p className="text-sm text-sifter-text-muted">30-day trend: +28% risk increase, slope = 0.94</p>
           </div>
         );
       default: // correlation
@@ -650,61 +646,61 @@ export default function ResearchReport({
     switch (qualitativeMethod) {
       case 'thematic':
         return (
-          <div className="p-4 bg-gray-900/30 rounded-lg mb-4">
+          <div className="p-4 bg-sifter-dark/30 rounded-lg mb-4">
             <h4 className="font-semibold text-white mb-2">Thematic Analysis Findings</h4>
-            <p className="text-gray-300 mb-2">Primary themes identified:</p>
-            <ul className="text-sm text-gray-300 space-y-1">
-              <li>• <span className="text-red-400">Urgency/FOMO:</span> "Last chance", "Don't miss out" (32% of messages)</li>
-              <li>• <span className="text-orange-400">Vague promises:</span> "Big news coming", "Partnerships" (28% of messages)</li>
+            <p className="text-sifter-text mb-2">Primary themes identified:</p>
+            <ul className="text-sm text-sifter-text space-y-1">
+              <li>• <span className="text-red-400">Urgency/FOMO:</span> &quot;Last chance&quot;, &quot;Don&apos;t miss out&quot; (32% of messages)</li>
+              <li>• <span className="text-orange-400">Vague promises:</span> &quot;Big news coming&quot;, &quot;Partnerships&quot; (28% of messages)</li>
               <li>• <span className="text-yellow-400">Artificial community:</span> Generic praise, low information replies (40% of messages)</li>
               <li>• <span className="text-purple-400">Engagement patterns:</span> Low authentic interaction, copy-paste replies</li>
             </ul>
-            <p className="text-xs text-gray-400 mt-2">Related to: Engagement Authenticity metric</p>
+            <p className="text-xs text-sifter-text-muted mt-2">Related to: Engagement Authenticity metric</p>
           </div>
         );
       case 'discourse':
         return (
-          <div className="p-4 bg-gray-900/30 rounded-lg mb-4">
+          <div className="p-4 bg-sifter-dark/30 rounded-lg mb-4">
             <h4 className="font-semibold text-white mb-2">Discourse Analysis Findings</h4>
-            <p className="text-gray-300 mb-2">Language patterns detected:</p>
-            <ul className="text-sm text-gray-300 space-y-1">
+            <p className="text-sifter-text mb-2">Language patterns detected:</p>
+            <ul className="text-sm text-sifter-text space-y-1">
               <li>• High use of superlatives (4.2x industry average)</li>
               <li>• Low technical vocabulary density (12% vs 48% avg)</li>
               <li>• Copy-paste message patterns in 62% of replies</li>
               <li>• Question deflection rate: 89% (vs 42% avg)</li>
               <li>• Promotional vs informational ratio: 4:1 (industry avg: 1:2)</li>
             </ul>
-            <p className="text-xs text-gray-400 mt-2">Related to: Tweet Focus, Mercenary Keywords metrics</p>
+            <p className="text-xs text-sifter-text-muted mt-2">Related to: Tweet Focus, Mercenary Keywords metrics</p>
           </div>
         );
       case 'content':
         return (
-          <div className="p-4 bg-gray-900/30 rounded-lg mb-4">
+          <div className="p-4 bg-sifter-dark/30 rounded-lg mb-4">
             <h4 className="font-semibold text-white mb-2">Content Analysis Findings</h4>
-            <p className="text-gray-300 mb-2">Message categorization:</p>
-            <ul className="text-sm text-gray-300 space-y-1">
+            <p className="text-sifter-text mb-2">Message categorization:</p>
+            <ul className="text-sm text-sifter-text space-y-1">
               <li>• Marketing/Hype: 67% (Industry avg: 35%)</li>
               <li>• Technical content: 8% (Industry avg: 42%)</li>
               <li>• Community engagement: 12% (Industry avg: 38%)</li>
               <li>• Question responses: 13% (Industry avg: 25%)</li>
               <li>• Mercenary keyword density: 4.8 per message (avg: 1.2)</li>
             </ul>
-            <p className="text-xs text-gray-400 mt-2">Related to: Mercenary Keywords, Tweet Focus metrics</p>
+            <p className="text-xs text-sifter-text-muted mt-2">Related to: Mercenary Keywords, Tweet Focus metrics</p>
           </div>
         );
       case 'narrative':
         return (
-          <div className="p-4 bg-gray-900/30 rounded-lg mb-4">
+          <div className="p-4 bg-sifter-dark/30 rounded-lg mb-4">
             <h4 className="font-semibold text-white mb-2">Narrative Analysis Findings</h4>
-            <p className="text-gray-300 mb-2">Story structure detected:</p>
-            <ul className="text-sm text-gray-300 space-y-1">
-              <li>• "Underdog to hero" narrative without substance</li>
-              <li>• Frequent narrative resetting (3 major "pivot" announcements)</li>
+            <p className="text-sifter-text mb-2">Story structure detected:</p>
+            <ul className="text-sm text-sifter-text space-y-1">
+              <li>• &quot;Underdog to hero&quot; narrative without substance</li>
+              <li>• Frequent narrative resetting (3 major &quot;pivot&quot; announcements)</li>
               <li>• Contradictions between early promises and current reality</li>
               <li>• Blame externalization pattern present</li>
               <li>• Founder attention split across multiple narratives</li>
             </ul>
-            <p className="text-xs text-gray-400 mt-2">Related to: Founder Distraction metric</p>
+            <p className="text-xs text-sifter-text-muted mt-2">Related to: Founder Distraction metric</p>
           </div>
         );
       default: // pattern
@@ -722,20 +718,19 @@ export default function ResearchReport({
         <div>
           <h2 className="text-2xl font-bold text-white">Research Report</h2>
           <div className="flex items-center gap-4 mt-1">
-            <div className="text-gray-400">Project: {projectName}</div>
+            <div className="text-sifter-text-muted">Project: {projectName}</div>
             <div className={`font-bold ${
               riskScore >= 70 ? 'text-red-400' :
               riskScore >= 40 ? 'text-orange-400' : 'text-green-400'
-            }`}>
-              Risk Score: {riskScore}/100
+            }`}> Risk Score: {riskScore}/100
             </div>
-            <div className="text-gray-400">Scanned: {scannedAt.toLocaleDateString()}</div>
+            <div className="text-sifter-text-muted">Scanned: {scannedAt.toLocaleDateString()}</div>
           </div>
         </div>
         {onClose && (
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white text-xl"
+            className="text-sifter-text-muted hover:text-white text-xl"
           >
             ✕
           </button>
@@ -750,30 +745,28 @@ export default function ResearchReport({
             className={`py-3 px-1 font-medium border-b-2 transition-colors whitespace-nowrap ${
               activeTab === 'metrics'
                 ? 'border-blue-500 text-blue-400'
-                : 'border-transparent text-gray-400 hover:text-gray-300'
+                : 'border-transparent text-sifter-text-muted hover:text-sifter-text'
             }`}
           >
-            📊 13-Metrics Analysis
+             13-Metrics Analysis
           </button>
           <button
             onClick={() => setActiveTab('patterns')}
             className={`py-3 px-1 font-medium border-b-2 transition-colors whitespace-nowrap ${
               activeTab === 'patterns'
                 ? 'border-purple-500 text-purple-400'
-                : 'border-transparent text-gray-400 hover:text-gray-300'
+                : 'border-transparent text-sifter-text-muted hover:text-sifter-text'
             }`}
-          >
-            🔍 Pattern Matching
+          > Pattern Matching
           </button>
           <button
             onClick={() => setActiveTab('summary')}
             className={`py-3 px-1 font-medium border-b-2 transition-colors whitespace-nowrap ${
               activeTab === 'summary'
                 ? 'border-purple-500 text-purple-400'
-                : 'border-transparent text-gray-400 hover:text-gray-300'
+                : 'border-transparent text-sifter-text-muted hover:text-sifter-text'
             }`}
-          >
-            📋 Executive Summary
+          > Executive Summary
           </button>
         </div>
       </div>
@@ -786,11 +779,11 @@ export default function ResearchReport({
             
             {/* Statistical Method Selector */}
             <div className="flex items-center gap-4 mb-4">
-              <div className="text-gray-300">Statistical Method:</div>
+              <div className="text-sifter-text">Statistical Method:</div>
               <select
                 value={statisticalMethod}
                 onChange={(e) => setStatisticalMethod(e.target.value as StatisticalMethod)}
-                className="bg-gray-900 border border-sifter-border rounded-lg px-3 py-2 text-white"
+                className="bg-sifter-dark border border-sifter-border rounded-lg px-3 py-2 text-white"
               >
                 <option value="correlation">Correlation Analysis</option>
                 <option value="regression">Regression Analysis</option>
@@ -798,7 +791,7 @@ export default function ResearchReport({
                 <option value="cluster">Cluster Analysis</option>
                 <option value="timeseries">Time Series Analysis</option>
               </select>
-              <div className="text-sm text-gray-400 max-w-md">
+              <div className="text-sm text-sifter-text-muted max-w-md">
                 {statisticalMethodDescriptions[statisticalMethod]}
               </div>
             </div>
@@ -808,22 +801,21 @@ export default function ResearchReport({
           
           {/* Key Metrics Summary */}
           <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="bg-gray-900/50 p-4 rounded-lg">
-              <div className="text-xs text-gray-400">Avg. Metric Score</div>
+            <div className="bg-sifter-dark/50 p-4 rounded-lg">
+              <div className="text-xs text-sifter-text-muted">Avg. Metric Score</div>
               <div className="text-2xl font-bold text-white">
                 {calculateAvgMetricScore()}
               </div>
             </div>
-            <div className="bg-gray-900/50 p-4 rounded-lg">
-              <div className="text-xs text-gray-400">High Significance</div>
+            <div className="bg-sifter-dark/50 p-4 rounded-lg">
+              <div className="text-xs text-sifter-text-muted">High Significance</div>
               <div className="text-2xl font-bold text-red-400">
                 {metricsAnalysis.filter(m => m.significance === 'high').length}
               </div>
             </div>
-            <div className="bg-gray-900/50 p-4 rounded-lg">
-              <div className="text-xs text-gray-400">Avg. Correlation</div>
-              <div className="text-2xl font-bold text-blue-400">
-                r = {(metricsAnalysis.reduce((sum, m) => sum + m.correlation, 0) / metricsAnalysis.length).toFixed(2)}
+            <div className="bg-sifter-dark/50 p-4 rounded-lg">
+              <div className="text-xs text-sifter-text-muted">Avg. Correlation</div>
+              <div className="text-2xl font-bold text-blue-400"> r = {(metricsAnalysis.reduce((sum, m) => sum + m.correlation, 0) / metricsAnalysis.length).toFixed(2)}
               </div>
             </div>
           </div>
@@ -850,26 +842,26 @@ export default function ResearchReport({
             
             {/* Quick Stats */}
             <div className="grid grid-cols-4 gap-3 mt-4">
-              <div className="bg-gray-900/30 p-3 rounded-lg">
-                <div className="text-xs text-gray-400">Highest Risk</div>
+              <div className="bg-sifter-dark/30 p-3 rounded-lg">
+                <div className="text-xs text-sifter-text-muted">Highest Risk</div>
                 <div className="text-base font-bold text-red-400">
                   {calculateHighestRiskMetric()}
                 </div>
               </div>
-              <div className="bg-gray-900/30 p-3 rounded-lg">
-                <div className="text-xs text-gray-400">Lowest Risk</div>
+              <div className="bg-sifter-dark/30 p-3 rounded-lg">
+                <div className="text-xs text-sifter-text-muted">Lowest Risk</div>
                 <div className="text-base font-bold text-green-400">
                   {calculateLowestRiskMetric()}
                 </div>
               </div>
-              <div className="bg-gray-900/30 p-3 rounded-lg">
-                <div className="text-xs text-gray-400">Avg. Metric Score</div>
+              <div className="bg-sifter-dark/30 p-3 rounded-lg">
+                <div className="text-xs text-sifter-text-muted">Avg. Metric Score</div>
                 <div className="text-base font-bold text-white">
                   {calculateAvgMetricScore()}
                 </div>
               </div>
-              <div className="bg-gray-900/30 p-3 rounded-lg">
-                <div className="text-xs text-gray-400">Critical Flags</div>
+              <div className="bg-sifter-dark/30 p-3 rounded-lg">
+                <div className="text-xs text-sifter-text-muted">Critical Flags</div>
                 <div className="text-base font-bold text-orange-400">
                   {calculateCriticalFlags()}
                 </div>
@@ -882,10 +874,9 @@ export default function ResearchReport({
             {metricsAnalysis.map(renderMetricAnalysis)}
           </div>
           
-          <div className="mt-6 p-4 bg-gray-900/30 border border-sifter-border rounded-lg">
+          <div className="mt-6 p-4 bg-sifter-dark/30 border border-sifter-border rounded-lg">
             <h4 className="font-semibold text-white mb-2">Statistical Conclusion on Metrics</h4>
-            <p className="text-gray-300">
-              Using <span className="text-blue-400">{statisticalMethod.charAt(0).toUpperCase() + statisticalMethod.slice(1)}</span>, this project shows {riskScore >= 70 ? 'statistically significant deviations' : riskScore >= 40 ? 'moderate statistical signals' : 'limited statistical evidence'} across the {metricsAnalysis.length} metrics.
+            <p className="text-sifter-text"> Using <span className="text-blue-400">{statisticalMethod.charAt(0).toUpperCase() + statisticalMethod.slice(1)}</span>, this project shows {riskScore >= 70 ? 'statistically significant deviations' : riskScore >= 40 ? 'moderate statistical signals' : 'limited statistical evidence'} across the {metricsAnalysis.length} metrics.
             </p>
           </div>
         </div>
@@ -899,11 +890,11 @@ export default function ResearchReport({
             
             {/* Qualitative Method Selector */}
             <div className="flex items-center gap-4 mb-4">
-              <div className="text-gray-300">Analysis Method:</div>
+              <div className="text-sifter-text">Analysis Method:</div>
               <select
                 value={qualitativeMethod}
                 onChange={(e) => setQualitativeMethod(e.target.value as QualitativeMethod)}
-                className="bg-gray-900 border border-sifter-border rounded-lg px-3 py-2 text-white"
+                className="bg-sifter-dark border border-sifter-border rounded-lg px-3 py-2 text-white"
               >
                 <option value="pattern">Pattern Matching</option>
                 <option value="thematic">Thematic Analysis</option>
@@ -911,15 +902,14 @@ export default function ResearchReport({
                 <option value="content">Content Analysis</option>
                 <option value="narrative">Narrative Analysis</option>
               </select>
-              <div className="text-sm text-gray-400 max-w-md">
+              <div className="text-sm text-sifter-text-muted max-w-md">
                 {qualitativeMethodDescriptions[qualitativeMethod]}
               </div>
             </div>
             
             {renderQualitativeAnalysis()}
             
-            <p className="text-gray-400 mb-4">
-              This project was compared against 47 documented scam patterns and analyzed using qualitative methods.
+            <p className="text-sifter-text-muted mb-4"> This project was compared against 47 documented scam patterns and analyzed using qualitative methods.
             </p>
           </div>
           
@@ -928,10 +918,9 @@ export default function ResearchReport({
             {patterns.map(renderPatternMatch)}
           </div>
           
-          <div className="mt-6 p-4 bg-gray-900/30 border border-sifter-border rounded-lg">
+          <div className="mt-6 p-4 bg-sifter-dark/30 border border-sifter-border rounded-lg">
             <h4 className="font-semibold text-white mb-2">Qualitative Analysis Conclusion</h4>
-            <p className="text-gray-300">
-              Using <span className="text-purple-400">{qualitativeMethod.charAt(0).toUpperCase() + qualitativeMethod.slice(1)} Analysis</span>, {patterns.length} patterns were detected with {patterns[0]?.similarity || 0}% average similarity. 
+            <p className="text-sifter-text"> Using <span className="text-purple-400">{qualitativeMethod.charAt(0).toUpperCase() + qualitativeMethod.slice(1)} Analysis</span>, {patterns.length} patterns were detected with {patterns[0]?.similarity || 0}% average similarity. 
               This indicates {riskScore >= 70 ? 'strong alignment with known risk narratives and patterns' : riskScore >= 40 ? 'moderate alignment with some risk indicators' : 'limited pattern matching with known risks'}.
             </p>
           </div>
@@ -942,8 +931,8 @@ export default function ResearchReport({
       {activeTab === 'summary' && (
         <div className="space-y-6">
           <div className="grid grid-cols-4 gap-4">
-            <div className="bg-gray-900/50 p-4 rounded-lg">
-              <div className="text-xs text-gray-400">Overall Risk Score</div>
+            <div className="bg-sifter-dark/50 p-4 rounded-lg">
+              <div className="text-xs text-sifter-text-muted">Overall Risk Score</div>
               <div className={`text-2xl font-bold ${
                 riskScore >= 70 ? 'text-red-400' :
                 riskScore >= 40 ? 'text-orange-400' : 'text-green-400'
@@ -951,18 +940,18 @@ export default function ResearchReport({
                 {riskScore}/100
               </div>
             </div>
-            <div className="bg-gray-900/50 p-4 rounded-lg">
-              <div className="text-xs text-gray-400">Statistical Confidence</div>
+            <div className="bg-sifter-dark/50 p-4 rounded-lg">
+              <div className="text-xs text-sifter-text-muted">Statistical Confidence</div>
               <div className="text-2xl font-bold text-blue-400">96%</div>
             </div>
-            <div className="bg-gray-900/50 p-4 rounded-lg">
-              <div className="text-xs text-gray-400">High Significance Metrics</div>
+            <div className="bg-sifter-dark/50 p-4 rounded-lg">
+              <div className="text-xs text-sifter-text-muted">High Significance Metrics</div>
               <div className="text-2xl font-bold text-red-400">
                 {metricsAnalysis.filter(m => m.significance === 'high').length}
               </div>
             </div>
-            <div className="bg-gray-900/50 p-4 rounded-lg">
-              <div className="text-xs text-gray-400">Pattern Matches</div>
+            <div className="bg-sifter-dark/50 p-4 rounded-lg">
+              <div className="text-xs text-sifter-text-muted">Pattern Matches</div>
               <div className="text-2xl font-bold text-purple-400">{patterns.length}</div>
             </div>
           </div>
@@ -973,26 +962,24 @@ export default function ResearchReport({
               <ul className="space-y-2">
                 <li className="flex items-start gap-2">
                   <div className="text-red-400 mt-0.5">•</div>
-                  <span className="text-gray-300">
+                  <span className="text-sifter-text">
                     <span className="text-blue-400">Statistical analysis</span> shows {metricsAnalysis.filter(m => m.significance === 'high').length} metrics with high significance
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="text-red-400 mt-0.5">•</div>
-                  <span className="text-gray-300">
+                  <span className="text-sifter-text">
                     <span className="text-purple-400">Qualitative analysis</span> reveals {patterns.length} pattern matches with {patterns[0]?.similarity || 0}% similarity
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="text-blue-400 mt-0.5">•</div>
-                  <span className="text-gray-300">
-                    Average correlation: r={(metricsAnalysis.reduce((sum, m) => sum + m.correlation, 0) / metricsAnalysis.length).toFixed(2)} with historical failures
+                  <span className="text-sifter-text"> Average correlation: r={(metricsAnalysis.reduce((sum, m) => sum + m.correlation, 0) / metricsAnalysis.length).toFixed(2)} with historical failures
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="text-purple-400 mt-0.5">•</div>
-                  <span className="text-gray-300">
-                    Pattern confidence scores average {patterns.reduce((sum, p) => sum + p.confidence, 0) / patterns.length}%
+                  <span className="text-sifter-text"> Pattern confidence scores average {patterns.reduce((sum, p) => sum + p.confidence, 0) / patterns.length}%
                   </span>
                 </li>
               </ul>
@@ -1006,9 +993,9 @@ export default function ResearchReport({
                   .slice(0, 3)
                   .map(metric => (
                     <div key={metric.name} className="flex justify-between items-center">
-                      <span className="text-gray-300">{metric.name}</span>
+                      <span className="text-sifter-text">{metric.name}</span>
                       <div className="flex items-center gap-3">
-                        <span className="text-gray-400">r = {metric.correlation.toFixed(2)}</span>
+                        <span className="text-sifter-text-muted">r = {metric.correlation.toFixed(2)}</span>
                         <span className={`px-2 py-1 rounded text-xs ${
                           metric.significance === 'high' ? 'bg-red-500/20 text-red-400' :
                           metric.significance === 'medium' ? 'bg-orange-500/20 text-orange-400' :
@@ -1029,12 +1016,12 @@ export default function ResearchReport({
                 riskScore >= 40 ? 'bg-yellow-500/10 border border-yellow-500/30' :
                 'bg-green-500/10 border border-green-500/30'
               }`}>
-                <p className="text-gray-300">
+                <p className="text-sifter-text">
                   {riskScore >= 70 
-                    ? '🚨 HIGH RISK - STRONG EVIDENCE: Both statistical and qualitative analyses show strong alignment with known risk patterns. Multiple red flags detected.'
+                    ? 'HIGH RISK - STRONG EVIDENCE: Both statistical and qualitative analyses show strong alignment with known risk patterns. Multiple red flags detected.'
                     : riskScore >= 40
-                    ? '⚠️ MODERATE RISK - MIXED SIGNALS: Some concerning indicators present in both statistical metrics and pattern matching. Requires careful due diligence.'
-                    : '✅ LOW RISK - MINIMAL CONCERNS: Limited evidence of risk patterns in both statistical and qualitative analyses.'
+                    ? 'MODERATE RISK - MIXED SIGNALS: Some concerning indicators present in both statistical metrics and pattern matching. Requires careful due diligence.'
+                    : 'LOW RISK - MINIMAL CONCERNS: Limited evidence of risk patterns in both statistical and qualitative analyses.'
                   }
                 </p>
               </div>
@@ -1046,24 +1033,21 @@ export default function ResearchReport({
       {/* Footer */}
       <div className="mt-6 pt-6 border-t border-sifter-border">
         <div className="flex justify-between items-center">
-          <div className="text-sm text-gray-400">
-            Report generated: {new Date().toLocaleString()}
+          <div className="text-sm text-sifter-text-muted"> Report generated: {new Date().toLocaleString()}
           </div>
           <div className="flex gap-3">
             {onExport && (
               <button 
                 onClick={onExport}
-                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm transition-colors"
-              >
-                📄 Export PDF
+                className="px-4 py-2 bg-sifter-elevated hover:bg-sifter-hover text-white rounded-lg text-sm transition-colors"
+              > Export PDF
               </button>
             )}
             {onShare && (
               <button 
                 onClick={onShare}
                 className="px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border border-purple-500/30 rounded-lg text-sm transition-colors"
-              >
-                📊 Export Data
+              > Export Data
               </button>
             )}
           </div>

@@ -6,7 +6,7 @@ interface LoadingStateProps {
   projectName: string;
   onComplete: () => void;
   duration: number; // in milliseconds
-  compact?: boolean;  // ✅ ADD THIS LINE
+  compact?: boolean;  //  ADD THIS LINE
 }
 
 const analysisSteps = [
@@ -97,19 +97,18 @@ export default function LoadingState({
               />
             </svg>
           </div>
-          <h2 className="text-xl font-semibold text-white mb-2">
-            Analyzing Project
+          <h2 className="text-xl font-semibold text-white mb-2"> Analyzing Project
           </h2>
-          <p className="text-gray-400 font-mono text-sm">{projectName}</p>
+          <p className="text-sifter-text-muted font-mono text-sm">{projectName}</p>
         </div>
 
         {/* Progress Bar */}
         <div className="mb-6">
-          <div className="flex justify-between text-sm text-gray-400 mb-2">
+          <div className="flex justify-between text-sm text-sifter-text-muted mb-2">
             <span>{Math.round(progress)}% complete</span>
             <span>{formatTime(elapsedTime)} elapsed</span>
           </div>
-          <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+          <div className="h-2 bg-sifter-elevated rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-sifter-blue to-blue-400 transition-all duration-300 ease-out"
               style={{ width: `${progress}%` }}
@@ -118,10 +117,10 @@ export default function LoadingState({
         </div>
 
         {/* Current Step */}
-        <div className="bg-gray-900/50 rounded-lg p-4 mb-6">
+        <div className="bg-sifter-dark/50 rounded-lg p-4 mb-6">
           <div className="flex items-center gap-3">
             <div className="w-2 h-2 bg-sifter-blue rounded-full animate-pulse" />
-            <span className="text-gray-300 text-sm">
+            <span className="text-sifter-text text-sm">
               {analysisSteps[currentStep]}
             </span>
           </div>
@@ -133,15 +132,14 @@ export default function LoadingState({
             <div
               key={index}
               className={`h-1 rounded-full transition-colors duration-300 ${
-                index <= currentStep ? 'bg-sifter-blue' : 'bg-gray-800'
+                index <= currentStep ? 'bg-sifter-blue' : 'bg-sifter-elevated'
               }`}
             />
           ))}
         </div>
 
         {/* Info Text */}
-        <p className="text-center text-gray-500 text-xs mt-6">
-          Deep analysis typically takes 75-90 seconds to complete
+        <p className="text-center text-sifter-text-subtle text-xs mt-6"> Deep analysis typically takes 75-90 seconds to complete
         </p>
       </div>
     </div>

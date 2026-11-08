@@ -20,6 +20,7 @@ import StandardFlagForm from '@/components/data-donation/universal/StandardFlagF
 import { RewardsShop } from '@/components/data-donation/gamification';
 import type { Reward, RewardType, UserTier } from '@/types/dataDonation';
 import { FeedbackButton } from '@/components/feedback';
+import { Button, LogoMark } from '@/components/ui';
 
 import { 
   AnalysisState, 
@@ -92,8 +93,7 @@ const ExportDropdown = ({ projectData, compact = false }: { projectData: Project
             <span>Exporting...</span>
           </>
         ) : (
-          <>
-            📥 Export
+          <> Export
           </>
         )}
       </button>
@@ -103,21 +103,18 @@ const ExportDropdown = ({ projectData, compact = false }: { projectData: Project
           <div className="p-1">
             <button
               onClick={() => handleExport('pdf')}
-              className="w-full text-left px-3 py-2 text-gray-300 hover:bg-blue-500/10 hover:text-blue-400 rounded text-sm transition-colors"
-            >
-              📄 Export as PDF
+              className="w-full text-left px-3 py-2 text-sifter-text hover:bg-blue-500/10 hover:text-blue-400 rounded text-sm transition-colors"
+            > Export as PDF
             </button>
             <button
               onClick={() => handleExport('json')}
-              className="w-full text-left px-3 py-2 text-gray-300 hover:bg-green-500/10 hover:text-green-400 rounded text-sm transition-colors"
-            >
-              📊 Export as JSON
+              className="w-full text-left px-3 py-2 text-sifter-text hover:bg-green-500/10 hover:text-green-400 rounded text-sm transition-colors"
+            > Export as JSON
             </button>
             <button
               onClick={() => handleExport('csv')}
-              className="w-full text-left px-3 py-2 text-gray-300 hover:bg-purple-500/10 hover:text-purple-400 rounded text-sm transition-colors"
-            >
-              📈 Export as CSV
+              className="w-full text-left px-3 py-2 text-sifter-text hover:bg-purple-500/10 hover:text-purple-400 rounded text-sm transition-colors"
+            > Export as CSV
             </button>
           </div>
         </div>
@@ -602,8 +599,7 @@ export default function Home() {
       if (!selectedSubmissionId || !userEmail) return;
       
       // Update the submission with new evidence
-      setDataDonationSubmissions(prev =>
-        prev.map(submission => {
+      setDataDonationSubmissions(prev => prev.map(submission => {
           if (submission.id === selectedSubmissionId) {
             const newEvidence = evidenceItems.map(item => {
               let type: 'twitter' | 'reddit' | 'news' | 'archive' | 'blockchain' | 'telegram' | 'other' = 'other';
@@ -663,8 +659,7 @@ export default function Home() {
     const headers = Object.keys(csvData[0]);
     const csvRows = [
       headers.join(','),
-      ...csvData.map(row => 
-        headers.map(header => 
+      ...csvData.map(row => headers.map(header => 
           `"${String(row[header as keyof typeof row]).replace(/"/g, '""')}"`
         ).join(',')
       )
@@ -980,14 +975,13 @@ export default function Home() {
         completedAt: new Date()
       };
       
-      setRecentBatches(prev => 
-        prev.map(job => job.id === newJob.id ? updatedJob : job)
+      setRecentBatches(prev => prev.map(job => job.id === newJob.id ? updatedJob : job)
       );
       
       setBatchStats(prev => ({
         ...prev,
         averageProcessingTime: Math.floor(Math.random() * 60000) + 30000,
-        rejectionRate: Math.floor(Math.random() * 40) + 10,
+        rejectionRate: (Math.floor(Math.random() * 40) + 10) / 100,
       }));
       
       handleBatchUploadComplete(updatedJob);
@@ -1350,8 +1344,7 @@ export default function Home() {
             <button
               onClick={() => setError(null)}
               className="mt-1 text-xs text-red-300 hover:text-red-200"
-            >
-              Dismiss
+            > Dismiss
             </button>
           </div>
         )}
@@ -1361,7 +1354,7 @@ export default function Home() {
             <h2 className={`${compactMode ? 'text-2xl sm:text-3xl' : 'text-3xl sm:text-4xl'} font-bold text-white mb-3`}>
               {isLoggedIn && userName ? `Welcome back, ${userName}!` : getModeGreeting}
             </h2>
-            <p className={`${compactMode ? 'text-sm' : 'text-base'} text-gray-400 max-w-2xl mx-auto`}>
+            <p className={`${compactMode ? 'text-sm' : 'text-base'} text-sifter-text-muted max-w-2xl mx-auto`}>
               {getModeDescription}
             </p>
           </div>
@@ -1434,8 +1427,7 @@ export default function Home() {
                     <button
                       onClick={() => ExportService.shareAnalysis(projectData)}
                       className={`${compactMode ? 'px-3 py-1.5 text-xs' : 'px-4 py-2'} bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 rounded-lg flex items-center gap-1.5`}
-                    >
-                      🔗 Share
+                    > Share
                     </button>
                   </>
                 )}
@@ -1454,6 +1446,7 @@ export default function Home() {
                 metrics={detailedMetrics}
                 projectName={verdictData.projectName}
                 riskScore={verdictData.riskScore}
+                verdict={verdictData.verdict}
                 projectData={projectData || undefined}
                 onExport={() => {
                   if (projectData) {
@@ -1475,12 +1468,11 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">Analysis Failed</h3>
-              <p className="text-gray-400 mb-4">{error || 'An unexpected error occurred'}</p>
+              <p className="text-sifter-text-muted mb-4">{error || 'An unexpected error occurred'}</p>
               <button
                 onClick={handleReset}
-                className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium text-sm"
-              >
-                Try Again
+                className="px-5 py-2.5 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium text-sm"
+              > Try Again
               </button>
             </div>
           )}
@@ -1488,7 +1480,7 @@ export default function Home() {
 
         {state === 'idle' && isLoggedIn && userMode !== 'ea-vc' && userMode !== 'individual' && userMode !== 'researcher' && (
           <div className={`text-center ${compactMode ? 'mt-6' : 'mt-12'}`}>
-            <p className="text-gray-600 text-xs mb-2">Quick demo:</p>
+            <p className="text-sifter-text-subtle text-xs mb-2">Quick demo:</p>
             <div className="flex justify-center gap-2">
               <button
                 onClick={() => {
@@ -1524,8 +1516,7 @@ export default function Home() {
                   handleSmartInputResolve(mockResult);
                 }}
                 className="text-xs text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 rounded transition-colors"
-              >
-                View REJECT example
+              > View REJECT example
               </button>
               <button
                 onClick={() => {
@@ -1561,8 +1552,7 @@ export default function Home() {
                   handleSmartInputResolve(mockResult);
                 }}
                 className="text-xs text-green-400 hover:text-green-300 bg-green-500/10 hover:bg-green-500/20 px-3 py-1.5 rounded transition-colors"
-              >
-                View PROCEED example
+              > View PROCEED example
               </button>
             </div>
           </div>
@@ -1571,20 +1561,18 @@ export default function Home() {
         {state === 'idle' && !isLoggedIn && (
           <div className={`text-center ${compactMode ? 'mt-6' : 'mt-12'}`}>
             <div className={`inline-block bg-sifter-card border border-sifter-border rounded-xl ${compactMode ? 'p-4' : 'p-6'} max-w-md mx-auto`}>
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
+              <div className="w-12 h-12 bg-sifter-blue hover:bg-sifter-blue-hover rounded-2xl flex items-center justify-center mx-auto mb-3">
                 <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">Sign in to Start Analyzing</h3>
-              <p className="text-gray-400 text-xs mb-4">
-                Login or create an account to access Sifter 1.0 and choose your workflow mode.
+              <p className="text-sifter-text-muted text-xs mb-4"> Login or create an account to access Sifter 1.0 and choose your workflow mode.
               </p>
               <button
                 onClick={() => setShowModeModal(true)}
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-2.5 rounded-lg font-medium text-sm transition-all"
-              >
-                Get Started
+                className="w-full bg-sifter-blue hover:bg-sifter-blue-hover text-white py-2.5 rounded-lg font-medium text-sm transition-all"
+              > Get Started
               </button>
             </div>
           </div>
@@ -1605,15 +1593,13 @@ export default function Home() {
         <div className={`flex items-center justify-between ${compactMode ? 'mb-4' : 'mb-6'}`}>
           <button
             onClick={() => setShowBatchView(true)}
-            className="flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors text-sm"
+            className="flex items-center gap-1.5 text-sifter-text-muted hover:text-white transition-colors text-sm"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to Batch Dashboard
+            </svg> Back to Batch Dashboard
           </button>
-          <div className="text-xs text-gray-500">
-            Single Project Analysis (EA/VC Mode)
+          <div className="text-xs text-sifter-text-subtle"> Single Project Analysis (EA/VC Mode)
           </div>
         </div>
         
@@ -1631,11 +1617,9 @@ export default function Home() {
 
           {state === 'idle' && (
             <div className={`text-center ${compactMode ? 'mb-6' : 'mb-8'}`}>
-              <h2 className={`${compactMode ? 'text-xl' : 'text-2xl'} font-bold text-white mb-3`}>
-                Single Project Analysis
+              <h2 className={`${compactMode ? 'text-xl' : 'text-2xl'} font-bold text-white mb-3`}> Single Project Analysis
               </h2>
-              <p className={`${compactMode ? 'text-sm' : 'text-base'} text-gray-400 max-w-2xl mx-auto`}>
-                Analyze a single project with detailed metrics for EA/VC review
+              <p className={`${compactMode ? 'text-sm' : 'text-base'} text-sifter-text-muted max-w-2xl mx-auto`}> Analyze a single project with detailed metrics for EA/VC review
               </p>
             </div>
           )}
@@ -1706,8 +1690,7 @@ export default function Home() {
                     <button
                       onClick={() => ExportService.shareAnalysis(projectData)}
                       className={`${compactMode ? 'px-3 py-1.5 text-xs' : 'px-4 py-2'} bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 rounded-lg flex items-center gap-1.5`}
-                    >
-                      🔗 Share
+                    > Share
                     </button>
                   </>
                 )}
@@ -1732,6 +1715,7 @@ export default function Home() {
                 metrics={detailedMetrics}
                 projectName={verdictData.projectName}
                 riskScore={verdictData.riskScore}
+                verdict={verdictData.verdict}
                 projectData={projectData || undefined}
                 onExport={() => {
                   if (projectData) {
@@ -1753,15 +1737,14 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">Analysis Failed</h3>
-              <p className="text-gray-400 mb-4">{error || 'An unexpected error occurred'}</p>
+              <p className="text-sifter-text-muted mb-4">{error || 'An unexpected error occurred'}</p>
               <button
                 onClick={() => {
                   setState('idle');
                   setError(null);
                 }}
-                className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium text-sm"
-              >
-                Try Again
+                className="px-5 py-2.5 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium text-sm"
+              > Try Again
               </button>
             </div>
           )}
@@ -1815,13 +1798,13 @@ export default function Home() {
           <div className="min-h-screen flex items-start justify-center p-4 pt-20">
             <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-6xl w-full max-h-[80vh] overflow-y-auto">
               <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-white">Data Donation Tracking</h2>
+                <div className="flex justify-end -mt-2 -mr-2 mb-2">
                   <button
                     onClick={() => setShowTrackingDashboard(false)}
-                    className="text-gray-400 hover:text-white text-2xl"
+                    aria-label="Close"
+                    className="rounded-lg p-2 text-sifter-text-muted transition-colors hover:bg-sifter-hover hover:text-sifter-text"
                   >
-                    ✕
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
                 </div>
                 
@@ -1846,13 +1829,13 @@ export default function Home() {
           <div className="min-h-screen flex items-start justify-center p-4 pt-20">
             <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-6xl w-full max-h-[80vh] overflow-y-auto">
               <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-white">Points & Rewards</h2>
+                <div className="flex justify-end -mt-2 -mr-2 mb-2">
                   <button
                     onClick={() => setShowPointsDisplay(false)}
-                    className="text-gray-400 hover:text-white text-2xl"
+                    aria-label="Close"
+                    className="rounded-lg p-2 text-sifter-text-muted transition-colors hover:bg-sifter-hover hover:text-sifter-text"
                   >
-                    ✕
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
                 </div>
                 
@@ -1926,7 +1909,7 @@ export default function Home() {
                       setShowDisputeForm(false);
                       setSelectedEntityForDispute([]);
                     }}
-                    className="text-gray-400 hover:text-white text-2xl hover:bg-gray-800/50 rounded-lg p-2 transition-colors"
+                    className="text-sifter-text-muted hover:text-white text-2xl hover:bg-sifter-hover rounded-lg p-2 transition-colors"
                   >
                     ✕
                   </button>
@@ -1960,7 +1943,7 @@ export default function Home() {
                       setShowStandardForm(false);
                       setSelectedEntityForFlagging([]);
                     }}
-                    className="text-gray-400 hover:text-white text-2xl hover:bg-gray-800/50 rounded-lg p-2 transition-colors"
+                    className="text-sifter-text-muted hover:text-white text-2xl hover:bg-sifter-hover rounded-lg p-2 transition-colors"
                   >
                     ✕
                   </button>
@@ -1979,13 +1962,11 @@ export default function Home() {
                   />
                 ) : (
                   <div className="text-center py-12">
-                    <div className="text-4xl mb-4">🚩</div>
-                    <p className="text-gray-400 mb-4">No entity selected for flagging</p>
+                    <p className="text-sifter-text-muted mb-4">No entity selected for flagging</p>
                     <button
                       onClick={() => setShowStandardForm(false)}
-                      className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-all"
-                    >
-                      Close
+                      className="px-6 py-3 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium transition-all"
+                    > Close
                     </button>
                   </div>
                 )}
@@ -2009,7 +1990,7 @@ export default function Home() {
                 <h1 className="text-xl sm:text-2xl font-bold text-white">SIFTER 1.0</h1>
               </div>
               <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">Choose Your Workflow</h2>
-              <p className="text-sm sm:text-base text-gray-400">Select your primary mode to customize your experience</p>
+              <p className="text-sm sm:text-base text-sifter-text-muted">Select your primary mode to customize your experience</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
@@ -2020,13 +2001,12 @@ export default function Home() {
                   : 'border-sifter-border hover:border-blue-500/50 hover:bg-sifter-card/50'
               }`}
               onClick={() => handleModeSelect('ea-vc')}>
-                <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">🏢</div>
                 <h3 className="font-bold text-white mb-2 text-base sm:text-lg">VC/EA Mode</h3>
-                <div className="text-xs sm:text-sm text-gray-400 space-y-2">
+                <div className="text-xs sm:text-sm text-sifter-text-muted space-y-2">
                   <p>Batch processing, Pass/Flag/Reject</p>
                   <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-sifter-border/50">
-                    <p className="text-xs text-gray-500">Features:</p>
-                    <ul className="text-xs text-gray-400 mt-1 space-y-1">
+                    <p className="text-xs text-sifter-text-subtle">Features:</p>
+                    <ul className="text-xs text-sifter-text-muted mt-1 space-y-1">
                       <li>• Batch upload (100 projects)</li>
                       <li>• Quick Pass/Flag/Reject</li>
                       <li>• Export for partner handoff</li>
@@ -2043,13 +2023,12 @@ export default function Home() {
                   : 'border-sifter-border hover:border-purple-500/50 hover:bg-sifter-card/50'
               }`}
               onClick={() => handleModeSelect('researcher')}>
-                <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">🔬</div>
                 <h3 className="font-bold text-white mb-2 text-base sm:text-lg">Researcher Mode</h3>
-                <div className="text-xs sm:text-sm text-gray-400 space-y-2">
+                <div className="text-xs sm:text-sm text-sifter-text-muted space-y-2">
                   <p>Deep analysis, export data, comparisons</p>
                   <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-sifter-border/50">
-                    <p className="text-xs text-gray-500">Features:</p>
-                    <ul className="text-xs text-gray-400 mt-1 space-y-1">
+                    <p className="text-xs text-sifter-text-subtle">Features:</p>
+                    <ul className="text-xs text-sifter-text-muted mt-1 space-y-1">
                       <li>• Single deep dives</li>
                       <li>• Data export (CSV/JSON)</li>
                       <li>• Historical comparisons</li>
@@ -2066,13 +2045,12 @@ export default function Home() {
                   : 'border-sifter-border hover:border-green-500/50 hover:bg-sifter-card/50'
               }`}
               onClick={() => handleModeSelect('individual')}>
-                <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">👤</div>
                 <h3 className="font-bold text-white mb-2 text-base sm:text-lg">Individual Investor Mode</h3>
-                <div className="text-xs sm:text-sm text-gray-400 space-y-2">
+                <div className="text-xs sm:text-sm text-sifter-text-muted space-y-2">
                   <p>Simple yes/no, mobile-friendly</p>
                   <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-sifter-border/50">
-                    <p className="text-xs text-gray-500">Features:</p>
-                    <ul className="text-xs text-gray-400 mt-1 space-y-1">
+                    <p className="text-xs text-sifter-text-subtle">Features:</p>
+                    <ul className="text-xs text-sifter-text-muted mt-1 space-y-1">
                       <li>• Mobile-first interface</li>
                       <li>• Simple yes/no/maybe</li>
                       <li>• Push notifications</li>
@@ -2086,23 +2064,21 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <button
                 onClick={handleModeCancel}
-                className="px-6 sm:px-8 py-3 rounded-lg font-medium bg-gray-800 text-gray-300 hover:bg-gray-700 transition-all order-2 sm:order-1"
-              >
-                Cancel
+                className="px-6 sm:px-8 py-3 rounded-lg font-medium bg-sifter-elevated text-sifter-text hover:bg-sifter-hover transition-all order-2 sm:order-1"
+              > Cancel
               </button>
               <button
                 onClick={handleModeConfirm}
                 disabled={!userMode}
                 className={`px-6 sm:px-8 py-3 rounded-lg font-medium transition-all order-1 sm:order-2 ${
                   userMode
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white'
-                    : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                    ? 'bg-sifter-blue hover:bg-sifter-blue-hover text-white'
+                    : 'bg-sifter-elevated text-sifter-text-subtle cursor-not-allowed'
                 }`}
-              >
-                Continue to Login
+              > Continue to Login
               </button>
             </div>
-            <p className="text-gray-500 text-xs sm:text-sm text-center mt-4">
+            <p className="text-sifter-text-subtle text-xs sm:text-sm text-center mt-4">
               (You can change this later in Settings)
             </p>
           </div>
@@ -2121,7 +2097,7 @@ export default function Home() {
                     setShowAuthModal(false);
                     setShowModeModal(true);
                   }}
-                  className="text-gray-400 hover:text-white text-2xl"
+                  className="text-sifter-text-muted hover:text-white text-2xl"
                 >
                   ✕
                 </button>
@@ -2133,20 +2109,18 @@ export default function Home() {
                   className={`flex-1 py-3 font-medium ${
                     authTab === 'login'
                       ? 'text-blue-500 border-b-2 border-blue-500'
-                      : 'text-gray-400'
+                      : 'text-sifter-text-muted'
                   }`}
-                >
-                  Login
+                > Login
                 </button>
                 <button
                   onClick={() => setAuthTab('signup')}
                   className={`flex-1 py-3 font-medium ${
                     authTab === 'signup'
                       ? 'text-blue-500 border-b-2 border-blue-500'
-                      : 'text-gray-400'
+                      : 'text-sifter-text-muted'
                   }`}
-                >
-                  Sign Up
+                > Sign Up
                 </button>
               </div>
 
@@ -2165,21 +2139,21 @@ export default function Home() {
                 <form onSubmit={handleLogin}>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm text-gray-400 mb-2">Email</label>
+                      <label className="block text-sm text-sifter-text-muted mb-2">Email</label>
                       <input
                         id="loginEmail"
                         type="email"
-                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-black focus:border-blue-500 focus:outline-none transition-colors"
+                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-sifter-text focus:border-blue-500 focus:outline-none transition-colors"
                         placeholder="you@example.com"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-400 mb-2">Password</label>
+                      <label className="block text-sm text-sifter-text-muted mb-2">Password</label>
                       <input
                         id="loginPassword"
                         type="password"
-                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-black focus:border-blue-500 focus:outline-none transition-colors"
+                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-sifter-text focus:border-blue-500 focus:outline-none transition-colors"
                         placeholder="Enter your password"
                         required
                       />
@@ -2191,15 +2165,13 @@ export default function Home() {
                           setShowAuthModal(false);
                           setShowModeModal(true);
                         }}
-                        className="flex-1 bg-gray-800 text-gray-300 hover:bg-gray-700 py-3 rounded-lg font-medium transition-all"
-                      >
-                        Back to Modes
+                        className="flex-1 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover py-3 rounded-lg font-medium transition-all"
+                      > Back to Modes
                       </button>
                       <button
                         type="submit"
-                        className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-3 rounded-lg font-medium transition-all"
-                      >
-                        Login
+                        className="flex-1 bg-sifter-blue hover:bg-sifter-blue-hover text-white py-3 rounded-lg font-medium transition-all"
+                      > Login
                       </button>
                     </div>
                   </div>
@@ -2208,41 +2180,41 @@ export default function Home() {
                 <form onSubmit={handleSignup}>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm text-gray-400 mb-2">Full Name</label>
+                      <label className="block text-sm text-sifter-text-muted mb-2">Full Name</label>
                       <input
                         id="signupName"
                         type="text"
-                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-black focus:border-blue-500 focus:outline-none transition-colors"
+                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-sifter-text focus:border-blue-500 focus:outline-none transition-colors"
                         placeholder="John Doe"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-400 mb-2">Email</label>
+                      <label className="block text-sm text-sifter-text-muted mb-2">Email</label>
                       <input
                         id="signupEmail"
                         type="email"
-                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-black focus:border-blue-500 focus:outline-none transition-colors"
+                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-sifter-text focus:border-blue-500 focus:outline-none transition-colors"
                         placeholder="you@example.com"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-400 mb-2">Password</label>
+                      <label className="block text-sm text-sifter-text-muted mb-2">Password</label>
                       <input
                         id="signupPassword"
                         type="password"
-                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-black focus:border-blue-500 focus:outline-none transition-colors"
+                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-sifter-text focus:border-blue-500 focus:outline-none transition-colors"
                         placeholder="Create a strong password"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-400 mb-2">Confirm Password</label>
+                      <label className="block text-sm text-sifter-text-muted mb-2">Confirm Password</label>
                       <input
                         id="signupConfirm"
                         type="password"
-                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-black focus:border-blue-500 focus:outline-none transition-colors"
+                        className="w-full bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-sifter-text focus:border-blue-500 focus:outline-none transition-colors"
                         placeholder="Confirm your password"
                         required
                       />
@@ -2254,15 +2226,13 @@ export default function Home() {
                           setShowAuthModal(false);
                           setShowModeModal(true);
                         }}
-                        className="flex-1 bg-gray-800 text-gray-300 hover:bg-gray-700 py-3 rounded-lg font-medium transition-all"
-                      >
-                        Back to Modes
+                        className="flex-1 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover py-3 rounded-lg font-medium transition-all"
+                      > Back to Modes
                       </button>
                       <button
                         type="submit"
-                        className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-3 rounded-lg font-medium transition-all"
-                      >
-                        Create Account
+                        className="flex-1 bg-sifter-blue hover:bg-sifter-blue-hover text-white py-3 rounded-lg font-medium transition-all"
+                      > Create Account
                       </button>
                     </div>
                   </div>
@@ -2275,205 +2245,106 @@ export default function Home() {
 
       {/* Header - Only show when logged in */}
       {isLoggedIn && (
-        <header className={`border-b border-sifter-border bg-sifter-dark/50 backdrop-blur-sm ${compactMode ? 'py-2' : 'py-4'}`}>
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className={`${compactMode ? 'w-8 h-8' : 'w-10 h-10'} bg-gradient-to-br from-sifter-blue to-blue-600 rounded-lg flex items-center justify-center`}>
-                  <svg className={`${compactMode ? 'w-4 h-4' : 'w-6 h-6'} text-white`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                  </svg>
-                </div>
-                <div>
-                  <h1 className={`${compactMode ? 'text-base font-bold' : 'text-xl font-bold'} text-white`}>SIFTER</h1>
-                  {userMode && (
-                    <p className={`${compactMode ? 'text-[10px]' : 'text-xs'} text-gray-500`}>{getModeDisplayName(userMode)}</p>
+        <header className="sticky top-0 z-40 border-b border-sifter-border bg-sifter-dark/85 backdrop-blur">
+          <div className={`max-w-7xl mx-auto px-4 flex items-center justify-between gap-4 ${compactMode ? 'h-12' : 'h-16'}`}>
+            <div className="flex items-center gap-3 min-w-0">
+              <LogoMark size="sm" />
+              <div className="min-w-0 leading-tight">
+                <p className="font-bold tracking-tight text-sifter-text">SIFTER</p>
+                {userMode && !compactMode && (
+                  <p className="text-xs text-sifter-text-subtle truncate">{getModeDisplayName(userMode)}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1 sm:gap-2">
+              {/* Density toggle */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setCompactMode(!compactMode)}
+                aria-pressed={compactMode}
+                aria-label={compactMode ? 'Switch to comfortable layout' : 'Switch to compact layout'}
+                title={compactMode ? 'Comfortable layout' : 'Compact layout'}
+                className="hidden sm:inline-flex px-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  {compactMode ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5h16M4 9h16M4 13h16M4 17h16M4 21h16" />
+                  )}
+                </svg>
+              </Button>
+
+              {/* Contribute menu: evidence, disputes, tracking, points */}
+              {isLoggedIn && (
+                <div className="relative mobile-data-menu">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setShowMobileDataMenu(!showMobileDataMenu)}
+                    aria-expanded={showMobileDataMenu}
+                    aria-controls="contribute-menu"
+                    trailingIcon={
+                      <svg className={`w-3.5 h-3.5 transition-transform ${showMobileDataMenu ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    }
+                  > Contribute
+                    {userPoints > 0 && (
+                      <span className="ml-1 rounded-full bg-sifter-blue/20 px-1.5 py-0.5 text-[11px] font-semibold text-blue-300 tabular-nums">
+                        {userPoints} pts
+                      </span>
+                    )}
+                  </Button>
+
+                  {showMobileDataMenu && (
+                    <div id="contribute-menu" className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-sifter-border bg-sifter-card p-1.5 shadow-popover z-[100] animate-fade-up">
+                      {[
+                        { label: 'Submit evidence', hint: 'Flag a project with proof', run: handleNewSubmission },
+                        { label: 'File a dispute', hint: 'Challenge a verdict', run: () => setShowDisputeForm(true) },
+                        { label: 'Track submissions', hint: 'Status of what you sent', run: () => setShowTrackingDashboard(true) },
+                        { label: 'Points and rewards', hint: userPoints > 0 ? `${userPoints} points available` : 'Earn points for contributions', run: () => setShowPointsDisplay(true) },
+                      ].map((item) => (
+                        <button
+                          key={item.label}
+                          onClick={() => {
+                            item.run();
+                            setShowMobileDataMenu(false);
+                          }}
+                          className="w-full rounded-lg px-3 py-2 text-left transition-colors hover:bg-sifter-hover focus-visible:bg-sifter-hover"
+                        >
+                          <span className="block text-sm font-medium text-sifter-text">{item.label}</span>
+                          <span className="block text-xs text-sifter-text-subtle">{item.hint}</span>
+                        </button>
+                      ))}
+                      <div className="my-1 border-t border-sifter-border sm:hidden" />
+                      <button
+                        onClick={() => {
+                          setCompactMode(!compactMode);
+                          setShowMobileDataMenu(false);
+                        }}
+                        className="w-full rounded-lg px-3 py-2 text-left text-sm text-sifter-text-muted transition-colors hover:bg-sifter-hover sm:hidden"
+                      >
+                        {compactMode ? 'Comfortable layout' : 'Compact layout'}
+                      </button>
+                    </div>
                   )}
                 </div>
-              </div>
-              
-              <div className="flex items-center gap-4">
-                {/* Compact mode toggle button */}
-                <button
-                  onClick={() => setCompactMode(!compactMode)}
-                  className={`px-2 py-1 text-xs ${
-                    compactMode 
-                      ? 'bg-gray-800 text-gray-300 border border-gray-700' 
-                      : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                  } rounded-lg transition-colors hidden sm:block`}
-                  title={compactMode ? "Switch to normal view" : "Switch to compact view"}
-                >
-                  {compactMode ? "↔️" : "↕️"}
-                </button>
-                
-                {/* Data Donation Button */}
-                {isLoggedIn && userMode && (
-                  <div className="hidden md:flex items-center gap-2">
-                    {/* Points & Rewards Button */}
-                    <button
-                      onClick={() => setShowPointsDisplay(true)}
-                      className={`${compactMode ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-xs'} bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg font-medium transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap`}
-                    >
-                      <svg className={`${compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} flex-shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>Points & Rewards</span>
-                    </button>
-                    
-                    {/* Submit Evidence Button */}
-                    <button
-                      onClick={handleNewSubmission}
-                      className={`${compactMode ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-xs'} bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 rounded-lg font-medium transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap`}
-                    >
-                      <svg className={`${compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} flex-shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>Submit Evidence</span>
-                    </button>
-                    
-                    {/* Dispute Button */}
-                    <button
-                      onClick={() => setShowDisputeForm(true)}
-                      className={`${compactMode ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-xs'} bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 rounded-lg font-medium transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap`}
-                    >
-                      <svg className={`${compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} flex-shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>File Dispute</span>
-                    </button>
-                    
-                    <button
-                      onClick={() => setShowTrackingDashboard(true)}
-                      className={`${compactMode ? 'px-2 py-1 text-xs' : 'px-3 py-2 text-xs'} bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 border border-amber-500/30 rounded-lg font-medium transition-colors flex items-center justify-center gap-1.5 whitespace-nowrap`}
-                    >
-                      <svg className={`${compactMode ? 'w-3 h-3' : 'w-3.5 h-3.5'} flex-shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                      </svg>
-                      <span>Data Donation</span>
-                      {userPoints > 0 && (
-                        <span className="bg-amber-500 text-white text-xs px-1 py-0.5 rounded-full font-bold">
-                          {userPoints}
-                        </span>
-                      )}
-                    </button>
-                  </div>
-                )}
+              )}
 
-                {/* Mobile: Show dropdown menu */}
-                {isLoggedIn && userMode && (
-                  <div className="md:hidden relative mobile-data-menu z-[60]">
-                    <button
-                      onClick={() => setShowMobileDataMenu(!showMobileDataMenu)}
-                      className={`p-1.5 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 border border-amber-500/30 rounded-lg transition-colors relative`}
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                      </svg>
-                      {userPoints > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-xs px-1 py-0.5 rounded-full font-bold">
-                          {userPoints}
-                        </span>
-                      )}
-                    </button>
-                    
-                    {showMobileDataMenu && (
-                      <div className="absolute right-0 top-full mt-1 w-48 bg-sifter-card border border-sifter-border rounded-lg shadow-xl z-[100]">
-                        <div className="p-1 space-y-1">
-                          {/* Data Donation Button */}
-                          <button
-                            onClick={() => {
-                              setShowTrackingDashboard(true);
-                              setShowMobileDataMenu(false);
-                            }}
-                            className="w-full text-left px-3 py-2 text-amber-400 hover:bg-amber-500/10 rounded text-sm transition-colors flex items-center gap-2"
-                          >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                            </svg>
-                            <span className="text-xs">Data Donation</span>
-                          </button>
-                          
-                          {/* Points & Rewards Button */}
-                          <button
-                            onClick={() => {
-                              setShowPointsDisplay(true);
-                              setShowMobileDataMenu(false);
-                            }}
-                            className="w-full text-left px-3 py-2 text-blue-400 hover:bg-blue-500/10 rounded text-sm transition-colors flex items-center gap-2"
-                          >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span className="text-xs">Points & Rewards</span>
-                          </button>
-
-                          {/* Submit Evidence Button */}
-                          <button
-                            onClick={() => {
-                              handleNewSubmission();
-                              setShowMobileDataMenu(false);
-                            }}
-                            className="w-full text-left px-3 py-2 text-green-400 hover:bg-green-500/10 rounded text-sm transition-colors flex items-center gap-2"
-                          >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span className="text-xs">Submit Evidence</span>
-                          </button>
-
-                          {/* Dispute Button */}
-                          <button
-                            onClick={() => {
-                              setShowDisputeForm(true);
-                              setShowMobileDataMenu(false);
-                            }}
-                            className="w-full text-left px-3 py-2 text-red-400 hover:bg-red-500/10 rounded text-sm transition-colors flex items-center gap-2"
-                          >
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span className="text-xs">File Dispute</span>
-                          </button>
-                          
-                          {/* Compact mode toggle */}
-                          <button
-                            onClick={() => {
-                              setCompactMode(!compactMode);
-                              setShowMobileDataMenu(false);
-                            }}
-                            className="w-full text-left px-3 py-2 text-blue-400 hover:bg-blue-500/10 rounded text-sm transition-colors flex items-center gap-2"
-                          >
-                            <span>{compactMode ? "↔️" : "↕️"}</span>
-                            <span className="text-xs">{compactMode ? "Normal View" : "Compact View"}</span>
-                          </button>
-                        </div>
-                      </div>
-                    )}
+              {/* Account */}
+              {isLoggedIn && (
+                <div className="flex items-center gap-2 pl-2 ml-1 border-l border-sifter-border">
+                  <div className="hidden md:block text-right leading-tight">
+                    <p className="text-sm font-medium text-sifter-text truncate max-w-[140px]">{userName}</p>
+                    <p className="text-xs text-sifter-text-subtle truncate max-w-[140px]">{userEmail}</p>
                   </div>
-                )}
-                
-                {isLoggedIn && userMode && (
-                  <div className="flex items-center gap-2 ml-2 pl-2 border-l border-sifter-border">
-                    <div className={`${compactMode ? 'px-2 py-1 text-xs' : 'px-2.5 py-1.5 text-xs'} rounded-full font-medium whitespace-nowrap ${
-                      userMode === 'ea-vc' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
-                      userMode === 'researcher' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
-                      'bg-green-500/20 text-green-400 border border-green-500/30'
-                    }`}>
-                      {getModeDisplayName(userMode)}
-                    </div>
-                    <div className="text-right">
-                      <p className={`${compactMode ? 'text-xs' : 'text-sm'} font-medium text-white truncate max-w-[100px]`}>{userName}</p>
-                      <p className={`${compactMode ? 'text-[10px]' : 'text-xs'} text-gray-500 truncate max-w-[100px]`}>{userEmail}</p>
-                    </div>
-                    <button
-                      onClick={handleLogout}
-                      className={`${compactMode ? 'px-2 py-1 text-xs' : 'px-2.5 py-1.5 text-xs'} text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors font-medium flex items-center justify-center`}
-                    >
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </div>
+                  <Button variant="ghost" size="sm" onClick={handleLogout}> Log out
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </header>
@@ -2652,22 +2523,10 @@ export default function Home() {
       </div>
 
       {isLoggedIn && (
-        <footer className={`fixed bottom-0 left-0 right-0 border-t border-sifter-border bg-sifter-dark/80 backdrop-blur-sm ${compactMode ? 'py-1.5' : 'py-3'}`}>
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex justify-between items-center">
-              <div className={`${compactMode ? 'text-[10px]' : 'text-xs'} text-gray-600`}>
-                <span className={`${compactMode ? 'text-xs' : 'text-sm'} font-medium text-gray-400`}>SIFTER 1.0</span> - Automated Project Due Diligence
-              </div>
-              {userMode && (
-                <div className={`${compactMode ? 'text-[10px]' : 'text-xs'} text-gray-500 flex items-center gap-1.5`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${compactMode ? 'animate-pulse' : 'animate-pulse'} bg-blue-500`}></span>
-                  Active: {getModeDisplayName(userMode)}
-                  {compactMode && (
-                    <span className="text-gray-600 ml-1">| Ctrl+K to toggle view</span>
-                  )}
-                </div>
-              )}
-            </div>
+        <footer className="border-t border-sifter-border mt-12">
+          <div className="max-w-7xl mx-auto px-4 py-6 flex items-center justify-between text-xs text-sifter-text-subtle">
+            <span>SIFTER 1.0</span>
+            {compactMode && <span>Ctrl+K toggles layout</span>}
           </div>
         </footer>
       )}

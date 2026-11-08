@@ -126,7 +126,7 @@ export default function DisputesQueuePanel({
       case 'resolved_rejected':
         return 'bg-red-500/20 text-red-400 border-red-500/30';
       default:
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+        return 'bg-sifter-elevated text-sifter-text-muted border-sifter-border-strong';
     }
   };
 
@@ -243,24 +243,24 @@ The SIFTER Team`
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-sifter-card border border-blue-500/30 rounded-xl p-4">
-          <div className="text-sm text-gray-400">Pending Review</div>
+          <div className="text-sm text-sifter-text-muted">Pending Review</div>
           <div className="text-3xl font-bold text-blue-400">{statusCounts.pending}</div>
-          <div className="text-xs text-gray-500 mt-1">Awaiting assignment</div>
+          <div className="text-xs text-sifter-text-subtle mt-1">Awaiting assignment</div>
         </div>
         <div className="bg-sifter-card border border-yellow-500/30 rounded-xl p-4">
-          <div className="text-sm text-gray-400">Under Review</div>
+          <div className="text-sm text-sifter-text-muted">Under Review</div>
           <div className="text-3xl font-bold text-yellow-400">{statusCounts.under_review}</div>
-          <div className="text-xs text-gray-500 mt-1">Active investigations</div>
+          <div className="text-xs text-sifter-text-subtle mt-1">Active investigations</div>
         </div>
         <div className="bg-sifter-card border border-orange-500/30 rounded-xl p-4">
-          <div className="text-sm text-gray-400">Needs Info</div>
+          <div className="text-sm text-sifter-text-muted">Needs Info</div>
           <div className="text-3xl font-bold text-orange-400">{statusCounts.needs_info}</div>
-          <div className="text-xs text-gray-500 mt-1">Awaiting response</div>
+          <div className="text-xs text-sifter-text-subtle mt-1">Awaiting response</div>
         </div>
         <div className="bg-sifter-card border border-green-500/30 rounded-xl p-4">
-          <div className="text-sm text-gray-400">Resolved</div>
+          <div className="text-sm text-sifter-text-muted">Resolved</div>
           <div className="text-3xl font-bold text-green-400">{statusCounts.resolved}</div>
-          <div className="text-xs text-gray-500 mt-1">Completed cases</div>
+          <div className="text-xs text-sifter-text-subtle mt-1">Completed cases</div>
         </div>
       </div>
 
@@ -268,7 +268,7 @@ The SIFTER Team`
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         <div className="flex-1">
           <h2 className="text-xl font-bold text-white">Dispute Management Queue</h2>
-          <p className="text-gray-400 text-sm">
+          <p className="text-sifter-text-muted text-sm">
             {filteredDisputes.length} disputes • {disputes.filter(d => new Date(d.resolutionDueDate) < new Date()).length} overdue
           </p>
         </div>
@@ -281,15 +281,13 @@ The SIFTER Team`
           >
             {isRefreshing ? (
               <>
-                <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-                Refreshing...
+                <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div> Refreshing...
               </>
             ) : (
               <>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                Refresh
+                </svg> Refresh
               </>
             )}
           </button>
@@ -320,8 +318,8 @@ The SIFTER Team`
                   status === 'pending' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/50' :
                   status === 'under_review' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/50' :
                   status === 'needs_info' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/50' :
-                  'bg-gray-700 text-white border border-gray-600'
-                : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-300 border border-gray-700'
+                  'bg-sifter-hover text-white border border-sifter-border'
+                : 'bg-sifter-elevated text-sifter-text-muted hover:bg-sifter-hover hover:text-sifter-text border border-sifter-border'
             }`}
           >
             {status.replace('_', ' ').replace('resolved ', '')}
@@ -340,14 +338,14 @@ The SIFTER Team`
           <table className="w-full">
             <thead className="bg-sifter-dark">
               <tr>
-                <th className="text-left p-4 text-sm font-medium text-gray-400">Case ID</th>
-                <th className="text-left p-4 text-sm font-medium text-gray-400">Entity</th>
-                <th className="text-left p-4 text-sm font-medium text-gray-400">Disputer</th>
-                <th className="text-left p-4 text-sm font-medium text-gray-400">Filed</th>
-                <th className="text-left p-4 text-sm font-medium text-gray-400">Due</th>
-                <th className="text-left p-4 text-sm font-medium text-gray-400">Verification</th>
-                <th className="text-left p-4 text-sm font-medium text-gray-400">Status</th>
-                <th className="text-left p-4 text-sm font-medium text-gray-400">Actions</th>
+                <th className="text-left p-4 text-sm font-medium text-sifter-text-muted">Case ID</th>
+                <th className="text-left p-4 text-sm font-medium text-sifter-text-muted">Entity</th>
+                <th className="text-left p-4 text-sm font-medium text-sifter-text-muted">Disputer</th>
+                <th className="text-left p-4 text-sm font-medium text-sifter-text-muted">Filed</th>
+                <th className="text-left p-4 text-sm font-medium text-sifter-text-muted">Due</th>
+                <th className="text-left p-4 text-sm font-medium text-sifter-text-muted">Verification</th>
+                <th className="text-left p-4 text-sm font-medium text-sifter-text-muted">Status</th>
+                <th className="text-left p-4 text-sm font-medium text-sifter-text-muted">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-sifter-border">
@@ -355,22 +353,22 @@ The SIFTER Team`
                 <tr key={dispute.id} className="hover:bg-sifter-dark/50">
                   <td className="p-4">
                     <div className="font-mono text-blue-400">{dispute.caseId}</div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-sifter-text-subtle">
                       {dispute.categories.length} categories
                     </div>
                   </td>
                   <td className="p-4">
                     <div className="font-medium text-white">{dispute.entityName}</div>
-                    <div className="text-sm text-gray-400">{dispute.entityType}</div>
+                    <div className="text-sm text-sifter-text-muted">{dispute.entityType}</div>
                   </td>
                   <td className="p-4">
                     <div className="text-white">{dispute.disputerName}</div>
-                    <div className="text-sm text-gray-400">{dispute.disputerTitle}</div>
-                    <div className="text-xs text-gray-500 truncate max-w-[150px]">
+                    <div className="text-sm text-sifter-text-muted">{dispute.disputerTitle}</div>
+                    <div className="text-xs text-sifter-text-subtle truncate max-w-[150px]">
                       {dispute.disputerEmail}
                     </div>
                   </td>
-                  <td className="p-4 text-gray-400">
+                  <td className="p-4 text-sifter-text-muted">
                     {new Date(dispute.filedAt).toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric'
@@ -380,7 +378,7 @@ The SIFTER Team`
                     <div className={`font-medium ${
                       new Date(dispute.resolutionDueDate) < new Date()
                         ? 'text-red-400'
-                        : 'text-gray-400'
+                        : 'text-sifter-text-muted'
                     }`}>
                       {new Date(dispute.resolutionDueDate).toLocaleDateString('en-US', {
                         month: 'short',
@@ -392,7 +390,7 @@ The SIFTER Team`
                     )}
                   </td>
                   <td className="p-4">
-                    <div className="flex items-center gap-2 text-gray-400">
+                    <div className="flex items-center gap-2 text-sifter-text-muted">
                       {getVerificationIcon(dispute.verificationMethod)}
                       <span className="text-sm">{dispute.verificationMethod || 'Pending'}</span>
                       {dispute.isVerified && (
@@ -410,15 +408,13 @@ The SIFTER Team`
                       <button
                         onClick={() => setSelectedDispute(dispute)}
                         className="px-3 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/30 rounded text-sm"
-                      >
-                        Review
+                      > Review
                       </button>
                       {dispute.status === 'pending' && (
                         <button
                           onClick={() => onUpdateDispute(dispute.id, { status: 'under_review' })}
                           className="px-3 py-1 bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border border-yellow-500/30 rounded text-sm"
-                        >
-                          Start Review
+                        > Start Review
                         </button>
                       )}
                     </div>
@@ -437,7 +433,7 @@ The SIFTER Team`
             <CheckCircleIcon className="w-10 h-10 text-green-400" />
           </div>
           <h3 className="text-xl font-semibold text-white mb-3">No disputes found!</h3>
-          <p className="text-gray-400 max-w-md mx-auto">
+          <p className="text-sifter-text-muted max-w-md mx-auto">
             {filterStatus === 'all' 
               ? "There are currently no disputes in the system."
               : `No disputes with status "${filterStatus.replace('_', ' ')}".`}
@@ -454,7 +450,7 @@ The SIFTER Team`
               <div className="sticky top-0 z-10 p-6 border-b border-sifter-border bg-sifter-card flex justify-between items-center">
                 <div>
                   <h2 className="text-xl font-bold text-white">Dispute Review</h2>
-                  <p className="text-gray-400">
+                  <p className="text-sifter-text-muted">
                     {selectedDispute.caseId} • {selectedDispute.entityName}
                   </p>
                 </div>
@@ -465,7 +461,7 @@ The SIFTER Team`
                     setAdminNotes('');
                     setEmailPreviewType('resolution');
                   }}
-                  className="p-2 text-gray-400 hover:text-white"
+                  className="p-2 text-sifter-text-muted hover:text-white"
                 >
                   <XMarkIcon className="w-6 h-6" />
                 </button>
@@ -476,27 +472,27 @@ The SIFTER Team`
                 {/* Dispute Overview */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="bg-sifter-dark/50 p-4 rounded-lg">
-                    <div className="text-sm text-gray-400 mb-2">Disputer Info</div>
+                    <div className="text-sm text-sifter-text-muted mb-2">Disputer Info</div>
                     <div className="text-white font-medium">{selectedDispute.disputerName}</div>
-                    <div className="text-sm text-gray-400">{selectedDispute.disputerTitle}</div>
+                    <div className="text-sm text-sifter-text-muted">{selectedDispute.disputerTitle}</div>
                     <div className="text-sm text-blue-400">{selectedDispute.disputerEmail}</div>
                   </div>
                   
                   <div className="bg-sifter-dark/50 p-4 rounded-lg">
-                    <div className="text-sm text-gray-400 mb-2">Timeline</div>
+                    <div className="text-sm text-sifter-text-muted mb-2">Timeline</div>
                     <div className="space-y-1">
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-400">Filed:</span>
+                        <span className="text-sifter-text-muted">Filed:</span>
                         <span className="text-white">{new Date(selectedDispute.filedAt).toLocaleDateString()}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-400">Due:</span>
+                        <span className="text-sifter-text-muted">Due:</span>
                         <span className={new Date(selectedDispute.resolutionDueDate) < new Date() ? 'text-red-400' : 'text-white'}>
                           {new Date(selectedDispute.resolutionDueDate).toLocaleDateString()}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-gray-400">Age:</span>
+                        <span className="text-sifter-text-muted">Age:</span>
                         <span className="text-white">
                           {Math.floor((new Date().getTime() - new Date(selectedDispute.filedAt).getTime()) / (1000 * 60 * 60 * 24))} days
                         </span>
@@ -505,10 +501,9 @@ The SIFTER Team`
                   </div>
                   
                   <div className="bg-sifter-dark/50 p-4 rounded-lg">
-                    <div className="text-sm text-gray-400 mb-2">Verification</div>
+                    <div className="text-sm text-sifter-text-muted mb-2">Verification</div>
                     <div className="text-white font-medium">{selectedDispute.verificationMethod || 'Not specified'}</div>
-                    <div className="text-sm text-gray-400">
-                      Verified: {selectedDispute.isVerified ? 'Yes' : 'No'}
+                    <div className="text-sm text-sifter-text-muted"> Verified: {selectedDispute.isVerified ? 'Yes' : 'No'}
                     </div>
                     {!selectedDispute.isVerified && (
                       <button 
@@ -519,8 +514,7 @@ The SIFTER Team`
                           });
                         }}
                         className="mt-2 px-3 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 text-sm rounded"
-                      >
-                        Request Verification
+                      > Request Verification
                       </button>
                     )}
                   </div>
@@ -531,7 +525,7 @@ The SIFTER Team`
                   <h3 className="font-medium text-white mb-4">Dispute Details</h3>
                   
                   <div className="mb-4">
-                    <div className="text-sm text-gray-400 mb-2">Categories:</div>
+                    <div className="text-sm text-sifter-text-muted mb-2">Categories:</div>
                     <div className="flex flex-wrap gap-2">
                       {selectedDispute.categories.map((category, idx) => (
                         <span key={idx} className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm">
@@ -542,7 +536,7 @@ The SIFTER Team`
                   </div>
                   
                   <div>
-                    <div className="text-sm text-gray-400 mb-2">Explanation:</div>
+                    <div className="text-sm text-sifter-text-muted mb-2">Explanation:</div>
                     <div className="bg-sifter-dark p-4 rounded-lg whitespace-pre-wrap">
                       {selectedDispute.explanation}
                     </div>
@@ -559,21 +553,20 @@ The SIFTER Team`
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <h4 className="font-medium text-white">{evidence.title}</h4>
-                            <div className="text-sm text-gray-400">{evidence.type}</div>
+                            <div className="text-sm text-sifter-text-muted">{evidence.type}</div>
                           </div>
-                          <span className="text-xs text-gray-500">
-                             {evidence.uploadedAt ? new Date(evidence.uploadedAt).toLocaleDateString() : 'Unknown date'}  {/* ✅ Add null check */}
+                          <span className="text-xs text-sifter-text-subtle">
+                             {evidence.uploadedAt ? new Date(evidence.uploadedAt).toLocaleDateString() : 'Unknown date'}  {/*  Add null check */}
                           </span>
                         </div>
-                        <p className="text-gray-300 text-sm mb-3">{evidence.description}</p>
+                        <p className="text-sifter-text text-sm mb-3">{evidence.description}</p>
                         {evidence.url && (
                           <a 
                             href={evidence.url} 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="text-blue-400 hover:text-blue-300 text-sm"
-                          >
-                            View Evidence →
+                          > View Evidence →
                           </a>
                         )}
                       </div>
@@ -591,37 +584,34 @@ The SIFTER Team`
                       className={`px-3 py-2 rounded text-sm ${
                         emailPreviewType === 'confirmation' 
                           ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
-                          : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                          : 'bg-sifter-elevated text-sifter-text-muted hover:bg-sifter-hover'
                       }`}
-                    >
-                      Confirmation
+                    > Confirmation
                     </button>
                     <button
                       onClick={() => setEmailPreviewType('verification')}
                       className={`px-3 py-2 rounded text-sm ${
                         emailPreviewType === 'verification' 
                           ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
-                          : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                          : 'bg-sifter-elevated text-sifter-text-muted hover:bg-sifter-hover'
                       }`}
-                    >
-                      Verification
+                    > Verification
                     </button>
                     <button
                       onClick={() => setEmailPreviewType('resolution')}
                       className={`px-3 py-2 rounded text-sm ${
                         emailPreviewType === 'resolution' 
                           ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
-                          : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                          : 'bg-sifter-elevated text-sifter-text-muted hover:bg-sifter-hover'
                       }`}
-                    >
-                      Resolution
+                    > Resolution
                     </button>
                   </div>
                   
                   <div className="bg-white text-black rounded-lg overflow-hidden">
                     <div className="border-b p-4">
-                      <div className="text-sm text-gray-500">To: {selectedDispute.disputerEmail}</div>
-                      <div className="text-sm text-gray-500">From: disputes@sifter.com</div>
+                      <div className="text-sm text-sifter-text-subtle">To: {selectedDispute.disputerEmail}</div>
+                      <div className="text-sm text-sifter-text-subtle">From: disputes@sifter.com</div>
                       <div className="font-medium mt-2">{currentEmailTemplate.subject}</div>
                     </div>
                     
@@ -646,8 +636,7 @@ The SIFTER Team`
                             }
                           }}
                           className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm"
-                        >
-                          Open Preview
+                        > Open Preview
                         </button>
                         <button
                           onClick={() => {
@@ -655,14 +644,12 @@ The SIFTER Team`
                             alert('Email content copied to clipboard!');
                           }}
                           className="px-4 py-2 border border-gray-300 rounded text-sm"
-                        >
-                          Copy Content
+                        > Copy Content
                         </button>
                         <button
                           onClick={() => alert(`Email would be sent to: ${selectedDispute.disputerEmail}`)}
                           className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded text-sm"
-                        >
-                          Send Email
+                        > Send Email
                         </button>
                       </div>
                     </div>
@@ -697,7 +684,7 @@ The SIFTER Team`
                       }`}
                     >
                       <div className="font-medium mb-1">Accept Dispute</div>
-                      <div className="text-sm text-gray-400">Update entry as requested</div>
+                      <div className="text-sm text-sifter-text-muted">Update entry as requested</div>
                     </button>
                     
                     <button
@@ -713,7 +700,7 @@ The SIFTER Team`
                       }`}
                     >
                       <div className="font-medium mb-1">Partial Acceptance</div>
-                      <div className="text-sm text-gray-400">Make some changes</div>
+                      <div className="text-sm text-sifter-text-muted">Make some changes</div>
                     </button>
                     
                     <button
@@ -729,26 +716,24 @@ The SIFTER Team`
                       }`}
                     >
                       <div className="font-medium mb-1">Reject Dispute</div>
-                      <div className="text-sm text-gray-400">Maintain original entry</div>
+                      <div className="text-sm text-sifter-text-muted">Maintain original entry</div>
                     </button>
                   </div>
                   
                   {resolution && (
                     <div className="mt-6 p-4 bg-sifter-dark/50 border border-sifter-border rounded-lg">
                       <h4 className="font-medium text-white mb-2">Ready to submit resolution?</h4>
-                      <p className="text-gray-400 text-sm mb-4">
-                        This will update the dispute status and send the resolution email.
+                      <p className="text-sifter-text-muted text-sm mb-4"> This will update the dispute status and send the resolution email.
                       </p>
                       <div className="flex gap-3">
                         <button
                           onClick={() => handleResolveDispute(resolution)}
                           disabled={isProcessing}
-                          className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium flex items-center gap-2 disabled:opacity-50"
+                          className="px-6 py-2 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium flex items-center gap-2 disabled:opacity-50"
                         >
                           {isProcessing ? (
                             <>
-                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                              Processing...
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Processing...
                             </>
                           ) : (
                             'Submit Resolution'
@@ -756,17 +741,15 @@ The SIFTER Team`
                         </button>
                         <button
                           onClick={() => setResolution(null)}
-                          className="px-6 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg"
-                        >
-                          Cancel
+                          className="px-6 py-2 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover rounded-lg"
+                        > Cancel
                         </button>
                       </div>
                     </div>
                   )}
                   
                   {isProcessing && !resolution && (
-                    <div className="mt-4 text-center text-gray-400">
-                      Processing resolution...
+                    <div className="mt-4 text-center text-sifter-text-muted"> Processing resolution...
                     </div>
                   )}
                 </div>

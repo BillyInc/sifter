@@ -195,8 +195,7 @@ export default function SubmissionForm({
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold text-white mb-2">Step 1: Entity Type Selection</h3>
-        <p className="text-sm text-gray-400">
-          What type of entity are you reporting? This helps us categorize and verify your submission.
+        <p className="text-sm text-sifter-text-muted"> What type of entity are you reporting? This helps us categorize and verify your submission.
         </p>
       </div>
       
@@ -205,25 +204,25 @@ export default function SubmissionForm({
           { 
             id: 'marketing-agency', 
             label: 'Marketing Agency', 
-            icon: '🏢', 
+            icon: '', 
             description: 'Promotion services, community management, etc.' 
           },
           { 
             id: 'advisor-consultant', 
             label: 'Advisor/Consultant', 
-            icon: '👔', 
+            icon: '', 
             description: 'Project advisors, technical consultants, etc.' 
           },
           { 
             id: 'influencer-kol', 
             label: 'Influencer/KOL', 
-            icon: '📢', 
+            icon: '', 
             description: 'Content creators, shillers, promoters' 
           },
           { 
             id: 'team-member', 
             label: 'Team Member', 
-            icon: '👥', 
+            icon: '', 
             description: 'Core team, developers, founders' 
           }
         ].map((type) => (
@@ -233,13 +232,13 @@ export default function SubmissionForm({
             onClick={() => setFormData({ ...formData, entityType: type.id as any })}
             className={`p-4 border rounded-xl flex flex-col items-center text-left transition-all ${
               formData.entityType === type.id 
-                ? 'border-blue-500 bg-gradient-to-br from-blue-500/20 to-blue-600/20 text-blue-400' 
-                : 'border-sifter-border bg-sifter-card hover:bg-sifter-card/80 text-gray-300 hover:border-blue-500/50'
+                ? 'border-blue-500 bg-sifter-elevated text-blue-400' 
+                : 'border-sifter-border bg-sifter-card hover:bg-sifter-card/80 text-sifter-text hover:border-blue-500/50'
             }`}
           >
             <span className="text-3xl mb-3">{type.icon}</span>
             <span className="font-medium text-base mb-1">{type.label}</span>
-            <span className="text-xs text-gray-400 text-center">{type.description}</span>
+            <span className="text-xs text-sifter-text-muted text-center">{type.description}</span>
           </button>
         ))}
       </div>
@@ -251,15 +250,13 @@ export default function SubmissionForm({
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold text-white mb-2">Step 2: Entity Details</h3>
-        <p className="text-sm text-gray-400">
-          Provide identifying information about the entity. More details help with verification.
+        <p className="text-sm text-sifter-text-muted"> Provide identifying information about the entity. More details help with verification.
         </p>
       </div>
       
       <div className="space-y-4">
         <div>
-          <label className="block text-sm text-gray-400 mb-2">
-            Full Name / Company Name <span className="text-red-400">*</span>
+          <label className="block text-sm text-sifter-text-muted mb-2"> Full Name / Company Name <span className="text-red-400">*</span>
           </label>
           <input
             type="text"
@@ -268,7 +265,7 @@ export default function SubmissionForm({
               ...formData,
               entityDetails: { ...formData.entityDetails, fullName: e.target.value }
             })}
-            className="w-full p-3 bg-sifter-dark border border-sifter-border rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+            className="w-full p-3 bg-sifter-dark border border-sifter-border rounded-lg text-white placeholder:text-sifter-text-subtle focus:border-blue-500 focus:outline-none"
             placeholder="e.g., 'CryptoGrowth Labs' or 'John Doe'"
             required
           />
@@ -276,7 +273,7 @@ export default function SubmissionForm({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-gray-400 mb-2">Twitter Handle</label>
+            <label className="block text-sm text-sifter-text-muted mb-2">Twitter Handle</label>
             <input
               type="text"
               value={formData.entityDetails.twitterHandle}
@@ -284,13 +281,13 @@ export default function SubmissionForm({
                 ...formData,
                 entityDetails: { ...formData.entityDetails, twitterHandle: e.target.value }
               })}
-              className="w-full p-3 bg-sifter-dark border border-sifter-border rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+              className="w-full p-3 bg-sifter-dark border border-sifter-border rounded-lg text-white placeholder:text-sifter-text-subtle focus:border-blue-500 focus:outline-none"
               placeholder="@username"
             />
           </div>
           
           <div>
-            <label className="block text-sm text-gray-400 mb-2">Website</label>
+            <label className="block text-sm text-sifter-text-muted mb-2">Website</label>
             <input
               type="text"
               value={formData.entityDetails.website}
@@ -298,7 +295,7 @@ export default function SubmissionForm({
                 ...formData,
                 entityDetails: { ...formData.entityDetails, website: e.target.value }
               })}
-              className="w-full p-3 bg-sifter-dark border border-sifter-border rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+              className="w-full p-3 bg-sifter-dark border border-sifter-border rounded-lg text-white placeholder:text-sifter-text-subtle focus:border-blue-500 focus:outline-none"
               placeholder="https://example.com"
             />
           </div>
@@ -306,7 +303,7 @@ export default function SubmissionForm({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm text-gray-400 mb-2">Telegram Handle</label>
+            <label className="block text-sm text-sifter-text-muted mb-2">Telegram Handle</label>
             <input
               type="text"
               value={formData.entityDetails.telegramHandle}
@@ -314,13 +311,13 @@ export default function SubmissionForm({
                 ...formData,
                 entityDetails: { ...formData.entityDetails, telegramHandle: e.target.value }
               })}
-              className="w-full p-3 bg-sifter-dark border border-sifter-border rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+              className="w-full p-3 bg-sifter-dark border border-sifter-border rounded-lg text-white placeholder:text-sifter-text-subtle focus:border-blue-500 focus:outline-none"
               placeholder="@telegram"
             />
           </div>
           
           <div>
-            <label className="block text-sm text-gray-400 mb-2">LinkedIn Profile</label>
+            <label className="block text-sm text-sifter-text-muted mb-2">LinkedIn Profile</label>
             <input
               type="text"
               value={formData.entityDetails.linkedinProfile}
@@ -328,7 +325,7 @@ export default function SubmissionForm({
                 ...formData,
                 entityDetails: { ...formData.entityDetails, linkedinProfile: e.target.value }
               })}
-              className="w-full p-3 bg-sifter-dark border border-sifter-border rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+              className="w-full p-3 bg-sifter-dark border border-sifter-border rounded-lg text-white placeholder:text-sifter-text-subtle focus:border-blue-500 focus:outline-none"
               placeholder="linkedin.com/in/..."
             />
           </div>
@@ -342,8 +339,7 @@ export default function SubmissionForm({
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold text-white mb-2">Step 3: Affected Projects</h3>
-        <p className="text-sm text-gray-400">
-          List the projects impacted by this entity. Provide specific details about each incident.
+        <p className="text-sm text-sifter-text-muted"> List the projects impacted by this entity. Provide specific details about each incident.
         </p>
       </div>
       
@@ -361,15 +357,13 @@ export default function SubmissionForm({
                     setFormData({ ...formData, affectedProjects: newProjects });
                   }}
                   className="text-sm text-red-400 hover:text-red-300"
-                >
-                  Remove
+                > Remove
                 </button>
               )}
             </div>
 
             <div>
-              <label className="block text-sm text-gray-400 mb-2">
-                Project Name <span className="text-red-400">*</span>
+              <label className="block text-sm text-sifter-text-muted mb-2"> Project Name <span className="text-red-400">*</span>
               </label>
               <input
                 type="text"
@@ -386,8 +380,7 @@ export default function SubmissionForm({
             </div>
 
             <div>
-              <label className="block text-sm text-gray-400 mb-2">
-                Incident Description <span className="text-red-400">*</span>
+              <label className="block text-sm text-sifter-text-muted mb-2"> Incident Description <span className="text-red-400">*</span>
               </label>
               <textarea
                 value={project.incidentDescription}
@@ -403,8 +396,7 @@ export default function SubmissionForm({
             </div>
 
             <div>
-              <label className="block text-sm text-gray-400 mb-2">
-                Date (MM/YYYY) <span className="text-red-400">*</span>
+              <label className="block text-sm text-sifter-text-muted mb-2"> Date (MM/YYYY) <span className="text-red-400">*</span>
               </label>
               <input
                 type="text"
@@ -432,12 +424,11 @@ export default function SubmissionForm({
               date: ''
             }]
           })}
-          className="w-full p-4 border border-dashed border-sifter-border rounded-lg text-gray-400 hover:text-white hover:border-blue-500 transition-colors flex items-center justify-center gap-2"
+          className="w-full p-4 border border-dashed border-sifter-border rounded-lg text-sifter-text-muted hover:text-white hover:border-blue-500 transition-colors flex items-center justify-center gap-2"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Add Another Project
+          </svg> Add Another Project
         </button>
       </div>
     </div>
@@ -448,14 +439,13 @@ export default function SubmissionForm({
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold text-white mb-2">Step 4: Evidence</h3>
-        <p className="text-sm text-gray-400">
-          Provide at least 2 public links as evidence. Strong evidence increases credibility and approval chances.
+        <p className="text-sm text-sifter-text-muted"> Provide at least 2 public links as evidence. Strong evidence increases credibility and approval chances.
         </p>
       </div>
 
-      <div className="p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/30 rounded-lg">
+      <div className="p-4 bg-sifter-elevated border border-blue-500/30 rounded-lg">
         <div className="flex items-start gap-3 mb-3">
-          <div className="text-green-400 text-xl">✅</div>
+          <div className="text-green-400 text-xl"></div>
           <div>
             <h4 className="font-medium text-white text-sm mb-1">Accepted Evidence Types</h4>
             <ul className="text-sm text-blue-300/80 space-y-1">
@@ -470,7 +460,7 @@ export default function SubmissionForm({
         </div>
         
         <div className="flex items-start gap-3">
-          <div className="text-red-400 text-xl">❌</div>
+          <div className="text-red-400 text-xl"></div>
           <div>
             <h4 className="font-medium text-white text-sm mb-1">Rejected Evidence</h4>
             <ul className="text-sm text-red-300/80 space-y-1">
@@ -487,8 +477,7 @@ export default function SubmissionForm({
         {formData.evidence.map((evidence: any, index: number) => (
           <div key={evidence.id || index} className="p-4 border border-sifter-border rounded-lg space-y-4">
             <div className="flex justify-between items-center">
-              <h4 className="font-medium text-white">
-                Evidence #{index + 1} {index < 2 && <span className="text-red-400">*</span>}
+              <h4 className="font-medium text-white"> Evidence #{index + 1} {index < 2 && <span className="text-red-400">*</span>}
               </h4>
               {formData.evidence.length > 2 && (
                 <button
@@ -499,15 +488,13 @@ export default function SubmissionForm({
                     setFormData({ ...formData, evidence: newEvidence });
                   }}
                   className="text-sm text-red-400 hover:text-red-300"
-                >
-                  Remove
+                > Remove
                 </button>
               )}
             </div>
 
             <div>
-              <label className="block text-sm text-gray-400 mb-2">
-                Evidence URL {index < 2 && <span className="text-red-400">*</span>}
+              <label className="block text-sm text-sifter-text-muted mb-2"> Evidence URL {index < 2 && <span className="text-red-400">*</span>}
               </label>
               <input
                 type="url"
@@ -524,8 +511,7 @@ export default function SubmissionForm({
             </div>
 
             <div>
-              <label className="block text-sm text-gray-400 mb-2">
-                Description {index < 2 && <span className="text-red-400">*</span>}
+              <label className="block text-sm text-sifter-text-muted mb-2"> Description {index < 2 && <span className="text-red-400">*</span>}
               </label>
               <textarea
                 value={evidence.description}
@@ -541,7 +527,7 @@ export default function SubmissionForm({
             </div>
 
             <div>
-              <label className="block text-sm text-gray-400 mb-2">Evidence Type</label>
+              <label className="block text-sm text-sifter-text-muted mb-2">Evidence Type</label>
               <select
                 value={evidence.type}
                 onChange={(e) => {
@@ -575,12 +561,11 @@ export default function SubmissionForm({
               status: 'pending' as EvidenceStatus  // Cast to EvidenceStatus
             }]
           })}
-          className="w-full p-4 border border-dashed border-sifter-border rounded-lg text-gray-400 hover:text-white hover:border-blue-500 transition-colors flex items-center justify-center gap-2"
+          className="w-full p-4 border border-dashed border-sifter-border rounded-lg text-sifter-text-muted hover:text-white hover:border-blue-500 transition-colors flex items-center justify-center gap-2"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Add More Evidence
+          </svg> Add More Evidence
         </button>
       </div>
     </div>
@@ -591,15 +576,13 @@ export default function SubmissionForm({
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold text-white mb-2">Step 5: Submitter Information</h3>
-        <p className="text-sm text-gray-400">
-          Your information helps us verify submissions and contact you if needed.
+        <p className="text-sm text-sifter-text-muted"> Your information helps us verify submissions and contact you if needed.
         </p>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm text-gray-400 mb-2">
-            Email Address <span className="text-red-400">*</span>
+          <label className="block text-sm text-sifter-text-muted mb-2"> Email Address <span className="text-red-400">*</span>
           </label>
           <input
             type="email"
@@ -612,13 +595,12 @@ export default function SubmissionForm({
             placeholder="you@example.com"
             required
           />
-          <p className="text-xs text-gray-500 mt-1">
-            Used for submission updates and verification
+          <p className="text-xs text-sifter-text-subtle mt-1"> Used for submission updates and verification
           </p>
         </div>
 
         <div>
-          <label className="block text-sm text-gray-400 mb-2">Your Name (Optional)</label>
+          <label className="block text-sm text-sifter-text-muted mb-2">Your Name (Optional)</label>
           <input
             type="text"
             value={formData.submitterInfo.name || ''}
@@ -629,8 +611,7 @@ export default function SubmissionForm({
             className="w-full p-3 bg-sifter-dark border border-sifter-border rounded-lg text-white focus:border-blue-500 focus:outline-none"
             placeholder="Jane Smith"
           />
-          <p className="text-xs text-gray-500 mt-1">
-            For attribution and credibility bonus (earn 20% more points)
+          <p className="text-xs text-sifter-text-subtle mt-1"> For attribution and credibility bonus (earn 20% more points)
           </p>
         </div>
 
@@ -646,12 +627,10 @@ export default function SubmissionForm({
               })}
               className="w-4 h-4 rounded border-sifter-border bg-sifter-dark text-blue-500 focus:ring-blue-500"
             />
-            <label htmlFor="anonymous" className="text-sm text-gray-300">
-              Submit anonymously
+            <label htmlFor="anonymous" className="text-sm text-sifter-text"> Submit anonymously
             </label>
           </div>
-          <p className="text-xs text-gray-500">
-            Your name won't appear publicly, but you'll receive fewer points (no credibility bonus)
+          <p className="text-xs text-sifter-text-subtle"> Your name won&apos;t appear publicly, but you&apos;ll receive fewer points (no credibility bonus)
           </p>
         </div>
 
@@ -679,7 +658,7 @@ export default function SubmissionForm({
                 className="w-4 h-4 mt-0.5 rounded border-sifter-border bg-sifter-dark text-blue-500 focus:ring-blue-500"
                 required
               />
-              <label htmlFor={`ack-${index}`} className="text-sm text-gray-300">
+              <label htmlFor={`ack-${index}`} className="text-sm text-sifter-text">
                 {text}
               </label>
             </div>
@@ -692,33 +671,32 @@ export default function SubmissionForm({
   // Step 6: Success Screen
   const renderStep6 = () => (
     <div className="text-center py-8">
-      <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+      <div className="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
         <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       </div>
       
       <h3 className="text-2xl font-bold text-white mb-2">Submission Successful!</h3>
-      <p className="text-gray-400 mb-6 max-w-md mx-auto">
-        Your data donation has been received. Our team will review it within 48-72 hours.
+      <p className="text-sifter-text-muted mb-6 max-w-md mx-auto"> Your data donation has been received. Our team will review it within 48-72 hours.
       </p>
 
       <div className="bg-sifter-dark/50 border border-sifter-border rounded-lg p-6 mb-8 max-w-md mx-auto">
         <div className="space-y-3 text-left">
           <div className="flex justify-between">
-            <span className="text-gray-400">Case ID:</span>
+            <span className="text-sifter-text-muted">Case ID:</span>
             <span className="font-mono text-blue-400">{formData.caseId}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-400">Entity:</span>
+            <span className="text-sifter-text-muted">Entity:</span>
             <span className="text-white font-medium">{formData.entityDetails.fullName}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-400">Submitted:</span>
+            <span className="text-sifter-text-muted">Submitted:</span>
             <span className="text-white">{new Date().toLocaleDateString()}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-400">Estimated Review:</span>
+            <span className="text-sifter-text-muted">Estimated Review:</span>
             <span className="text-blue-400">24-48 hours</span>
           </div>
         </div>
@@ -727,9 +705,8 @@ export default function SubmissionForm({
       <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
         <button
           onClick={onClose}
-          className="px-6 py-3 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg font-medium transition-colors"
-        >
-          Close
+          className="px-6 py-3 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover rounded-lg font-medium transition-colors"
+        > Close
         </button>
         <button
           onClick={() => {
@@ -779,9 +756,8 @@ export default function SubmissionForm({
               severity: 'medium'
             });
           }}
-          className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-all"
-        >
-          Submit Another
+          className="px-6 py-3 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium transition-all"
+        > Submit Another
         </button>
       </div>
     </div>
@@ -808,13 +784,12 @@ export default function SubmissionForm({
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-xl font-bold text-white">Data Donation Submission</h2>
-                <p className="text-sm text-gray-400">
-                  Mode: <span className="text-blue-400">{(mode || 'individual').toUpperCase()}</span>
+                <p className="text-sm text-sifter-text-muted"> Mode: <span className="text-blue-400">{(mode || 'individual').toUpperCase()}</span>
                 </p>
               </div>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-white text-2xl"
+                className="text-sifter-text-muted hover:text-white text-2xl"
               >
                 ✕
               </button>
@@ -823,13 +798,13 @@ export default function SubmissionForm({
             {/* Progress bar */}
             {step < 6 && (
               <div className="mt-4">
-                <div className="flex justify-between text-xs text-gray-500 mb-1">
+                <div className="flex justify-between text-xs text-sifter-text-subtle mb-1">
                   <span>Step {step} of 5</span>
                   <span>{step * 20}% Complete</span>
                 </div>
                 <div className="w-full bg-sifter-border rounded-full h-2">
                   <div 
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
+                    className="bg-sifter-blue h-2 rounded-full transition-all duration-300"
                     style={{ width: `${step * 20}%` }}
                   ></div>
                 </div>
@@ -865,12 +840,11 @@ export default function SubmissionForm({
                     <button
                       type="button"
                       onClick={handlePrevStep}
-                      className="px-6 py-3 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg font-medium transition-colors flex items-center gap-2"
+                      className="px-6 py-3 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover rounded-lg font-medium transition-colors flex items-center gap-2"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                      Back
+                      </svg> Back
                     </button>
                   )}
                 </div>
@@ -879,7 +853,7 @@ export default function SubmissionForm({
                   type="button"
                   onClick={step < 5 ? handleNextStep : handleSubmit}
                   disabled={isSubmitting}
-                  className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 
+                  className="px-6 py-3 bg-sifter-blue hover:bg-sifter-blue-hover 
                            text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed 
                            flex items-center gap-2"
                 >
@@ -888,8 +862,7 @@ export default function SubmissionForm({
                       <svg className="animate-spin w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Processing...
+                      </svg> Processing...
                     </>
                   ) : (
                     <>

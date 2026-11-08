@@ -43,7 +43,7 @@ export function ProtectedRoute({ children, requiredRole, fallback }: ProtectedRo
           <div className="bg-sifter-card border border-sifter-border rounded-xl p-8 max-w-md text-center">
             <div className="text-red-400 text-4xl mb-4">403</div>
             <h2 className="text-white text-xl font-semibold mb-2">Access Denied</h2>
-            <p className="text-gray-400">You don&apos;t have permission to view this page.</p>
+            <p className="text-sifter-text-muted">You don&apos;t have permission to view this page.</p>
           </div>
         </div>
       );

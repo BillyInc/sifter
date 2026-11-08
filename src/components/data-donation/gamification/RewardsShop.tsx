@@ -9,9 +9,9 @@ interface RewardsShopProps {
   userProfile: UserGamificationProfile;
   rewards: Reward[];
   onRedeem: (rewardId: string) => Promise<boolean>;
-  isAvailable?: boolean;  // ✅ ADD THIS
-  onPurchaseCredits?: () => void;  // ✅ ADD THIS
-  showCategories?: boolean;  // ✅ ADD THIS
+  isAvailable?: boolean;  //  ADD THIS
+  onPurchaseCredits?: () => void;  //  ADD THIS
+  showCategories?: boolean;  //  ADD THIS
 }
 
 export default function RewardsShop({ userProfile, rewards, onRedeem,  onPurchaseCredits, showCategories = true  }: RewardsShopProps) {
@@ -71,11 +71,11 @@ export default function RewardsShop({ userProfile, rewards, onRedeem,  onPurchas
         setSelectedReward(null);
         setUserNotes('');
         
-        alert(`✅ Reward redemption requested! Our team will process it within 24-48 hours.`);
+        alert(` Reward redemption requested! Our team will process it within 24-48 hours.`);
       }
     } catch (error) {
       console.error('Redemption failed:', error);
-      alert('❌ Redemption failed. Please try again.');
+      alert('Redemption failed. Please try again.');
     } finally {
       setIsRedeeming(false);
     }
@@ -83,10 +83,10 @@ export default function RewardsShop({ userProfile, rewards, onRedeem,  onPurchas
 
   // Categories for filter
   const categories = [
-    { id: 'all', label: 'All Rewards', icon: '🎁' },
-    { id: 'ea-vc', label: 'VC Rewards', icon: '🏢' },
-    { id: 'researcher', label: 'Researcher Rewards', icon: '🔬' },
-    { id: 'individual', label: 'Individual Rewards', icon: '👤' }
+    { id: 'all', label: 'All Rewards', icon: '' },
+    { id: 'ea-vc', label: 'VC Rewards', icon: '' },
+    { id: 'researcher', label: 'Researcher Rewards', icon: '' },
+    { id: 'individual', label: 'Individual Rewards', icon: '' }
   ];
 
   // Group rewards by type
@@ -97,44 +97,43 @@ export default function RewardsShop({ userProfile, rewards, onRedeem,  onPurchas
   }, {} as Record<string, Reward[]>);
 
   const typeLabels = {
-    discount: '💰 Discounts',
-    access: '🔓 Access',
-    feature: '⚡ Features',
-    recognition: '🏆 Recognition',
-    physical: '📦 Physical',
-    digital: '💻 Digital'
+    discount: 'Discounts',
+    access: 'Access',
+    feature: 'Features',
+    recognition: 'Recognition',
+    physical: 'Physical',
+    digital: 'Digital'
   };
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 to-black border border-sifter-border rounded-2xl p-6">
+    <div className="bg-sifter-card border border-sifter-border rounded-2xl p-6">
       {/* Header */}
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-white mb-2">Rewards Shop</h2>
-        <p className="text-gray-400">Redeem your points for exclusive rewards</p>
+        <p className="text-sifter-text-muted">Redeem your points for exclusive rewards</p>
         
         {/* Points Display */}
-        <div className="mt-4 p-4 bg-gradient-to-r from-amber-500/10 to-amber-600/10 border border-amber-500/30 rounded-xl">
+        <div className="mt-4 p-4 bg-sifter-elevated border border-amber-500/30 rounded-xl">
           <div className="flex justify-between items-center">
             <div>
-              <div className="text-sm text-gray-400">Available Points</div>
+              <div className="text-sm text-sifter-text-muted">Available Points</div>
               <div className="text-3xl font-bold text-amber-400">{userProfile.availablePoints.toLocaleString()}</div>
             </div>
             <div className="text-right">
-              <div className="text-sm text-gray-400">Total Points</div>
+              <div className="text-sm text-sifter-text-muted">Total Points</div>
               <div className="text-2xl font-bold text-white">{userProfile.totalPoints.toLocaleString()}</div>
             </div>
           </div>
         </div>
 
-        {/* ✅ ADD THIS: Optional "Get More Points" button */}
+        {/*  ADD THIS: Optional "Get More Points" button */}
        {onPurchaseCredits && (
        <button
       onClick={onPurchaseCredits}
-      className="mt-3 w-full px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 
+      className="mt-3 w-full px-4 py-2 bg-amber-600 
                  hover:from-amber-600 hover:to-amber-700 text-white rounded-lg 
                  font-medium text-sm transition-all"
-        >
-      ⚡ Get More Points
+        > Get More Points
        </button>
       )}
 
@@ -156,8 +155,8 @@ export default function RewardsShop({ userProfile, rewards, onRedeem,  onPurchas
                   ? category.id === 'ea-vc' ? 'bg-blue-500/30 text-blue-400 border border-blue-500/50' :
                     category.id === 'researcher' ? 'bg-purple-500/30 text-purple-400 border border-purple-500/50' :
                     category.id === 'individual' ? 'bg-green-500/30 text-green-400 border border-green-500/50' :
-                    'bg-gray-700 text-white border border-gray-600'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700 border border-gray-700'
+                    'bg-sifter-hover text-white border border-sifter-border'
+                  : 'bg-sifter-elevated text-sifter-text-muted hover:bg-sifter-hover border border-sifter-border'
               }`}
             >
               <span>{category.icon}</span>
@@ -190,14 +189,14 @@ export default function RewardsShop({ userProfile, rewards, onRedeem,  onPurchas
                         reward.category === 'vc' ? 'bg-blue-500/20 text-blue-400' :
                         reward.category === 'researcher' ? 'bg-purple-500/20 text-purple-400' :
                         reward.category === 'individual' ? 'bg-green-500/20 text-green-400' :
-                        'bg-gray-500/20 text-gray-400'
+                        'bg-sifter-elevated text-sifter-text-muted'
                       }`}>
                         {reward.category === 'all' ? 'All Users' : reward.category.toUpperCase()}
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="flex items-center gap-1 text-amber-400 font-bold">
-                        <span className="text-sm">⚡</span>
+                        
                         <span>{reward.pointsCost.toLocaleString()}</span>
                       </div>
                       {reward.tierRequirement && (
@@ -205,9 +204,9 @@ export default function RewardsShop({ userProfile, rewards, onRedeem,  onPurchas
                           reward.tierRequirement === 'vc-elite' ? 'bg-purple-500/20 text-purple-400' :
                           reward.tierRequirement === 'research-fellow' ? 'bg-blue-500/20 text-blue-400' :
                           reward.tierRequirement === 'diamond' ? 'bg-cyan-500/20 text-cyan-400' :
-                          reward.tierRequirement === 'platinum' ? 'bg-gray-500/20 text-gray-400' :
+                          reward.tierRequirement === 'platinum' ? 'bg-sifter-elevated text-sifter-text-muted' :
                           reward.tierRequirement === 'gold' ? 'bg-amber-500/20 text-amber-400' :
-                          reward.tierRequirement === 'silver' ? 'bg-gray-400/20 text-gray-400' :
+                          reward.tierRequirement === 'silver' ? 'bg-sifter-elevated text-sifter-text-muted' :
                           'bg-amber-900/20 text-amber-700'
                         }`}>
                           {reward.tierRequirement}
@@ -216,14 +215,14 @@ export default function RewardsShop({ userProfile, rewards, onRedeem,  onPurchas
                     </div>
                   </div>
                   
-                  <p className="text-sm text-gray-300 mb-3">{reward.description}</p>
+                  <p className="text-sm text-sifter-text mb-3">{reward.description}</p>
                   
                   {/* Features */}
                   {reward.features && reward.features.length > 0 && (
                     <div className="mb-3">
                       <ul className="space-y-1">
                         {reward.features.slice(0, 3).map((feature, idx) => (
-                          <li key={idx} className="text-xs text-gray-400 flex items-center gap-2">
+                          <li key={idx} className="text-xs text-sifter-text-muted flex items-center gap-2">
                             <span className="text-green-400">✓</span>
                             {feature}
                           </li>
@@ -235,7 +234,7 @@ export default function RewardsShop({ userProfile, rewards, onRedeem,  onPurchas
                   {/* Availability */}
                   <div className="flex justify-between items-center mt-4 pt-3 border-t border-sifter-border/50">
                     {reward.quantityRemaining !== undefined && (
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-sifter-text-muted">
                         {reward.quantityRemaining > 0 
                           ? `${reward.quantityRemaining} left` 
                           : 'Out of stock'}
@@ -259,9 +258,8 @@ export default function RewardsShop({ userProfile, rewards, onRedeem,  onPurchas
         
         {eligibleRewards.length === 0 && (
           <div className="text-center py-12">
-            <div className="text-4xl mb-4">🎁</div>
             <h3 className="text-lg font-medium text-white mb-2">No rewards available</h3>
-            <p className="text-gray-400">
+            <p className="text-sifter-text-muted">
               {selectedCategory !== 'all' 
                 ? `No rewards available for your current category and tier. Keep earning points!`
                 : 'No rewards match your current points balance and tier.'}
@@ -276,7 +274,7 @@ export default function RewardsShop({ userProfile, rewards, onRedeem,  onPurchas
           <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-lg w-full p-6">
             <div className="mb-6">
               <h3 className="text-xl font-bold text-white mb-2">Redeem Reward</h3>
-              <p className="text-gray-400">Confirm your reward redemption request</p>
+              <p className="text-sifter-text-muted">Confirm your reward redemption request</p>
             </div>
             
             {/* Reward Summary */}
@@ -284,22 +282,22 @@ export default function RewardsShop({ userProfile, rewards, onRedeem,  onPurchas
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h4 className="font-medium text-white mb-1">{selectedReward.name}</h4>
-                  <p className="text-sm text-gray-300">{selectedReward.description}</p>
+                  <p className="text-sm text-sifter-text">{selectedReward.description}</p>
                 </div>
                 <div className="text-right">
                   <div className="text-2xl font-bold text-amber-400">
                     {selectedReward.pointsCost.toLocaleString()}
                   </div>
-                  <div className="text-sm text-gray-400">points</div>
+                  <div className="text-sm text-sifter-text-muted">points</div>
                 </div>
               </div>
               
-              <div className="text-sm text-gray-400 mb-3">
+              <div className="text-sm text-sifter-text-muted mb-3">
                 {selectedReward.redemptionInstructions}
               </div>
               
               <div className="flex items-center justify-between pt-3 border-t border-sifter-border/50">
-                <div className="text-sm text-gray-400">Your points after redemption:</div>
+                <div className="text-sm text-sifter-text-muted">Your points after redemption:</div>
                 <div className="text-lg font-bold text-white">
                   {(userProfile.availablePoints - selectedReward.pointsCost).toLocaleString()}
                 </div>
@@ -308,25 +306,23 @@ export default function RewardsShop({ userProfile, rewards, onRedeem,  onPurchas
             
             {/* User Notes */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-white mb-2">
-                Notes (Optional)
+              <label className="block text-sm font-medium text-white mb-2"> Notes (Optional)
               </label>
               <textarea
                 value={userNotes}
                 onChange={(e) => setUserNotes(e.target.value)}
                 placeholder="Add any notes for the admin team..."
                 className="w-full h-24 px-3 py-2 bg-sifter-dark border border-sifter-border rounded-lg 
-                         text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                         text-white placeholder:text-sifter-text-subtle focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             
             {/* Confirmation */}
-            <div className="mb-6 p-4 bg-gradient-to-r from-amber-500/10 to-amber-600/10 border border-amber-500/30 rounded-xl">
+            <div className="mb-6 p-4 bg-sifter-elevated border border-amber-500/30 rounded-xl">
               <div className="flex items-start gap-3">
-                <div className="text-amber-400 mt-1">ℹ️</div>
-                <div className="text-sm text-amber-300">
-                  After redemption, our team will process your request within 24-48 hours. 
-                  You'll receive a notification when your reward is ready.
+                <div className="text-amber-400 mt-1">ℹ</div>
+                <div className="text-sm text-amber-300"> After redemption, our team will process your request within 24-48 hours. 
+                  You&apos;ll receive a notification when your reward is ready.
                 </div>
               </div>
             </div>
@@ -338,24 +334,22 @@ export default function RewardsShop({ userProfile, rewards, onRedeem,  onPurchas
                   setSelectedReward(null);
                   setUserNotes('');
                 }}
-                className="flex-1 px-4 py-3 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg font-medium"
+                className="flex-1 px-4 py-3 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover rounded-lg font-medium"
                 disabled={isRedeeming}
-              >
-                Cancel
+              > Cancel
               </button>
               <button
                 onClick={handleRedeem}
                 disabled={isRedeeming || selectedReward.pointsCost > userProfile.availablePoints}
                 className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all ${
                   selectedReward.pointsCost > userProfile.availablePoints || isRedeeming
-                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'
+                    ? 'bg-sifter-hover text-sifter-text-subtle cursor-not-allowed'
+                    : 'bg-green-600 hover:bg-green-500 text-white'
                 }`}
               >
                 {isRedeeming ? (
                   <span className="flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Processing...
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Processing...
                   </span>
                 ) : (
                   'Confirm Redemption'

@@ -27,7 +27,7 @@ export default function PointsDisplay({
       name: 'Institutional',
       color: 'from-purple-500/20 to-purple-600/20',
       textColor: 'text-purple-400',
-      badge: '🏢',
+      badge: '',
       multiplier: 2.0,
       minPoints: 10000
     },
@@ -35,7 +35,7 @@ export default function PointsDisplay({
       name: 'Professional',
       color: 'from-blue-500/20 to-blue-600/20',
       textColor: 'text-blue-400',
-      badge: '👔',
+      badge: '',
       multiplier: 1.5,
       minPoints: 5000
     },
@@ -43,7 +43,7 @@ export default function PointsDisplay({
       name: 'Community',
       color: 'from-green-500/20 to-green-600/20',
       textColor: 'text-green-400',
-      badge: '👤',
+      badge: '',
       multiplier: 1.0,
       minPoints: 0
     }
@@ -53,19 +53,19 @@ export default function PointsDisplay({
   const modeConfig = {
     'ea-vc': {
       name: 'VC/EA Mode',
-      icon: '🏢',
+      icon: '',
       color: 'from-blue-500/10 to-blue-600/20',
       pointEarning: 'Earn 3x points for verified entities'
     },
     'researcher': {
       name: 'Researcher Mode',
-      icon: '🔬',
+      icon: '',
       color: 'from-purple-500/10 to-purple-600/20',
       pointEarning: 'Earn 2x points for deep analysis evidence'
     },
     'individual': {
       name: 'Individual Mode',
-      icon: '👤',
+      icon: '',
       color: 'from-green-500/10 to-green-600/20',
       pointEarning: 'Earn 1x points for community reports'
     }
@@ -97,7 +97,7 @@ export default function PointsDisplay({
   };
 
   return (
-    <div className={`bg-gradient-to-br ${currentMode.color} border border-sifter-border rounded-2xl p-6`}>
+    <div className="bg-sifter-card border border-sifter-border rounded-2xl p-6">
       {/* Header */}
       <div className="flex justify-between items-start mb-8">
         <div>
@@ -107,67 +107,65 @@ export default function PointsDisplay({
               {currentTier.badge} {currentTier.name}
             </span>
           </div>
-          <p className="text-gray-400">
+          <p className="text-sifter-text-muted">
             {currentMode.pointEarning} • Multiplier: {multiplier}x
           </p>
         </div>
         
         <div className="text-right">
           <div className="text-4xl font-bold text-white mb-1">{formatNumber(availablePoints)}</div>
-          <div className="text-sm text-gray-400">Available Points</div>
+          <div className="text-sm text-sifter-text-muted">Available Points</div>
         </div>
       </div>
 
       {/* Points Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-sifter-dark/50 border border-sifter-border rounded-xl p-4">
-          <div className="text-sm text-gray-400 mb-1">Lifetime Earned</div>
+          <div className="text-sm text-sifter-text-muted mb-1">Lifetime Earned</div>
           <div className="text-2xl font-bold text-white">{formatNumber(lifetimeEarned)}</div>
         </div>
         
         <div className="bg-sifter-dark/50 border border-sifter-border rounded-xl p-4">
-          <div className="text-sm text-gray-400 mb-1">In Reward Pool</div>
+          <div className="text-sm text-sifter-text-muted mb-1">In Reward Pool</div>
           <div className="text-2xl font-bold text-green-400">{formatNumber(pointsInPool)}</div>
         </div>
         
         <div className="bg-sifter-dark/50 border border-sifter-border rounded-xl p-4">
-          <div className="text-sm text-gray-400 mb-1">Current Multiplier</div>
+          <div className="text-sm text-sifter-text-muted mb-1">Current Multiplier</div>
           <div className="text-2xl font-bold text-amber-400">{multiplier}x</div>
         </div>
         
         <div className="bg-sifter-dark/50 border border-sifter-border rounded-xl p-4">
-          <div className="text-sm text-gray-400 mb-1">Next Milestone</div>
+          <div className="text-sm text-sifter-text-muted mb-1">Next Milestone</div>
           <div className="text-2xl font-bold text-purple-400">{formatNumber(nextMilestone)}</div>
         </div>
       </div>
 
       {/* Tier Progress */}
       {nextTier && (
-        <div className="mb-8 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/30 rounded-xl">
+        <div className="mb-8 p-4 bg-sifter-elevated border border-blue-500/30 rounded-xl">
           <div className="flex justify-between items-center mb-3">
             <div>
-              <div className="text-sm font-medium text-white mb-1">
-                Progress to {tierConfig[nextTier as keyof typeof tierConfig]?.name} Tier
+              <div className="text-sm font-medium text-white mb-1"> Progress to {tierConfig[nextTier as keyof typeof tierConfig]?.name} Tier
               </div>
-              <div className="text-xs text-gray-400">
+              <div className="text-xs text-sifter-text-muted">
                 {formatNumber(pointsNeeded - lifetimeEarned)} points needed
               </div>
             </div>
             <div className="text-right">
               <div className="text-sm font-medium text-white">{progress.toFixed(1)}%</div>
-              <div className="text-xs text-gray-400">Complete</div>
+              <div className="text-xs text-sifter-text-muted">Complete</div>
             </div>
           </div>
           
           <div className="w-full bg-sifter-border rounded-full h-2 mb-2">
             <div 
-              className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500"
+              className="bg-sifter-blue h-2 rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
             ></div>
           </div>
           
-          <div className="text-sm text-gray-300">
-            Unlock: <span className="text-white font-medium">
+          <div className="text-sm text-sifter-text"> Unlock: <span className="text-white font-medium">
               {tierConfig[nextTier as keyof typeof tierConfig]?.multiplier}x multiplier
             </span>
           </div>
@@ -186,17 +184,14 @@ export default function PointsDisplay({
           ].map((reward) => (
             <div key={reward.id} className="flex justify-between items-center p-3 border border-sifter-border rounded-lg hover:bg-sifter-dark/30 transition-colors">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-amber-500/20 to-amber-600/20 rounded-lg flex items-center justify-center">
-                  <span className="text-xl">🏆</span>
-                </div>
                 <div>
                   <div className="text-white font-medium">{reward.type}</div>
-                  <div className="text-xs text-gray-400">{reward.date}</div>
+                  <div className="text-xs text-sifter-text-muted">{reward.date}</div>
                 </div>
               </div>
               <div className="text-right">
                 <div className="text-lg font-bold text-amber-400">+{reward.points}</div>
-                <div className="text-xs text-gray-400">Points</div>
+                <div className="text-xs text-sifter-text-muted">Points</div>
               </div>
             </div>
           ))}
@@ -210,12 +205,10 @@ export default function PointsDisplay({
           disabled={availablePoints < 1000}
           className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
             availablePoints >= 1000
-              ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white'
-              : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+              ? 'bg-sifter-blue hover:bg-sifter-blue-hover text-white'
+              : 'bg-sifter-elevated text-sifter-text-subtle cursor-not-allowed'
           }`}
-        >
-          <span className="text-xl">🎰</span>
-          Enter Reward Pool
+        > Enter Reward Pool
         </button>
         
         <button
@@ -223,18 +216,14 @@ export default function PointsDisplay({
           disabled={availablePoints < 500}
           className={`px-6 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
             availablePoints >= 500
-              ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
-              : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+              ? 'bg-green-600 hover:bg-green-500 text-white'
+              : 'bg-sifter-elevated text-sifter-text-subtle cursor-not-allowed'
           }`}
-        >
-          <span className="text-xl">💎</span>
-          Redeem Points
+        > Redeem Points
         </button>
         
         <button className="px-6 py-3 bg-sifter-dark border border-sifter-border hover:bg-sifter-dark/80 
-                 text-gray-300 rounded-xl font-medium transition-colors flex items-center justify-center gap-2">
-          <span className="text-xl">🏪</span>
-          Rewards Shop
+                 text-sifter-text rounded-xl font-medium transition-colors flex items-center justify-center gap-2"> Rewards Shop
         </button>
       </div>
 

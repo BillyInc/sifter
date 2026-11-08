@@ -43,8 +43,8 @@ function MetricRow({
   return (
     <div
       className={`${compact ? 'py-2' : 'py-3'} ${
-        !isLast ? 'border-b border-gray-800/50' : ''
-      } ${isComposite ? 'pt-4 mt-2 border-t border-gray-700' : ''}`}
+        !isLast ? 'border-b border-sifter-border' : ''
+      } ${isComposite ? 'pt-4 mt-2 border-t border-sifter-border' : ''}`}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
@@ -53,13 +53,13 @@ function MetricRow({
               className={`${compact ? 'text-sm' : 'text-sm'} font-medium ${
                 isComposite
                   ? `text-white ${compact ? 'text-base' : 'text-base'}`
-                  : 'text-gray-300'
+                  : 'text-sifter-text'
               }`}
             >
               {metric.name}
             </span>
             {showWeight && !isComposite && (
-              <span className={`${compact ? 'text-xs' : 'text-xs'} text-gray-600`}>
+              <span className={`${compact ? 'text-xs' : 'text-xs'} text-sifter-text-subtle`}>
                 ({(metric.weight * 100).toFixed(0)}%)
               </span>
             )}
@@ -74,7 +74,7 @@ function MetricRow({
             )}
           </div>
           {metric.subline && !compact && (
-            <p className={`${compact ? 'text-xs' : 'text-xs'} text-gray-500 mt-1`}>
+            <p className={`${compact ? 'text-xs' : 'text-xs'} text-sifter-text-subtle mt-1`}>
               {metric.subline}
             </p>
           )}
@@ -84,7 +84,7 @@ function MetricRow({
             className={`${compact ? 'text-xs' : 'text-sm'} ${
               isComposite
                 ? `font-bold ${compact ? 'text-base' : 'text-lg'} ${getScoreColor(metricScore)}`
-                : 'text-gray-400'
+                : 'text-sifter-text-muted'
             }`}
           >
             {metric.value}
@@ -100,7 +100,7 @@ function MetricRow({
               </div>
               {showWeight && (
                 <div className={`${compact ? 'w-10' : 'w-12'} text-right`}>
-                  <span className={`${compact ? 'text-xs' : 'text-xs'} text-gray-500`}>
+                  <span className={`${compact ? 'text-xs' : 'text-xs'} text-sifter-text-subtle`}>
                     +{metric.contribution.toFixed(compact ? 0 : 1)}
                   </span>
                 </div>
@@ -125,20 +125,19 @@ function ScoreBreakdownChart({ data, compact = false }: { data: VerdictData; com
   );
 
   return (
-    <div className={`${compact ? 'bg-gray-900/30 p-3 rounded' : 'bg-gray-900/50 rounded-lg p-4'}`}>
-      <h4 className={`${compact ? 'text-xs' : 'text-sm'} font-medium text-gray-300 ${compact ? 'mb-2' : 'mb-3'}`}>
-        Score Breakdown (by contribution)
+    <div className={`${compact ? 'bg-sifter-dark/30 p-3 rounded' : 'bg-sifter-dark/50 rounded-lg p-4'}`}>
+      <h4 className={`${compact ? 'text-xs' : 'text-sm'} font-medium text-sifter-text ${compact ? 'mb-2' : 'mb-3'}`}> Score Breakdown (by contribution)
       </h4>
       <div className={`space-y-${compact ? '1.5' : '2'}`}>
         {sortedBreakdown.slice(0, compact ? 3 : undefined).map((item) => (
           <div key={item.name} className="flex items-center gap-3">
             <div
-              className={`${compact ? 'w-24 text-xs' : 'w-32 text-xs'} text-gray-400 truncate`}
+              className={`${compact ? 'w-24 text-xs' : 'w-32 text-xs'} text-sifter-text-muted truncate`}
               title={item.name}
             >
               {item.name}
             </div>
-            <div className="flex-1 h-2 bg-gray-800 rounded-full overflow-hidden">
+            <div className="flex-1 h-2 bg-sifter-elevated rounded-full overflow-hidden">
               <div
                 className={`h-full ${getBarColor(item.score)} transition-all duration-500`}
                 style={{
@@ -147,21 +146,20 @@ function ScoreBreakdownChart({ data, compact = false }: { data: VerdictData; com
               />
             </div>
             <div className={`${compact ? 'w-14' : 'w-16'} text-right`}>
-              <span className={`${compact ? 'text-xs' : 'text-xs'} text-gray-500`}>
+              <span className={`${compact ? 'text-xs' : 'text-xs'} text-sifter-text-subtle`}>
                 +{item.contribution.toFixed(compact ? 0 : 1)}
               </span>
             </div>
           </div>
         ))}
         {compact && sortedBreakdown.length > 3 && (
-          <div className="text-xs text-gray-500 pt-1 text-center">
+          <div className="text-xs text-sifter-text-subtle pt-1 text-center">
             +{sortedBreakdown.length - 3} more metrics
           </div>
         )}
       </div>
-      <div className={`${compact ? 'mt-2 pt-2' : 'mt-3 pt-3'} border-t border-gray-800 flex justify-between items-center`}>
-        <span className={`${compact ? 'text-xs' : 'text-sm'} text-gray-400`}>
-          Total Score
+      <div className={`${compact ? 'mt-2 pt-2' : 'mt-3 pt-3'} border-t border-sifter-border flex justify-between items-center`}>
+        <span className={`${compact ? 'text-xs' : 'text-sm'} text-sifter-text-muted`}> Total Score
         </span>
         <span className={`${compact ? 'text-base' : 'text-lg'} font-bold text-white`}>
           {data.compositeScore}/100
@@ -190,8 +188,8 @@ export default function VerdictCard({
       <div
         className={`${compact ? 'rounded-xl p-4' : 'rounded-t-2xl p-6'} ${
           isReject
-            ? 'bg-gradient-to-r from-red-900/80 to-red-800/80'
-            : 'bg-gradient-to-r from-green-900/80 to-green-800/80'
+            ? 'bg-sifter-card'
+            : 'bg-sifter-card'
         }`}
       >
         <div className="flex items-center justify-between">
@@ -252,22 +250,21 @@ export default function VerdictCard({
             <div className={`${compact ? 'text-xs' : 'text-sm'} ${riskTierInfo.color}`}>
               {riskTierInfo.label}
             </div>
-            <div className={`${compact ? 'text-xs' : 'text-xs'} text-white/40`}>
-              Composite Score
+            <div className={`${compact ? 'text-xs' : 'text-xs'} text-white/40`}> Composite Score
             </div>
           </div>
         </div>
       </div>
 
       {/* Controls */}
-      <div className={`bg-sifter-card ${compact ? 'border-x border-sifter-border px-4 py-2' : 'border-x border-sifter-border px-6 py-3'} flex justify-between items-center border-b border-gray-800`}>
+      <div className={`bg-sifter-card ${compact ? 'border-x border-sifter-border px-4 py-2' : 'border-x border-sifter-border px-6 py-3'} flex justify-between items-center border-b border-sifter-border`}>
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowWeights(!showWeights)}
             className={`${compact ? 'text-xs px-2 py-0.5' : 'text-xs px-3 py-1'} rounded-full transition-colors ${
               showWeights
                 ? 'bg-sifter-blue text-white'
-                : 'bg-gray-800 text-gray-400 hover:text-white'
+                : 'bg-sifter-elevated text-sifter-text-muted hover:text-white'
             }`}
           >
             {showWeights ? 'Hide Weights' : 'Show Weights'}
@@ -277,20 +274,20 @@ export default function VerdictCard({
             className={`${compact ? 'text-xs px-2 py-0.5' : 'text-xs px-3 py-1'} rounded-full transition-colors ${
               showBreakdown
                 ? 'bg-sifter-blue text-white'
-                : 'bg-gray-800 text-gray-400 hover:text-white'
+                : 'bg-sifter-elevated text-sifter-text-muted hover:text-white'
             }`}
           >
             {showBreakdown ? 'Hide Breakdown' : 'Score Breakdown'}
           </button>
         </div>
-        <div className={`${compact ? 'text-xs' : 'text-xs'} text-gray-500`}>
+        <div className={`${compact ? 'text-xs' : 'text-xs'} text-sifter-text-subtle`}>
           {data.metrics.length} metrics weighted
         </div>
       </div>
 
       {/* Score Breakdown Chart */}
       {showBreakdown && (
-        <div className={`bg-sifter-card border-x border-sifter-border ${compact ? 'px-4 py-3' : 'px-6 py-4'} border-b border-gray-800`}>
+        <div className={`bg-sifter-card border-x border-sifter-border ${compact ? 'px-4 py-3' : 'px-6 py-4'} border-b border-sifter-border`}>
           <ScoreBreakdownChart data={data} compact={compact} />
         </div>
       )}
@@ -307,8 +304,8 @@ export default function VerdictCard({
           />
         ))}
         {compact && data.metrics.length > 5 && (
-          <div className="py-2 text-center border-t border-gray-800/50 mt-2">
-            <span className="text-xs text-gray-500">
+          <div className="py-2 text-center border-t border-sifter-border mt-2">
+            <span className="text-xs text-sifter-text-subtle">
               +{data.metrics.length - 5} more metrics
             </span>
           </div>
@@ -329,12 +326,11 @@ export default function VerdictCard({
               <button
                 onClick={onReject}
                 className={`flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold ${compact ? 'py-2 px-4 text-sm' : 'py-3 px-6'} rounded-lg transition-colors`}
-              >
-                Reject
+              > Reject
               </button>
               <button
                 onClick={onProceed}
-                className={`flex-1 bg-transparent hover:bg-white/5 text-gray-300 hover:text-white font-medium ${compact ? 'py-2 px-4 text-sm' : 'py-3 px-6'} rounded-lg border border-gray-600 hover:border-gray-500 transition-colors`}
+                className={`flex-1 bg-transparent hover:bg-white/5 text-sifter-text hover:text-white font-medium ${compact ? 'py-2 px-4 text-sm' : 'py-3 px-6'} rounded-lg border border-sifter-border hover:border-sifter-border-strong transition-colors`}
               >
                 {compact ? 'Proceed Anyway' : 'Proceed to Due Diligence anyway'}
               </button>
@@ -350,15 +346,13 @@ export default function VerdictCard({
         </div>
         <button
           onClick={onReset}
-          className={`w-full ${compact ? 'mt-2' : 'mt-3'} text-gray-500 hover:text-gray-400 ${compact ? 'text-xs' : 'text-sm'} transition-colors`}
-        >
-          Analyze another project
+          className={`w-full ${compact ? 'mt-2' : 'mt-3'} text-sifter-text-subtle hover:text-sifter-text-muted ${compact ? 'text-xs' : 'text-sm'} transition-colors`}
+        > Analyze another project
         </button>
       </div>
 
       {/* Timestamp */}
-      <p className={`text-center text-gray-600 ${compact ? 'text-xs mt-2' : 'text-xs mt-4'}`}>
-        Analyzed at{' '}
+      <p className={`text-center text-sifter-text-subtle ${compact ? 'text-xs mt-2' : 'text-xs mt-4'}`}> Analyzed at{' '}
         {new Date(data.analyzedAt).toLocaleString('en-US', {
           dateStyle: 'short',
           timeStyle: 'short',

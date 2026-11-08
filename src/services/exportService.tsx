@@ -291,7 +291,7 @@ export class ExportService {
           
           // Sub-bullets (indented)
           if (trimmed.startsWith('  - ') || trimmed.startsWith('    •')) {
-            return `<div style="margin-left: 40px; margin-bottom: 4px; font-size: 13px; color: #555;">○ ${trimmed.trim().substring(2)}</div>`;
+            return `<div style="margin-left: 40px; margin-bottom: 4px; font-size: 13px; color: #555;"> ${trimmed.trim().substring(2)}</div>`;
           }
           
           // Code blocks

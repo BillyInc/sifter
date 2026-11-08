@@ -46,7 +46,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
     }>,
     
     // Step 5: Address Specific Allegations
-    allegationResponses: entity.allegations?.map((allegation: any, index: number) => ({  // ✅ Add types
+    allegationResponses: entity.allegations?.map((allegation: any, index: number) => ({  //  Add types
 
       allegationId: allegation.id,
       allegationText: allegation.description,
@@ -78,8 +78,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-white font-medium mb-2">
-            Full Name *
+          <label className="block text-white font-medium mb-2"> Full Name *
           </label>
           <input
             type="text"
@@ -91,8 +90,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
         </div>
         
         <div>
-          <label className="block text-white font-medium mb-2">
-            Email Address *
+          <label className="block text-white font-medium mb-2"> Email Address *
           </label>
           <input
             type="email"
@@ -104,8 +102,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
         </div>
         
         <div>
-          <label className="block text-white font-medium mb-2">
-            Your Title/Role *
+          <label className="block text-white font-medium mb-2"> Your Title/Role *
           </label>
           <input
             type="text"
@@ -117,8 +114,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
         </div>
         
         <div>
-          <label className="block text-white font-medium mb-2">
-            Phone Number
+          <label className="block text-white font-medium mb-2"> Phone Number
           </label>
           <input
             type="tel"
@@ -130,8 +126,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
         </div>
         
         <div>
-          <label className="block text-white font-medium mb-2">
-            Company Domain
+          <label className="block text-white font-medium mb-2"> Company Domain
           </label>
           <input
             type="text"
@@ -140,14 +135,12 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
             className="w-full px-4 py-3 bg-sifter-dark border border-sifter-border rounded-lg text-white"
             placeholder="company.com"
           />
-          <p className="text-sm text-gray-400 mt-2">
-            Used for verification if filing as a representative
+          <p className="text-sm text-sifter-text-muted mt-2"> Used for verification if filing as a representative
           </p>
         </div>
         
         <div>
-          <label className="block text-white font-medium mb-2">
-            Your Relationship *
+          <label className="block text-white font-medium mb-2"> Your Relationship *
           </label>
           <select
             value={formData.disputerRelationship}
@@ -168,10 +161,10 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
       {formData.disputerRelationship && (
         <div className="bg-sifter-dark/50 border border-sifter-border rounded-lg p-4">
           <h4 className="font-medium text-white mb-2">
-            {formData.disputerRelationship === 'representative' ? '🏢 Official Representative' :
-             formData.disputerRelationship === 'individual' ? '👤 Individual' : '🤝 Third Party'}
+            {formData.disputerRelationship === 'representative' ? 'Official Representative' :
+             formData.disputerRelationship === 'individual' ? 'Individual' : 'Third Party'}
           </h4>
-          <p className="text-sm text-gray-300">
+          <p className="text-sm text-sifter-text">
             {formData.disputerRelationship === 'representative' 
               ? 'As an official representative, we\'ll verify your identity through company email or documents.'
               : formData.disputerRelationship === 'individual'
@@ -189,9 +182,8 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
       <h2 className="text-xl font-bold text-white">What Are You Disputing?</h2>
       
       <div className="bg-sifter-dark/50 border border-sifter-border rounded-lg p-4 mb-6">
-        <h3 className="font-medium text-white mb-2">🎯 Tip: Be Specific</h3>
-        <p className="text-sm text-gray-300">
-          Select all categories that apply. Being specific helps us review your dispute faster and more accurately.
+        <h3 className="font-medium text-white mb-2"> Tip: Be Specific</h3>
+        <p className="text-sm text-sifter-text"> Select all categories that apply. Being specific helps us review your dispute faster and more accurately.
         </p>
       </div>
       
@@ -221,15 +213,14 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
             />
             <div>
               <div className="font-medium text-white">{category.label}</div>
-              <div className="text-sm text-gray-400">{category.description}</div>
+              <div className="text-sm text-sifter-text-muted">{category.description}</div>
             </div>
           </label>
         ))}
       </div>
       
       <div className="mt-6">
-        <label className="block text-sm text-gray-400 mb-2">
-          Quick summary of what you're disputing:
+        <label className="block text-sm text-sifter-text-muted mb-2"> Quick summary of what you&apos;re disputing:
         </label>
         <div className="flex flex-wrap gap-2">
           {formData.categories.map(category => (
@@ -238,7 +229,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
             </span>
           ))}
           {formData.categories.length === 0 && (
-            <span className="text-gray-500 italic">Select categories above</span>
+            <span className="text-sifter-text-subtle italic">Select categories above</span>
           )}
         </div>
       </div>
@@ -252,10 +243,9 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
       
       <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mb-6">
         <div className="flex items-start gap-3">
-          <div className="text-2xl">📝</div>
           <div>
             <h3 className="font-medium text-yellow-400 mb-2">Write a Clear Explanation</h3>
-            <ul className="text-sm text-gray-300 space-y-1">
+            <ul className="text-sm text-sifter-text space-y-1">
               <li>• Be specific about <strong>what</strong> is wrong and <strong>why</strong></li>
               <li>• Reference specific allegations if applicable</li>
               <li>• Provide context for any complex situations</li>
@@ -267,8 +257,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
       </div>
       
       <div>
-        <label className="block text-white font-medium mb-3">
-          Your detailed explanation: *
+        <label className="block text-white font-medium mb-3"> Your detailed explanation: *
         </label>
         <textarea
           value={formData.explanation}
@@ -280,27 +269,27 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
           <div className={`text-sm ${formData.explanation.length < 100 ? 'text-red-400' : 'text-green-400'}`}>
             {formData.explanation.length} / 100 characters minimum
           </div>
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-sifter-text-muted">
             {formData.explanation.length > 5000 ? 'Maximum exceeded' : `${5000 - formData.explanation.length} characters left`}
           </div>
         </div>
       </div>
       
       <div className="mt-6">
-        <h4 className="font-medium text-white mb-3">💡 Explanation Template (Optional)</h4>
-        <div className="bg-sifter-dark/50 border border-sifter-border rounded-lg p-4 text-sm text-gray-300">
+        <h4 className="font-medium text-white mb-3"> Explanation Template (Optional)</h4>
+        <div className="bg-sifter-dark/50 border border-sifter-border rounded-lg p-4 text-sm text-sifter-text">
           <div className="space-y-2">
             <p><strong>1. What specific information is incorrect?</strong></p>
-            <p className="ml-4 text-gray-400">"The entry states that we [incorrect statement], but in reality..."</p>
+            <p className="ml-4 text-sifter-text-muted">&quot;The entry states that we [incorrect statement], but in reality...&quot;</p>
             
             <p><strong>2. Why is it incorrect?</strong></p>
-            <p className="ml-4 text-gray-400">"This is incorrect because [evidence/reason]..."</p>
+            <p className="ml-4 text-sifter-text-muted">&quot;This is incorrect because [evidence/reason]...&quot;</p>
             
             <p><strong>3. What is the correct information?</strong></p>
-            <p className="ml-4 text-gray-400">"The accurate information should be [correct details]..."</p>
+            <p className="ml-4 text-sifter-text-muted">&quot;The accurate information should be [correct details]...&quot;</p>
             
             <p><strong>4. Supporting evidence (briefly mention):</strong></p>
-            <p className="ml-4 text-gray-400">"This is supported by [evidence you'll upload]..."</p>
+            <p className="ml-4 text-sifter-text-muted">&quot;This is supported by [evidence you&apos;ll upload]...&quot;</p>
           </div>
         </div>
       </div>
@@ -313,9 +302,9 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
       <h2 className="text-xl font-bold text-white">Address Specific Allegations</h2>
       
       <div className="bg-sifter-dark/50 border border-sifter-border rounded-lg p-4 mb-4">
-        <h3 className="font-medium text-white mb-2">📋 How This Works:</h3>
-        <ul className="text-sm text-gray-400 space-y-1">
-          <li>• We've listed each allegation from the database entry</li>
+        <h3 className="font-medium text-white mb-2"> How This Works:</h3>
+        <ul className="text-sm text-sifter-text-muted space-y-1">
+          <li>• We&apos;ve listed each allegation from the database entry</li>
           <li>• For each one, provide your response</li>
           <li>• Link to counter-evidence where relevant</li>
         </ul>
@@ -332,13 +321,12 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
                 <h3 className="font-medium text-white">Allegation #{index + 1}</h3>
               </div>
               <div className="bg-sifter-dark p-4 rounded-lg border border-sifter-border">
-                <p className="text-gray-300">{response.allegationText}</p>
+                <p className="text-sifter-text">{response.allegationText}</p>
               </div>
             </div>
             
             <div>
-              <label className="block text-white font-medium mb-3">
-                Your Response: *
+              <label className="block text-white font-medium mb-3"> Your Response: *
               </label>
               <textarea
                 value={response.response}
@@ -352,8 +340,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
               />
               
               <div className="mt-3">
-                <label className="block text-sm text-gray-400 mb-2">
-                  Link to supporting evidence (optional):
+                <label className="block text-sm text-sifter-text-muted mb-2"> Link to supporting evidence (optional):
                 </label>
                 <select
                   value={response.evidenceIds[0] || ''}
@@ -378,9 +365,8 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
         
         {formData.allegationResponses.length === 0 && (
           <div className="text-center py-8 border-2 border-dashed border-sifter-border rounded-lg">
-            <div className="text-gray-400 mb-2">No specific allegations found in this entry</div>
-            <p className="text-sm text-gray-500">
-              Continue to the next step to provide general dispute information
+            <div className="text-sifter-text-muted mb-2">No specific allegations found in this entry</div>
+            <p className="text-sm text-sifter-text-subtle"> Continue to the next step to provide general dispute information
             </p>
           </div>
         )}
@@ -394,16 +380,14 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
       <h2 className="text-xl font-bold text-white">Requested Resolution</h2>
       
       <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mb-6">
-        <h3 className="font-medium text-blue-400 mb-2">🏛️ Our Commitment:</h3>
-        <p className="text-sm text-gray-300">
-          We commit to reviewing all disputes within <strong>10 business days</strong> and providing a clear resolution.
+        <h3 className="font-medium text-blue-400 mb-2"> Our Commitment:</h3>
+        <p className="text-sm text-sifter-text"> We commit to reviewing all disputes within <strong>10 business days</strong> and providing a clear resolution.
           All decisions are based on verifiable evidence and transparent criteria.
         </p>
       </div>
       
       <div className="space-y-4">
-        <label className="block text-white font-medium mb-2">
-          What resolution are you requesting? *
+        <label className="block text-white font-medium mb-2"> What resolution are you requesting? *
         </label>
         
         {([
@@ -411,25 +395,25 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
             id: 'remove_entry',
             title: 'Remove this entry entirely',
             description: 'The entry should be removed because it is completely incorrect',
-            icon: '🗑️'
+            icon: ''
           },
           {
             id: 'update_entry',
             title: 'Update/correct specific information',
             description: 'Some information is wrong but the entry should remain',
-            icon: '📝'
+            icon: ''
           },
           {
             id: 'add_context',
             title: 'Add clarifying context',
             description: 'The entry needs additional context to be fair',
-            icon: '📄'
+            icon: ''
           },
           {
             id: 'reduce_risk_score',
             title: 'Adjust the risk score/assessment',
             description: 'The severity or risk level is inaccurate',
-            icon: '📊'
+            icon: ''
           }
         ] as const).map((option) => (
           <label key={option.id} className="flex items-start space-x-3 p-4 border border-sifter-border rounded-lg hover:bg-sifter-dark/30 cursor-pointer">
@@ -448,7 +432,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
                 <span>{option.icon}</span>
                 <span className="font-medium text-white">{option.title}</span>
               </div>
-              <div className="text-sm text-gray-400">{option.description}</div>
+              <div className="text-sm text-sifter-text-muted">{option.description}</div>
             </div>
           </label>
         ))}
@@ -456,8 +440,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
       
       {formData.requestedResolution && (
         <div className="mt-6">
-          <label className="block text-white font-medium mb-3">
-            Additional details about your requested resolution: *
+          <label className="block text-white font-medium mb-3"> Additional details about your requested resolution: *
           </label>
           <textarea
             value={formData.resolutionExplanation}
@@ -468,7 +451,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
             className="w-full h-40 px-4 py-3 bg-sifter-dark border border-sifter-border rounded-lg text-white resize-none"
             placeholder="Provide specific details about what changes you want to see..."
           />
-          <div className="text-right text-sm text-gray-400 mt-2">
+          <div className="text-right text-sm text-sifter-text-muted mt-2">
             {formData.resolutionExplanation.length} / 2000 characters
           </div>
         </div>
@@ -482,8 +465,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
       <h2 className="text-xl font-bold text-white">Verification & Acknowledgements</h2>
       
       <div className="space-y-4">
-        <label className="block text-white font-medium mb-2">
-          How would you like us to verify your identity? *
+        <label className="block text-white font-medium mb-2"> How would you like us to verify your identity? *
         </label>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -492,19 +474,19 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
               id: 'email',
               title: 'Email Verification',
               description: 'Reply to verification email from company domain',
-              icon: '✉️'
+              icon: ''
             },
             {
               id: 'document',
               title: 'Document Upload',
               description: 'Upload official documents',
-              icon: '📄'
+              icon: ''
             },
             {
               id: 'call',
               title: 'Phone Call',
               description: 'Schedule a verification call',
-              icon: '📞'
+              icon: ''
             }
           ] as const).map((method) => (
             <label key={method.id} className="flex flex-col p-4 border border-sifter-border rounded-lg hover:bg-sifter-dark/30 cursor-pointer">
@@ -522,7 +504,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
                 <span className="text-xl">{method.icon}</span>
                 <span className="font-medium text-white">{method.title}</span>
               </div>
-              <div className="text-sm text-gray-400">{method.description}</div>
+              <div className="text-sm text-sifter-text-muted">{method.description}</div>
             </label>
           ))}
         </div>
@@ -530,8 +512,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
       
       {formData.verificationMethod && (
         <div className="mt-6">
-          <label className="block text-white font-medium mb-3">
-            Additional verification notes:
+          <label className="block text-white font-medium mb-3"> Additional verification notes:
           </label>
           <textarea
             value={formData.verificationNotes}
@@ -594,22 +575,22 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
       </div>
       
       <div className="mt-6 bg-sifter-dark/50 border border-sifter-border rounded-lg p-4">
-        <h4 className="font-medium text-white mb-3">📋 Dispute Summary</h4>
+        <h4 className="font-medium text-white mb-3"> Dispute Summary</h4>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-gray-400">Case:</span>
+            <span className="text-sifter-text-muted">Case:</span>
             <span className="text-white">{entity.name}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-400">Categories:</span>
+            <span className="text-sifter-text-muted">Categories:</span>
             <span className="text-white">{formData.categories.length}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-400">Evidence Items:</span>
+            <span className="text-sifter-text-muted">Evidence Items:</span>
             <span className="text-white">{formData.counterEvidence.length}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-400">Requested:</span>
+            <span className="text-sifter-text-muted">Requested:</span>
             <span className="text-white">{formData.requestedResolution?.replace('_', ' ') || 'Not specified'}</span>
           </div>
         </div>
@@ -683,7 +664,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
         
         verificationMethod: formData.verificationMethod,
         isVerified: false,
-        verificationNotes: formData.verificationNotes,  // ✅ Add this to Dispute type
+        verificationNotes: formData.verificationNotes,  //  Add this to Dispute type
         
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -733,13 +714,12 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
             <div className="flex justify-between items-center">
               <div>
                 <h1 className="text-2xl font-bold text-white">File a Dispute</h1>
-                <p className="text-gray-400">
-                  Case: {entity.name} • ID: {entity.id}
+                <p className="text-sifter-text-muted"> Case: {entity.name} • ID: {entity.id}
                 </p>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 text-gray-400 hover:text-white transition-colors"
+                className="p-2 text-sifter-text-muted hover:text-white transition-colors"
               >
                 ✕ Close
               </button>
@@ -756,17 +736,17 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
                           ? 'border-blue-500 bg-blue-500/20 text-blue-500' 
                           : step > stepNum 
                             ? 'border-green-500 bg-green-500/20 text-green-500' 
-                            : 'border-gray-600 text-gray-500'
+                            : 'border-sifter-border text-sifter-text-subtle'
                       }`}>
                         {step > stepNum ? '✓' : stepNum}
                       </div>
-                      <div className="text-xs mt-2 text-gray-400 text-center">
+                      <div className="text-xs mt-2 text-sifter-text-muted text-center">
                         {['Relationship', 'What', 'Explain', 'Evidence', 'Allegations', 'Resolution', 'Verify'][stepNum-1]}
                       </div>
                     </div>
                     {stepNum < 7 && (
                       <div className={`flex-1 h-1 mx-2 ${
-                        step > stepNum ? 'bg-green-500' : 'bg-gray-700'
+                        step > stepNum ? 'bg-green-500' : 'bg-sifter-hover'
                       }`} />
                     )}
                   </React.Fragment>
@@ -792,8 +772,8 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
                 <h2 className="text-xl font-bold text-white">Counter Evidence</h2>
                 
                 <div className="bg-sifter-dark/50 border border-sifter-border rounded-lg p-4 mb-6">
-                  <h3 className="font-medium text-white mb-2">✅ What we accept:</h3>
-                  <ul className="text-sm text-gray-400 space-y-1">
+                  <h3 className="font-medium text-white mb-2"> What we accept:</h3>
+                  <ul className="text-sm text-sifter-text-muted space-y-1">
                     <li>• Official company statements/press releases</li>
                     <li>• Legal documents (contracts, agreements)</li>
                     <li>• Third-party audits or reports</li>
@@ -816,14 +796,13 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
                             setFormData({...formData, counterEvidence: newEvidence});
                           }}
                           className="text-red-400 hover:text-red-300 text-sm"
-                        >
-                          Remove
+                        > Remove
                         </button>
                       </div>
                       
                       <div className="space-y-3">
                         <div>
-                          <label className="block text-sm text-gray-400 mb-2">Type of Evidence</label>
+                          <label className="block text-sm text-sifter-text-muted mb-2">Type of Evidence</label>
                           <select
                             value={evidence.type}
                             onChange={(e) => {
@@ -846,7 +825,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
                         </div>
                         
                         <div>
-                          <label className="block text-sm text-gray-400 mb-2">Title *</label>
+                          <label className="block text-sm text-sifter-text-muted mb-2">Title *</label>
                           <input
                             type="text"
                             value={evidence.title}
@@ -861,7 +840,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
                         </div>
                         
                         <div>
-                          <label className="block text-sm text-gray-400 mb-2">URL (if online)</label>
+                          <label className="block text-sm text-sifter-text-muted mb-2">URL (if online)</label>
                           <input
                             type="url"
                             value={evidence.url || ''}
@@ -876,7 +855,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
                         </div>
                         
                         <div>
-                          <label className="block text-sm text-gray-400 mb-2">Or Upload File</label>
+                          <label className="block text-sm text-sifter-text-muted mb-2">Or Upload File</label>
                           <input
                             type="file"
                             ref={fileInputRef}
@@ -888,13 +867,13 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
                           />
                           {evidence.isUploading && (
                             <div className="mt-2">
-                              <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                              <div className="h-2 bg-sifter-hover rounded-full overflow-hidden">
                                 <div 
                                   className="h-full bg-blue-500 transition-all duration-300"
                                   style={{ width: `${uploadProgress[index] || 0}%` }}
                                 />
                               </div>
-                              <div className="text-xs text-gray-400 mt-1 text-right">
+                              <div className="text-xs text-sifter-text-muted mt-1 text-right">
                                 {uploadProgress[index] || 0}%
                               </div>
                             </div>
@@ -902,7 +881,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
                         </div>
                         
                         <div>
-                          <label className="block text-sm text-gray-400 mb-2">Description *</label>
+                          <label className="block text-sm text-sifter-text-muted mb-2">Description *</label>
                           <textarea
                             value={evidence.description}
                             onChange={(e) => {
@@ -934,11 +913,11 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
                         alert('Maximum 10 evidence items allowed');
                       }
                     }}
-                    className="w-full py-4 border-2 border-dashed border-sifter-border rounded-lg text-gray-400 hover:text-white hover:border-blue-500/50 transition-colors flex flex-col items-center gap-2"
+                    className="w-full py-4 border-2 border-dashed border-sifter-border rounded-lg text-sifter-text-muted hover:text-white hover:border-blue-500/50 transition-colors flex flex-col items-center gap-2"
                   >
                     <span className="text-xl">+</span>
                     <span>Add More Evidence</span>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-sifter-text-subtle">
                       {formData.counterEvidence.length} of 10 items added
                     </span>
                   </button>
@@ -959,7 +938,7 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
             {!validateStep() && (
               <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
                 <div className="flex items-center gap-2 text-red-400">
-                  <span>⚠️</span>
+                  <span></span>
                   <span>Please complete all required fields before proceeding</span>
                 </div>
               </div>
@@ -970,14 +949,14 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
               {step > 1 ? (
                 <button
                   onClick={() => setStep(step - 1)}
-                  className="px-6 py-3 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg font-medium transition-colors"
+                  className="px-6 py-3 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover hover:text-white rounded-lg font-medium transition-colors"
                 >
                   ← Previous Step
                 </button>
               ) : (
                 <button
                   onClick={onClose}
-                  className="px-6 py-3 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg font-medium transition-colors"
+                  className="px-6 py-3 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover hover:text-white rounded-lg font-medium transition-colors"
                 >
                   ← Cancel
                 </button>
@@ -996,14 +975,13 @@ export default function DisputeFilingForm({ entity, onClose, compact = false }: 
                   }
                 }}
                 disabled={isSubmitting || !validateStep()}
-                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {step < 7 ? 'Continue →' : isSubmitting ? 'Submitting...' : 'Submit Dispute'}
               </button>
             </div>
             
-            <div className="mt-4 text-center text-sm text-gray-500">
-              Step {step} of 7 • {Math.round((step / 7) * 100)}% complete
+            <div className="mt-4 text-center text-sm text-sifter-text-subtle"> Step {step} of 7 • {Math.round((step / 7) * 100)}% complete
             </div>
           </div>
         </div>

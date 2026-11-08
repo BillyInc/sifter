@@ -56,7 +56,7 @@ export default function NotificationBell({ onNotificationClick, compact = false 
       {/* Bell Icon */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-400 hover:text-white transition-colors"
+        className="relative p-2 text-sifter-text-muted hover:text-white transition-colors"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
@@ -85,19 +85,17 @@ export default function NotificationBell({ onNotificationClick, compact = false 
                   <button
                     onClick={handleMarkAllAsRead}
                     className="text-xs text-blue-400 hover:text-blue-300"
-                  >
-                    Mark all as read
+                  > Mark all as read
                   </button>
                 )}
                 <button
                   onClick={handleClearAll}
-                  className="text-xs text-gray-400 hover:text-gray-300"
-                >
-                  Clear all
+                  className="text-xs text-sifter-text-muted hover:text-sifter-text"
+                > Clear all
                 </button>
               </div>
             </div>
-            <div className="text-xs text-gray-400 mt-1">
+            <div className="text-xs text-sifter-text-muted mt-1">
               {unreadCount} unread • {notifications.length} total
             </div>
           </div>
@@ -106,8 +104,8 @@ export default function NotificationBell({ onNotificationClick, compact = false 
           <div className="max-h-96 overflow-y-auto">
             {notifications.length === 0 ? (
               <div className="p-8 text-center">
-                <div className="text-gray-400 mb-2">No notifications yet</div>
-                <div className="text-sm text-gray-500">Submit reports to earn points and badges!</div>
+                <div className="text-sifter-text-muted mb-2">No notifications yet</div>
+                <div className="text-sm text-sifter-text-subtle">Submit reports to earn points and badges!</div>
               </div>
             ) : (
               <div className="divide-y divide-sifter-border">
@@ -128,7 +126,7 @@ export default function NotificationBell({ onNotificationClick, compact = false 
                         notification.type === 'tier-changed' ? 'bg-purple-500/20 text-purple-400' :
                         notification.type === 'streak-extended' ? 'bg-red-500/20 text-red-400' :
                         notification.type === 'submission-approved' ? 'bg-green-500/20 text-green-400' :
-                        'bg-gray-500/20 text-gray-400'
+                        'bg-sifter-elevated text-sifter-text-muted'
                       }`}>
                         <span className="text-lg">{notification.icon}</span>
                       </div>
@@ -141,8 +139,8 @@ export default function NotificationBell({ onNotificationClick, compact = false 
                             <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                           )}
                         </div>
-                        <p className="text-sm text-gray-300 mt-1">{notification.message}</p>
-                        <div className="text-xs text-gray-500 mt-2">
+                        <p className="text-sm text-sifter-text mt-1">{notification.message}</p>
+                        <div className="text-xs text-sifter-text-subtle mt-2">
                           {new Date(notification.createdAt).toLocaleTimeString([], { 
                             hour: '2-digit', 
                             minute: '2-digit' 
@@ -164,8 +162,7 @@ export default function NotificationBell({ onNotificationClick, compact = false 
                 setIsOpen(false);
               }}
               className="w-full text-center text-sm text-blue-400 hover:text-blue-300 py-2"
-            >
-              View All Notifications
+            > View All Notifications
             </button>
           </div>
         </div>

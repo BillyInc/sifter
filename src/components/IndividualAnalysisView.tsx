@@ -63,13 +63,13 @@ const getChainInfo = (chain?: string) => {
   if (!chain) return { icon: '', name: '', color: '' };
   
   const chainMap: Record<string, { icon: string; name: string; color: string }> = {
-    'solana': { icon: '◎', name: 'Solana', color: 'bg-gradient-to-br from-[#00FFA3] to-[#DC1FFF]' },
+    'solana': { icon: '', name: 'Solana', color: 'bg-gradient-to-br from-[#00FFA3] to-[#DC1FFF]' },
     'ethereum': { icon: '⧫', name: 'Ethereum', color: 'bg-gradient-to-br from-[#627EEA] to-[#ECF0F1]' },
-    'base': { icon: '⎔', name: 'Base', color: 'bg-gradient-to-br from-[#0052FF] to-[#FFFFFF]' },
-    'polygon': { icon: '⬢', name: 'Polygon', color: 'bg-gradient-to-br from-[#8247E5] to-[#8B5CF6]' },
-    'avalanche': { icon: '❄️', name: 'Avalanche', color: 'bg-gradient-to-br from-[#E84142] to-[#FFFFFF]' },
-    'arbitrum': { icon: '⎔', name: 'Arbitrum', color: 'bg-gradient-to-br from-[#2D374B] to-[#96BEDC]' },
-    'unknown': { icon: '🔗', name: 'Unknown', color: 'bg-gradient-to-br from-gray-600 to-gray-800' }
+    'base': { icon: '', name: 'Base', color: 'bg-gradient-to-br from-[#0052FF] to-[#FFFFFF]' },
+    'polygon': { icon: '', name: 'Polygon', color: 'bg-gradient-to-br from-[#8247E5] to-[#8B5CF6]' },
+    'avalanche': { icon: '', name: 'Avalanche', color: 'bg-gradient-to-br from-[#E84142] to-[#FFFFFF]' },
+    'arbitrum': { icon: '', name: 'Arbitrum', color: 'bg-gradient-to-br from-[#2D374B] to-[#96BEDC]' },
+    'unknown': { icon: '', name: 'Unknown', color: 'bg-sifter-elevated' }
   };
   
   return chainMap[chain.toLowerCase()] || chainMap['unknown'];
@@ -85,11 +85,9 @@ const formatHyperBlitzReport = (reportData: any, detectedChain?: string) => {
       <div className="bg-sifter-card border border-blue-500/30 rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <span className="text-3xl">⚡</span>
             <div>
               <h2 className="text-xl font-bold text-white">HYPER-BLITZ SNAPSHOT</h2>
-              <p className="text-sm text-gray-400">
-                Token: $PEPE2.0 | Age: 4 min 32 sec | Scan Time: 8 sec
+              <p className="text-sm text-sifter-text-muted"> Token: $PEPE2.0 | Age: 4 min 32 sec | Scan Time: 8 sec
               </p>
             </div>
           </div>
@@ -104,49 +102,49 @@ const formatHyperBlitzReport = (reportData: any, detectedChain?: string) => {
         {/* Chain and Volume Spike */}
         <div className="mb-4 flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <span className="text-gray-400">Chain:</span>
-            <span className="text-white font-medium">Solana ⚡</span>
+            <span className="text-sifter-text-muted">Chain:</span>
+            <span className="text-white font-medium">Solana </span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-gray-400">Volume Spike:</span>
-            <span className="text-red-400 font-medium">+850% in 2min 🚨</span>
+            <span className="text-sifter-text-muted">Volume Spike:</span>
+            <span className="text-red-400 font-medium">+850% in 2min </span>
           </div>
         </div>
 
         {/* Contract Safety */}
         <div className="border border-blue-500/20 rounded-lg p-4 bg-blue-500/5 mb-4">
-          <h3 className="font-bold text-white mb-3">🛡️ CONTRACT SAFETY: CRITICAL ⚠️</h3>
+          <h3 className="font-bold text-white mb-3"> CONTRACT SAFETY: CRITICAL </h3>
           <div className="space-y-1 text-sm">
             <div className="flex items-start gap-2">
               <span className="text-blue-400 mt-1">├─</span>
-              <span className="text-gray-300">Mint Authority:</span>
-              <span className="text-green-400 ml-2">REVOKED ✅</span>
+              <span className="text-sifter-text">Mint Authority:</span>
+              <span className="text-green-400 ml-2">REVOKED </span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-blue-400 mt-1">├─</span>
-              <span className="text-gray-300">Freeze Authority:</span>
-              <span className="text-green-400 ml-2">REVOKED ✅</span>
+              <span className="text-sifter-text">Freeze Authority:</span>
+              <span className="text-green-400 ml-2">REVOKED </span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-blue-400 mt-1">└─</span>
-              <span className="text-gray-300">LP Locked:</span>
-              <span className="text-red-400 ml-2">NO (0 minutes) 🚨 DANGER</span>
+              <span className="text-sifter-text">LP Locked:</span>
+              <span className="text-red-400 ml-2">NO (0 minutes)  DANGER</span>
             </div>
           </div>
         </div>
 
         {/* Network Structure Map */}
         <div className="border border-blue-500/20 rounded-lg p-4 bg-blue-500/5 mb-4">
-          <h3 className="font-bold text-white mb-3">🔗 NETWORK STRUCTURE MAP (SNA ONLY - METRIC #6 INPUT)</h3>
+          <h3 className="font-bold text-white mb-3"> NETWORK STRUCTURE MAP (SNA ONLY - METRIC #6 INPUT)</h3>
           <div className="space-y-1 text-sm">
             <div className="flex items-start gap-2">
               <span className="text-blue-400 mt-1">├─</span>
-              <span className="text-gray-300">Total Accounts Tweeting:</span>
+              <span className="text-sifter-text">Total Accounts Tweeting:</span>
               <span className="text-white ml-2">14</span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-blue-400 mt-1">├─</span>
-              <span className="text-gray-300">Clusters Detected:</span>
+              <span className="text-sifter-text">Clusters Detected:</span>
               <span className="text-white ml-2">2</span>
             </div>
             
@@ -161,15 +159,15 @@ const formatHyperBlitzReport = (reportData: any, detectedChain?: string) => {
                 <div className="ml-4 space-y-1">
                   <div className="flex items-start gap-2">
                     <span className="text-blue-400 mt-1">├─</span>
-                    <span className="text-gray-300">Members: @RugPullRicky, @PaidShillX, @TelegramRugger, @PumpBot1, @PumpBot2</span>
+                    <span className="text-sifter-text">Members: @RugPullRicky, @PaidShillX, @TelegramRugger, @PumpBot1, @PumpBot2</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-blue-400 mt-1">├─</span>
-                    <span className="text-gray-300">Density: 1.0 (perfectly connected)</span>
+                    <span className="text-sifter-text">Density: 1.0 (perfectly connected)</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-blue-400 mt-1">└─</span>
-                    <span className="text-gray-300">Centrality: @RugPullRicky = 0.95 (leader)</span>
+                    <span className="text-sifter-text">Centrality: @RugPullRicky = 0.95 (leader)</span>
                   </div>
                 </div>
               </div>
@@ -186,11 +184,11 @@ const formatHyperBlitzReport = (reportData: any, detectedChain?: string) => {
                 <div className="ml-4 space-y-1">
                   <div className="flex items-start gap-2">
                     <span className="text-blue-400 mt-1">├─</span>
-                    <span className="text-gray-300">Density: 0.67</span>
+                    <span className="text-sifter-text">Density: 0.67</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-blue-400 mt-1">└─</span>
-                    <span className="text-gray-300">Centrality: @CryptoCelebrity = 0.45</span>
+                    <span className="text-sifter-text">Centrality: @CryptoCelebrity = 0.45</span>
                   </div>
                 </div>
               </div>
@@ -198,12 +196,12 @@ const formatHyperBlitzReport = (reportData: any, detectedChain?: string) => {
             
             <div className="flex items-start gap-2">
               <span className="text-blue-400 mt-1">├─</span>
-              <span className="text-gray-300">Individual Accounts:</span>
+              <span className="text-sifter-text">Individual Accounts:</span>
               <span className="text-white ml-2">6 (loose connections)</span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-blue-400 mt-1">└─</span>
-              <span className="text-gray-300">Network Density Overall:</span>
+              <span className="text-sifter-text">Network Density Overall:</span>
               <span className="text-white ml-2">0.42 (moderate connectivity)</span>
             </div>
           </div>
@@ -211,11 +209,11 @@ const formatHyperBlitzReport = (reportData: any, detectedChain?: string) => {
 
         {/* Timing Analysis */}
         <div className="border border-blue-500/20 rounded-lg p-4 bg-blue-500/5">
-          <h3 className="font-bold text-white mb-3">⏰ TIMING ANALYSIS (METRIC #7 + #13 INPUT)</h3>
+          <h3 className="font-bold text-white mb-3"> TIMING ANALYSIS (METRIC #7 + #13 INPUT)</h3>
           <div className="space-y-1 text-sm">
             <div className="flex items-start gap-2">
               <span className="text-blue-400 mt-1">├─</span>
-              <span className="text-gray-300">Pre-pump Activity:</span>
+              <span className="text-sifter-text">Pre-pump Activity:</span>
             </div>
             <div className="ml-4 space-y-1">
               <div className="flex items-start gap-2">
@@ -234,7 +232,7 @@ const formatHyperBlitzReport = (reportData: any, detectedChain?: string) => {
             
             <div className="flex items-start gap-2">
               <span className="text-blue-400 mt-1">├─</span>
-              <span className="text-gray-300">Volume Correlation:</span>
+              <span className="text-sifter-text">Volume Correlation:</span>
             </div>
             <div className="ml-4 space-y-1">
               <div className="flex items-start gap-2">
@@ -253,12 +251,12 @@ const formatHyperBlitzReport = (reportData: any, detectedChain?: string) => {
             
             <div className="flex items-start gap-2">
               <span className="text-blue-400 mt-1">└─</span>
-              <span className="text-gray-300">Coordination Evidence:</span>
+              <span className="text-sifter-text">Coordination Evidence:</span>
             </div>
             <div className="ml-4 space-y-1">
               <div className="flex items-start gap-2">
                 <span className="text-blue-400 mt-1">├─</span>
-                <span className="text-white">Same talking points: "100x", "Elon tweet incoming"</span>
+                <span className="text-white">Same talking points: &quot;100x&quot;, &quot;Elon tweet incoming&quot;</span>
               </div>
               <div className="flex items-start gap-2">
                 <span className="text-blue-400 mt-1">├─</span>
@@ -275,11 +273,11 @@ const formatHyperBlitzReport = (reportData: any, detectedChain?: string) => {
 
       {/* Historical Context */}
       <div className="bg-sifter-card border border-blue-500/20 rounded-xl p-6">
-        <h3 className="font-bold text-white mb-4">🎯 HISTORICAL CONTEXT ADDED (METRIC #6 SCORING)</h3>
+        <h3 className="font-bold text-white mb-4"> HISTORICAL CONTEXT ADDED (METRIC #6 SCORING)</h3>
         <div className="space-y-1 text-sm">
           <div className="flex items-start gap-2">
             <span className="text-blue-400 mt-1">├─</span>
-            <span className="text-gray-300">Cluster A History:</span>
+            <span className="text-sifter-text">Cluster A History:</span>
           </div>
           <div className="ml-4 space-y-1">
             <div className="flex items-start gap-2">
@@ -302,7 +300,7 @@ const formatHyperBlitzReport = (reportData: any, detectedChain?: string) => {
           
           <div className="flex items-start gap-2">
             <span className="text-blue-400 mt-1">├─</span>
-            <span className="text-gray-300">Individual Risk Scoring:</span>
+            <span className="text-sifter-text">Individual Risk Scoring:</span>
           </div>
           <div className="ml-4 space-y-1">
             <div className="flex items-start gap-2">
@@ -325,19 +323,19 @@ const formatHyperBlitzReport = (reportData: any, detectedChain?: string) => {
           
           <div className="flex items-start gap-2">
             <span className="text-blue-400 mt-1">└─</span>
-            <span className="text-gray-300">NETWORK CONTAMINATION SCORE:</span>
-            <span className="text-red-400 ml-2">15/100 🚨</span>
+            <span className="text-sifter-text">NETWORK CONTAMINATION SCORE:</span>
+            <span className="text-red-400 ml-2">15/100 </span>
           </div>
         </div>
       </div>
 
       {/* Financial Correlation */}
       <div className="bg-sifter-card border border-blue-500/20 rounded-xl p-6">
-        <h3 className="font-bold text-white mb-4">💰 FINANCIAL CORRELATION ADDED</h3>
+        <h3 className="font-bold text-white mb-4"> FINANCIAL CORRELATION ADDED</h3>
         <div className="space-y-1 text-sm">
           <div className="flex items-start gap-2">
             <span className="text-blue-400 mt-1">├─</span>
-            <span className="text-gray-300">Whale Activity:</span>
+            <span className="text-sifter-text">Whale Activity:</span>
           </div>
           <div className="ml-4 space-y-1">
             <div className="flex items-start gap-2">
@@ -356,7 +354,7 @@ const formatHyperBlitzReport = (reportData: any, detectedChain?: string) => {
           
           <div className="flex items-start gap-2">
             <span className="text-blue-400 mt-1">├─</span>
-            <span className="text-gray-300">Whale-Promoter Connections:</span>
+            <span className="text-sifter-text">Whale-Promoter Connections:</span>
           </div>
           <div className="ml-4 space-y-1">
             <div className="flex items-start gap-2">
@@ -371,7 +369,7 @@ const formatHyperBlitzReport = (reportData: any, detectedChain?: string) => {
           
           <div className="flex items-start gap-2">
             <span className="text-blue-400 mt-1">└─</span>
-            <span className="text-gray-300">Exit Liquidity Analysis:</span>
+            <span className="text-sifter-text">Exit Liquidity Analysis:</span>
           </div>
           <div className="ml-4 space-y-2">
             <div className="flex items-start gap-2">
@@ -392,26 +390,26 @@ const formatHyperBlitzReport = (reportData: any, detectedChain?: string) => {
 
       {/* On-Chain Momentum */}
       <div className="bg-sifter-card border border-blue-500/20 rounded-xl p-6">
-        <h3 className="font-bold text-white mb-4">📊 ON-CHAIN MOMENTUM</h3>
+        <h3 className="font-bold text-white mb-4"> ON-CHAIN MOMENTUM</h3>
         <div className="space-y-1 text-sm">
           <div className="flex items-start gap-2">
             <span className="text-blue-400 mt-1">├─</span>
-            <span className="text-gray-300">Volume:</span>
+            <span className="text-sifter-text">Volume:</span>
             <span className="text-white ml-2">$1.2M</span>
           </div>
           <div className="flex items-start gap-2">
             <span className="text-blue-400 mt-1">├─</span>
-            <span className="text-gray-300">Holder Concentration:</span>
-            <span className="text-yellow-400 ml-2">Top 10 = 68% ⚠️</span>
+            <span className="text-sifter-text">Holder Concentration:</span>
+            <span className="text-yellow-400 ml-2">Top 10 = 68% </span>
           </div>
           <div className="flex items-start gap-2">
             <span className="text-blue-400 mt-1">├─</span>
-            <span className="text-gray-300">Liquidity:</span>
+            <span className="text-sifter-text">Liquidity:</span>
             <span className="text-white ml-2">$820K (shallow, 14.2% slippage)</span>
           </div>
           <div className="flex items-start gap-2">
             <span className="text-blue-400 mt-1">└─</span>
-            <span className="text-gray-300">Exit Risk:</span>
+            <span className="text-sifter-text">Exit Risk:</span>
             <span className="text-white ml-2">Large holders cannot exit without crash</span>
           </div>
         </div>
@@ -419,11 +417,11 @@ const formatHyperBlitzReport = (reportData: any, detectedChain?: string) => {
 
       {/* Verdict and Critical Issues */}
       <div className="border-2 border-red-500 bg-red-500/10 rounded-xl p-6">
-        <h3 className="font-bold text-white text-xl mb-3">🚨 VERDICT: EXTREME DANGER - COORDINATED PUMP</h3>
+        <h3 className="font-bold text-white text-xl mb-3"> VERDICT: EXTREME DANGER - COORDINATED PUMP</h3>
         
         <div className="mb-4">
-          <h4 className="text-gray-300 font-medium mb-2">ANALYSIS SUMMARY:</h4>
-          <ul className="text-sm text-gray-300 space-y-1">
+          <h4 className="text-sifter-text font-medium mb-2">ANALYSIS SUMMARY:</h4>
+          <ul className="text-sm text-sifter-text space-y-1">
             <li className="flex items-start gap-2">
               <span className="mt-1">•</span>
               <span>SNA MAP: Shows organized cluster of 5 accounts</span>
@@ -448,48 +446,43 @@ const formatHyperBlitzReport = (reportData: any, detectedChain?: string) => {
         </div>
 
         <div className="mb-4">
-          <h4 className="text-gray-300 font-medium mb-2">CRITICAL ISSUES:</h4>
+          <h4 className="text-sifter-text font-medium mb-2">CRITICAL ISSUES:</h4>
           <ul className="text-sm space-y-1">
             <li className="text-red-400 flex items-center gap-2">
               <span>•</span>
-              <span>No LP lock = Instant dump capability 🚨</span>
+              <span>No LP lock = Instant dump capability </span>
             </li>
             <li className="text-red-400 flex items-center gap-2">
               <span>•</span>
-              <span>Insider whale coordination 🚨</span>
+              <span>Insider whale coordination </span>
             </li>
             <li className="text-red-400 flex items-center gap-2">
               <span>•</span>
-              <span>Professional gang operation 🚨</span>
+              <span>Professional gang operation </span>
             </li>
             <li className="text-red-400 flex items-center gap-2">
               <span>•</span>
-              <span>Exit liquidity insufficient 🚨</span>
+              <span>Exit liquidity insufficient </span>
             </li>
           </ul>
         </div>
 
-        <div className="mt-4 pt-4 border-t border-gray-700">
+        <div className="mt-4 pt-4 border-t border-sifter-border">
           <h4 className="text-white font-bold mb-2">RECOMMENDATION:</h4>
-          <p className="text-gray-300">
-            AVOID. If gambling: 1% max, 2x stop loss, exit within 30 min.
+          <p className="text-sifter-text"> AVOID. If gambling: 1% max, 2x stop loss, exit within 30 min.
           </p>
         </div>
       </div>
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-3 justify-center">
-        <button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all flex items-center gap-2">
-          🔗 View Network Graph
+        <button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all flex items-center gap-2"> View Network Graph
         </button>
-        <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-all flex items-center gap-2">
-          📊 See Raw SNA Data
+        <button className="px-4 py-2 bg-sifter-elevated hover:bg-sifter-hover text-white rounded-lg transition-all flex items-center gap-2"> See Raw SNA Data
         </button>
-        <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-all flex items-center gap-2">
-          🐋 Track Whale Wallets
+        <button className="px-4 py-2 bg-sifter-elevated hover:bg-sifter-hover text-white rounded-lg transition-all flex items-center gap-2"> Track Whale Wallets
         </button>
-        <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-all flex items-center gap-2">
-          ⚠️ Set Alert
+        <button className="px-4 py-2 bg-sifter-elevated hover:bg-sifter-hover text-white rounded-lg transition-all flex items-center gap-2"> Set Alert
         </button>
       </div>
     </div>
@@ -505,11 +498,9 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
       <div className="bg-sifter-card border border-purple-500/30 rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <span className="text-3xl">📊</span>
             <div>
               <h2 className="text-xl font-bold text-white">MOMENTUM-BLITZ ANALYSIS</h2>
-              <p className="text-sm text-gray-400">
-                Token: $DEFI_PROTOCOL | Age: 3 days 14 hours | Scan Time: 52 sec
+              <p className="text-sm text-sifter-text-muted"> Token: $DEFI_PROTOCOL | Age: 3 days 14 hours | Scan Time: 52 sec
               </p>
             </div>
           </div>
@@ -524,33 +515,33 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
         {/* Chain and Price Context */}
         <div className="mb-4 flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <span className="text-gray-400">Chain:</span>
-            <span className="text-white font-medium">Base ⎔</span>
+            <span className="text-sifter-text-muted">Chain:</span>
+            <span className="text-white font-medium">Base </span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-gray-400">Price:</span>
+            <span className="text-sifter-text-muted">Price:</span>
             <span className="text-green-400 font-medium">+127% in 24h</span>
           </div>
         </div>
 
         {/* Price Context */}
         <div className="border border-purple-500/20 rounded-lg p-4 bg-purple-500/5 mb-4">
-          <h3 className="font-bold text-white mb-3">💰 PRICE CONTEXT</h3>
+          <h3 className="font-bold text-white mb-3"> PRICE CONTEXT</h3>
           <div className="space-y-1 text-sm">
             <div className="flex items-start gap-2">
               <span className="text-purple-400 mt-1">├─</span>
-              <span className="text-gray-300">Current:</span>
+              <span className="text-sifter-text">Current:</span>
               <span className="text-white ml-2">$0.00042 (+127% 24h)</span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-purple-400 mt-1">├─</span>
-              <span className="text-gray-300">ATH:</span>
+              <span className="text-sifter-text">ATH:</span>
               <span className="text-white ml-2">$0.00089 (18 hours ago)</span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-purple-400 mt-1">└─</span>
-              <span className="text-gray-300">Volume:</span>
-              <span className="text-white ml-2">$2.4M (24h) | Trend: Declining ⚠️</span>
+              <span className="text-sifter-text">Volume:</span>
+              <span className="text-white ml-2">$2.4M (24h) | Trend: Declining </span>
             </div>
           </div>
         </div>
@@ -558,12 +549,12 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
 
       {/* Community Health */}
       <div className="bg-sifter-card border border-purple-500/20 rounded-xl p-6">
-        <h3 className="font-bold text-white mb-4">🗣️ COMMUNITY HEALTH (METRICS #7, #8)</h3>
+        <h3 className="font-bold text-white mb-4"> COMMUNITY HEALTH (METRICS #7, #8)</h3>
         <div className="space-y-1 text-sm">
           <div className="flex items-start gap-2">
             <span className="text-purple-400 mt-1">├─</span>
-            <span className="text-gray-300">Message Timing Entropy:</span>
-            <span className="text-green-400 ml-2">0.72/1.00 ✅</span>
+            <span className="text-sifter-text">Message Timing Entropy:</span>
+            <span className="text-green-400 ml-2">0.72/1.00 </span>
           </div>
           <div className="ml-4 space-y-1">
             <div className="flex items-start gap-2">
@@ -578,8 +569,8 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
           
           <div className="flex items-start gap-2">
             <span className="text-purple-400 mt-1">├─</span>
-            <span className="text-gray-300">Account Age Entropy:</span>
-            <span className="text-green-400 ml-2">0.81/1.00 ✅</span>
+            <span className="text-sifter-text">Account Age Entropy:</span>
+            <span className="text-green-400 ml-2">0.81/1.00 </span>
           </div>
           <div className="ml-4 space-y-1">
             <div className="flex items-start gap-2">
@@ -594,8 +585,8 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
           
           <div className="flex items-start gap-2">
             <span className="text-purple-400 mt-1">└─</span>
-            <span className="text-gray-300">Engagement Distribution:</span>
-            <span className="text-green-400 ml-2">0.68/1.00 ✅</span>
+            <span className="text-sifter-text">Engagement Distribution:</span>
+            <span className="text-green-400 ml-2">0.68/1.00 </span>
           </div>
           <div className="ml-4">
             <div className="flex items-start gap-2">
@@ -608,11 +599,11 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
 
       {/* Network Structure Evolution */}
       <div className="bg-sifter-card border border-purple-500/20 rounded-xl p-6">
-        <h3 className="font-bold text-white mb-4">🔗 NETWORK STRUCTURE EVOLUTION (SNA MAPPING OVER TIME - METRIC #6)</h3>
+        <h3 className="font-bold text-white mb-4"> NETWORK STRUCTURE EVOLUTION (SNA MAPPING OVER TIME - METRIC #6)</h3>
         <div className="space-y-1 text-sm">
           <div className="flex items-start gap-2">
             <span className="text-purple-400 mt-1">├─</span>
-            <span className="text-gray-300">Initial Network (Launch):</span>
+            <span className="text-sifter-text">Initial Network (Launch):</span>
           </div>
           <div className="ml-4 space-y-1">
             <div className="flex items-start gap-2">
@@ -631,7 +622,7 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
           
           <div className="flex items-start gap-2">
             <span className="text-purple-400 mt-1">├─</span>
-            <span className="text-gray-300">Current Network (30 days later):</span>
+            <span className="text-sifter-text">Current Network (30 days later):</span>
           </div>
           <div className="ml-4 space-y-1">
             <div className="flex items-start gap-2">
@@ -654,8 +645,8 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
           
           <div className="flex items-start gap-2">
             <span className="text-purple-400 mt-1">└─</span>
-            <span className="text-gray-300">Network Health Trend:</span>
-            <span className="text-yellow-400 ml-2">⚠️ Deteriorating</span>
+            <span className="text-sifter-text">Network Health Trend:</span>
+            <span className="text-yellow-400 ml-2"> Deteriorating</span>
           </div>
           <div className="ml-4 space-y-2">
             <div className="flex items-start gap-2">
@@ -672,12 +663,12 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
 
       {/* Engagement Quality */}
       <div className="bg-sifter-card border border-purple-500/20 rounded-xl p-6">
-        <h3 className="font-bold text-white mb-4">💬 ENGAGEMENT QUALITY (METRICS #10, #11)</h3>
+        <h3 className="font-bold text-white mb-4"> ENGAGEMENT QUALITY (METRICS #10, #11)</h3>
         <div className="space-y-1 text-sm">
           <div className="flex items-start gap-2">
             <span className="text-purple-400 mt-1">├─</span>
-            <span className="text-gray-300">Substantive Discussion:</span>
-            <span className="text-green-400 ml-2">42% ✅</span>
+            <span className="text-sifter-text">Substantive Discussion:</span>
+            <span className="text-green-400 ml-2">42% </span>
           </div>
           <div className="ml-4 space-y-1">
             <div className="flex items-start gap-2">
@@ -692,8 +683,8 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
           
           <div className="flex items-start gap-2">
             <span className="text-purple-400 mt-1">├─</span>
-            <span className="text-gray-300">Mercenary Content:</span>
-            <span className="text-yellow-400 ml-2">31% ⚠️ (METRIC #11)</span>
+            <span className="text-sifter-text">Mercenary Content:</span>
+            <span className="text-yellow-400 ml-2">31%  (METRIC #11)</span>
           </div>
           <div className="ml-4 space-y-1">
             <div className="flex items-start gap-2">
@@ -702,7 +693,7 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
             </div>
             <div className="flex items-start gap-2">
               <span className="text-purple-400 mt-1">└─</span>
-              <span className="text-white">Keywords: "moon" (47), "100x" (8), "gem" (31)</span>
+              <span className="text-white">Keywords: &quot;moon&quot; (47), &quot;100x&quot; (8), &quot;gem&quot; (31)</span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-purple-400 mt-1">└─</span>
@@ -712,8 +703,8 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
           
           <div className="flex items-start gap-2">
             <span className="text-purple-400 mt-1">└─</span>
-            <span className="text-gray-300">Spam/Bot Content:</span>
-            <span className="text-yellow-400 ml-2">27% ⚠️</span>
+            <span className="text-sifter-text">Spam/Bot Content:</span>
+            <span className="text-yellow-400 ml-2">27% </span>
           </div>
           <div className="ml-4 space-y-1">
             <div className="flex items-start gap-2">
@@ -730,20 +721,20 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
 
       {/* Founder Activity */}
       <div className="bg-sifter-card border border-purple-500/20 rounded-xl p-6">
-        <h3 className="font-bold text-white mb-4">👨‍💼 FOUNDER ACTIVITY (METRIC #9, #12)</h3>
+        <h3 className="font-bold text-white mb-4">‍ FOUNDER ACTIVITY (METRIC #9, #12)</h3>
         <div className="space-y-1 text-sm">
           <div className="flex items-start gap-2">
             <span className="text-purple-400 mt-1">├─</span>
-            <span className="text-gray-300">Tweet Focus Analysis:</span>
+            <span className="text-sifter-text">Tweet Focus Analysis:</span>
           </div>
           <div className="ml-4 space-y-1">
             <div className="flex items-start gap-2">
               <span className="text-purple-400 mt-1">├─</span>
-              <span className="text-white">Project Updates: 54% ✅</span>
+              <span className="text-white">Project Updates: 54% </span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-purple-400 mt-1">├─</span>
-              <span className="text-white">Promotional Content: 28% ⚠️</span>
+              <span className="text-white">Promotional Content: 28% </span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-purple-400 mt-1">└─</span>
@@ -753,7 +744,7 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
           
           <div className="flex items-start gap-2">
             <span className="text-purple-400 mt-1">├─</span>
-            <span className="text-gray-300">Response Patterns:</span>
+            <span className="text-sifter-text">Response Patterns:</span>
           </div>
           <div className="ml-4 space-y-1">
             <div className="flex items-start gap-2">
@@ -776,8 +767,8 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
           
           <div className="flex items-start gap-2">
             <span className="text-purple-400 mt-1">└─</span>
-            <span className="text-gray-300">Activity Trend:</span>
-            <span className="text-green-400 ml-2">Stable ✅</span>
+            <span className="text-sifter-text">Activity Trend:</span>
+            <span className="text-green-400 ml-2">Stable </span>
           </div>
           <div className="ml-4 space-y-2">
             <div className="flex items-start gap-2">
@@ -798,30 +789,30 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
 
       {/* Artificial Hype Detection */}
       <div className="bg-sifter-card border border-purple-500/20 rounded-xl p-6">
-        <h3 className="font-bold text-white mb-4">🚨 ARTIFICIAL HYPE DETECTION (METRIC #13)</h3>
+        <h3 className="font-bold text-white mb-4"> ARTIFICIAL HYPE DETECTION (METRIC #13)</h3>
         <div className="space-y-1 text-sm">
           <div className="flex items-start gap-2">
             <span className="text-purple-400 mt-1">├─</span>
-            <span className="text-gray-300">Coordination Patterns:</span>
+            <span className="text-sifter-text">Coordination Patterns:</span>
           </div>
           <div className="ml-4 space-y-1">
             <div className="flex items-start gap-2">
               <span className="text-purple-400 mt-1">├─</span>
-              <span className="text-white">Natural bursts: 8 accounts (news-driven) ✅</span>
+              <span className="text-white">Natural bursts: 8 accounts (news-driven) </span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-purple-400 mt-1">├─</span>
-              <span className="text-white">Light coordination: 5 accounts (not malicious) ⚠️</span>
+              <span className="text-white">Light coordination: 5 accounts (not malicious) </span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-purple-400 mt-1">└─</span>
-              <span className="text-white">No sustained manipulation campaigns ✅</span>
+              <span className="text-white">No sustained manipulation campaigns </span>
             </div>
           </div>
           
           <div className="flex items-start gap-2">
             <span className="text-purple-400 mt-1">├─</span>
-            <span className="text-gray-300">Bot Network Analysis:</span>
+            <span className="text-sifter-text">Bot Network Analysis:</span>
           </div>
           <div className="ml-4 space-y-1">
             <div className="flex items-start gap-2">
@@ -830,17 +821,17 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
             </div>
             <div className="flex items-start gap-2">
               <span className="text-purple-400 mt-1">├─</span>
-              <span className="text-white">Follower quality: 68% real accounts ✅</span>
+              <span className="text-white">Follower quality: 68% real accounts </span>
             </div>
             <div className="flex items-start gap-2">
               <span className="text-purple-400 mt-1">└─</span>
-              <span className="text-white">Engagement patterns: Human-like ✅</span>
+              <span className="text-white">Engagement patterns: Human-like </span>
             </div>
           </div>
           
           <div className="flex items-start gap-2">
             <span className="text-purple-400 mt-1">└─</span>
-            <span className="text-gray-300">Influence Purchasing:</span>
+            <span className="text-sifter-text">Influence Purchasing:</span>
           </div>
           <div className="ml-4 space-y-2">
             <div className="flex items-start gap-2">
@@ -849,7 +840,7 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
             </div>
             <div className="flex items-start gap-2">
               <span className="text-purple-400 mt-1">•</span>
-              <span className="text-white">Fake engagement: &lt;8% detected ✅</span>
+              <span className="text-white">Fake engagement: &lt;8% detected </span>
             </div>
           </div>
         </div>
@@ -857,25 +848,25 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
 
       {/* Network-Based Risk Assessment */}
       <div className="bg-sifter-card border border-purple-500/20 rounded-xl p-6">
-        <h3 className="font-bold text-white mb-4">🎯 NETWORK-BASED RISK ASSESSMENT</h3>
+        <h3 className="font-bold text-white mb-4"> NETWORK-BASED RISK ASSESSMENT</h3>
         
         <div className="mb-4">
           <h4 className="text-green-400 font-medium mb-2">STRENGTHS (From SNA Map + Metrics):</h4>
           <div className="space-y-1">
             <div className="flex items-start gap-2">
-              <span className="text-green-400 mt-1">✅</span>
+              <span className="text-green-400 mt-1"></span>
               <span className="text-white">Organic community growth (entropy 0.81)</span>
             </div>
             <div className="flex items-start gap-2">
-              <span className="text-green-400 mt-1">✅</span>
+              <span className="text-green-400 mt-1"></span>
               <span className="text-white">Founder network still technical-focused</span>
             </div>
             <div className="flex items-start gap-2">
-              <span className="text-green-400 mt-1">✅</span>
+              <span className="text-green-400 mt-1"></span>
               <span className="text-white">No direct scammer connections (0-hop contamination)</span>
             </div>
             <div className="flex items-start gap-2">
-              <span className="text-green-400 mt-1">✅</span>
+              <span className="text-green-400 mt-1"></span>
               <span className="text-white">Natural engagement patterns (no coordination)</span>
             </div>
           </div>
@@ -885,19 +876,19 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
           <h4 className="text-yellow-400 font-medium mb-2">CONCERNS (From SNA Map + Metrics):</h4>
           <div className="space-y-1">
             <div className="flex items-start gap-2">
-              <span className="text-yellow-400 mt-1">⚠️</span>
+              <span className="text-yellow-400 mt-1"></span>
               <span className="text-white">Promoter infiltration increasing (+13% in 30 days)</span>
             </div>
             <div className="flex items-start gap-2">
-              <span className="text-yellow-400 mt-1">⚠️</span>
+              <span className="text-yellow-400 mt-1"></span>
               <span className="text-white">Mercenary content rising (18% → 31%)</span>
             </div>
             <div className="flex items-start gap-2">
-              <span className="text-yellow-400 mt-1">⚠️</span>
+              <span className="text-yellow-400 mt-1"></span>
               <span className="text-white">Founder centrality decreasing (losing influence)</span>
             </div>
             <div className="flex items-start gap-2">
-              <span className="text-yellow-400 mt-1">⚠️</span>
+              <span className="text-yellow-400 mt-1"></span>
               <span className="text-white">Network density increasing (becoming more connected)</span>
             </div>
           </div>
@@ -924,11 +915,11 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
 
       {/* Verdict */}
       <div className="border-2 border-yellow-500 bg-yellow-500/10 rounded-xl p-6">
-        <h3 className="font-bold text-white text-xl mb-3">⚖️ VERDICT: MODERATE RISK - HEALTHY BUT UNDER PRESSURE</h3>
+        <h3 className="font-bold text-white text-xl mb-3"> VERDICT: MODERATE RISK - HEALTHY BUT UNDER PRESSURE</h3>
         
         <div className="mb-4">
-          <h4 className="text-gray-300 font-medium mb-2">WHY MODERATE (Not Low):</h4>
-          <ul className="text-sm text-gray-300 space-y-1">
+          <h4 className="text-sifter-text font-medium mb-2">WHY MODERATE (Not Low):</h4>
+          <ul className="text-sm text-sifter-text space-y-1">
             <li className="flex items-start gap-2">
               <span className="mt-1">•</span>
               <span>Network structure shows promoter infiltration beginning</span>
@@ -948,27 +939,22 @@ const formatMomentumBlitzReport = (reportData: any, detectedChain?: string) => {
           </ul>
         </div>
 
-        <div className="mt-4 pt-4 border-t border-gray-700">
+        <div className="mt-4 pt-4 border-t border-sifter-border">
           <h4 className="text-white font-bold mb-2">RECOMMENDATION:</h4>
-          <p className="text-gray-300">
-            CAUTIOUS OPTIMISM • If holding: Maintain, 15-20% stop loss • If entering: Wait for pullback, ≤3% position • Exit signals:  Founder goes silent, mercenary &gt;40%, whales dump • Monitor: Network evolution weekly
+          <p className="text-sifter-text"> CAUTIOUS OPTIMISM • If holding: Maintain, 15-20% stop loss • If entering: Wait for pullback, ≤3% position • Exit signals:  Founder goes silent, mercenary &gt;40%, whales dump • Monitor: Network evolution weekly
           </p>
         </div>
       </div>
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-3 justify-center">
-        <button className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-all flex items-center gap-2">
-          📈 Network Evolution Timeline
+        <button className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-all flex items-center gap-2"> Network Evolution Timeline
         </button>
-        <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-all flex items-center gap-2">
-          📊 Engagement Quality Monitor
+        <button className="px-4 py-2 bg-sifter-elevated hover:bg-sifter-hover text-white rounded-lg transition-all flex items-center gap-2"> Engagement Quality Monitor
         </button>
-        <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-all flex items-center gap-2">
-          🔗 Compare Network Structures
+        <button className="px-4 py-2 bg-sifter-elevated hover:bg-sifter-hover text-white rounded-lg transition-all flex items-center gap-2"> Compare Network Structures
         </button>
-        <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-all flex items-center gap-2">
-          ⚠️ Set Threshold Alerts
+        <button className="px-4 py-2 bg-sifter-elevated hover:bg-sifter-hover text-white rounded-lg transition-all flex items-center gap-2"> Set Threshold Alerts
         </button>
       </div>
     </div>
@@ -984,11 +970,9 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
       <div className="bg-sifter-card border border-green-500/30 rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <span className="text-3xl">📋</span>
             <div>
               <h2 className="text-xl font-bold text-white">DEEP-BLITZ COMPREHENSIVE REPORT</h2>
-              <p className="text-sm text-gray-400">
-                Token: $PROJECT | Analysis: 3 min 47 sec | Generated: Dec 29, 2025
+              <p className="text-sm text-sifter-text-muted"> Token: $PROJECT | Analysis: 3 min 47 sec | Generated: Dec 29, 2025
               </p>
             </div>
           </div>
@@ -1003,27 +987,27 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
         {/* Chain and Overall */}
         <div className="mb-4 flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <span className="text-gray-400">Chain:</span>
+            <span className="text-sifter-text-muted">Chain:</span>
             <span className="text-white font-medium">Ethereum ⧫</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-gray-400">Overall:</span>
-            <span className="text-yellow-400 font-medium">58/100 ⚠️ MODERATE RISK</span>
+            <span className="text-sifter-text-muted">Overall:</span>
+            <span className="text-yellow-400 font-medium">58/100  MODERATE RISK</span>
           </div>
         </div>
       </div>
 
       {/* 13-Metric Weighted Analysis */}
       <div className="bg-sifter-card border border-green-500/20 rounded-xl p-6">
-        <h3 className="font-bold text-white text-xl mb-4">📊 13-METRIC WEIGHTED ANALYSIS</h3>
+        <h3 className="font-bold text-white text-xl mb-4"> 13-METRIC WEIGHTED ANALYSIS</h3>
         
         {/* Metric 1 */}
-        <div className="mb-4 border border-gray-800 rounded-lg p-4">
+        <div className="mb-4 border border-sifter-border rounded-lg p-4">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="font-bold text-white">1️⃣ TEAM IDENTITY (13% weight): 45/100 ⚠️ → 5.85 points</h4>
+            <h4 className="font-bold text-white">1⃣ TEAM IDENTITY (13% weight): 45/100  → 5.85 points</h4>
             <div className="text-2xl font-bold text-yellow-400">45/100</div>
           </div>
-          <div className="space-y-1 text-sm text-gray-300">
+          <div className="space-y-1 text-sm text-sifter-text">
             <div className="flex items-start gap-2">
               <span className="text-green-400 mt-1">├─</span>
               <span>Founder: Pseudonymous (Twitter: @CryptoBuilder)</span>
@@ -1044,12 +1028,12 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
         </div>
 
         {/* Metric 2 */}
-        <div className="mb-4 border border-gray-800 rounded-lg p-4">
+        <div className="mb-4 border border-sifter-border rounded-lg p-4">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="font-bold text-white">2️⃣ TEAM COMPETENCE (11% weight): 35/100 🚨 → 3.85 points</h4>
+            <h4 className="font-bold text-white">2⃣ TEAM COMPETENCE (11% weight): 35/100  → 3.85 points</h4>
             <div className="text-2xl font-bold text-red-400">35/100</div>
           </div>
-          <div className="space-y-1 text-sm text-gray-300">
+          <div className="space-y-1 text-sm text-sifter-text">
             <div className="flex items-start gap-2">
               <span className="text-green-400 mt-1">├─</span>
               <span>Prior Projects: None verified</span>
@@ -1070,14 +1054,14 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
         </div>
 
         {/* Metric 3 */}
-        <div className="mb-4 border border-gray-800 rounded-lg p-4">
+        <div className="mb-4 border border-sifter-border rounded-lg p-4">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="font-bold text-white">3️⃣ CONTAMINATED NETWORK (19% weight): 92/100 ✅ → 17.48 points</h4>
+            <h4 className="font-bold text-white">3⃣ CONTAMINATED NETWORK (19% weight): 92/100  → 17.48 points</h4>
             <div className="text-2xl font-bold text-green-400">92/100</div>
           </div>
-          <div className="space-y-2 text-sm text-gray-300">
+          <div className="space-y-2 text-sm text-sifter-text">
             <div>
-              <span className="text-gray-400">SNA MAP OUTPUT:</span>
+              <span className="text-sifter-text-muted">SNA MAP OUTPUT:</span>
               <div className="ml-4 mt-1 space-y-1">
                 <div className="flex items-start gap-2">
                   <span className="text-green-400 mt-1">├─</span>
@@ -1099,11 +1083,11 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
             </div>
             
             <div>
-              <span className="text-gray-400">DATABASE CHECK (Your Proprietary Data):</span>
+              <span className="text-sifter-text-muted">DATABASE CHECK (Your Proprietary Data):</span>
               <div className="ml-4 mt-1 space-y-1">
                 <div className="flex items-start gap-2">
                   <span className="text-green-400 mt-1">├─</span>
-                  <span>Direct connections to verified bad actors: NONE ✅</span>
+                  <span>Direct connections to verified bad actors: NONE </span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-400 mt-1">├─</span>
@@ -1121,7 +1105,7 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
             </div>
             
             <div>
-              <span className="text-gray-400">HISTORICAL CONTEXT:</span>
+              <span className="text-sifter-text-muted">HISTORICAL CONTEXT:</span>
               <div className="ml-4 mt-1 space-y-1">
                 <div className="flex items-start gap-2">
                   <span className="text-green-400 mt-1">•</span>
@@ -1144,14 +1128,14 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
         {/* For brevity, showing a few key metrics */}
 
         {/* Metric 8 */}
-        <div className="mb-4 border border-gray-800 rounded-lg p-4">
+        <div className="mb-4 border border-sifter-border rounded-lg p-4">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="font-bold text-white">8️⃣ GITHUB AUTHENTICITY (10% weight): 42/100 ⚠️ → 4.20 points</h4>
+            <h4 className="font-bold text-white">8⃣ GITHUB AUTHENTICITY (10% weight): 42/100  → 4.20 points</h4>
             <div className="text-2xl font-bold text-yellow-400">42/100</div>
           </div>
-          <div className="space-y-2 text-sm text-gray-300">
+          <div className="space-y-2 text-sm text-sifter-text">
             <div>
-              <span className="text-gray-400">Commit Patterns:</span>
+              <span className="text-sifter-text-muted">Commit Patterns:</span>
               <div className="ml-4 mt-1 space-y-1">
                 <div className="flex items-start gap-2">
                   <span className="text-green-400 mt-1">├─</span>
@@ -1175,14 +1159,14 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
         </div>
 
         {/* Metric 9 */}
-        <div className="mb-4 border border-gray-800 rounded-lg p-4">
+        <div className="mb-4 border border-sifter-border rounded-lg p-4">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="font-bold text-white">9️⃣ BUS FACTOR (2% weight): 30/100 🚨 → 0.60 points</h4>
+            <h4 className="font-bold text-white">9⃣ BUS FACTOR (2% weight): 30/100  → 0.60 points</h4>
             <div className="text-2xl font-bold text-red-400">30/100</div>
           </div>
-          <div className="space-y-1 text-sm text-gray-300">
+          <div className="space-y-1 text-sm text-sifter-text">
             <div>
-              <span className="text-gray-400">SNA CONTEXT:</span>
+              <span className="text-sifter-text-muted">SNA CONTEXT:</span>
               <div className="ml-4 mt-1 space-y-1">
                 <div className="flex items-start gap-2">
                   <span className="text-green-400 mt-1">•</span>
@@ -1202,14 +1186,14 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
         </div>
 
         {/* Metric 13 */}
-        <div className="mb-4 border border-gray-800 rounded-lg p-4">
+        <div className="mb-4 border border-sifter-border rounded-lg p-4">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="font-bold text-white">1️⃣3️⃣ TOKENOMICS RED FLAGS (7% weight): 71/100 ✅ → 4.97 points</h4>
+            <h4 className="font-bold text-white">1⃣3⃣ TOKENOMICS RED FLAGS (7% weight): 71/100  → 4.97 points</h4>
             <div className="text-2xl font-bold text-green-400">71/100</div>
           </div>
-          <div className="space-y-2 text-sm text-gray-300">
+          <div className="space-y-2 text-sm text-sifter-text">
             <div>
-              <span className="text-gray-400">Allocation Analysis:</span>
+              <span className="text-sifter-text-muted">Allocation Analysis:</span>
               <div className="ml-4 mt-1 space-y-1">
                 <div className="flex items-start gap-2">
                   <span className="text-green-400 mt-1">├─</span>
@@ -1229,7 +1213,7 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-green-400 mt-1">└─</span>
-                  <span>Marketing: 5% (UNLOCKED 🚨)</span>
+                  <span>Marketing: 5% (UNLOCKED )</span>
                 </div>
               </div>
             </div>
@@ -1239,11 +1223,11 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
 
       {/* SNA's Role in Metric Assessment */}
       <div className="bg-sifter-card border border-green-500/20 rounded-xl p-6">
-        <h3 className="font-bold text-white text-xl mb-4">🎯 SNA'S ROLE IN METRIC ASSESSMENT</h3>
+        <h3 className="font-bold text-white text-xl mb-4"> SNA&apos;S ROLE IN METRIC ASSESSMENT</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="border border-blue-500/20 rounded-lg p-4 bg-blue-500/5">
             <h4 className="text-blue-400 font-medium mb-2">SNA PROVIDES MAPS FOR THESE METRICS:</h4>
-            <ul className="space-y-2 text-sm text-gray-300">
+            <ul className="space-y-2 text-sm text-sifter-text">
               <li>• METRIC #3 (Contaminated Network): Network structure, connections, clusters</li>
               <li>• METRIC #5 (Message Times): Timing patterns ACROSS network clusters</li>
               <li>• METRIC #6 (Account Ages): Age distribution WITHIN network clusters</li>
@@ -1255,10 +1239,8 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
           
           <div className="border border-green-500/20 rounded-lg p-4 bg-green-500/5">
             <h4 className="text-green-400 font-medium mb-2">EXAMPLE WITH SNA CONTEXT:</h4>
-            <p className="text-sm text-gray-300">
-              Without SNA, Metric #3 would just be "no direct bad actor connections"
-              With SNA: "No direct connections, AND network structure is healthy (decentralized, 
-              natural clusters, founder appropriately central)"
+            <p className="text-sm text-sifter-text"> Without SNA, Metric #3 would just be &quot;no direct bad actor connections&quot;With SNA: &quot;No direct connections, AND network structure is healthy (decentralized, 
+              natural clusters, founder appropriately central)&quot;
             </p>
           </div>
         </div>
@@ -1266,18 +1248,18 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
 
       {/* Critical Red Flags */}
       <div className="bg-sifter-card border border-red-500/20 rounded-xl p-6">
-        <h3 className="font-bold text-white text-xl mb-4">🚨 CRITICAL RED FLAGS (Based on Metrics)</h3>
+        <h3 className="font-bold text-white text-xl mb-4"> CRITICAL RED FLAGS (Based on Metrics)</h3>
         <div className="space-y-4">
           <div>
             <h4 className="text-red-400 font-medium mb-1">1. ANONYMOUS TEAM (Metric #1: 45/100)</h4>
-            <p className="text-sm text-gray-300">
+            <p className="text-sm text-sifter-text">
               • Founder pseudonymous, team unknown<br/>
               • Zero accountability if project fails
             </p>
           </div>
           <div>
             <h4 className="text-red-400 font-medium mb-1">2. DECLINING DEVELOPMENT (Metric #8: 42/100)</h4>
-            <p className="text-sm text-gray-300">
+            <p className="text-sm text-sifter-text">
               • GitHub: Only 8 commits last 30 days<br/>
               • No external contributors<br/>
               • High bus factor risk (Metric #9: 30/100)
@@ -1285,14 +1267,14 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
           </div>
           <div>
             <h4 className="text-red-400 font-medium mb-1">3. MARKETING WALLET UNLOCKED (Metric #13)</h4>
-            <p className="text-sm text-gray-300">
+            <p className="text-sm text-sifter-text">
               • 5% of supply unlocked (instant dump risk)<br/>
               • No transparent spending plan
             </p>
           </div>
           <div>
             <h4 className="text-red-400 font-medium mb-1">4. ENGAGEMENT QUALITY DECLINING (Metric #12: 65/100)</h4>
-            <p className="text-sm text-gray-300">
+            <p className="text-sm text-sifter-text">
               • Substantive discussion: 38% (down from 45%)<br/>
               • Promoter influence increasing
             </p>
@@ -1302,11 +1284,11 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
 
       {/* Strengths */}
       <div className="bg-sifter-card border border-green-500/20 rounded-xl p-6">
-        <h3 className="font-bold text-white text-xl mb-4">✅ STRENGTHS (Based on Metrics)</h3>
+        <h3 className="font-bold text-white text-xl mb-4"> STRENGTHS (Based on Metrics)</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="border border-green-500/20 rounded-lg p-4 bg-green-500/5">
             <h4 className="text-green-400 font-medium mb-2">1. CLEAN NETWORK (Metric #3: 92/100)</h4>
-            <ul className="text-sm text-gray-300 space-y-1">
+            <ul className="text-sm text-sifter-text space-y-1">
               <li>• No direct connections to verified bad actors</li>
               <li>• Natural, decentralized structure</li>
               <li>• Founder appropriately central (not overly dominant)</li>
@@ -1314,7 +1296,7 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
           </div>
           <div className="border border-green-500/20 rounded-lg p-4 bg-green-500/5">
             <h4 className="text-green-400 font-medium mb-2">2. ORGANIC COMMUNITY (Metrics #5, #6: 78/100, 84/100)</h4>
-            <ul className="text-sm text-gray-300 space-y-1">
+            <ul className="text-sm text-sifter-text space-y-1">
               <li>• Natural message timing patterns</li>
               <li>• Organic account age distribution</li>
               <li>• No bot farm indicators</li>
@@ -1322,7 +1304,7 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
           </div>
           <div className="border border-green-500/20 rounded-lg p-4 bg-green-500/5">
             <h4 className="text-green-400 font-medium mb-2">3. FOUNDER FOCUSED (Metrics #7, #11: 71/100, 68/100)</h4>
-            <ul className="text-sm text-gray-300 space-y-1">
+            <ul className="text-sm text-sifter-text space-y-1">
               <li>• Building-focused, not distracted</li>
               <li>• Technical network connections</li>
               <li>• Active GitHub development</li>
@@ -1330,7 +1312,7 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
           </div>
           <div className="border border-green-500/20 rounded-lg p-4 bg-green-500/5">
             <h4 className="text-green-400 font-medium mb-2">4. NO ARTIFICIAL HYPE (Metric #10: 82/100)</h4>
-            <ul className="text-sm text-gray-300 space-y-1">
+            <ul className="text-sm text-sifter-text space-y-1">
               <li>• No coordinated campaigns detected</li>
               <li>• Organic engagement patterns</li>
               <li>• Low bot amplification</li>
@@ -1341,25 +1323,25 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
 
       {/* Network-Aware Investment Strategy */}
       <div className="bg-sifter-card border border-green-500/20 rounded-xl p-6">
-        <h3 className="font-bold text-white text-xl mb-4">💎 NETWORK-AWARE INVESTMENT STRATEGY</h3>
+        <h3 className="font-bold text-white text-xl mb-4"> NETWORK-AWARE INVESTMENT STRATEGY</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="border border-green-500/20 rounded-lg p-4 bg-green-500/5">
             <h4 className="text-green-400 font-medium mb-2">POSITION SIZING</h4>
             <div className="text-lg font-bold text-white">2-5% of crypto portfolio</div>
-            <p className="text-sm text-gray-300 mt-1">Clean network (92/100) but technical vulnerabilities</p>
+            <p className="text-sm text-sifter-text mt-1">Clean network (92/100) but technical vulnerabilities</p>
           </div>
           
           <div className="border border-green-500/20 rounded-lg p-4 bg-green-500/5">
             <h4 className="text-green-400 font-medium mb-2">ENTRY TIMING</h4>
             <div className="text-sm text-white">Wait for: Mercenary content &lt;20% (currently 18%)</div>
-            <p className="text-sm text-gray-300 mt-1">Ideal: After GitHub activity increases (&gt;15 commits/month)</p>
+            <p className="text-sm text-sifter-text mt-1">Ideal: After GitHub activity increases (&gt;15 commits/month)</p>
           </div>
           
           <div className="border border-green-500/20 rounded-lg p-4 bg-green-500/5">
             <h4 className="text-green-400 font-medium mb-2">EXIT STRATEGY</h4>
             <div className="text-sm text-white">IMMEDIATE EXIT:</div>
-            <p className="text-sm text-gray-300 mt-1">Founder goes silent &gt;2 weeks • Marketing wallet dumps &gt;50%</p>
+            <p className="text-sm text-sifter-text mt-1">Founder goes silent &gt;2 weeks • Marketing wallet dumps &gt;50%</p>
           </div>
         </div>
 
@@ -1367,43 +1349,43 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
           <h4 className="text-blue-400 font-medium mb-3">NETWORK MONITORING CHECKLIST</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <h5 className="text-gray-300 text-sm mb-2">Daily/Weekly:</h5>
-              <ul className="space-y-1 text-sm text-gray-300">
+              <h5 className="text-sifter-text text-sm mb-2">Daily/Weekly:</h5>
+              <ul className="space-y-1 text-sm text-sifter-text">
                 <li className="flex items-center gap-2">
-                  <span className="text-blue-400">□</span>
+                  <span className="text-blue-400"></span>
                   <span>Network contamination check (maintain 0 direct bad actor connections)</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-blue-400">□</span>
+                  <span className="text-blue-400"></span>
                   <span>Promoter cluster size (alert if &gt;30%)</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-blue-400">□</span>
+                  <span className="text-blue-400"></span>
                   <span>Founder centrality (ideal: 0.4-0.6 range)</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-blue-400">□</span>
+                  <span className="text-blue-400"></span>
                   <span>Engagement quality (sustain &gt;35% substantive)</span>
                 </li>
               </ul>
             </div>
             <div>
-              <h5 className="text-gray-300 text-sm mb-2">Monthly:</h5>
-              <ul className="space-y-1 text-sm text-gray-300">
+              <h5 className="text-sifter-text text-sm mb-2">Monthly:</h5>
+              <ul className="space-y-1 text-sm text-sifter-text">
                 <li className="flex items-center gap-2">
-                  <span className="text-blue-400">□</span>
+                  <span className="text-blue-400"></span>
                   <span>GitHub commit velocity (expect ≥15/month)</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-blue-400">□</span>
+                  <span className="text-blue-400"></span>
                   <span>Account age distribution (watch for bot farm spikes)</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-blue-400">□</span>
+                  <span className="text-blue-400"></span>
                   <span>Message timing patterns (detect new coordination)</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-blue-400">□</span>
+                  <span className="text-blue-400"></span>
                   <span>Network structure changes (new clusters, density changes)</span>
                 </li>
               </ul>
@@ -1419,7 +1401,7 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <h4 className="text-green-400 font-medium mb-2">STRENGTHS:</h4>
-            <ul className="space-y-2 text-sm text-gray-300">
+            <ul className="space-y-2 text-sm text-sifter-text">
               <li className="flex items-start gap-2">
                 <span className="text-green-400 mt-1">•</span>
                 <span>Exceptionally clean social network (92/100 on contamination)</span>
@@ -1441,7 +1423,7 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
           
           <div>
             <h4 className="text-red-400 font-medium mb-2">WEAKNESSES:</h4>
-            <ul className="space-y-2 text-sm text-gray-300">
+            <ul className="space-y-2 text-sm text-sifter-text">
               <li className="flex items-start gap-2">
                 <span className="text-red-400 mt-1">•</span>
                 <span>Anonymous team with declining development velocity</span>
@@ -1462,41 +1444,36 @@ const formatDeepBlitzReport = (reportData: any, detectedChain?: string) => {
           </div>
         </div>
 
-        <div className="border-t border-gray-700 pt-4">
+        <div className="border-t border-sifter-border pt-4">
           <h4 className="text-white font-medium mb-2">NETWORK PARADOX:</h4>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
-              <span className="text-green-400">✅</span>
-              <span className="text-gray-300">Clean social structure suggests genuine community</span>
+              <span className="text-green-400"></span>
+              <span className="text-sifter-text">Clean social structure suggests genuine community</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-red-400">🚨</span>
-              <span className="text-gray-300">Technical/economic vulnerabilities create execution risk</span>
+              <span className="text-red-400"></span>
+              <span className="text-sifter-text">Technical/economic vulnerabilities create execution risk</span>
             </div>
           </div>
         </div>
 
-        <div className="mt-6 pt-6 border-t border-gray-700">
+        <div className="mt-6 pt-6 border-t border-sifter-border">
           <h4 className="text-white font-bold text-lg mb-3">RECOMMENDATION:</h4>
-          <p className="text-gray-300 text-lg">
-            Small speculative position only (2-5%). Active monitoring required. Not for passive investors or large allocations. Plan to exit at 2-3x or if network quality deteriorates.
+          <p className="text-sifter-text text-lg"> Small speculative position only (2-5%). Active monitoring required. Not for passive investors or large allocations. Plan to exit at 2-3x or if network quality deteriorates.
           </p>
         </div>
       </div>
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-3 justify-center">
-        <button className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all flex items-center gap-2">
-          🔗 View Interactive Network Graph
+        <button className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all flex items-center gap-2"> View Interactive Network Graph
         </button>
-        <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-all flex items-center gap-2">
-          📊 Metric History Timeline
+        <button className="px-4 py-2 bg-sifter-elevated hover:bg-sifter-hover text-white rounded-lg transition-all flex items-center gap-2"> Metric History Timeline
         </button>
-        <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-all flex items-center gap-2">
-          🐋 Whale Wallet Tracking
+        <button className="px-4 py-2 bg-sifter-elevated hover:bg-sifter-hover text-white rounded-lg transition-all flex items-center gap-2"> Whale Wallet Tracking
         </button>
-        <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-all flex items-center gap-2">
-          ⚠️ Custom Network Alerts
+        <button className="px-4 py-2 bg-sifter-elevated hover:bg-sifter-hover text-white rounded-lg transition-all flex items-center gap-2"> Custom Network Alerts
         </button>
       </div>
     </div>
@@ -1520,11 +1497,11 @@ export default function IndividualAnalysisView({
   const chainInfo = getChainInfo(detectedChain);
   
   const getRiskLevel = (score: number): RiskLevelInfo => {
-    if (score >= 80) return { label: 'HIGH RISK - DON\'T INVEST', color: 'red', icon: '🚨' };
-    if (score >= 60) return { label: 'CAUTION ADVISED', color: 'orange', icon: '⚠️' };
-    if (score >= 40) return { label: 'MODERATE RISK', color: 'yellow', icon: '⚡' };
-    if (score >= 20) return { label: 'LOW RISK', color: 'blue', icon: '🔍' };
-    return { label: 'VERY LOW RISK', color: 'green', icon: '✅' };
+    if (score >= 80) return { label: 'HIGH RISK - DON\'T INVEST', color: 'red', icon: '' };
+    if (score >= 60) return { label: 'CAUTION ADVISED', color: 'orange', icon: '' };
+    if (score >= 40) return { label: 'MODERATE RISK', color: 'yellow', icon: '' };
+    if (score >= 20) return { label: 'LOW RISK', color: 'blue', icon: '' };
+    return { label: 'VERY LOW RISK', color: 'green', icon: '' };
   };
 
   const getRecommendation = (score: number): Recommendation => {
@@ -1595,27 +1572,26 @@ export default function IndividualAnalysisView({
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <button
           onClick={onScanAnother}
-          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors self-start"
+          className="flex items-center gap-2 text-sifter-text-muted hover:text-white transition-colors self-start"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Back to Dashboard
+          </svg> Back to Dashboard
         </button>
         
         <div className="flex gap-3 self-start sm:self-auto">
           <button
             onClick={onDownloadPDF}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-sifter-elevated hover:bg-sifter-hover text-white rounded-lg transition-colors"
           >
-            <span>📄</span>
+            <span></span>
             <span className="hidden sm:inline">Download PDF</span>
           </button>
           <button
             onClick={onShare}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-sifter-elevated hover:bg-sifter-hover text-white rounded-lg transition-colors"
           >
-            <span>📤</span>
+            <span></span>
             <span className="hidden sm:inline">Share Report</span>
           </button>
         </div>
@@ -1630,19 +1606,17 @@ export default function IndividualAnalysisView({
           <div>
             <h3 className="font-bold text-white flex items-center gap-2">
               {chainInfo.name} Network
-              <span className="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 rounded">
-                Verified
+              <span className="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 rounded"> Verified
               </span>
             </h3>
-            <p className="text-sm text-gray-400">{chainMessage}</p>
+            <p className="text-sm text-sifter-text-muted">{chainMessage}</p>
             <div className="flex gap-2 mt-2">
-              <span className="text-xs px-2 py-1 bg-gray-800 text-gray-300 rounded">
-                {detectedChain === 'solana' ? '⚡ Fast Chain' : 
-                 detectedChain === 'base' ? '🛡️ L2 Security' :
-                 '🔗 EVM Compatible'}
+              <span className="text-xs px-2 py-1 bg-sifter-elevated text-sifter-text rounded">
+                {detectedChain === 'solana' ? 'Fast Chain' : 
+                 detectedChain === 'base' ? 'L2 Security' :
+                 'EVM Compatible'}
               </span>
-              <span className="text-xs px-2 py-1 bg-gray-800 text-gray-300 rounded">
-                Scan Time: {Math.floor(processingTime / 1000)}s
+              <span className="text-xs px-2 py-1 bg-sifter-elevated text-sifter-text rounded"> Scan Time: {Math.floor(processingTime / 1000)}s
               </span>
             </div>
           </div>
@@ -1668,8 +1642,7 @@ export default function IndividualAnalysisView({
         }`}>
           {overallRisk.score}/100
         </div>
-        <div className="text-sm md:text-base text-gray-400 mt-3 px-4">
-          Scanned: {new Date().toLocaleDateString()} at {new Date().toLocaleTimeString()} | 
+        <div className="text-sm md:text-base text-sifter-text-muted mt-3 px-4"> Scanned: {new Date().toLocaleDateString()} at {new Date().toLocaleTimeString()} | 
           Duration: {Math.floor(processingTime / 1000)} seconds
           {detectedChain && ` | Network: ${chainInfo.name}`}
         </div>
@@ -1679,15 +1652,13 @@ export default function IndividualAnalysisView({
             onClick={onAddToWatchlist}
             className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
           >
-            <span>⭐</span>
-            Add to Watchlist
+            <span></span> Add to Watchlist
           </button>
           <button
             onClick={onScanAnother}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-sifter-elevated hover:bg-sifter-hover text-white rounded-lg font-medium transition-colors"
           >
-            <span>🔄</span>
-            Scan Again
+            <span></span> Scan Again
           </button>
         </div>
       </div>
@@ -1696,17 +1667,14 @@ export default function IndividualAnalysisView({
       {blitzMode === 'hyper' && modeSpecificData?.hyperBlitzReport && (
         <div className="animate-fadeIn">
           <div className={`text-center py-4 rounded-xl mb-6 border-2 border-blue-500/50 bg-blue-500/10`}>
-            <div className="text-3xl mb-2">⚡</div>
             <h2 className="text-xl font-bold text-white">HYPER-BLITZ SNAPSHOT</h2>
-            <p className="text-sm text-gray-400 mt-1">
-              Scan completed in {Math.floor(processingTime / 1000)} seconds
+            <p className="text-sm text-sifter-text-muted mt-1"> Scan completed in {Math.floor(processingTime / 1000)} seconds
               {detectedChain && (
                 <>
                   <br />
-                  <span className="text-xs">
-                    Chain: {chainInfo.name} • 
-                    {detectedChain === 'solana' && ' Optimized for Solana speed'}
-                    {detectedChain === 'base' && ' Optimized for Base L2'}
+                  <span className="text-xs"> Chain: {chainInfo.name} • 
+                    {detectedChain === 'solana' && 'Optimized for Solana speed'}
+                    {detectedChain === 'base' && 'Optimized for Base L2'}
                   </span>
                 </>
               )}
@@ -1723,17 +1691,14 @@ export default function IndividualAnalysisView({
       {blitzMode === 'momentum' && modeSpecificData?.momentumBlitzReport && (
         <div className="animate-fadeIn">
           <div className={`text-center py-4 rounded-xl mb-6 border-2 border-purple-500/50 bg-purple-500/10`}>
-            <div className="text-3xl mb-2">📈</div>
             <h2 className="text-xl font-bold text-white">MOMENTUM-BLITZ ANALYSIS</h2>
-            <p className="text-sm text-gray-400 mt-1">
-              Scan completed in {Math.floor(processingTime / 1000)} seconds
+            <p className="text-sm text-sifter-text-muted mt-1"> Scan completed in {Math.floor(processingTime / 1000)} seconds
               {detectedChain && (
                 <>
                   <br />
-                  <span className="text-xs">
-                    Chain: {chainInfo.name} • 
-                    {detectedChain === 'solana' && ' Active trading analysis'}
-                    {detectedChain === 'base' && ' Trending tokens focus'}
+                  <span className="text-xs"> Chain: {chainInfo.name} • 
+                    {detectedChain === 'solana' && 'Active trading analysis'}
+                    {detectedChain === 'base' && 'Trending tokens focus'}
                   </span>
                 </>
               )}
@@ -1750,17 +1715,14 @@ export default function IndividualAnalysisView({
       {blitzMode === 'deep' && modeSpecificData?.deepBlitzReport && (
         <div className="animate-fadeIn">
           <div className={`text-center py-4 rounded-xl mb-6 border-2 border-green-500/50 bg-green-500/10`}>
-            <div className="text-3xl mb-2">🔍</div>
             <h2 className="text-xl font-bold text-white">DEEP-BLITZ COMPREHENSIVE REPORT</h2>
-            <p className="text-sm text-gray-400 mt-1">
-              Scan completed in {Math.floor(processingTime / 1000)} seconds
+            <p className="text-sm text-sifter-text-muted mt-1"> Scan completed in {Math.floor(processingTime / 1000)} seconds
               {detectedChain && (
                 <>
                   <br />
-                  <span className="text-xs">
-                    Chain: {chainInfo.name} • 
-                    {detectedChain === 'solana' && ' Full audit quality'}
-                    {detectedChain === 'base' && ' Comprehensive assessment'}
+                  <span className="text-xs"> Chain: {chainInfo.name} • 
+                    {detectedChain === 'solana' && 'Full audit quality'}
+                    {detectedChain === 'base' && 'Comprehensive assessment'}
                   </span>
                 </>
               )}
@@ -1790,15 +1752,15 @@ export default function IndividualAnalysisView({
             </div>
             <ul className="space-y-2">
               {recommendation.reasons.map((reason, index) => (
-                <li key={index} className="flex items-start gap-2 text-gray-300">
+                <li key={index} className="flex items-start gap-2 text-sifter-text">
                   <span className="mt-1">•</span>
                   <span>{reason}</span>
                 </li>
               ))}
             </ul>
             {detectedChain && (
-              <div className="mt-4 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
-                <p className="text-sm text-gray-300">
+              <div className="mt-4 p-3 bg-sifter-elevated/50 rounded-lg border border-sifter-border">
+                <p className="text-sm text-sifter-text">
                   <span className="font-medium">Chain-specific note:</span> {chainMessage}
                 </p>
               </div>
@@ -1812,13 +1774,13 @@ export default function IndividualAnalysisView({
                 const score = metric?.score ?? metric?.value ?? 0;
                 
                 return (
-                  <div key={metric.id} className="bg-gray-900/50 border border-gray-800 rounded-xl p-4 text-center">
+                  <div key={metric.id} className="bg-sifter-dark/50 border border-sifter-border rounded-xl p-4 text-center">
                     <div className="text-2xl font-bold text-white">
                       {Math.round(score)}/100
                     </div>
-                    <div className="text-sm text-gray-400 mt-1">{metric.name}</div>
+                    <div className="text-sm text-sifter-text-muted mt-1">{metric.name}</div>
                     <div className="mt-2">
-                      <div className="h-1 bg-gray-800 rounded-full overflow-hidden">
+                      <div className="h-1 bg-sifter-elevated rounded-full overflow-hidden">
                         <div 
                           className={`h-full ${
                             score >= 70 ? 'bg-red-500' :
@@ -1835,11 +1797,10 @@ export default function IndividualAnalysisView({
               })}
             </div>
             
-            <div className="mt-6 pt-6 border-t border-gray-800">
-              <div className="flex items-center justify-between text-gray-400">
+            <div className="mt-6 pt-6 border-t border-sifter-border">
+              <div className="flex items-center justify-between text-sifter-text-muted">
                 <span className="text-sm">Additional metrics analyzed: {metrics.length - 4}</span>
-                <button className="text-sm text-blue-400 hover:text-blue-300">
-                  View all metrics →
+                <button className="text-sm text-blue-400 hover:text-blue-300"> View all metrics →
                 </button>
               </div>
             </div>
@@ -1855,21 +1816,18 @@ export default function IndividualAnalysisView({
             onClick={onScanAnother}
             className="p-4 rounded-lg border border-sifter-border hover:border-blue-500/50 hover:bg-sifter-card/50 transition-all text-left group"
           >
-            <div className="text-3xl mb-2">🔍</div>
             <h3 className="font-medium text-white group-hover:text-blue-400">Check Another Project</h3>
-            <p className="text-sm text-gray-400 mt-1">Analyze a different project</p>
+            <p className="text-sm text-sifter-text-muted mt-1">Analyze a different project</p>
           </button>
           
           <button className="p-4 rounded-lg border border-sifter-border hover:border-blue-500/50 hover:bg-sifter-card/50 transition-all text-left group">
-            <div className="text-3xl mb-2">📚</div>
             <h3 className="font-medium text-white group-hover:text-blue-400">Learn About Scams</h3>
-            <p className="text-sm text-gray-400 mt-1">Common red flags to watch for</p>
+            <p className="text-sm text-sifter-text-muted mt-1">Common red flags to watch for</p>
           </button>
           
           <button className="p-4 rounded-lg border border-sifter-border hover:border-blue-500/50 hover:bg-sifter-card/50 transition-all text-left group">
-            <div className="text-3xl mb-2">💬</div>
             <h3 className="font-medium text-white group-hover:text-blue-400">Get Help</h3>
-            <p className="text-sm text-gray-400 mt-1">Questions about this report?</p>
+            <p className="text-sm text-sifter-text-muted mt-1">Questions about this report?</p>
           </button>
         </div>
       </div>
@@ -1878,17 +1836,16 @@ export default function IndividualAnalysisView({
         <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
           <div className="bg-sifter-card border border-sifter-border rounded-2xl w-full max-w-5xl h-[80vh] flex flex-col">
             <div className="p-4 flex justify-between items-center border-b border-sifter-border">
-              <h2 className="text-xl font-bold text-white">
-                Contaminated Network Graph
+              <h2 className="text-xl font-bold text-white"> Contaminated Network Graph
                 {detectedChain && (
-                  <span className="text-sm text-gray-400 ml-2">
+                  <span className="text-sm text-sifter-text-muted ml-2">
                     • {chainInfo.name} Network
                   </span>
                 )}
               </h2>
               <button
                 onClick={() => setShowSNAGraph(false)}
-                className="text-2xl text-gray-400 hover:text-white"
+                className="text-2xl text-sifter-text-muted hover:text-white"
               >
                 ✕
               </button>

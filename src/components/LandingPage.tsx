@@ -1,99 +1,195 @@
-// components/LandingPage.tsx
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { UserMenu } from '@/components/auth/UserMenu';
+import { Button, Card, Badge, Logo } from '@/components/ui';
+import { METRIC_WEIGHTS } from '@/types';
+import { ACCOUNT_MODES } from '@/data/accountModes';
 
 interface LandingPageProps {
   onGetStarted: () => void;
-   compact?: boolean;  // ✅ ADD THIS LINE
+  compact?: boolean;
 }
 
-export default function LandingPage({ onGetStarted, compact = false }: LandingPageProps) {
+/** Input kinds recognised by SmartInputParser.detectInputType. */
+const ACCEPTED_INPUTS = ['Twitter handle', 'Discord invite', 'Telegram link', 'GitHub repo', 'Website URL', 'Project name'];
+
+/** Verdict buckets from `getVerdict` in src/types. */
+const VERDICTS = [
+  { key: 'pass', label: 'Pass', tone: 'success' as const, text: 'No material red flags across the weighted metrics.' },
+  { key: 'flag', label: 'Flag', tone: 'warning' as const, text: 'Elevated risk on one or more metrics. Review the breakdown before proceeding.' },
+  { key: 'reject', label: 'Reject', tone: 'danger' as const, text: 'Strong risk signals. The composite score crosses the reject threshold.' },
+];
+
+const STEPS = [
+  { n: 1, title: 'Enter a project', text: 'Paste any identifier. Sifter detects the type and resolves the entity.' },
+  { n: 2, title: 'Automated analysis', text: 'Every metric is scored in parallel and combined into a weighted composite.' },
+  { n: 3, title: 'Get a verdict', text: 'Pass, Flag or Reject, with the full metric breakdown and export options.' },
+];
+
+const metricsByWeight = [...METRIC_WEIGHTS].sort((a, b) => b.weight - a.weight);
+const maxWeight = metricsByWeight[0]?.weight ?? 1;
+
+export default function LandingPage({ onGetStarted }: LandingPageProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sifter-dark to-sifter-card">
-      {/* Top nav with user menu */}
-      <div className="absolute top-4 right-4">
-        <UserMenu />
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="text-center">
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-sifter-blue to-blue-600 rounded-2xl flex items-center justify-center">
-              <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-              </svg>
-            </div>
-            <h1 className="text-4xl font-bold text-white">SIFTER 1.0</h1>
-          </div>
-
-          <h2 className="text-5xl font-bold text-white mb-6">
-            Automated Project <span className="text-transparent bg-clip-text bg-gradient-to-r from-sifter-blue to-purple-600">Due Diligence</span>
-          </h2>
-
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-            Analyze any crypto project using 13 risk metrics. Enter a Twitter handle, Discord, Telegram,
-            GitHub repo, website URL, or just the project name.
-          </p>
-
-          <div className="flex justify-center gap-4 mb-12">
-            <button
-              onClick={onGetStarted}
-              className="px-8 py-4 bg-gradient-to-r from-sifter-blue to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold rounded-xl text-lg transition-all transform hover:scale-105"
-            >
-              Get Started →
-            </button>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-12">
-            <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
-              <div className="text-3xl mb-4">🔬</div>
-              <h3 className="text-xl font-bold text-white mb-2">Deep Analysis</h3>
-              <p className="text-gray-400">13 comprehensive risk metrics covering team, code, and community</p>
-            </div>
-            
-            <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
-              <div className="text-3xl mb-4">📊</div>
-              <h3 className="text-xl font-bold text-white mb-2">Smart Detection</h3>
-              <p className="text-gray-400">Pattern matching against known scam techniques and red flags</p>
-            </div>
-            
-            <div className="bg-sifter-card border border-sifter-border rounded-xl p-6">
-              <div className="text-3xl mb-4">⚡</div>
-              <h3 className="text-xl font-bold text-white mb-2">Fast Results</h3>
-              <p className="text-gray-400">Complete analysis in seconds, not hours of manual research</p>
-            </div>
-          </div>
-          
-          <div className="bg-sifter-card border border-sifter-border rounded-2xl p-8 max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold text-white mb-6 text-center">How It Works</h3>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-xl">1</span>
-                </div>
-                <h4 className="font-bold text-white mb-2">Enter Project</h4>
-                <p className="text-gray-400 text-sm">Twitter, Discord, GitHub, website, or name</p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-xl">2</span>
-                </div>
-                <h4 className="font-bold text-white mb-2">Automated Analysis</h4>
-                <p className="text-gray-400 text-sm">13 metrics analyzed in parallel</p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-xl">3</span>
-                </div>
-                <h4 className="font-bold text-white mb-2">Get Verdict</h4>
-                <p className="text-gray-400 text-sm">Pass/Flag/Reject with detailed breakdown</p>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-sifter-dark text-sifter-text">
+      {/* Top bar */}
+      <header className="sticky top-0 z-40 border-b border-sifter-border bg-sifter-dark/80 backdrop-blur">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          <Link href="/" aria-label="Sifter home" className="rounded-lg">
+            <Logo size="sm" />
+          </Link>
+          <nav aria-label="Primary" className="flex items-center gap-4">
+            <a href="#metrics" className="hidden sm:inline text-sm text-sifter-text-muted hover:text-sifter-text transition-colors"> Metrics
+            </a>
+            <a href="#how-it-works" className="hidden sm:inline text-sm text-sifter-text-muted hover:text-sifter-text transition-colors"> How it works
+            </a>
+            <UserMenu />
+          </nav>
         </div>
-      </div>
+      </header>
+
+      <main>
+        {/* Hero */}
+        <section className="relative overflow-hidden">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 -top-40 h-[480px] bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.18),transparent_60%)]"
+          />
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-20 pb-16 sm:pt-28 sm:pb-20 text-center animate-fade-up">
+            <Badge tone="info" className="mb-6"> Automated due diligence for Web3 projects
+            </Badge>
+            <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-balance"> Know what you&apos;re backing{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-sifter-blue to-purple-400">before you commit</span>
+            </h1>
+            <p className="mt-6 text-lg sm:text-xl text-sifter-text-muted max-w-2xl mx-auto text-balance"> Sifter scores a project across {METRIC_WEIGHTS.length} weighted risk metrics spanning team, community, marketing and code,
+              then returns a clear Pass, Flag or Reject verdict.
+            </p>
+
+            <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Button size="lg" onClick={onGetStarted} trailingIcon={<span aria-hidden="true">→</span>}> Get started
+              </Button>
+              <Link
+                href="/login"
+                className="inline-flex h-12 items-center justify-center rounded-lg border border-sifter-border bg-sifter-card px-6 text-base font-medium text-sifter-text transition-colors duration-base hover:border-sifter-border-strong hover:bg-sifter-hover"
+              >
+                Sign in
+              </Link>
+            </div>
+
+            <div className="mt-10">
+              <p className="text-xs uppercase tracking-wider text-sifter-text-subtle mb-3">Works with</p>
+              <ul className="flex flex-wrap justify-center gap-2" aria-label="Accepted input types">
+                {ACCEPTED_INPUTS.map((label) => (
+                  <li key={label}>
+                    <Badge tone="neutral">{label}</Badge>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* Metrics */}
+        <section id="metrics" className="max-w-6xl mx-auto px-4 sm:px-6 py-16 scroll-mt-20">
+          <div className="max-w-2xl mb-10">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">What Sifter measures</h2>
+            <p className="mt-3 text-sifter-text-muted"> Each metric is scored from 0 to 100 and weighted by how strongly it predicts scams or poor execution.
+              Heavier bars carry more influence on the composite score.
+            </p>
+          </div>
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {metricsByWeight.map((m) => (
+              <li key={m.key}>
+                <Card padding="sm" interactive className="h-full">
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 className="font-semibold text-sifter-text">{m.name}</h3>
+                    <span className="font-mono text-xs text-sifter-text-muted tabular-nums">{Math.round(m.weight * 100)}%</span>
+                  </div>
+                  <p className="mt-1.5 text-sm text-sifter-text-muted">{m.description}</p>
+                  <div className="mt-3 h-1.5 w-full rounded-full bg-sifter-border overflow-hidden" aria-hidden="true">
+                    <div className="h-full rounded-full bg-sifter-blue" style={{ width: `${(m.weight / maxWeight) * 100}%` }} />
+                  </div>
+                </Card>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Verdicts */}
+        <section className="border-y border-sifter-border bg-sifter-card/40">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">One of three verdicts</h2>
+            <p className="mt-3 text-sifter-text-muted max-w-2xl"> The weighted metric scores combine into a single composite. The verdict tells you what to do next; the breakdown tells you why.
+            </p>
+            <ul className="mt-8 grid gap-4 md:grid-cols-3">
+              {VERDICTS.map((v) => (
+                <li key={v.key}>
+                  <Card className="h-full">
+                    <Badge tone={v.tone}>{v.label}</Badge>
+                    <p className="mt-3 text-sm text-sifter-text-muted">{v.text}</p>
+                  </Card>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section id="how-it-works" className="max-w-6xl mx-auto px-4 sm:px-6 py-16 scroll-mt-20">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">How it works</h2>
+          <ol className="mt-8 grid gap-4 md:grid-cols-3">
+            {STEPS.map((s) => (
+              <li key={s.n} className="flex gap-4">
+                <span className="flex-none w-9 h-9 rounded-full bg-sifter-blue/15 text-blue-300 border border-sifter-blue/30 flex items-center justify-center font-semibold">
+                  {s.n}
+                </span>
+                <div>
+                  <h3 className="font-semibold">{s.title}</h3>
+                  <p className="mt-1 text-sm text-sifter-text-muted">{s.text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        {/* Account types */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
+          <Card tone="elevated" padding="lg">
+            <div className="md:flex md:items-end md:justify-between gap-8">
+              <div className="max-w-xl">
+                <h2 className="text-2xl font-bold tracking-tight">Built for how you work</h2>
+                <p className="mt-2 text-sifter-text-muted">Pick an account type when you sign up. You can switch modes later.</p>
+              </div>
+            </div>
+            <ul className="mt-6 grid gap-3 sm:grid-cols-3">
+              {ACCOUNT_MODES.map((mode) => (
+                <li key={mode.value}>
+                  <Link
+                    href={`/register?mode=${mode.value}`}
+                    className="group block h-full rounded-xl border border-sifter-border bg-sifter-card p-4 transition-colors duration-base hover:border-sifter-blue/60 hover:bg-sifter-hover"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold">{mode.label}</span>
+                      <span aria-hidden="true" className="text-sifter-text-subtle group-hover:text-sifter-blue transition-colors">→</span>
+                    </div>
+                    <p className="mt-1 text-sm text-sifter-text-muted">{mode.description}</p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </section>
+      </main>
+
+      <footer className="border-t border-sifter-border">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-sifter-text-subtle">
+          <span>SIFTER 1.0 · Automated project due diligence</span>
+          <Link href="/terms" className="hover:text-sifter-text transition-colors"> Terms
+          </Link>
+        </div>
+      </footer>
     </div>
   );
 }

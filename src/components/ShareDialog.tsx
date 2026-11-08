@@ -70,9 +70,9 @@ export default function ShareDialog({ isOpen, onClose, projectData, shareUrl }: 
   };
 
   const shareOptions: { id: SharePlatform; name: string; icon: string; color: string }[] = [
-    { id: 'twitter', name: 'Twitter', icon: '🐦', color: 'hover:bg-blue-500/20 hover:border-blue-500/50' },
-    { id: 'linkedin', name: 'LinkedIn', icon: '💼', color: 'hover:bg-blue-700/20 hover:border-blue-700/50' },
-    { id: 'copy', name: 'Copy Link', icon: '🔗', color: 'hover:bg-gray-500/20 hover:border-gray-500/50' },
+    { id: 'twitter', name: 'Twitter', icon: '', color: 'hover:bg-blue-500/20 hover:border-blue-500/50' },
+    { id: 'linkedin', name: 'LinkedIn', icon: '', color: 'hover:bg-blue-700/20 hover:border-blue-700/50' },
+    { id: 'copy', name: 'Copy Link', icon: '', color: 'hover:bg-sifter-elevated hover:border-sifter-border-strong/50' },
   ];
 
   return (
@@ -82,14 +82,14 @@ export default function ShareDialog({ isOpen, onClose, projectData, shareUrl }: 
           <h3 className="text-xl font-bold text-white">Share Analysis</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white text-2xl"
+            className="text-sifter-text-muted hover:text-white text-2xl"
           >
             ✕
           </button>
         </div>
 
         {/* Project Summary */}
-        <div className="bg-gray-900/50 rounded-xl p-4 mb-6">
+        <div className="bg-sifter-dark/50 rounded-xl p-4 mb-6">
           <div className="flex items-center justify-between mb-3">
             <h4 className="font-medium text-white">{projectData.displayName}</h4>
             <div className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -101,10 +101,8 @@ export default function ShareDialog({ isOpen, onClose, projectData, shareUrl }: 
               {projectData.overallRisk.score}/100
             </div>
           </div>
-          <p className="text-sm text-gray-300">
-            Verdict: <span className="font-medium text-white">{projectData.overallRisk.verdict.toUpperCase()}</span>
-            <br />
-            Confidence: <span className="font-medium text-white">{projectData.overallRisk.confidence}%</span>
+          <p className="text-sm text-sifter-text"> Verdict: <span className="font-medium text-white">{projectData.overallRisk.verdict.toUpperCase()}</span>
+            <br /> Confidence: <span className="font-medium text-white">{projectData.overallRisk.confidence}%</span>
           </p>
         </div>
 
@@ -121,7 +119,7 @@ export default function ShareDialog({ isOpen, onClose, projectData, shareUrl }: 
                 }`}
               >
                 <span className="text-2xl">{option.icon}</span>
-                <span className="text-sm text-gray-300">{option.name}</span>
+                <span className="text-sm text-sifter-text">{option.name}</span>
               </button>
             ))}
           </div>
@@ -141,7 +139,7 @@ export default function ShareDialog({ isOpen, onClose, projectData, shareUrl }: 
             <button
               onClick={() => handleShare('email')}
               disabled={!email}
-              className="px-6 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-800 disabled:text-gray-500 text-white rounded-lg font-medium transition-colors"
+              className="px-6 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-sifter-elevated disabled:text-sifter-text-subtle text-white rounded-lg font-medium transition-colors"
             >
               {emailSent ? '✓ Sent' : 'Send'}
             </button>
@@ -155,12 +153,12 @@ export default function ShareDialog({ isOpen, onClose, projectData, shareUrl }: 
         <div className="mb-6">
           <h4 className="font-medium text-white mb-3">Shareable Link</h4>
           <div className="flex gap-2">
-            <div className="flex-1 bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-gray-400 text-sm truncate">
+            <div className="flex-1 bg-sifter-dark border border-sifter-border rounded-lg px-4 py-3 text-sifter-text-muted text-sm truncate">
               {shareUrl || window.location.href}
             </div>
             <button
               onClick={() => handleShare('copy')}
-              className={`px-4 py-3 ${copied ? 'bg-green-800 hover:bg-green-700' : 'bg-gray-800 hover:bg-gray-700'} text-white rounded-lg font-medium transition-colors`}
+              className={`px-4 py-3 ${copied ? 'bg-green-800 hover:bg-green-700' : 'bg-sifter-elevated hover:bg-sifter-hover'} text-white rounded-lg font-medium transition-colors`}
             >
               {copied ? '✓ Copied' : 'Copy'}
             </button>
@@ -175,29 +173,25 @@ export default function ShareDialog({ isOpen, onClose, projectData, shareUrl }: 
               onClick={() => ExportService.exportMetricsToCSV(projectData.metrics, projectData.displayName)}
               className="p-3 border border-sifter-border rounded-lg hover:border-green-500/50 hover:bg-green-500/10 transition-colors flex items-center gap-2"
             >
-              <span className="text-xl">📊</span>
-              <span className="text-sm text-gray-300">CSV</span>
+              <span className="text-sm text-sifter-text">CSV</span>
             </button>
             <button
               onClick={() => ExportService.exportProjectAnalysis(projectData)}
               className="p-3 border border-sifter-border rounded-lg hover:border-blue-500/50 hover:bg-blue-500/10 transition-colors flex items-center gap-2"
             >
-              <span className="text-xl">💾</span>
-              <span className="text-sm text-gray-300">JSON</span>
+              <span className="text-sm text-sifter-text">JSON</span>
             </button>
             <button
               onClick={() => ExportService.exportToPDF(projectData)}
               className="p-3 border border-sifter-border rounded-lg hover:border-red-500/50 hover:bg-red-500/10 transition-colors flex items-center gap-2"
             >
-              <span className="text-xl">📄</span>
-              <span className="text-sm text-gray-300">PDF</span>
+              <span className="text-sm text-sifter-text">PDF</span>
             </button>
             <button
               onClick={() => ExportService.exportResearchReport(projectData)}
               className="p-3 border border-sifter-border rounded-lg hover:border-purple-500/50 hover:bg-purple-500/10 transition-colors flex items-center gap-2"
             >
-              <span className="text-xl">🔬</span>
-              <span className="text-sm text-gray-300">Research</span>
+              <span className="text-sm text-sifter-text">Research</span>
             </button>
           </div>
         </div>

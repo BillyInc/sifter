@@ -13,7 +13,7 @@ interface AutoVerificationProps {
 }
 
 interface StepResult {
-  status: 'pending' | 'passed' | 'failed' | 'warning';  // ✅ Explicit type
+  status: 'pending' | 'passed' | 'failed' | 'warning';  //  Explicit type
   details?: string;
 }
 
@@ -150,8 +150,7 @@ export default function AutoVerification({ submission, onComplete }: AutoVerific
       const result = await step.run();
       
       // Update check with result
-      setChecks(prev => prev.map(check => 
-        check.id === step.id 
+      setChecks(prev => prev.map(check => check.id === step.id 
           ? { ...check, ...result, timestamp: new Date() }
           : check
       ));
@@ -208,17 +207,17 @@ export default function AutoVerification({ submission, onComplete }: AutoVerific
       case 'failed': return 'text-red-400 bg-red-400/10';
       case 'warning': return 'text-amber-400 bg-amber-400/10';
       case 'pending': return 'text-blue-400 bg-blue-400/10';
-      default: return 'text-gray-400 bg-gray-400/10';
+      default: return 'text-sifter-text-muted bg-sifter-elevated';
     }
   };
 
   const getStatusIcon = (status: VerificationCheck['status']) => {
     switch (status) {
-      case 'passed': return '✅';
-      case 'failed': return '❌';
-      case 'warning': return '⚠️';
-      case 'pending': return '⏳';
-      default: return '📝';
+      case 'passed': return '';
+      case 'failed': return '';
+      case 'warning': return '';
+      case 'pending': return '';
+      default: return '';
     }
   };
 
@@ -228,25 +227,24 @@ export default function AutoVerification({ submission, onComplete }: AutoVerific
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-lg font-bold text-white">Auto-Verification</h3>
-          <p className="text-sm text-gray-400">
-            Stage 1: Automated checks (PDF Section: Verification Workflow)
+          <p className="text-sm text-sifter-text-muted"> Stage 1: Automated checks (PDF Section: Verification Workflow)
           </p>
         </div>
         <div className="text-right">
           <div className="text-2xl font-bold text-white">{confidence}%</div>
-          <div className="text-sm text-gray-400">Confidence Score</div>
+          <div className="text-sm text-sifter-text-muted">Confidence Score</div>
         </div>
       </div>
 
       {/* Progress Bar */}
       <div className="mb-6">
-        <div className="flex justify-between text-sm text-gray-400 mb-1">
+        <div className="flex justify-between text-sm text-sifter-text-muted mb-1">
           <span>Verification Progress</span>
           <span>{currentStep} of {verificationSteps.length} checks</span>
         </div>
-        <div className="w-full bg-gray-800 rounded-full h-2">
+        <div className="w-full bg-sifter-elevated rounded-full h-2">
           <div 
-            className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
+            className="bg-sifter-blue h-2 rounded-full transition-all duration-300"
             style={{ width: `${(currentStep / verificationSteps.length) * 100}%` }}
           />
         </div>
@@ -257,9 +255,9 @@ export default function AutoVerification({ submission, onComplete }: AutoVerific
         <div className={`p-3 border rounded-lg text-center ${
           confidence >= MODE_VERIFICATION_THRESHOLDS[submission.mode].autoApprove
             ? 'border-green-500 bg-green-500/10'
-            : 'border-gray-700'
+            : 'border-sifter-border'
         }`}>
-          <div className="text-sm text-gray-400">Auto-Approve</div>
+          <div className="text-sm text-sifter-text-muted">Auto-Approve</div>
           <div className="font-bold text-white">
             ≥{MODE_VERIFICATION_THRESHOLDS[submission.mode].autoApprove}%
           </div>
@@ -267,15 +265,15 @@ export default function AutoVerification({ submission, onComplete }: AutoVerific
         <div className={`p-3 border rounded-lg text-center ${
           confidence <= MODE_VERIFICATION_THRESHOLDS[submission.mode].autoReject
             ? 'border-red-500 bg-red-500/10'
-            : 'border-gray-700'
+            : 'border-sifter-border'
         }`}>
-          <div className="text-sm text-gray-400">Auto-Reject</div>
+          <div className="text-sm text-sifter-text-muted">Auto-Reject</div>
           <div className="font-bold text-white">
             ≤{MODE_VERIFICATION_THRESHOLDS[submission.mode].autoReject}%
           </div>
         </div>
-        <div className="p-3 border border-gray-700 rounded-lg text-center">
-          <div className="text-sm text-gray-400">Mode</div>
+        <div className="p-3 border border-sifter-border rounded-lg text-center">
+          <div className="text-sm text-sifter-text-muted">Mode</div>
           <div className="font-bold text-white capitalize">{submission.mode}</div>
         </div>
       </div>
@@ -283,32 +281,31 @@ export default function AutoVerification({ submission, onComplete }: AutoVerific
       {/* Verification Checks */}
       <div className="space-y-3">
         {checks.map((check) => (
-          <div key={check.id} className="p-4 border border-gray-800 rounded-lg">
+          <div key={check.id} className="p-4 border border-sifter-border rounded-lg">
             <div className="flex justify-between items-start mb-2">
               <div className="flex items-center gap-3">
                 <span className={`text-lg ${getStatusIcon(check.status)}`} />
                 <div>
                   <h4 className="font-medium text-white">{check.name}</h4>
-                  <p className="text-sm text-gray-400">{check.description}</p>
+                  <p className="text-sm text-sifter-text-muted">{check.description}</p>
                 </div>
               </div>
               <div className="text-right">
                 <span className={`px-2 py-1 rounded text-xs ${getStatusColor(check.status)}`}>
                   {check.status.toUpperCase()}
                 </span>
-                <div className="text-xs text-gray-500 mt-1">
-                  Weight: {check.weight} pts
+                <div className="text-xs text-sifter-text-subtle mt-1"> Weight: {check.weight} pts
                 </div>
               </div>
             </div>
             
             {check.details && (
-              <div className="mt-2 p-2 bg-gray-900/50 rounded text-sm text-gray-300">
+              <div className="mt-2 p-2 bg-sifter-dark/50 rounded text-sm text-sifter-text">
                 {check.details}
               </div>
             )}
             
-            <div className="flex justify-between text-xs text-gray-500 mt-2">
+            <div className="flex justify-between text-xs text-sifter-text-subtle mt-2">
               <span>ID: {check.id}</span>
               <span>{check.timestamp.toLocaleTimeString()}</span>
             </div>
@@ -321,10 +318,9 @@ export default function AutoVerification({ submission, onComplete }: AutoVerific
             <div className="flex items-center gap-3">
               <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-500 border-t-transparent" />
               <div>
-                <h4 className="font-medium text-white">
-                  Running: {verificationSteps[currentStep]?.name}
+                <h4 className="font-medium text-white"> Running: {verificationSteps[currentStep]?.name}
                 </h4>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-sifter-text-muted">
                   {verificationSteps[currentStep]?.description}
                 </p>
               </div>
@@ -335,7 +331,7 @@ export default function AutoVerification({ submission, onComplete }: AutoVerific
 
       {/* Decision Preview */}
       {!isRunning && (
-        <div className="mt-6 p-4 border rounded-lg bg-gradient-to-r from-gray-900/50 to-gray-800/50">
+        <div className="mt-6 p-4 border rounded-lg bg-sifter-dark/50">
           <div className="flex items-center justify-between mb-3">
             <h4 className="font-bold text-white">Auto-Verification Complete</h4>
             <span className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -346,16 +342,15 @@ export default function AutoVerification({ submission, onComplete }: AutoVerific
                 : 'bg-amber-500/20 text-amber-400'
             }`}>
               {confidence >= MODE_VERIFICATION_THRESHOLDS[submission.mode].autoApprove
-                ? '🚀 AUTO-APPROVE'
+                ? 'AUTO-APPROVE'
                 : confidence <= MODE_VERIFICATION_THRESHOLDS[submission.mode].autoReject
-                ? '❌ AUTO-REJECT'
-                : '📋 NEEDS MANUAL REVIEW'}
+                ? 'AUTO-REJECT'
+                : 'NEEDS MANUAL REVIEW'}
             </span>
           </div>
           
-          <div className="text-sm text-gray-400 space-y-2">
-            <p>
-              Confidence score of <span className="text-white font-medium">{confidence}%</span> 
+          <div className="text-sm text-sifter-text-muted space-y-2">
+            <p> Confidence score of <span className="text-white font-medium">{confidence}%</span> 
               {confidence >= MODE_VERIFICATION_THRESHOLDS[submission.mode].autoApprove
                 ? ' exceeds auto-approve threshold.'
                 : confidence <= MODE_VERIFICATION_THRESHOLDS[submission.mode].autoReject
@@ -364,8 +359,8 @@ export default function AutoVerification({ submission, onComplete }: AutoVerific
             </p>
             
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="p-2 bg-gray-800/50 rounded">
-                <div className="text-gray-400">Next Step</div>
+              <div className="p-2 bg-sifter-elevated/50 rounded">
+                <div className="text-sifter-text-muted">Next Step</div>
                 <div className="text-white">
                   {confidence >= MODE_VERIFICATION_THRESHOLDS[submission.mode].autoApprove
                     ? 'Add to database'
@@ -374,8 +369,8 @@ export default function AutoVerification({ submission, onComplete }: AutoVerific
                     : 'Admin review queue'}
                 </div>
               </div>
-              <div className="p-2 bg-gray-800/50 rounded">
-                <div className="text-gray-400">Estimated Time</div>
+              <div className="p-2 bg-sifter-elevated/50 rounded">
+                <div className="text-sifter-text-muted">Estimated Time</div>
                 <div className="text-white">
                   {confidence >= MODE_VERIFICATION_THRESHOLDS[submission.mode].autoApprove
                     ? 'Immediate'

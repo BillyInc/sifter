@@ -42,13 +42,12 @@ export default function AdminSubmissionDetail({
             <div className="flex justify-between items-center">
               <div>
                 <h2 className="text-xl font-bold text-white">Review Submission</h2>
-                <p className="text-sm text-gray-400">
-                  Case: <span className="font-mono text-blue-400">{submission.caseId}</span>
+                <p className="text-sm text-sifter-text-muted"> Case: <span className="font-mono text-blue-400">{submission.caseId}</span>
                 </p>
               </div>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-white text-2xl"
+                className="text-sifter-text-muted hover:text-white text-2xl"
               >
                 <XMarkIcon className="w-6 h-6" />
               </button>
@@ -62,19 +61,19 @@ export default function AdminSubmissionDetail({
               <h3 className="text-lg font-semibold text-white mb-3">Entity Information</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm text-gray-400">Entity Name</div>
+                  <div className="text-sm text-sifter-text-muted">Entity Name</div>
                   <div className="text-white font-medium">{submission.entityName}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-400">Entity Type</div>
+                  <div className="text-sm text-sifter-text-muted">Entity Type</div>
                   <div className="text-white font-medium">{submission.entityType}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-400">Project</div>
+                  <div className="text-sm text-sifter-text-muted">Project</div>
                   <div className="text-white font-medium">{submission.projectName || 'Not specified'}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-400">Submitted By</div>
+                  <div className="text-sm text-sifter-text-muted">Submitted By</div>
                   <div className="text-white font-medium">
                     {submission.submittedBy.name || 'Anonymous'} ({submission.submittedBy.mode})
                   </div>
@@ -85,10 +84,10 @@ export default function AdminSubmissionDetail({
             {/* Auto-Verification Results */}
             <div className="mb-6">
               <h3 className="text-lg font-semibold text-white mb-3">Auto-Verification Results</h3>
-              <div className="p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/30 rounded-xl">
+              <div className="p-4 bg-sifter-elevated border border-blue-500/30 rounded-xl">
                 <div className="flex justify-between items-center mb-4">
                   <div className="text-3xl font-bold text-white">{submission.autoVerification.confidence}%</div>
-                  <div className="text-sm text-gray-400">Confidence Score</div>
+                  <div className="text-sm text-sifter-text-muted">Confidence Score</div>
                 </div>
                 
                 <div className="space-y-3">
@@ -101,7 +100,7 @@ export default function AdminSubmissionDetail({
                       )}
                       <div className="flex-1">
                         <div className="font-medium text-white">{check.check.replace('_', ' ')}</div>
-                        <div className="text-sm text-gray-400">{check.detail}</div>
+                        <div className="text-sm text-sifter-text-muted">{check.detail}</div>
                       </div>
                       <div className={`px-2 py-1 rounded text-xs ${
                         check.result.includes('match') || check.result.includes('confirmed') || check.result.includes('no_contradictions')
@@ -125,7 +124,7 @@ export default function AdminSubmissionDetail({
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-sm text-gray-400">Evidence #{idx + 1}</span>
+                          <span className="text-sm text-sifter-text-muted">Evidence #{idx + 1}</span>
                           <span className={`px-2 py-1 rounded text-xs ${
                             evidence.verified ? 'bg-green-500/20 text-green-400' :
                             evidence.accessible ? 'bg-blue-500/20 text-blue-400' :
@@ -135,7 +134,7 @@ export default function AdminSubmissionDetail({
                           </span>
                         </div>
                         <div className="text-white font-medium truncate">{evidence.url}</div>
-                        <div className="text-sm text-gray-400 mt-1">Type: {evidence.type}</div>
+                        <div className="text-sm text-sifter-text-muted mt-1">Type: {evidence.type}</div>
                       </div>
                       <div className="flex gap-2">
                         <button
@@ -158,7 +157,7 @@ export default function AdminSubmissionDetail({
                           className={`p-2 rounded-lg ${
                             evidence.verified
                               ? 'bg-green-500/20 text-green-400'
-                              : 'text-gray-400 hover:text-green-400 hover:bg-green-500/20'
+                              : 'text-sifter-text-muted hover:text-green-400 hover:bg-green-500/20'
                           }`}
                           title="Mark as verified"
                         >
@@ -169,7 +168,7 @@ export default function AdminSubmissionDetail({
                     
                     {evidence.notes && (
                       <div className="mt-3 p-3 bg-sifter-dark/50 rounded-lg">
-                        <div className="text-sm text-gray-400 mb-1">Admin Notes</div>
+                        <div className="text-sm text-sifter-text-muted mb-1">Admin Notes</div>
                         <div className="text-white text-sm">{evidence.notes}</div>
                       </div>
                     )}
@@ -200,8 +199,7 @@ export default function AdminSubmissionDetail({
             {submission.autoVerification.issues.length > 0 && (
               <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl">
                 <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                  <ExclamationTriangleIcon className="w-5 h-5 text-red-400" />
-                  Issues Found
+                  <ExclamationTriangleIcon className="w-5 h-5 text-red-400" /> Issues Found
                 </h3>
                 <ul className="space-y-2">
                   {submission.autoVerification.issues.map((issue, idx) => (
@@ -224,7 +222,7 @@ export default function AdminSubmissionDetail({
                   className={`p-4 border rounded-xl flex flex-col items-center justify-center transition-all ${
                     selectedAction === 'approve'
                       ? 'border-green-500 bg-green-500/20 text-green-400'
-                      : 'border-sifter-border text-gray-400 hover:border-green-500/50'
+                      : 'border-sifter-border text-sifter-text-muted hover:border-green-500/50'
                   }`}
                 >
                   <CheckIcon className="w-6 h-6 mb-2" />
@@ -237,7 +235,7 @@ export default function AdminSubmissionDetail({
                   className={`p-4 border rounded-xl flex flex-col items-center justify-center transition-all ${
                     selectedAction === 'reject'
                       ? 'border-red-500 bg-red-500/20 text-red-400'
-                      : 'border-sifter-border text-gray-400 hover:border-red-500/50'
+                      : 'border-sifter-border text-sifter-text-muted hover:border-red-500/50'
                   }`}
                 >
                   <XMarkIcon className="w-6 h-6 mb-2" />
@@ -250,10 +248,9 @@ export default function AdminSubmissionDetail({
                   className={`p-4 border rounded-xl flex flex-col items-center justify-center transition-all ${
                     selectedAction === 'request-info'
                       ? 'border-blue-500 bg-blue-500/20 text-blue-400'
-                      : 'border-sifter-border text-gray-400 hover:border-blue-500/50'
+                      : 'border-sifter-border text-sifter-text-muted hover:border-blue-500/50'
                   }`}
                 >
-                  <span className="text-2xl mb-2">❓</span>
                   <span className="font-medium">Request Info</span>
                   <span className="text-xs mt-1">Need more evidence</span>
                 </button>
@@ -263,7 +260,7 @@ export default function AdminSubmissionDetail({
                   className={`p-4 border rounded-xl flex flex-col items-center justify-center transition-all ${
                     selectedAction === 'flag'
                       ? 'border-amber-500 bg-amber-500/20 text-amber-400'
-                      : 'border-sifter-border text-gray-400 hover:border-amber-500/50'
+                      : 'border-sifter-border text-sifter-text-muted hover:border-amber-500/50'
                   }`}
                 >
                   <ExclamationTriangleIcon className="w-6 h-6 mb-2" />
@@ -275,8 +272,7 @@ export default function AdminSubmissionDetail({
               {/* Action Notes */}
               {selectedAction && (
                 <div className="mt-4">
-                  <label className="block text-sm text-gray-400 mb-2">
-                    Action Notes (Required)
+                  <label className="block text-sm text-sifter-text-muted mb-2"> Action Notes (Required)
                   </label>
                   <textarea
                     value={actionNotes}
@@ -293,9 +289,8 @@ export default function AdminSubmissionDetail({
                 <div className="mt-6 flex justify-end gap-3">
                   <button
                     onClick={onClose}
-                    className="px-6 py-3 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg font-medium"
-                  >
-                    Cancel
+                    className="px-6 py-3 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover rounded-lg font-medium"
+                  > Cancel
                   </button>
                   <button
                     onClick={handleSubmitAction}

@@ -72,7 +72,7 @@ interface EABatchDashboardProps {
     projects: string[];
     confidence: number;
   }>) => void;
-  compact?: boolean;  // ✅ ADD THIS LINE
+  compact?: boolean;  //  ADD THIS LINE
 }
 
 // Helper function to create a metric data object WITH FIXED SCORE PROPERTY
@@ -234,9 +234,8 @@ const BatchUpload = ({
           handleFileUpload(files);
         }}
       >
-        <div className="text-4xl mb-4">📁</div>
         <h4 className="font-semibold text-white mb-2">Drop CSV file here</h4>
-        <p className="text-gray-400 text-sm mb-4">or</p>
+        <p className="text-sifter-text-muted text-sm mb-4">or</p>
         <label className="inline-block cursor-pointer">
           <input
             type="file"
@@ -248,12 +247,10 @@ const BatchUpload = ({
               handleFileUpload(files);
             }}
           />
-          <div className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors">
-            Browse Files
+          <div className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"> Browse Files
           </div>
         </label>
-        <p className="text-gray-500 text-xs mt-4">
-          Supports CSV, JSON, TXT formats
+        <p className="text-sifter-text-subtle text-xs mt-4"> Supports CSV, JSON, TXT formats
         </p>
       </div>
     </div>
@@ -285,32 +282,32 @@ const BatchSummaryComponent = ({
       <div className="flex overflow-x-auto border-b border-sifter-border -mx-4 px-4 sm:mx-0 sm:px-0">
         <div className="bg-sifter-dark/50 border border-sifter-border rounded-xl p-4">
           <div className="text-2xl font-bold text-white mb-1">{batchStats.totalProcessed}</div>
-          <div className="text-sm text-gray-400">Total Processed</div>
+          <div className="text-sm text-sifter-text-muted">Total Processed</div>
         </div>
         <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
           <div className="text-2xl font-bold text-green-400 mb-1">
             {Math.round((1 - batchStats.rejectionRate) * 100)}%
           </div>
-          <div className="text-sm text-gray-400">Success Rate</div>
+          <div className="text-sm text-sifter-text-muted">Success Rate</div>
         </div>
         <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
           <div className="text-2xl font-bold text-yellow-400 mb-1">
             {Math.round(batchStats.averageProcessingTime / 60)}m
           </div>
-          <div className="text-sm text-gray-400">Avg Processing Time</div>
+          <div className="text-sm text-sifter-text-muted">Avg Processing Time</div>
         </div>
         <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
           <div className="text-2xl font-bold text-red-400 mb-1">
             {Math.round(batchStats.rejectionRate * 100)}%
           </div>
-          <div className="text-sm text-gray-400">Rejection Rate</div>
+          <div className="text-sm text-sifter-text-muted">Rejection Rate</div>
         </div>
       </div>
 
       <div className="space-y-4">
         <div>
           <div className="flex justify-between items-center mb-2">
-            <span className="text-gray-400">Last Batch Date</span>
+            <span className="text-sifter-text-muted">Last Batch Date</span>
             <span className="text-white font-medium">
               {batchStats.lastBatchDate.toLocaleDateString()}
             </span>
@@ -320,10 +317,10 @@ const BatchSummaryComponent = ({
         {averageRiskScore > 0 && (
           <div>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-gray-400">Average Risk Score</span>
+              <span className="text-sifter-text-muted">Average Risk Score</span>
               <span className="text-white font-medium">{averageRiskScore}/100</span>
             </div>
-            <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+            <div className="h-2 bg-sifter-elevated rounded-full overflow-hidden">
               <div
                 className={`h-full ${averageRiskScore < 30 ? 'bg-green-500' :
                   averageRiskScore < 60 ? 'bg-yellow-500' :
@@ -338,13 +335,13 @@ const BatchSummaryComponent = ({
         {totalProjects > 0 && (
           <div>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-gray-400">Projects in this batch</span>
+              <span className="text-sifter-text-muted">Projects in this batch</span>
               <span className="text-white font-medium">{totalProjects}</span>
             </div>
           </div>
         )}
       </div>
-      {/* ✅ ADD THIS SECTION HERE - before the closing </div> */}
+      {/*  ADD THIS SECTION HERE - before the closing </div> */}
       {job.summary && job.summary.rejected > 0 && onOpenBulkFlagging && (
         <div className="mt-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
           <div className="flex items-center justify-between">
@@ -352,11 +349,9 @@ const BatchSummaryComponent = ({
               <div className="font-semibold text-amber-400 flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-1.998-1.333-2.732 0L3.732 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                Suspicious entities detected
+                </svg> Suspicious entities detected
               </div>
-              <div className="text-sm text-gray-400 mt-1">
-                Review entities appearing in multiple rejected projects
+              <div className="text-sm text-sifter-text-muted mt-1"> Review entities appearing in multiple rejected projects
               </div>
             </div>
             <button
@@ -365,8 +360,7 @@ const BatchSummaryComponent = ({
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
-              </svg>
-              Review Entities
+              </svg> Review Entities
             </button>
           </div>
         </div>
@@ -404,7 +398,7 @@ const ProjectCardWithFlagging = ({
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1">
           <div className="font-medium text-white">{project.name}</div>
-          <div className="text-xs text-gray-500">{project.input}</div>
+          <div className="text-xs text-sifter-text-subtle">{project.input}</div>
         </div>
         <div className="flex items-center gap-2">
           <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${riskScore < 30 ? 'bg-green-500/20 text-green-400' :
@@ -421,13 +415,13 @@ const ProjectCardWithFlagging = ({
       </div>
 
       <div className="flex items-center justify-between mb-3">
-        <div className="text-sm text-gray-300">{topRedFlag}</div>
+        <div className="text-sm text-sifter-text">{topRedFlag}</div>
         <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${verdict === 'pass' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
           verdict === 'flag' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
             'bg-red-500/20 text-red-400 border border-red-500/30'
           }`}>
           {verdict === 'pass' ? '✓ Pass' :
-            verdict === 'flag' ? '⚠ Flag' : '✗ Reject'}
+            verdict === 'flag' ? 'Flag' : '✗ Reject'}
         </div>
       </div>
 
@@ -437,10 +431,9 @@ const ProjectCardWithFlagging = ({
           <div className="flex justify-between items-center">
             <div className="flex-1">
               <p className="text-sm text-amber-300 font-medium">
-                ⚠️ {flaggedEntity}
+                {flaggedEntity}
               </p>
-              <p className="text-xs text-gray-400">
-                Detected during batch analysis
+              <p className="text-xs text-sifter-text-muted"> Detected during batch analysis
               </p>
             </div>
             {onStandardForm && (
@@ -460,8 +453,7 @@ const ProjectCardWithFlagging = ({
         <button
           onClick={() => onViewDetails(project)}
           className="w-full px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg text-sm transition-colors"
-        >
-          View Full Analysis
+        > View Full Analysis
         </button>
       </div>
     </div>
@@ -511,15 +503,13 @@ const BatchResultsTable = ({
         <div className="flex gap-2">
           <button
             onClick={handleExportCSV}
-            className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm"
-          >
-            Export CSV
+            className="px-4 py-2 bg-sifter-elevated hover:bg-sifter-hover text-white rounded-lg transition-colors text-sm"
+          > Export CSV
           </button>
           <button
             onClick={handleExportPDF}
             className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm"
-          >
-            Export PDF
+          > Export PDF
           </button>
         </div>
       </div>
@@ -538,8 +528,7 @@ const BatchResultsTable = ({
       </div>
 
       {projects.length > 10 && (
-        <div className="mt-6 text-center text-gray-500 text-sm">
-          Showing 10 of {projects.length} projects
+        <div className="mt-6 text-center text-sifter-text-subtle text-sm"> Showing 10 of {projects.length} projects
         </div>
       )}
     </div>
@@ -577,6 +566,10 @@ const EABatchDashboard: React.FC<EABatchDashboardProps> =({
   const [selectedProject, setSelectedProject] = useState<ExtendedBatchProject | null>(null);
   const [projectData, setProjectData] = useState<ProjectData | null>(null);
   const [detailedMetrics, setDetailedMetrics] = useState<MetricData[]>([]);
+  // Where the headline score on the detail view came from. `false` = a batch row or an
+  // average of raw scores, so the contribution strip is only a comparison. `undefined` =
+  // summed from the displayed contributions, so MetricBreakdown verifies the match itself.
+  const [headlineFromMetrics, setHeadlineFromMetrics] = useState<boolean | undefined>(false);
   const [batchTextInput, setBatchTextInput] = useState<string>('');
   const [processing, setProcessing] = useState(false);
   // NEW: Bulk flagging state
@@ -745,6 +738,7 @@ const EABatchDashboard: React.FC<EABatchDashboardProps> =({
       const mockMetrics = createMetricsArray();
       const metricsWithScore = ensureMetricsHaveScore(mockMetrics);
       setDetailedMetrics(metricsWithScore);
+      setHeadlineFromMetrics(false);
 
       const compositeScore = Math.round(
         metricsWithScore.reduce((sum, m) => sum + (m.score || 0), 0) / metricsWithScore.length
@@ -874,7 +868,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
       if (onExportPartnerPacket) {
         onExportPartnerPacket(batchJob.summary, batchJob.projects);
       } else {
-        // ✅ Create properly typed packet
+        //  Create properly typed packet
         const packet = {
           summary: {
             total: batchJob.summary.total,
@@ -889,7 +883,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
           projects: batchJob.projects.map(p => ({
             name: p.name,
             riskScore: p.riskScore || 0,
-            verdict: (p.verdict || 'unknown') as VerdictType | 'unknown', // ✅ Explicit type assertion
+            verdict: (p.verdict || 'unknown') as VerdictType | 'unknown', //  Explicit type assertion
             redFlags: p.redFlags || [],
             processingTime: p.processingTime || 0,
             scannedAt: p.scannedAt || new Date()
@@ -946,6 +940,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
 
       setProjectData(mockProjectData);
       setDetailedMetrics(filteredMetrics);
+      setHeadlineFromMetrics(undefined);
       setSelectedProject({
         id: `project_${Date.now()}`,
         name: projectName,
@@ -1002,12 +997,11 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
               setProjectData(null);
               setDetailedMetrics([]);
             }}
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+            className="flex items-center gap-2 text-sifter-text-muted hover:text-white transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to Batch Results
+            </svg> Back to Batch Results
           </button>
           <h2 className="text-xl font-bold text-white">Project Analysis: {selectedProject.name}</h2>
         </div>
@@ -1017,6 +1011,8 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
           metrics={detailedMetrics}
           projectName={selectedProject.name}
           riskScore={riskScore}
+          headlineFromMetrics={headlineFromMetrics}
+          verdict={selectedProject.verdict}
           onExport={() => {
             handleExportAnalysis(projectData);
           }}
@@ -1034,15 +1030,14 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
               setShowBatchResults(false);
               setBatchJob(null);
             }}
-            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+            className="flex items-center gap-2 text-sifter-text-muted hover:text-white transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to Upload
+            </svg> Back to Upload
           </button>
           <div className="text-right">
-            <div className="text-sm text-gray-400">Batch Analysis Complete</div>
+            <div className="text-sm text-sifter-text-muted">Batch Analysis Complete</div>
             <div className="text-lg font-semibold text-white">{batchJob.name}</div>
           </div>
         </div>
@@ -1057,9 +1052,8 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
         <div className="flex justify-end">
           <button
             onClick={handleExportPartnerPacket}
-            className="px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border border-purple-500/30 rounded-lg font-medium transition-colors flex items-center gap-2"
-          >
-            📦 Export Partner Packet
+            className="px-4 py-2 bg-sifter-blue/15 hover:bg-sifter-blue/30 text-blue-300 border border-sifter-blue/30 rounded-lg font-medium transition-colors flex items-center gap-2"
+          > Export partner packet
           </button>
         </div>
 
@@ -1076,6 +1070,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
               setSelectedProject(enrichedProject);
               setProjectData(fullProjectData);
               setDetailedMetrics(fullProjectData.metrics);
+              setHeadlineFromMetrics(false);
               setShowSingleAnalysis(true);
 
               if (onViewProjectDetails) {
@@ -1112,11 +1107,11 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-white">VC/EA Batch Mode</h1>
-          <p className="text-gray-400">Batch processing for deal flow screening</p>
+          <p className="text-sifter-text-muted">Batch processing for deal flow screening</p>
         </div>
         <div className="flex items-center gap-4">
           <div className="text-right">
-            <div className="text-sm text-gray-400">Analyst</div>
+            <div className="text-sm text-sifter-text-muted">Analyst</div>
             <div className="font-medium text-white">{userEmail}</div>
           </div>
         </div>
@@ -1128,19 +1123,17 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
           onClick={() => setActiveTab('batch')}
           className={`px-6 py-3 font-medium ${activeTab === 'batch'
             ? 'text-blue-400 border-b-2 border-blue-400'
-            : 'text-gray-400 hover:text-gray-300'
+            : 'text-sifter-text-muted hover:text-sifter-text'
             }`}
-        >
-          📤 Batch Upload
+        > Batch upload
         </button>
         <button
           onClick={() => setActiveTab('single')}
           className={`px-6 py-3 font-medium ${activeTab === 'single'
             ? 'text-blue-400 border-b-2 border-blue-400'
-            : 'text-gray-400 hover:text-gray-300'
+            : 'text-sifter-text-muted hover:text-sifter-text'
             }`}
-        >
-          🔍 Single Project
+        > Single project
         </button>
       </div>
 
@@ -1166,7 +1159,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
                     <div key={batch.id} className="flex items-center justify-between p-3 bg-sifter-dark/50 rounded-lg">
                       <div>
                         <div className="font-medium text-white">{batch.name}</div>
-                        <div className="text-sm text-gray-400">
+                        <div className="text-sm text-sifter-text-muted">
                           {batch.summary?.total || batch.projects?.length || 0} projects • {batch.createdAt.toLocaleDateString()}
                         </div>
                       </div>
@@ -1188,7 +1181,7 @@ Vault Protocol,@vaultproto,discord.gg/vault,https://vaultprotocol.com,Strong tea
             <div className="bg-sifter-card border border-sifter-border rounded-2xl p-6">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-semibold text-white">Batch Text Input</h3>
-                <div className="text-sm text-gray-400">
+                <div className="text-sm text-sifter-text-muted">
                   {batchTextInput.split('\n').filter(l => l.trim()).length}/100 projects
                 </div>
               </div>
@@ -1210,23 +1203,21 @@ https://projectx.com`}
               />
 
               <div className="flex justify-between items-center mt-4">
-                <div className="text-sm text-gray-400">
-                  Max 100 projects. Supports any format.
+                <div className="text-sm text-sifter-text-muted"> Max 100 projects. Supports any format.
                 </div>
 
                 <div className="flex gap-3">
                   <button
                     onClick={() => setBatchTextInput('')}
-                    className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                    className="px-4 py-2 bg-sifter-elevated hover:bg-sifter-hover text-white rounded-lg transition-colors"
                     disabled={!batchTextInput.trim()}
-                  >
-                    Clear
+                  > Clear
                   </button>
 
                   <button
                     onClick={handleTextBatchProcessing}
                     disabled={!batchTextInput.trim() || processing}
-                    className="px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-6 py-2 bg-sifter-blue hover:bg-sifter-blue-hover text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {processing ? 'Processing...' : 'Process Batch'}
                   </button>
@@ -1244,17 +1235,15 @@ https://projectx.com`}
                   }}
                   className="p-4 border border-sifter-border rounded-xl hover:border-blue-500/50 hover:bg-sifter-card/50 transition-all text-center"
                 >
-                  <div className="text-2xl mb-2">🔍</div>
                   <div className="font-medium text-white">Single Analysis</div>
-                  <div className="text-sm text-gray-400">Analyze one project</div>
+                  <div className="text-sm text-sifter-text-muted">Analyze one project</div>
                 </button>
                 <button
                   onClick={handleAnalyzeClick}
                   className="p-4 border border-sifter-border rounded-xl hover:border-blue-500/50 hover:bg-sifter-card/50 transition-all text-center"
                 >
-                  <div className="text-2xl mb-2">⚡</div>
                   <div className="font-medium text-white">Quick Analyze</div>
-                  <div className="text-sm text-gray-400">Manual input</div>
+                  <div className="text-sm text-sifter-text-muted">Manual input</div>
                 </button>
               </div>
             </div>
@@ -1264,12 +1253,11 @@ https://projectx.com`}
               <h3 className="text-xl font-semibold text-white mb-4">CSV Template</h3>
               <button
                 onClick={downloadCSVTemplate}
-                className="w-full px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="w-full px-4 py-3 bg-sifter-elevated hover:bg-sifter-hover text-white rounded-lg transition-colors flex items-center justify-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Download CSV Template
+                </svg> Download CSV Template
               </button>
             </div>
           </div>
@@ -1281,7 +1269,7 @@ https://projectx.com`}
         <div className="space-y-6">
           <div className="bg-sifter-card border border-sifter-border rounded-2xl p-6">
             <h3 className="text-xl font-semibold text-white mb-4">Single Project Analysis</h3>
-            <p className="text-gray-400 mb-6">Deep dive into one project with 13-metric evaluation</p>
+            <p className="text-sifter-text-muted mb-6">Deep dive into one project with 13-metric evaluation</p>
 
             <div className="max-w-4xl mx-auto">
               <SmartInputParser
@@ -1295,9 +1283,7 @@ https://projectx.com`}
           {/* Blitz Selector */}
           {showBlitzSelector && (
             <div className="bg-sifter-card border border-blue-500/30 rounded-xl p-6 animate-fadeIn">
-              <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
-                <span className="text-3xl">⚡</span>
-                Memecoin Detected — Choose Your Scan Speed
+              <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-3"> Memecoin Detected — Choose Your Scan Speed
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <button
@@ -1307,21 +1293,19 @@ https://projectx.com`}
                       : 'border-sifter-border hover:border-blue-500/50'
                     }`}
                 >
-                  <div className="text-5xl mb-3">⚡</div>
                   <h4 className="font-bold text-white text-lg">Hyper-Blitz</h4>
-                  <p className="text-sm text-gray-400 mt-2">5–10 seconds • New launches</p>
+                  <p className="text-sm text-sifter-text-muted mt-2">5–10 seconds • New launches</p>
                 </button>
 
                 <button
                   onClick={() => performSingleAnalysis(inputValue, 'momentum')}
                   className={`p-6 rounded-lg border-2 transition-all ${selectedBlitzMode === 'momentum'
-                      ? 'border-purple-500 bg-purple-500/10'
-                      : 'border-sifter-border hover:border-purple-500/50'
+                      ? 'border-sifter-blue bg-sifter-blue/10'
+                      : 'border-sifter-border hover:border-sifter-border-strong'
                     }`}
                 >
-                  <div className="text-5xl mb-3">📈</div>
                   <h4 className="font-bold text-white text-lg">Momentum-Blitz</h4>
-                  <p className="text-sm text-gray-400 mt-2">30–90 seconds • Active tokens</p>
+                  <p className="text-sm text-sifter-text-muted mt-2">30–90 seconds • Active tokens</p>
                 </button>
 
                 <button
@@ -1331,9 +1315,8 @@ https://projectx.com`}
                       : 'border-sifter-border hover:border-green-500/50'
                     }`}
                 >
-                  <div className="text-5xl mb-3">🔍</div>
                   <h4 className="font-bold text-white text-lg">Deep-Blitz</h4>
-                  <p className="text-sm text-gray-400 mt-2">2–5 minutes • Full analysis</p>
+                  <p className="text-sm text-sifter-text-muted mt-2">2–5 minutes • Full analysis</p>
                 </button>
               </div>
             </div>
@@ -1341,19 +1324,17 @@ https://projectx.com`}
 
           {/* Quick Examples */}
           <div className="text-center">
-            <p className="text-gray-600 text-sm mb-3">Quick demo:</p>
+            <p className="text-sifter-text-subtle text-sm mb-3">Quick demo:</p>
             <div className="flex justify-center gap-3">
               <button
                 onClick={() => performSingleAnalysis('MoonRocket Finance', 'deep')}
                 className="text-sm text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-colors"
-              >
-                View REJECT example (High Risk 70+)
+              > View REJECT example (High Risk 70+)
               </button>
               <button
                 onClick={() => performSingleAnalysis('Aave Protocol', 'deep')}
                 className="text-sm text-green-400 hover:text-green-300 bg-green-500/10 hover:bg-green-500/20 px-4 py-2 rounded-lg transition-colors"
-              >
-                View PASS example (Low Risk {'<'}30)
+              > View PASS example (Low Risk {'<'}30)
               </button>
             </div>
           </div>
@@ -1365,16 +1346,13 @@ https://projectx.com`}
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="bg-sifter-card border border-sifter-border rounded-2xl p-8 max-w-md w-full mx-4">
             <div className="text-center">
-              <div className="text-4xl mb-4 animate-pulse">⚡</div>
               <h3 className="text-xl font-semibold text-white mb-2">Processing Batch</h3>
-              <p className="text-gray-400 mb-6">
-                Analyzing {batchJob?.summary?.total || 0} projects...
+              <p className="text-sifter-text-muted mb-6"> Analyzing {batchJob?.summary?.total || 0} projects...
               </p>
-              <div className="w-full bg-gray-800 rounded-full h-2 mb-4 overflow-hidden">
-                <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full animate-pulse"></div>
+              <div className="w-full bg-sifter-elevated rounded-full h-2 mb-4 overflow-hidden">
+                <div className="bg-sifter-blue h-2 rounded-full animate-pulse"></div>
               </div>
-              <p className="text-sm text-gray-500">
-                This usually takes 1-3 minutes depending on batch size
+              <p className="text-sm text-sifter-text-subtle"> This usually takes 1-3 minutes depending on batch size
               </p>
             </div>
           </div>

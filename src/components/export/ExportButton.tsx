@@ -18,10 +18,10 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
   const getLabel = () => {
     if (label) return label;
     switch (variant) {
-      case 'pdf': return '📄 Export PDF';
-      case 'json': return '📊 Export JSON';
-      case 'csv': return '📈 Export CSV';
-      case 'all': return '📁 Export All';
+      case 'pdf': return 'Export PDF';
+      case 'json': return 'Export JSON';
+      case 'csv': return 'Export CSV';
+      case 'all': return 'Export All';
       default: return 'Export';
     }
   };
@@ -53,7 +53,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
           ? 'bg-green-600 hover:bg-green-700 text-white'
           : variant === 'csv'
           ? 'bg-purple-600 hover:bg-purple-700 text-white'
-          : 'bg-gray-600 hover:bg-gray-700 text-white'
+          : 'bg-sifter-elevated hover:bg-sifter-hover text-white'
       }`}
     >
       {getLabel()}

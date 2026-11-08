@@ -114,15 +114,15 @@ export default function AdminRedemptionPanel({
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-sifter-card border border-blue-500/30 rounded-xl p-4">
-          <div className="text-sm text-gray-400">Pending Requests</div>
+          <div className="text-sm text-sifter-text-muted">Pending Requests</div>
           <div className="text-3xl font-bold text-blue-400">{pendingRequests.length}</div>
         </div>
         <div className="bg-sifter-card border border-yellow-500/30 rounded-xl p-4">
-          <div className="text-sm text-gray-400">Approved</div>
+          <div className="text-sm text-sifter-text-muted">Approved</div>
           <div className="text-3xl font-bold text-yellow-400">{approvedRequests.length}</div>
         </div>
         <div className="bg-sifter-card border border-green-500/30 rounded-xl p-4">
-          <div className="text-sm text-gray-400">Fulfilled</div>
+          <div className="text-sm text-sifter-text-muted">Fulfilled</div>
           <div className="text-3xl font-bold text-green-400">{fulfilledRequests.length}</div>
         </div>
       </div>
@@ -133,12 +133,12 @@ export default function AdminRedemptionPanel({
           <table className="w-full">
             <thead className="bg-sifter-dark">
               <tr>
-                <th className="text-left p-4 text-sm font-medium text-gray-400">User</th>
-                <th className="text-left p-4 text-sm font-medium text-gray-400">Reward</th>
-                <th className="text-left p-4 text-sm font-medium text-gray-400">Points</th>
-                <th className="text-left p-4 text-sm font-medium text-gray-400">Status</th>
-                <th className="text-left p-4 text-sm font-medium text-gray-400">Requested</th>
-                <th className="text-left p-4 text-sm font-medium text-gray-400">Actions</th>
+                <th className="text-left p-4 text-sm font-medium text-sifter-text-muted">User</th>
+                <th className="text-left p-4 text-sm font-medium text-sifter-text-muted">Reward</th>
+                <th className="text-left p-4 text-sm font-medium text-sifter-text-muted">Points</th>
+                <th className="text-left p-4 text-sm font-medium text-sifter-text-muted">Status</th>
+                <th className="text-left p-4 text-sm font-medium text-sifter-text-muted">Requested</th>
+                <th className="text-left p-4 text-sm font-medium text-sifter-text-muted">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-sifter-border">
@@ -152,11 +152,11 @@ export default function AdminRedemptionPanel({
                       <div className="font-medium text-white">
                         {user?.displayName || `User ${request.userId.slice(0, 8)}`}
                       </div>
-                      <div className="text-sm text-gray-400">{user?.mode}</div>
+                      <div className="text-sm text-sifter-text-muted">{user?.mode}</div>
                     </td>
                     <td className="p-4">
                       <div className="font-medium text-white">{reward?.name || 'Unknown'}</div>
-                      <div className="text-sm text-gray-400">{reward?.category}</div>
+                      <div className="text-sm text-sifter-text-muted">{reward?.category}</div>
                     </td>
                     <td className="p-4">
                       <div className="font-bold text-amber-400">{request.pointsCost}</div>
@@ -171,15 +171,14 @@ export default function AdminRedemptionPanel({
                         {request.status}
                       </div>
                     </td>
-                    <td className="p-4 text-gray-400 text-sm">
+                    <td className="p-4 text-sifter-text-muted text-sm">
                       {new Date(request.requestedAt).toLocaleDateString()}
                     </td>
                     <td className="p-4">
                       <button
                         onClick={() => setSelectedRequest(request)}
-                        className="px-3 py-1 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded text-sm"
-                      >
-                        Review
+                        className="px-3 py-1 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover rounded text-sm"
+                      > Review
                       </button>
                     </td>
                   </tr>
@@ -196,7 +195,7 @@ export default function AdminRedemptionPanel({
           <div className="bg-sifter-card border border-sifter-border rounded-2xl max-w-2xl w-full p-6">
             <div className="mb-6">
               <h3 className="text-xl font-bold text-white mb-2">Redemption Request</h3>
-              <p className="text-gray-400">Review and process this redemption request</p>
+              <p className="text-sifter-text-muted">Review and process this redemption request</p>
             </div>
             
             {/* Request Details */}
@@ -207,13 +206,13 @@ export default function AdminRedemptionPanel({
                   <h4 className="font-medium text-white mb-3">User Information</h4>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-gray-400">User:</span>
+                      <span className="text-sifter-text-muted">User:</span>
                       <span className="text-white font-medium">
                         {users[selectedRequest.userId]?.displayName || `User ${selectedRequest.userId.slice(0, 8)}`}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Mode:</span>
+                      <span className="text-sifter-text-muted">Mode:</span>
                       <span className={`px-2 py-1 rounded text-xs ${
                         users[selectedRequest.userId]?.mode === 'ea-vc' ? 'bg-blue-500/20 text-blue-400' :
                         users[selectedRequest.userId]?.mode === 'researcher' ? 'bg-purple-500/20 text-purple-400' :
@@ -223,7 +222,7 @@ export default function AdminRedemptionPanel({
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Available Points:</span>
+                      <span className="text-sifter-text-muted">Available Points:</span>
                       <span className="text-amber-400 font-bold">
                         {users[selectedRequest.userId]?.availablePoints.toLocaleString()}
                       </span>
@@ -235,7 +234,7 @@ export default function AdminRedemptionPanel({
                 {selectedRequest.userNotes && (
                   <div className="bg-sifter-dark/50 border border-sifter-border rounded-lg p-4">
                     <h4 className="font-medium text-white mb-2">User Notes</h4>
-                    <p className="text-gray-300 text-sm">{selectedRequest.userNotes}</p>
+                    <p className="text-sifter-text text-sm">{selectedRequest.userNotes}</p>
                   </div>
                 )}
               </div>
@@ -245,31 +244,31 @@ export default function AdminRedemptionPanel({
                 <h4 className="font-medium text-white mb-3">Reward Details</h4>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Reward:</span>
+                    <span className="text-sifter-text-muted">Reward:</span>
                     <span className="text-white font-medium">{rewards[selectedRequest.rewardId]?.name || 'Unknown'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Category:</span>
+                    <span className="text-sifter-text-muted">Category:</span>
                     <span className={`px-2 py-1 rounded text-xs ${
                       rewards[selectedRequest.rewardId]?.category === 'vc' ? 'bg-blue-500/20 text-blue-400' :
                       rewards[selectedRequest.rewardId]?.category === 'researcher' ? 'bg-purple-500/20 text-purple-400' :
                       rewards[selectedRequest.rewardId]?.category === 'individual' ? 'bg-green-500/20 text-green-400' :
-                      'bg-gray-500/20 text-gray-400'
+                      'bg-sifter-elevated text-sifter-text-muted'
                     }`}>
                       {rewards[selectedRequest.rewardId]?.category || 'Unknown'}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Type:</span>
+                    <span className="text-sifter-text-muted">Type:</span>
                     <span className="text-white">{rewards[selectedRequest.rewardId]?.type || 'Unknown'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Points Cost:</span>
+                    <span className="text-sifter-text-muted">Points Cost:</span>
                     <span className="font-bold text-amber-400">{selectedRequest.pointsCost}</span>
                   </div>
                   <div className="pt-3 border-t border-sifter-border/50">
                     <h5 className="text-sm font-medium text-white mb-2">Redemption Instructions:</h5>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-sifter-text-muted">
                       {rewards[selectedRequest.rewardId]?.redemptionInstructions || 'No specific instructions.'}
                     </p>
                   </div>
@@ -279,15 +278,14 @@ export default function AdminRedemptionPanel({
             
             {/* Admin Notes */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-white mb-2">
-                Admin Notes
+              <label className="block text-sm font-medium text-white mb-2"> Admin Notes
               </label>
               <textarea
                 value={adminNotes}
                 onChange={(e) => setAdminNotes(e.target.value)}
                 placeholder="Add notes about processing this request..."
                 className="w-full h-32 px-3 py-2 bg-sifter-dark border border-sifter-border rounded-lg 
-                         text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                         text-white placeholder:text-sifter-text-subtle focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             
@@ -298,10 +296,9 @@ export default function AdminRedemptionPanel({
                   setSelectedRequest(null);
                   setAdminNotes('');
                 }}
-                className="px-4 py-3 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg font-medium flex-1"
+                className="px-4 py-3 bg-sifter-elevated text-sifter-text hover:bg-sifter-hover rounded-lg font-medium flex-1"
                 disabled={isProcessing}
-              >
-                Cancel
+              > Cancel
               </button>
               
               {selectedRequest.status === 'pending' && (
@@ -310,8 +307,7 @@ export default function AdminRedemptionPanel({
                     onClick={handleRejectRequest}
                     disabled={isProcessing}
                     className="px-4 py-3 bg-red-500/20 text-red-400 hover:bg-red-500/30 rounded-lg font-medium"
-                  >
-                    Reject
+                  > Reject
                   </button>
                   <button
                     onClick={handleApproveRequest}

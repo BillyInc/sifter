@@ -21,25 +21,25 @@ export default function VerificationDemo({ evidenceId }: VerificationDemoProps) 
     {
       name: 'Original URL',
       description: 'Checking if the original link is accessible',
-      icon: '🔗',
+      icon: '',
       key: 'original'
     },
     {
       name: 'Archive.org',
       description: 'Verifying Wayback Machine archive',
-      icon: '📚',
+      icon: '',
       key: 'archive'
     },
     {
       name: 'Screenshot',
       description: 'Checking stored screenshot',
-      icon: '🖼️',
+      icon: '',
       key: 'screenshot'
     },
     {
       name: 'IPFS',
       description: 'Verifying IPFS pin',
-      icon: '🌐',
+      icon: '',
       key: 'ipfs'
     }
   ];

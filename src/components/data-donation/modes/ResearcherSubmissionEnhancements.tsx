@@ -20,15 +20,14 @@ export default function ResearcherSubmissionEnhancements({
       {/* Methodology Documentation */}
       <div className="p-4 border border-purple-500/30 rounded-xl bg-purple-500/10">
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-purple-400">📊</span>
+          <span className="text-purple-400"></span>
           <span className="font-medium text-white">Research Methodology</span>
           <span className="text-xs bg-purple-500/30 text-purple-300 px-2 py-1 rounded">Required</span>
         </div>
         
         <div className="space-y-3">
           <div>
-            <label className="block text-sm text-gray-400 mb-2">
-              Methodology Description *
+            <label className="block text-sm text-sifter-text-muted mb-2"> Methodology Description *
             </label>
             <textarea
               value={methodology}
@@ -46,8 +45,7 @@ export default function ResearcherSubmissionEnhancements({
           
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm text-gray-400 mb-2">
-                Analysis Tools Used
+              <label className="block text-sm text-sifter-text-muted mb-2"> Analysis Tools Used
               </label>
               <select className="w-full p-2 bg-sifter-dark border border-purple-500/30 rounded-lg text-white">
                 <option>On-chain analysis</option>
@@ -59,8 +57,7 @@ export default function ResearcherSubmissionEnhancements({
             </div>
             
             <div>
-              <label className="block text-sm text-gray-400 mb-2">
-                Data Sources
+              <label className="block text-sm text-sifter-text-muted mb-2"> Data Sources
               </label>
               <select multiple className="w-full p-2 bg-sifter-dark border border-purple-500/30 rounded-lg text-white">
                 <option>Blockchain data</option>
@@ -77,13 +74,12 @@ export default function ResearcherSubmissionEnhancements({
       {/* Pattern Analysis */}
       <div className="p-4 border border-purple-500/30 rounded-xl bg-purple-500/10">
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-purple-400">🔍</span>
+          <span className="text-purple-400"></span>
           <span className="font-medium text-white">Pattern Analysis</span>
         </div>
         
         <div>
-          <label className="block text-sm text-gray-400 mb-2">
-            Pattern Recognition Notes (Optional)
+          <label className="block text-sm text-sifter-text-muted mb-2"> Pattern Recognition Notes (Optional)
           </label>
           <textarea
             value={patternAnalysis}
@@ -100,12 +96,12 @@ export default function ResearcherSubmissionEnhancements({
       </div>
 
       {/* Researcher-Specific Evidence Requirements */}
-      <div className="p-4 border border-purple-500/30 rounded-xl bg-gray-900/50">
+      <div className="p-4 border border-purple-500/30 rounded-xl bg-sifter-dark/50">
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-amber-400">📋</span>
+          <span className="text-amber-400"></span>
           <span className="font-medium text-white">Researcher Evidence Requirements</span>
         </div>
-        <ul className="text-sm text-gray-300 space-y-1">
+        <ul className="text-sm text-sifter-text space-y-1">
           <li className="flex items-center gap-2">
             <span className="text-green-400">✓</span>
             <span>Minimum 3 evidence sources required</span>
@@ -119,7 +115,7 @@ export default function ResearcherSubmissionEnhancements({
             <span>Data-driven analysis preferred</span>
           </li>
           <li className="flex items-center gap-2">
-            <span className="text-purple-400">💎</span>
+            <span className="text-purple-400"></span>
             <span>3x points multiplier applied</span>
           </li>
         </ul>
