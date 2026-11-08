@@ -1765,7 +1765,7 @@ export default function IndividualDashboard({
                       ? 'bg-red-500/15 text-red-300 border-red-500/30'
                       : 'bg-amber-500/15 text-amber-300 border-amber-500/30'
                   }`}>
-                    {flag.severity === 'critical' ? 'Critical' : 'Warning'}
+                    {flag.severity === 'critical' ? 'Critical' : flag.severity === 'high' ? 'High' : 'Warning'}
                   </span>
                   <div>
                     <h4 className="font-bold text-white text-sm">{flag.title}</h4>

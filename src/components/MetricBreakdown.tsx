@@ -84,6 +84,7 @@ export default function MetricBreakdown({
 }: MetricBreakdownProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [showShare, setShowShare] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
   const shareDialogRef = useRef<HTMLDialogElement>(null);
   const shareTriggerRef = useRef<HTMLButtonElement>(null);
 
@@ -91,6 +92,7 @@ export default function MetricBreakdown({
   useEffect(() => {
     const dialog = shareDialogRef.current;
     if (!dialog) return;
+    if (showShare) setCopyFailed(false);
     if (showShare && !dialog.open) dialog.showModal();
     if (!showShare && dialog.open) dialog.close();
   }, [showShare]);
@@ -137,7 +139,9 @@ export default function MetricBreakdown({
     try {
       await navigator.clipboard.writeText(text);
     } catch {
-      /* clipboard unavailable; nothing else to do */
+      // Clipboard unavailable or blocked: say so and keep the dialog open for a retry.
+      setCopyFailed(true);
+      return;
     }
     setShowShare(false);
   };
@@ -324,6 +328,11 @@ export default function MetricBreakdown({
           <Button variant="secondary" fullWidth onClick={copySummary}>Copy summary</Button>
           <Button variant="secondary" fullWidth onClick={shareToX}>Post on X</Button>
         </div>
+        {copyFailed ? (
+          <p role="alert" className="mt-3 text-sm text-sifter-danger">
+            Could not copy the summary. Check your browser permissions and try again.
+          </p>
+        ) : null}
         <div className="mt-4 flex justify-end">
           <Button variant="ghost" onClick={() => setShowShare(false)}>Cancel</Button>
         </div>
